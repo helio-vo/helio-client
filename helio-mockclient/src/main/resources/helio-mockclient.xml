@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />	
+	
+	<bean id="hecMockParamQueryImpl" class="eu.heliovo.mockclient.query.HecMockParamQueryImpl">
+		<property name="conversionService" ref="conversionService"></property>
+	</bean>
+
+	<bean id="ilsMockParamQueryImpl" class="eu.heliovo.mockclient.query.IlsMockParamQueryImpl">
+		<property name="conversionService" ref="conversionService"></property>
+	</bean>
+
+	<bean id="dpasMockParamQueryImpl" class="eu.heliovo.mockclient.query.DpasMockParamQueryImpl">
+		<property name="conversionService" ref="conversionService"></property>
+	</bean>
+		
+</beans>
