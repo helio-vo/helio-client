@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_rAVHMWjEEd-7H8XMdOI5Rg" name="clientapi" viewpoint="">
+  <packagedElement xmi:type="uml:Component" xmi:id="_P4-lwGjMEd-ni6bqWPS2Ww" name="HelioClientApi " clientDependency="_PmQBkGjNEd-ni6bqWPS2Ww _YJC3IGjPEd-ni6bqWPS2Ww _ZRwysGjPEd-ni6bqWPS2Ww _ycGUMGjPEd-ni6bqWPS2Ww">
+    <interfaceRealization xmi:id="_PmQBkGjNEd-ni6bqWPS2Ww" client="_P4-lwGjMEd-ni6bqWPS2Ww"/>
+    <interfaceRealization xmi:id="_YJC3IGjPEd-ni6bqWPS2Ww" client="_P4-lwGjMEd-ni6bqWPS2Ww"/>
+    <interfaceRealization xmi:id="_ZRwysGjPEd-ni6bqWPS2Ww" client="_P4-lwGjMEd-ni6bqWPS2Ww"/>
+    <interfaceRealization xmi:id="_ycGUMGjPEd-ni6bqWPS2Ww" client="_P4-lwGjMEd-ni6bqWPS2Ww"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Component" xmi:id="_4SopwGjPEd-ni6bqWPS2Ww" name="HelioWebClient"/>
+  <packagedElement xmi:type="uml:Component" xmi:id="_KpFcoGjQEd-ni6bqWPS2Ww" name="HelioIDLClient"/>
+  <packagedElement xmi:type="uml:Component" xmi:id="_M5NFIGjQEd-ni6bqWPS2Ww" name="TavernaWorkbench"/>
+  <packagedElement xmi:type="uml:Association" xmi:id="_P8J4wGjQEd-ni6bqWPS2Ww" memberEnd="_P8J4wWjQEd-ni6bqWPS2Ww _P8J4xGjQEd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="_P8J4wWjQEd-ni6bqWPS2Ww" name="src" type="_4SopwGjPEd-ni6bqWPS2Ww" association="_P8J4wGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_P8J4w2jQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_P8J4wmjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_P8J4xGjQEd-ni6bqWPS2Ww" name="dst" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_P8J4wGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_P8J4xmjQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_P8J4xWjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_RVuTwGjQEd-ni6bqWPS2Ww" memberEnd="_RVuTwWjQEd-ni6bqWPS2Ww _RVuTxGjQEd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="_RVuTwWjQEd-ni6bqWPS2Ww" name="src" type="_KpFcoGjQEd-ni6bqWPS2Ww" association="_RVuTwGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_RVuTw2jQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_RVuTwmjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_RVuTxGjQEd-ni6bqWPS2Ww" name="dst" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_RVuTwGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_RVuTxmjQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_RVuTxWjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_XiLO8GjQEd-ni6bqWPS2Ww" memberEnd="_XiLO8WjQEd-ni6bqWPS2Ww _XiLO9GjQEd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="_XiLO8WjQEd-ni6bqWPS2Ww" name="src" type="_M5NFIGjQEd-ni6bqWPS2Ww" association="_XiLO8GjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_XiLO82jQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_XiLO8mjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_XiLO9GjQEd-ni6bqWPS2Ww" name="dst" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_XiLO8GjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_XiLO9mjQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_XiLO9WjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Component" xmi:id="_clTKkGjQEd-ni6bqWPS2Ww" name="ThirdPartyClient"/>
+  <packagedElement xmi:type="uml:Association" xmi:id="_gIj18GjQEd-ni6bqWPS2Ww" memberEnd="_gIj18WjQEd-ni6bqWPS2Ww _gIj19GjQEd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="_gIj18WjQEd-ni6bqWPS2Ww" name="src" type="_clTKkGjQEd-ni6bqWPS2Ww" association="_gIj18GjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gIj182jQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gIj18mjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_gIj19GjQEd-ni6bqWPS2Ww" name="dst" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_gIj18GjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gIj19mjQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gIj19WjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Component" xmi:id="_xwWMAGjQEd-ni6bqWPS2Ww" name="HEC"/>
+  <packagedElement xmi:type="uml:Component" xmi:id="_OO3TsGjUEd-IvszF0dLCRA" name="ILS" isLeaf="true"/>
+  <packagedElement xmi:type="uml:Component" xmi:id="_zwDZ8GjQEd-ni6bqWPS2Ww" name="DPAS"/>
+  <packagedElement xmi:type="uml:Component" xmi:id="_0qUp0GjQEd-ni6bqWPS2Ww" name="RegistryService"/>
+  <packagedElement xmi:type="uml:Association" xmi:id="_9ZJbIGjQEd-ni6bqWPS2Ww" memberEnd="_9ZJbIWjQEd-ni6bqWPS2Ww _9ZJbJGjQEd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="_9ZJbIWjQEd-ni6bqWPS2Ww" name="src" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_9ZJbIGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9ZJbI2jQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9ZJbImjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_9ZJbJGjQEd-ni6bqWPS2Ww" name="dst" type="_xwWMAGjQEd-ni6bqWPS2Ww" association="_9ZJbIGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9ZJbJmjQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9ZJbJWjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_-xz3MGjQEd-ni6bqWPS2Ww" memberEnd="_-xz3MWjQEd-ni6bqWPS2Ww _-xz3NGjQEd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="_-xz3MWjQEd-ni6bqWPS2Ww" name="src" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_-xz3MGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-xz3M2jQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_-xz3MmjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_-xz3NGjQEd-ni6bqWPS2Ww" name="dst" association="_-xz3MGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-xz3NmjQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_-xz3NWjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="__5WHAGjQEd-ni6bqWPS2Ww" memberEnd="__5WHAWjQEd-ni6bqWPS2Ww __5WHBGjQEd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="__5WHAWjQEd-ni6bqWPS2Ww" name="src" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="__5WHAGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__5WHA2jQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__5WHAmjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="__5WHBGjQEd-ni6bqWPS2Ww" name="dst" type="_zwDZ8GjQEd-ni6bqWPS2Ww" association="__5WHAGjQEd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="__5WHBmjQEd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="__5WHBWjQEd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_BDQVYGjREd-ni6bqWPS2Ww" memberEnd="_BDQVYWjREd-ni6bqWPS2Ww _BDQVZGjREd-ni6bqWPS2Ww">
+    <ownedEnd xmi:id="_BDQVYWjREd-ni6bqWPS2Ww" name="src" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_BDQVYGjREd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BDQVY2jREd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BDQVYmjREd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_BDQVZGjREd-ni6bqWPS2Ww" name="dst" type="_0qUp0GjQEd-ni6bqWPS2Ww" association="_BDQVYGjREd-ni6bqWPS2Ww">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BDQVZmjREd-ni6bqWPS2Ww" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BDQVZWjREd-ni6bqWPS2Ww" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_aDsMoGjUEd-IvszF0dLCRA" memberEnd="_aD_uoGjUEd-IvszF0dLCRA _aD_uo2jUEd-IvszF0dLCRA">
+    <ownedEnd xmi:id="_aD_uoGjUEd-IvszF0dLCRA" name="src" type="_OO3TsGjUEd-IvszF0dLCRA" association="_aDsMoGjUEd-IvszF0dLCRA">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_aD_uomjUEd-IvszF0dLCRA" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_aD_uoWjUEd-IvszF0dLCRA" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_aD_uo2jUEd-IvszF0dLCRA" name="dst" type="_P4-lwGjMEd-ni6bqWPS2Ww" association="_aDsMoGjUEd-IvszF0dLCRA">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_aD_upWjUEd-IvszF0dLCRA" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_aD_upGjUEd-IvszF0dLCRA" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_yJOCMGjUEd-IvszF0dLCRA" name="HelioParamQuery">
+    <ownedOperation xmi:id="_MFNqIGjVEd-IvszF0dLCRA" name="querySync">
+      <ownedParameter xmi:id="_NjiCQGjVEd-IvszF0dLCRA" direction="return"/>
+      <ownedParameter xmi:id="_NjiCQWjVEd-IvszF0dLCRA" name="Map params"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_LKOzIGjWEd-IvszF0dLCRA" name="queryAsync">
+      <ownedParameter xmi:id="_MgW4kGjWEd-IvszF0dLCRA" direction="return"/>
+      <ownedParameter xmi:id="_MgW4kWjWEd-IvszF0dLCRA" name="Map params"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_0FzDoGjUEd-IvszF0dLCRA" name="HelioSQLQuery">
+    <ownedOperation xmi:id="_-PCkgGjUEd-IvszF0dLCRA" name="querySync">
+      <ownedParameter xmi:id="_WAvfIGjVEd-IvszF0dLCRA" direction="return"/>
+      <ownedParameter xmi:id="_WAvfIWjVEd-IvszF0dLCRA" name="String query"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_M-m60GjWEd-IvszF0dLCRA" name="queryAsync">
+      <ownedParameter xmi:id="_OJkSEGjWEd-IvszF0dLCRA" direction="return"/>
+      <ownedParameter xmi:id="_OJkSEWjWEd-IvszF0dLCRA" name="Map params"/>
+    </ownedOperation>
+    <nestedClassifier xmi:type="uml:Interface" xmi:id="_7UR_8GlKEd-KBfYlpTyAbw" name="HelioProcessingService">
+      <ownedOperation xmi:id="_GphZ4GlLEd-KBfYlpTyAbw" name="submit">
+        <ownedParameter xmi:id="_MMeFEGlLEd-KBfYlpTyAbw" direction="return"/>
+        <ownedParameter xmi:id="_MMeFEWlLEd-KBfYlpTyAbw" name="job"/>
+        <ownedParameter xmi:id="_MMeFEmlLEd-KBfYlpTyAbw" name="id"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_O-PCEGlLEd-KBfYlpTyAbw" name="getResult">
+        <ownedParameter xmi:id="_QZk-sGlLEd-KBfYlpTyAbw" direction="return"/>
+        <ownedParameter xmi:id="_QZk-sWlLEd-KBfYlpTyAbw" name="id"/>
+      </ownedOperation>
+      <ownedOperation xmi:id="_NJHTgGlLEd-KBfYlpTyAbw" name="cancel">
+        <ownedParameter xmi:id="_ROLrcGlLEd-KBfYlpTyAbw" direction="return"/>
+        <ownedParameter xmi:id="_ROLrcWlLEd-KBfYlpTyAbw" name="id"/>
+      </ownedOperation>
+    </nestedClassifier>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_ADvm4GjWEd-IvszF0dLCRA" name="HelioCore">
+    <ownedOperation xmi:id="_CL8CcGjWEd-IvszF0dLCRA" name="login">
+      <ownedParameter xmi:id="_D56nMGjWEd-IvszF0dLCRA" direction="return"/>
+      <ownedParameter xmi:id="_D56nMWjWEd-IvszF0dLCRA" name="String user"/>
+      <ownedParameter xmi:id="_D56nMmjWEd-IvszF0dLCRA" name="String password"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_mqr4AGlFEd-KBfYlpTyAbw" memberEnd="_mqr4AWlFEd-KBfYlpTyAbw _mqr4BGlFEd-KBfYlpTyAbw">
+    <ownedEnd xmi:id="_mqr4AWlFEd-KBfYlpTyAbw" name="src" type="_clTKkGjQEd-ni6bqWPS2Ww" association="_mqr4AGlFEd-KBfYlpTyAbw">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_mqr4A2lFEd-KBfYlpTyAbw" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_mqr4AmlFEd-KBfYlpTyAbw" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_mqr4BGlFEd-KBfYlpTyAbw" name="dst" type="_zwDZ8GjQEd-ni6bqWPS2Ww" association="_mqr4AGlFEd-KBfYlpTyAbw">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_mqr4BmlFEd-KBfYlpTyAbw" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_mqr4BWlFEd-KBfYlpTyAbw" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_vT0RAGlFEd-KBfYlpTyAbw" memberEnd="_vT0RAWlFEd-KBfYlpTyAbw _vT0RBGlFEd-KBfYlpTyAbw">
+    <ownedEnd xmi:id="_vT0RAWlFEd-KBfYlpTyAbw" name="src" type="_M5NFIGjQEd-ni6bqWPS2Ww" association="_vT0RAGlFEd-KBfYlpTyAbw">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vT0RA2lFEd-KBfYlpTyAbw" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vT0RAmlFEd-KBfYlpTyAbw" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_vT0RBGlFEd-KBfYlpTyAbw" name="dst" type="_OO3TsGjUEd-IvszF0dLCRA" association="_vT0RAGlFEd-KBfYlpTyAbw">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vT0RBmlFEd-KBfYlpTyAbw" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vT0RBWlFEd-KBfYlpTyAbw" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_TnNKkGlGEd-KBfYlpTyAbw" memberEnd="_TnNKkWlGEd-KBfYlpTyAbw _TnNKlGlGEd-KBfYlpTyAbw">
+    <ownedEnd xmi:id="_TnNKkWlGEd-KBfYlpTyAbw" name="src" type="_M5NFIGjQEd-ni6bqWPS2Ww" association="_TnNKkGlGEd-KBfYlpTyAbw">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_TnNKk2lGEd-KBfYlpTyAbw" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_TnNKkmlGEd-KBfYlpTyAbw" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_TnNKlGlGEd-KBfYlpTyAbw" name="dst" type="_zwDZ8GjQEd-ni6bqWPS2Ww" association="_TnNKkGlGEd-KBfYlpTyAbw">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_TnW7kWlGEd-KBfYlpTyAbw" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_TnW7kGlGEd-KBfYlpTyAbw" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_Ga49cGlKEd-KBfYlpTyAbw" name="HelioConfiguration">
+    <ownedOperation xmi:id="_HpQ1EGlKEd-KBfYlpTyAbw" name="setProperty">
+      <ownedParameter xmi:id="_JLnYoGlKEd-KBfYlpTyAbw" direction="return"/>
+      <ownedParameter xmi:id="_JLnYoWlKEd-KBfYlpTyAbw" name="String key"/>
+      <ownedParameter xmi:id="_JLnYomlKEd-KBfYlpTyAbw" name="String value"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_WySpsGlKEd-KBfYlpTyAbw" name="HelioResultSetManager">
+    <ownedOperation xmi:id="_Y9Bb4GlKEd-KBfYlpTyAbw" name="getHelioJobs">
+      <ownedParameter xmi:id="_bf5BQGlKEd-KBfYlpTyAbw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_gVh6gGlKEd-KBfYlpTyAbw" name="HelioMonitor">
+    <ownedOperation xmi:id="_huMWkGlKEd-KBfYlpTyAbw" name="getStatus">
+      <ownedParameter xmi:id="_lVUOQGlKEd-KBfYlpTyAbw" direction="return"/>
+      <ownedParameter xmi:id="_lVUOQWlKEd-KBfYlpTyAbw" name="String serviceId"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_sFvZMGlKEd-KBfYlpTyAbw" name="HelioRegistryService">
+    <ownedOperation xmi:id="_ty-XEGlKEd-KBfYlpTyAbw" name="lookupService">
+      <ownedParameter xmi:id="_w6fhoGlKEd-KBfYlpTyAbw" direction="return"/>
+      <ownedParameter xmi:id="_w6pSoGlKEd-KBfYlpTyAbw" name="Map params"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_44RQgGlKEd-KBfYlpTyAbw" name="HelioStorageService">
+    <ownedOperation xmi:id="_owF2kGlLEd-KBfYlpTyAbw" name="copy">
+      <ownedParameter xmi:id="_pzJPAGlLEd-KBfYlpTyAbw" direction="return"/>
+      <ownedParameter xmi:id="_pzJPAWlLEd-KBfYlpTyAbw" name="src"/>
+      <ownedParameter xmi:id="_pzJPAmlLEd-KBfYlpTyAbw" name="dst"/>
+      <ownedParameter xmi:id="_pzJPA2lLEd-KBfYlpTyAbw" name="id"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_qJ8lcGlLEd-KBfYlpTyAbw" name="move">
+      <ownedParameter xmi:id="_rgOb4GlLEd-KBfYlpTyAbw" direction="return"/>
+      <ownedParameter xmi:id="_rgOb4WlLEd-KBfYlpTyAbw" name="src"/>
+      <ownedParameter xmi:id="_rgOb4mlLEd-KBfYlpTyAbw" name="dst"/>
+      <ownedParameter xmi:id="_rgOb42lLEd-KBfYlpTyAbw" name="id"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_r0yWoGlLEd-KBfYlpTyAbw" name="del">
+      <ownedParameter xmi:id="_tVf7cGlLEd-KBfYlpTyAbw" direction="return"/>
+      <ownedParameter xmi:id="_tVf7cWlLEd-KBfYlpTyAbw" name="src"/>
+      <ownedParameter xmi:id="_tVf7cmlLEd-KBfYlpTyAbw" name="id"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_Wc8-4GomEd-KBfYlpTyAbw" name="HelioClientApi">
+    <generalization xmi:id="_8Z-IsGomEd-KBfYlpTyAbw" general="_0FzDoGjUEd-IvszF0dLCRA"/>
+    <generalization xmi:id="_9K2zEGomEd-KBfYlpTyAbw" general="_yJOCMGjUEd-IvszF0dLCRA"/>
+    <generalization xmi:id="_9uLikGomEd-KBfYlpTyAbw" general="_sFvZMGlKEd-KBfYlpTyAbw"/>
+    <generalization xmi:id="_-L1H4GomEd-KBfYlpTyAbw" general="_ADvm4GjWEd-IvszF0dLCRA"/>
+    <generalization xmi:id="_-zUlsGomEd-KBfYlpTyAbw" general="_44RQgGlKEd-KBfYlpTyAbw"/>
+    <generalization xmi:id="__gVcsGomEd-KBfYlpTyAbw" general="_7UR_8GlKEd-KBfYlpTyAbw"/>
+    <generalization xmi:id="_ACJwUGonEd-KBfYlpTyAbw" general="_gVh6gGlKEd-KBfYlpTyAbw"/>
+    <generalization xmi:id="_As7LoGonEd-KBfYlpTyAbw" general="_WySpsGlKEd-KBfYlpTyAbw"/>
+    <generalization xmi:id="_BxK24GonEd-KBfYlpTyAbw" general="_Ga49cGlKEd-KBfYlpTyAbw"/>
+    <generalization xmi:id="_5qWGUHCgEd-BPL_JVJSfKA" general="_0pbRgHCdEd-BPL_JVJSfKA"/>
+    <generalization xmi:id="_-UN0cHCgEd-BPL_JVJSfKA" general="_4Ptw0HCfEd-BPL_JVJSfKA"/>
+    <generalization xmi:id="_H0yLwHChEd-BPL_JVJSfKA" general="_QTTFoHCgEd-BPL_JVJSfKA"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_0pbRgHCdEd-BPL_JVJSfKA" name="HelioServiceDiscovery">
+    <ownedOperation xmi:id="_fcQ6wHCeEd-BPL_JVJSfKA" name="getServiceInstance">
+      <ownedParameter xmi:id="_iyZJEHCeEd-BPL_JVJSfKA" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_jbE5sHCeEd-BPL_JVJSfKA" name="isServiceRunning">
+      <ownedParameter xmi:id="_kVodcHCeEd-BPL_JVJSfKA" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_4Ptw0HCfEd-BPL_JVJSfKA" name="HelioTracing">
+    <ownedOperation xmi:id="_6acjAHCfEd-BPL_JVJSfKA" name="getLogs">
+      <ownedParameter xmi:id="_DNQccHCgEd-BPL_JVJSfKA" direction="return"/>
+      <ownedParameter xmi:id="_DNQccXCgEd-BPL_JVJSfKA" name="String callId"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interface" xmi:id="_QTTFoHCgEd-BPL_JVJSfKA" name="HelioUtil">
+    <ownedOperation xmi:id="_Y6fk8HCgEd-BPL_JVJSfKA" name="performWhatever">
+      <ownedParameter xmi:id="_bhifsHCgEd-BPL_JVJSfKA" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+</uml:Model>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>helio-client</artifactId>
+    <groupId>eu.heliovo</groupId>
+    <version>0.4-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eu.heliovo</groupId>
+  <artifactId>helio-clientapi</artifactId>
+  <name>helio-clientapi</name>
+  <version>0.4-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <description>Module that describes the client API. The client API will be used by graphical user interfaces such as our web client as well as by scripting environments such as IDL.</description>  
+  
+</project>
