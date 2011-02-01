@@ -12,5 +12,6 @@
   <description>Parent project of the helio client API and all implementations.</description>
   <modules>
   	<module>helio-clientapi</module>
+  	<module>helio-mockclient</module>
   </modules>
 </project>
