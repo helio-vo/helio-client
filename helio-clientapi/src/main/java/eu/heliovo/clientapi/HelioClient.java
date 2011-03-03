@@ -1,6 +1,6 @@
 package eu.heliovo.clientapi;
 
-import eu.heliovo.clientapi.model.infrastructure.HelioService;
+import eu.heliovo.clientapi.model.service.HelioService;
 
 /**
  * Main object to access the HELIO API. Different implementations will be provided

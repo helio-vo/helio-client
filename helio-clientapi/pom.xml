@@ -12,6 +12,26 @@
   <name>helio-clientapi</name>
   <version>0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <description>Module that describes the client API. The client API will be used by graphical user interfaces such as our web client as well as by scripting environments such as IDL.</description>  
+  <description>Module that describes the client API. The client API will be used by graphical user interfaces such as our web client as well as by scripting environments such as IDL.</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>eu.heliovo</groupId>
+  		<artifactId>helio-queryservice-client</artifactId>
+  		<version>0.4-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>eu.heliovo</groupId>
+  		<artifactId>helio-shared</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
+  <dependencyManagement>
+  	<dependencies>
+  	</dependencies>
+  </dependencyManagement>  
   
 </project>
