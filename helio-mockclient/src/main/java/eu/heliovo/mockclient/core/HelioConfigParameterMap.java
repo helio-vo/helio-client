@@ -35,51 +35,6 @@ public class HelioConfigParameterMap extends HashMap<HelioConfigParameterMap.Use
      *
      */
     static enum UserParamType {
-        /**
-         * Path to image resources that should be copied.
-         */
-        RESOURCE_PATHS (String[].class), 
-        
-        /**
-         * Map of jython sources to be parsed. Key is the source path, the value is the list of packages to search.
-         */
-        JYTHON_SOURCES (Map.class),
-    
-        /**
-         * Map of XML sources to be parsed. Key is the source path, the value is the list of packages to search.
-         */
-        XML_SOURCES (Map.class), 
-        
-        /**
-         * Map of Java sources to be parsed. Key is the source path, the value is the list of packages to search.
-         */
-        JAVA_SOURCES (Map.class),         
-        
-        /**
-         * Set custom parameters for the Yajahs Docbook XSL style sheets.
-         */
-        YAJAHS_DOCBOOK_XSL_PARAMS (Map.class),
-    
-        /**
-         * Set custom parameters for the HTML Docbook XSL style sheets.
-         */
-        HTML_DOCBOOK_XSL_PARAMS (Map.class),
-        
-        /**
-         * Set custom parameters for the PDF Docbook XSL style sheets.
-         */
-        PDF_DOCBOOK_XSL_PARAMS (Map.class),
-        
-        /**
-         * Set of links to external JavaDoc resources.
-         */
-        DRM_LINKS (Set.class),
-
-        /**
-         * Name of the style sheet to load for PDF transformation. 
-         * 
-         */
-        PDF_STYLESHEET (String.class),
         ;
         
         /**

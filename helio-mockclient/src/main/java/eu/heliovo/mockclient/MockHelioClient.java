@@ -12,7 +12,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 import eu.heliovo.clientapi.HelioClient;
-import eu.heliovo.clientapi.model.infrastructure.HelioService;
+import eu.heliovo.clientapi.model.service.HelioService;
 
 public class MockHelioClient implements HelioClient {
 	/**

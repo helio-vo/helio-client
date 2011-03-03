@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.HelioClient;
-import eu.heliovo.clientapi.model.infrastructure.HelioService;
-import eu.heliovo.clientapi.query.HelioParamQuery;
+import eu.heliovo.clientapi.model.service.HelioService;
+import eu.heliovo.clientapi.query.paramquery.ParamQueryService;
 import eu.heliovo.mockclient.MockHelioClient;
 
 
@@ -29,11 +29,12 @@ public class MockHelioClientImplTest {
 	    
 	    HelioService hecService = helio.getService("hec");
 	    assertNotNull(hecService);
-	    assertTrue(hecService instanceof HelioParamQuery);
+	    assertTrue(hecService instanceof ParamQueryService);
 	    
-	    HelioParamQuery hecService2 = helio.getService("hec", HelioParamQuery.class);
+	    ParamQueryService hecService2 = helio.getService("hec", ParamQueryService.class);
 	    assertNotNull(hecService2);
 	    assertTrue(hecService2 instanceof HelioService);
-	    assertTrue(hecService2 instanceof HelioParamQuery);
+	    assertTrue(hecService2 instanceof ParamQueryService);
+	    
 	}
 }

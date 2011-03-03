@@ -13,6 +13,7 @@
 	<artifactId>helio-mockclient</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>helio-mockclient</name>
+	<packaging>jar</packaging>
 	<description>The mock-client is mainly intended for testing purposes. It provides mock implementations of some common services.</description>
 	<build>
 		<!-- plugins>
@@ -48,6 +49,20 @@
 			<groupId>eu.heliovo</groupId>
 			<artifactId>helio-shared</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.heliovo</groupId>
+			<artifactId>helio-queryservice-client</artifactId>
+			<version>0.4-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>eu.heliovo</groupId>
+			<artifactId>helio-workflow</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+			<type>war</type>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
