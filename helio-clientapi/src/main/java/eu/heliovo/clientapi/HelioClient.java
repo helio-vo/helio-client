@@ -15,7 +15,7 @@ public interface HelioClient {
 	 * @return all services registered with HelioClient or empty array if none are found.
 	 */
 	public HelioService[] getServices();
-
+	
 	/**
 	 * Get all services that implement a specific interface or are derived from a given class.
 	 * @param <T> The type of the implemented interface or the derived class.
