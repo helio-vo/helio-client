@@ -2,6 +2,8 @@ package eu.heliovo.clientapi.model.field;
 
 import java.util.Arrays;
 
+import eu.heliovo.shared.util.AssertUtil;
+
 
 /**
  * Description of a helio field.
@@ -40,7 +42,7 @@ public class HelioField<T extends Object> {
 	/**
 	 * The default value assigned to an object. May be null.
 	 */
-	private final T defaultValue;
+	private T defaultValue;
 
 	/**
 	 * Create the HELIO field. The default value and the value domain will be null.
@@ -86,10 +88,14 @@ public class HelioField<T extends Object> {
 	 * @param defaultValue the default value. Will be ignored if null.
 	 */
 	public HelioField(String id, String fieldName, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain, T defaultValue) {
+		AssertUtil.assertArgumentNotNull(id, "id");
+		AssertUtil.assertArgumentNotNull(fieldName, "fieldName");
+		AssertUtil.assertArgumentNotNull(type, "type");
 		this.id = id;
 		this.fieldName = fieldName;
 		this.description = description;
 		this.type = type;
+		checkDomainConsistency(defaultValue, valueDomain);
 		this.valueDomain = valueDomain;
 		this.defaultValue = defaultValue;
 	}
@@ -140,6 +146,7 @@ public class HelioField<T extends Object> {
 	 * @param valueDomain the value domain.
 	 */
 	public void setValueDomain(DomainValueDescriptor<T>[] valueDomain) {
+		checkDomainConsistency(defaultValue, valueDomain);
 		this.valueDomain = valueDomain;
 	}
 	
@@ -151,6 +158,15 @@ public class HelioField<T extends Object> {
 		return defaultValue;
 	}
 	
+	/**
+	 * Set the default value of the field.
+	 * @param defaultValue the default value.
+	 */
+	public void setDefaultValue(T defaultValue) {
+		checkDomainConsistency(defaultValue, valueDomain);
+		this.defaultValue = defaultValue;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -159,7 +175,8 @@ public class HelioField<T extends Object> {
 		if (!(obj instanceof HelioField)) {
 			return false;
 		}
-		return this.id.equals(((HelioField<?>)obj).id);
+		boolean ret = this.id.equals(((HelioField<?>)obj).id);
+		return ret;
 	}
 	
 	@Override
@@ -174,5 +191,29 @@ public class HelioField<T extends Object> {
 			sb.append(", description=").append(description);
 		sb.append("}");
 		return sb.toString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return 1 + 37 * id.hashCode();
+	}
+	
+	/**
+	 * Check if a value is part of the given domain. If either domain or value are null the check will succeed.
+	 * @param value the value to check
+	 * @param domain the domain of values to check.
+	 */
+	private static <T> void checkDomainConsistency(T value, DomainValueDescriptor<T>[] domain) {
+		//nothing to do if not both valueDomain and defaultValue are set.
+		if (domain == null || value == null) {
+			return;
+		}
+		
+		for (DomainValueDescriptor<T> val : domain) {
+			if (value != null && val.getValue().equals(value)) {
+				return;
+			}
+		}
+		throw new IllegalArgumentException("Value '" + value + "' is not part of domain '" + Arrays.toString(domain) + "'.");
 	}
 }

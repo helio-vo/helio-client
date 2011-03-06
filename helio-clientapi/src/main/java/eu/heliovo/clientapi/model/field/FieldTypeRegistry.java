@@ -3,8 +3,6 @@ package eu.heliovo.clientapi.model.field;
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.heliovo.shared.util.AssertUtil;
-
 public class FieldTypeRegistry {
 	
 	/**
@@ -34,7 +32,7 @@ public class FieldTypeRegistry {
 	private FieldTypeRegistry() {
 		add(new SimpleFieldType("string", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("integer", java.math.BigInteger.class, "xsd:integer" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("integer", int.class, "xsd:int" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("int", int.class, "xsd:int" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("long", long.class, "xsd.long" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("short", short.class, "xsd:short" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("decimal", java.math.BigDecimal.class, "xsd:decimal" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
@@ -74,7 +72,6 @@ public class FieldTypeRegistry {
 	 * @return the found type or null if not applicable.
 	 */
 	public FieldType getType(String name) {
-		AssertUtil.assertArgumentHasText(name, "name");
 		return fieldMap.get(name);
 	}
 }
