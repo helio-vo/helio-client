@@ -76,7 +76,6 @@ public class SimpleInterface
     
     HelioQueryServiceService service=new HelioQueryServiceService();
     HelioQueryService port=service.getHelioQueryServicePort();
-    
     int numberOfDatePairs=minDate.size();
     int numberOfFromSingles=from.size();
     
@@ -89,7 +88,7 @@ public class SimpleInterface
     
     BindingProvider bp = (BindingProvider) port;
     bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, portAddress);
-    VOTABLE result = port.query(minDate,maxDate, from,where,null, maxrecords, startindex);
+    VOTABLE result = port.query(minDate,maxDate, from,where,null, maxrecords, startindex, null);
     
     
     ResultVT resvt= new ResultVT(result);
