@@ -106,7 +106,7 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 			} else {
 				sb.append(", ");
 			}
-			sb.append(field.getFieldName());
+			sb.append(field.getName());
 		}
 		sb.append("]}");
 		return sb.toString();

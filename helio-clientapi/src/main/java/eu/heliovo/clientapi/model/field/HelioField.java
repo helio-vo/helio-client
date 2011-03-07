@@ -22,7 +22,12 @@ public class HelioField<T extends Object> {
 	/**
 	 * Name of the field.
 	 */
-	private final String fieldName;
+	private final String name;
+	
+	/**
+	 * Label to show to the user.
+	 */
+	private final String label;
 	
 	/**
 	 * General description of the field.
@@ -47,52 +52,54 @@ public class HelioField<T extends Object> {
 	/**
 	 * Create the HELIO field. The default value and the value domain will be null.
 	 * @param id the id of the field. must not be null.
-	 * @param fieldName the name of the field. must not be null.
+	 * @param name the name of the field. must not be null.
 	 * @param description the description of the field in user friendly format. May be null.
 	 * @param type the type of the field in XML Schema definition. Must not be null
 	 */
-	public HelioField(String id, String fieldName, String description, FieldType type) {
-		this(id, fieldName, description, type, null, null);	
+	public HelioField(String id, String name, String description, FieldType type) {
+		this(id, name, name, description, type, null, null);	
 	}
 	
 	/**
 	 * Create the HELIO field with a given default value. The value domain will be null.
 	 * @param id the id of the field. must not be null.
-	 * @param fieldName the name of the field. must not be null.
+	 * @param name the name of the field. must not be null.
 	 * @param description the description of the field in user friendly format. May be null.
 	 * @param type the type of the field in XML Schema definition. Must not be null
 	 * @param defaultValue the default value. Will be ignored if null. 
 	 */
-	public HelioField(String id, String fieldName, String description, FieldType type, T defaultValue) {
-		this(id, fieldName, description, type, null, defaultValue);
+	public HelioField(String id, String name, String description, FieldType type, T defaultValue) {
+		this(id, name, name, description, type, null, defaultValue);
 	}
 
 	/**
 	 * Create the HELIO field with a given value domain. The default value will be null.
 	 * @param id the id of the field. must not be null.
-	 * @param fieldName the name of the field. must not be null.
+	 * @param name the name of the field. must not be null.
 	 * @param description the description of the field in user friendly format. May be null.
 	 * @param type the type of the field in XML Schema definition. Must not be null
 	 * @param valueDomain the value domain. Will be ignored if null. 
 	 */
-	public HelioField(String id, String fieldName, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain) {
-		this(id, fieldName, description, type, valueDomain, null);
+	public HelioField(String id, String name, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain) {
+		this(id, name, name, description, type, valueDomain, null);
 	}
 	/**
 	 * Create the helio field
 	 * @param id the id of the field. must not be null.
-	 * @param fieldName the name of the field. must not be null.
+	 * @param name the name of the field. must not be null.
+	 * @param label label to be shown to the user. Same as name if null.
 	 * @param description the description of the field in user friendly format. May be null.
 	 * @param type the type of the field in XML Schema definition. Must not be null
 	 * @param valueDomain the value domain. Will be ignored if null. 
 	 * @param defaultValue the default value. Will be ignored if null.
 	 */
-	public HelioField(String id, String fieldName, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain, T defaultValue) {
-		AssertUtil.assertArgumentNotNull(id, "id");
-		AssertUtil.assertArgumentNotNull(fieldName, "fieldName");
+	public HelioField(String id, String name, String label, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain, T defaultValue) {
+		AssertUtil.assertArgumentHasText(id, "id");
+		AssertUtil.assertArgumentHasText(name, "name");
 		AssertUtil.assertArgumentNotNull(type, "type");
 		this.id = id;
-		this.fieldName = fieldName;
+		this.name = name;
+		this.label = label == null ? name : label;
 		this.description = description;
 		this.type = type;
 		checkDomainConsistency(defaultValue, valueDomain);
@@ -113,10 +120,18 @@ public class HelioField<T extends Object> {
 	 * Get the name of the field. Case sensitive. Must not be null.
 	 * @return the name
 	 */
-	public String getFieldName() {
-		return fieldName;
+	public String getName() {
+		return name;
 	}
 
+	/**
+	 * Get the label of this field.
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+	
 	/**
 	 * Get the description of the field. Any string is applicable. May be null.
 	 * @return 
@@ -183,7 +198,8 @@ public class HelioField<T extends Object> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("HelioField");
-		sb.append("name=").append(fieldName);
+		sb.append("name=").append(name);
+		sb.append("label=").append(label);
 		sb.append(", type=").append(type);
 		if (valueDomain != null) 
 			sb.append(", domain=").append(Arrays.toString(valueDomain));

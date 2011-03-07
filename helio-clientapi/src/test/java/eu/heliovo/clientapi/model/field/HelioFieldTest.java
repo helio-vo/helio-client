@@ -20,6 +20,7 @@ public class HelioFieldTest {
 	@Test public void testCreation() {
 		String id = "id";
 		String fieldName = "fieldName";
+		String fieldLabel = "fieldLabel";
 		String description = "description";
 		FieldType type = FieldTypeRegistry.getInstance().getType("string");
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2", "string3");
@@ -30,8 +31,10 @@ public class HelioFieldTest {
 		HelioField<String> helioField1 = new HelioField<String>(id, fieldName, description, type);
 		assertNotNull(helioField1.getId());
 		assertEquals(id, helioField1.getId());
-		assertNotNull(helioField1.getFieldName());
-		assertEquals(fieldName, helioField1.getFieldName());
+		assertNotNull(helioField1.getName());
+		assertEquals(fieldName, helioField1.getName());
+		assertNotNull(helioField1.getLabel());
+		assertEquals(fieldName, helioField1.getLabel());
 		assertNotNull(helioField1.getDescription());
 		assertEquals(description, helioField1.getDescription());
 		assertNotNull(helioField1.getType());
@@ -40,7 +43,7 @@ public class HelioFieldTest {
 		assertNull(helioField1.getDefaultValue());
 		HelioField<String> helioField2 = new HelioField<String>(id, fieldName, description, type, valueDomain);
 		assertNotNull(helioField2.getId());
-		assertNotNull(helioField2.getFieldName());
+		assertNotNull(helioField2.getName());
 		assertNotNull(helioField2.getDescription());
 		assertNotNull(helioField2.getType());
 		assertNotNull(helioField2.getValueDomain());
@@ -49,16 +52,17 @@ public class HelioFieldTest {
 
 		HelioField<String> helioField3 = new HelioField<String>(id, fieldName, description, type, defaultValue);
 		assertNotNull(helioField3.getId());
-		assertNotNull(helioField3.getFieldName());
+		assertNotNull(helioField3.getName());
 		assertNotNull(helioField3.getDescription());
 		assertNotNull(helioField3.getType());
 		assertNull(helioField3.getValueDomain());
 		assertNotNull(helioField3.getDefaultValue());
 		assertEquals(defaultValue, helioField3.getDefaultValue());
 
-		HelioField<String> helioField4 = new HelioField<String>(id, fieldName, description, type, valueDomain, defaultValue);
+		HelioField<String> helioField4 = new HelioField<String>(id, fieldName, fieldLabel, description, type, valueDomain, defaultValue);
 		assertNotNull(helioField4.getId());
-		assertNotNull(helioField4.getFieldName());
+		assertNotNull(helioField4.getName());
+		assertNotNull(helioField4.getLabel());
 		assertNotNull(helioField4.getDescription());
 		assertNotNull(helioField4.getType());
 		assertNotNull(helioField4.getValueDomain());
@@ -71,12 +75,13 @@ public class HelioFieldTest {
 	@Test public void testDomainConsitency() {
 		String id = "id";
 		String fieldName = "fieldName";
+		String fieldLabel = "fieldLabel";
 		String description = "description";
 		FieldType type = FieldTypeRegistry.getInstance().getType("string");
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2", "string3");
 		String defaultValue = "string1";
 		
-		HelioField<String> helioField = new HelioField<String>(id, fieldName, description, type, valueDomain, defaultValue);
+		HelioField<String> helioField = new HelioField<String>(id, fieldName, fieldLabel, description, type, valueDomain, defaultValue);
 		try {
 			helioField.setDefaultValue("string.not.existing");
 			fail("IllegalArgumentException expected.");
