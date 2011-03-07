@@ -1,14 +1,16 @@
 package eu.heliovo.clientapi.model.catalog;
 
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
-import eu.heliovo.clientapi.model.field.HelioField;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.*;
+
+import org.w3c.dom.*;
+
+import eu.heliovo.clientapi.frontend.SimpleInterface;
+import eu.heliovo.clientapi.model.field.*;
 
 /**
  * Registry that holds the configuration of the HEC catalogs.
@@ -48,6 +50,89 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	 * Populate the registry
 	 */
 	private HecStaticCatalogRegistry() {
+    try
+    {
+      DocumentBuilder docBuilder=DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      
+      //parse catalog descriptions
+      Document dLists=docBuilder.parse(SimpleInterface.class.getResourceAsStream("/HEC_Lists.xml"));
+      Document dFields=docBuilder.parse(SimpleInterface.class.getResourceAsStream("/HEC_Fields.xml"));
+      dLists.normalize();
+      dFields.normalize();
+      
+      //create xpath
+      XPath xpath=XPathFactory.newInstance().newXPath();
+      
+      NodeList lists=dLists.getElementsByTagName("HEC_Lists");
+      for(int i=0;i<lists.getLength();i++)
+      {
+        Element listElement=(Element)lists.item(i);
+        
+        //create catalog
+        int catInternalId=Integer.parseInt(listElement.getElementsByTagName("ListDBID").item(0).getTextContent());
+        String catName=listElement.getElementsByTagName("ListID").item(0).getTextContent();
+        String catLabel=listElement.getElementsByTagName("ListName").item(0).getTextContent();
+        String catDescription=listElement.getElementsByTagName("ListDesc").item(0).getTextContent();
+        HelioCatalog catalog=new HelioCatalog(catName,catLabel,catDescription);
+        
+        System.out.println(catName);
+        
+        //find associated fields
+        NodeList fields=(NodeList)xpath.evaluate("//HEC_Fields[ListDBID="+catInternalId+"]",dFields,XPathConstants.NODESET);
+        for(int j=0;j<fields.getLength();j++)
+        {
+          Element fieldElement=(Element)fields.item(j);
+          
+          String fieldId=fieldElement.getElementsByTagName("OldFieldName").item(0).getTextContent();
+          String fieldName=fieldElement.getElementsByTagName("FieldName").item(0).getTextContent();
+          
+          String fieldDescription=null;
+          NodeList nl=fieldElement.getElementsByTagName("FieldDesc");
+          if(nl.getLength()>0)
+            fieldDescription=nl.item(0).getTextContent();
+          
+          String fieldDataType=fieldElement.getElementsByTagName("FieldDataType").item(0).getTextContent();
+          
+          
+          FieldType ft=null;
+          if("integer".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("int");
+          else if("real".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("double");
+          else if("text".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("string");
+          else if("ISO8601 Time".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("dateTime");
+          else if("Special - Xclass".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("xclass");
+          else if("Special - Oclass".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("oclass");
+          else
+            ft=fieldTypeRegistry.getType(fieldDataType);
+          
+          /*
+            <FieldDBID>5</FieldDBID>
+            <OldFieldName>goes_id</OldFieldName>
+            <FieldType>Private</FieldType>
+            <FieldEntity>Index</FieldEntity>
+            <FieldProperty>Catalogue</FieldProperty>
+            <FieldUnits>HEC id</FieldUnits>
+            <FieldSIConv>1&gt;Unitless</FieldSIConv>
+            <FieldProdNotes>rename to standard id (e.g. hec_id)</FieldProdNotes>
+           */
+          
+          System.out.println("      "+fieldName);
+          
+          catalog.addField(new HelioField<Object>(fieldId,fieldName,fieldDescription,ft));
+        }
+      }
+    }
+    catch(Exception e)
+    {
+      e.printStackTrace();
+    }
+	  
+	  
 		HelioCatalog catalog = new HelioCatalog("goes_xray_flare", "goes_xray_flare", "Goes list of xray flares");
 		catalog.addField(new HelioField<Date>("ntime_start", "ntime_start", "selection start time", fieldTypeRegistry.getType("dateTime")));
 		catalog.addField(new HelioField<Date>("time_start", "time_start", "event start time", fieldTypeRegistry.getType("dateTime")));

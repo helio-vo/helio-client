@@ -53,6 +53,9 @@ public class FieldTypeRegistry {
 		add(new SimpleFieldType("object", java.lang.Object.class, "xsd:anySimpleType" , new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("duration", javax.xml.datatype.Duration.class, "xsd:duration" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("NOTATION", javax.xml.namespace.QName.class, "xsd:NOTATION" , new Operator[] {Operator.EQUALS}));
+    
+		add(new SimpleFieldType("xclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+    add(new SimpleFieldType("oclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
 	}
 
 	/**
@@ -60,7 +63,7 @@ public class FieldTypeRegistry {
 	 * @param fieldType the field type to add. 
 	 */
 	private void add(FieldType fieldType) {
-		FieldType oldFieldType = fieldMap.put(fieldType.getName(), fieldType);
+		FieldType oldFieldType = fieldMap.put(fieldType.getName().toLowerCase(), fieldType);
 		if (oldFieldType != null) {
 			throw new RuntimeException("Attempt to register two fieldTypes with the same name: old type: " + oldFieldType + ", new type: " + fieldType);
 		};
@@ -72,6 +75,6 @@ public class FieldTypeRegistry {
 	 * @return the found type or null if not applicable.
 	 */
 	public FieldType getType(String name) {
-		return fieldMap.get(name);
+		return fieldMap.get(name.toLowerCase());
 	}
 }
