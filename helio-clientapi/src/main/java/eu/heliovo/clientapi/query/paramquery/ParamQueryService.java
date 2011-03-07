@@ -22,7 +22,7 @@ public interface ParamQueryService extends HelioService {
 	 * @throws IllegalArgumentException if the terms cannot be validated.
 	 * @throws JobExecutionException if the execution of the query fails for some reason.
 	 */
-	public HelioQueryResult[] query(List<ParamQueryTerm<?>> terms) throws IllegalArgumentException, JobExecutionException;
+	public HelioQueryResult query(List<ParamQueryTerm<?>> terms) throws IllegalArgumentException, JobExecutionException;
 	
 	/**
 	 * Get the description of all fields of a given catalog.

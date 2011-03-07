@@ -42,7 +42,7 @@ public interface LongRunningQueryService extends HelioService {
      * @param saveto
      * @return
      */
-    public HelioQueryResult[] longQuery(
+    public HelioQueryResult longQuery(
     		List<String> starttime,
     		List<String> endtime,
     		List<String> from,
@@ -80,7 +80,7 @@ public interface LongRunningQueryService extends HelioService {
      * @param saveto name of the subfolder where to store the result to. Must be a String of [a-zA-Z]. 
      * @return current status. 
      */
-    public HelioQueryResult[] longTimeQuery(
+    public HelioQueryResult longTimeQuery(
         List<String> starttime,
         List<String> endtime,
         List<String> from,
