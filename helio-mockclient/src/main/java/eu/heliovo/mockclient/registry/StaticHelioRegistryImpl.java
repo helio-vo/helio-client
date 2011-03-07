@@ -20,21 +20,17 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 
 	@Override
 	public URL getDpas() throws ServiceResolutionException {
-		throw new ServiceResolutionException("No service available yet");
+		return asURL("http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
 	}
 
 	@Override
 	public URL getIcs() throws ServiceResolutionException {
-		try {
-			return new URL("http://msslxw.mssl.ucl.ac.uk:8080/helio-ics-longrunning/HelioLongQueryService?wsdl");
-		} catch (MalformedURLException e) {
-			throw new ServiceResolutionException("Unable to parse URL: " + e.getMessage(), e);
-		}
+		return asURL("http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioLongQueryService?wsdl");
 	}
 
 	@Override
 	public URL getIls() throws ServiceResolutionException {
-		throw new ServiceResolutionException("No service available yet");
+		return asURL("http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioLongQueryService?wsdl");
 	}
 
 	@Override
@@ -44,13 +40,20 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 
 	@Override
 	public URL getMdes() throws ServiceResolutionException {
+		return asURL("http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService_MDES.wsdl");		
+	}
+
+	/**
+	 * Convert String to URL. 
+	 * @param url the url to convert
+	 * @return the url as URL object
+	 * @throws ServiceResolutionException if the URL is not valid
+	 */
+	private URL asURL(String url) throws ServiceResolutionException {
 		try {
-			return new URL("http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService_MDES.wsdl");
+			return new URL("http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
 		} catch (MalformedURLException e) {
 			throw new ServiceResolutionException("Unable to parse URL: " + e.getMessage(), e);
 		}
-		
 	}
-
-	
 }

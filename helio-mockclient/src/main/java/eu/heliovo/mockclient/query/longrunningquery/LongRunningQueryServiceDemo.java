@@ -19,24 +19,21 @@ public class LongRunningQueryServiceDemo {
 //		BaseLongRunningQueryService baseLongRunningQueryService = new BaseLongRunningQueryService(url);
 		
 		LongRunningQueryService icsService = LongRunningQueryServiceFactory.getInstance().getIcsService();
-		HelioQueryResult[] results = icsService.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+		HelioQueryResult result = icsService.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 
-		System.out.println(Arrays.toString(results));
-		if (results != null) {
-			for (HelioQueryResult result : results) {
-				System.out.println("Phase: " + result.getPhase());
-				System.out.println("Result URL: " + result.asURL());
-				System.out.println("Result VOTable: " + result.asVOTable());
-				StringBuilder sb = new StringBuilder("User log: ");
-				for (LogRecord logRecord : result.getUserLogs()) {
-					if (sb.length() > 0) {
-						sb.append(", ");
-					}
-					sb.append(logRecord.getMessage());
+		System.out.println(result);
+		if (result != null) {
+			System.out.println("Phase: " + result.getPhase());
+			System.out.println("Result URL: " + result.asURL());
+			System.out.println("Result VOTable: " + result.asVOTable());
+			StringBuilder sb = new StringBuilder("User log: ");
+			for (LogRecord logRecord : result.getUserLogs()) {
+				if (sb.length() > 0) {
+					sb.append(", ");
 				}
-				System.out.println(sb.toString());
+				sb.append(logRecord.getMessage());
 			}
+			System.out.println(sb.toString());
 		}
 	}
-
 }

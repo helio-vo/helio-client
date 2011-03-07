@@ -1,7 +1,8 @@
 package eu.heliovo.mockclient.query.paramquery;
 
+import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.HecStaticCatalogRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
-import eu.heliovo.mockclient.model.catalog.HecCatalogRegistry;
 import eu.heliovo.mockclient.query.longrunningquery.LongRunningQueryServiceFactory;
 /**
  * Mock implementation of the param query for the HEC service. 
@@ -12,7 +13,7 @@ public class HecMockParamQueryServiceImpl extends AbstractParamQueryServiceImpl 
 	/**
 	 * Keep a reference to the HecCatalogRegistry
 	 */
-	private HecCatalogRegistry catalogRegistry = HecCatalogRegistry.getInstance();
+	private CatalogRegistry catalogRegistry = HecStaticCatalogRegistry.getInstance();
 	
 	/**
 	 * Reference to the query service factory.

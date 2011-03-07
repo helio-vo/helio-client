@@ -28,9 +28,11 @@ import org.apache.log4j.Logger;
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService_Service;
 import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
-import eu.helio_vo.xml.longqueryservice.v0.Statusvalues;
-import eu.heliovo.clientapi.help.annotation.TypeHelp;
+import eu.helio_vo.xml.longqueryservice.v0.Status;
+import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.help.annotation.Description;
+import eu.heliovo.clientapi.help.annotation.TypeHelp;
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.longrunningquery.LongRunningQueryService;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -44,7 +46,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  *
  */
-abstract class AbstractLongRunningQueryService implements LongRunningQueryService {
+abstract class AbstractLongRunningQueryService implements LongRunningQueryService, HelioService {
 	/**
 	 * The logger instance
 	 */
@@ -53,9 +55,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	/**
 	 * Name of the long query service
 	 */
-	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/LongQueryService/v0.1", "LongHelioQueryService");
-//	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/LongQueryService/MDES/v0.1", "LongHelioQueryService");
-//	private static final QName PORT_NAME = new QName("http://helio-vo.eu/xml/LongQueryService/MDES/v0.1", "LongHelioQueryServicePort");
+	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/LongQueryService/v0.9", "LongHelioQueryService");
 
 	/**
 	 * The location of the target WSDL file
@@ -84,31 +84,50 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	 * @param wsdlLocation the location of the wsdl. Must not be null
 	 */
 	public AbstractLongRunningQueryService(URL wsdlLocation, String name, String description) {
-		this.name = name;
-		this.description = description;
-		if (wsdlLocation == null) {
-			throw new IllegalArgumentException("Argument 'wsdlLocation' must not be null.");
-		}
-		this.wsdlLocation = wsdlLocation;
+		this(getPort(wsdlLocation), wsdlLocation, name, description);
+	}
+
+	/**
+	 * Use JAXWS to create a new service port for a given WSDL location.
+	 * @param wsdlLocation the service endpoint
+	 * @return the port to access the service.
+	 */
+	private static LongHelioQueryService getPort(URL wsdlLocation) {
+		AssertUtil.assertArgumentNotNull(wsdlLocation, "wsdlLocation");
 		LongHelioQueryService_Service queryService = new LongHelioQueryService_Service(wsdlLocation, SERVICE_NAME);		
-		port = queryService.getLongHelioQueryServicePort();
+		LongHelioQueryService port = queryService.getLongHelioQueryServicePort();
 		if (_LOGGER.isDebugEnabled()) {
 			_LOGGER.debug("Created " + port.getClass().getSimpleName() + " for " + wsdlLocation);
 		}
+		return port;
+	}
+
+	/**
+	 * Create the connector and open the connection to the WSDL file.
+	 * @param port the port to be used by this query service
+	 * @param wsdlLocation the location of the wsdl. Must not be null
+	 * @param name the name of the service
+	 * @param description a short text to describe the service
+	 */
+	public AbstractLongRunningQueryService(LongHelioQueryService port, URL wsdlLocation, String name, String description) {
+		AssertUtil.assertArgumentNotNull(port, "port");
+		AssertUtil.assertArgumentNotNull(wsdlLocation, "wsdlLocation");
+		AssertUtil.assertArgumentNotNull(name, "name");
+		this.port = port;
+		this.wsdlLocation = wsdlLocation;
+		this.name = name;
+		this.description = description;
 	}
 
 	@Override
 	public HelioQueryResult longQuery(String starttime, String endtime, String from, String where, 
 			Integer maxrecords, Integer startindex, String saveto) throws JobExecutionException {
-		HelioQueryResult[] result = longQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), where, maxrecords, startindex, saveto);
-		if (result.length != 1) {
-			throw new RuntimeException("Internal Error: Expected result of size 1, but got: " + result.length);
-		} 
-		return result[0];
+		HelioQueryResult result = longQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), where, maxrecords, startindex, saveto);
+		return result;
 	}
 	
 	@Override
-	public HelioQueryResult[] longQuery(final List<String> startTime, final List<String> endTime, final List<String> from, final String where,
+	public HelioQueryResult longQuery(final List<String> startTime, final List<String> endTime, final List<String> from, final String where,
 			final Integer maxrecords, final Integer startindex, final String saveto) throws JobExecutionException {
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
@@ -141,47 +160,33 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 		}
 
 		// wait for result
-		List<ResultInfo> resultInfos = AsyncCallUtils.callAndWait(new Callable<List<ResultInfo>>() {
+		String resultId = AsyncCallUtils.callAndWait(new Callable<String>() {
 			@Override
-			public List<ResultInfo> call() throws Exception {
-				List<ResultInfo> result = port.longQuery(startTime, endTime, from, where, null, maxrecords, startindex, saveto);
-				return result;
+			public String call() throws Exception {
+				String resultId = port.longQuery(startTime, endTime, from, where, null, maxrecords, startindex);
+				return resultId;
 			}
 		}, callId);
 		
-		if (resultInfos == null) {
-			throw new JobExecutionException("Unspecified error occured on service provider. Got back null. ", new NullPointerException("Exception in remote implementation of long running query service: return value should never be null."));
+		if (resultId == null) {
+			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
 		}
 		
 		// prepare return value
-		HelioQueryResult [] helioQueryResults = new HelioQueryResult[resultInfos.size()];
-		for (int i = 0; i < helioQueryResults.length; i++) {
-			ResultInfo resultInfo = resultInfos.get(i);
-			if (resultInfo == null) {
-				throw new JobExecutionException("Unspecified error occured on service provider. Unexpected null value. ", new NullPointerException("Exception in remote implementation of long running query service: item " + i + " of resultSet is null."));
-			}
-			String id = resultInfo.getID();
-			if (id == null) {
-				throw new JobExecutionException("Unspecified error occured on service provider. Unexpected null value. ", new NullPointerException("Exception in remote implementation of long running query service: property 'ID' of item " + i + " of resultSet is null."));
-			}			
-			helioQueryResults[i] = new LongRunningQueryResultImpl(id, port, callId, new LogRecord(Level.INFO, message.toString()));
-		}
+		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, new LogRecord(Level.INFO, message.toString()));
 		
-		return helioQueryResults;
+		return helioQueryResult;
 	}
 
 	@Override
 	public HelioQueryResult longTimeQuery(String starttime, String endtime, String from, Integer maxrecords,
 			Integer startindex, String saveto) throws JobExecutionException {
-		HelioQueryResult[] result = longTimeQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), maxrecords, startindex, saveto);
-		if (result.length != 1) {
-			throw new RuntimeException("Internal Error: Expected result of size 1, but got: " + result.length);
-		} 
-		return result[0];
+		HelioQueryResult result = longTimeQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), maxrecords, startindex, saveto);
+		return result;
 	}
 
 	@Override
-	public HelioQueryResult[] longTimeQuery(final List<String> startTime, final List<String> endTime, final List<String> from,
+	public HelioQueryResult longTimeQuery(final List<String> startTime, final List<String> endTime, final List<String> from,
 			final Integer maxrecords, final Integer startindex, final String saveto) throws JobExecutionException {
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
@@ -207,39 +212,27 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 		message.append(", ").append("saveTo=").append(saveto);
 		message.append(")");
 		
-
 		if (_LOGGER.isTraceEnabled()) {
 			_LOGGER.trace(message.toString());
 		}
 		
 		// wait for result
-		List<ResultInfo> resultInfos = AsyncCallUtils.callAndWait(new Callable<List<ResultInfo>>() {
+		String resultId = AsyncCallUtils.callAndWait(new Callable<String>() {
 			@Override
-			public List<ResultInfo> call() throws Exception {
-				List<ResultInfo> result = port.longTimeQuery(startTime, endTime, from, maxrecords, startindex, saveto);
+			public String call() throws Exception {
+				String result = port.longTimeQuery(startTime, endTime, from, maxrecords, startindex);
 				return result;
 			}
 		}, callId);
 		
-		if (resultInfos == null) {
-			throw new JobExecutionException("Unspecified error occured on service provider. Got back null. ", new NullPointerException("Exception in remote implementation of long running query service: return value should never be null."));
+		if (resultId == null) {
+			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
 		}
 		
 		// prepare return value
-		HelioQueryResult [] helioQueryResults = new HelioQueryResult[resultInfos.size()];
-		for (int i = 0; i < helioQueryResults.length; i++) {
-			ResultInfo resultInfo = resultInfos.get(i);
-			if (resultInfo == null) {
-				throw new JobExecutionException("Unspecified error occured on service provider. Unexpected null value. ", new NullPointerException("Exception in remote implementation of long running query service: item " + i + " of resultSet is null."));
-			}
-			String id = resultInfo.getID();
-			if (id == null) {
-				throw new JobExecutionException("Unspecified error occured on service provider. Unexpected null value. ", new NullPointerException("Exception in remote implementation of long running query service: property 'ID' of item " + i + " of resultSet is null."));
-			}			
-			helioQueryResults[i] = new LongRunningQueryResultImpl(id, port, callId, new LogRecord(Level.INFO, message.toString()));
-		}
+		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, new LogRecord(Level.INFO, message.toString()));
 		
-		return helioQueryResults;
+		return helioQueryResult;
 	}	
 	
 	
@@ -253,15 +246,6 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	public String getDescription() {
 		return description;
 	}
-	
-	/**
-	 * Get the remote location of the WSDL that this service is connected to 
-	 * @return the remote WSDL location.
-	 */
-	public URL getWsdlLocation() {
-		return wsdlLocation;
-	}
-
 	
 	/**
 	 * HelioQueryResult object that handles results from the long running query interface.
@@ -356,29 +340,28 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 				return phase;
 			}
 			
-			List<ResultInfo> resultInfos = AsyncCallUtils.callAndWait(new Callable<List<ResultInfo>>() {
+			Status status = AsyncCallUtils.callAndWait(new Callable<Status>() {
 				@Override
-				public List<ResultInfo> call() throws Exception {
-					List<ResultInfo> result = port.getStatus(id);
-					return result;
+				public Status call() throws Exception {
+					Status status = port.getStatus(id);
+					return status;
 				}
 			}, callId);
 			
-			if (resultInfos == null) {
-				throw new JobExecutionException("Unspecified error occured on '" + callId  + "'. Got back null. ", new NullPointerException("Exception in remote implementation of long running query service: return value should never be null."));
+			if (status == null) {
+				throw new JobExecutionException("Unspecified error occured on '" + callId  + ".getStatus()'. Got back null.");
 			}
-			
-			if (resultInfos.size() != 1) {
-				throw new JobExecutionException("Error on service provider '" + callId + "'. Size of result should be 1 but is " + resultInfos.size(), new RuntimeException("Exception in remote implementation of long running query service: return value should have size 1."));
-			}
-			
-			Statusvalues status = resultInfos.get(0).getStatus();
-			switch (status) {
+						
+			StatusValue statusValue = status.getStatus();
+			switch (statusValue) {
 			case COMPLETED:
 				phase = Phase.COMPLETED;
 				break;
 			case ERROR:
 				phase = Phase.ERROR;
+				break;
+			case TIMEOUT:
+				phase = Phase.ABORTED;
 				break;
 			case PENDING: 
 				phase = Phase.PENDING;
@@ -388,7 +371,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 				break;
 			}
 			
-			String message = resultInfos.get(0).getStatusdescription();
+			String message = status.getDescription();
 			if (message != null) {
 				userLogs.add(new LogRecord(Level.INFO, message));
 			}
@@ -451,12 +434,12 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 				throw new RuntimeException("Internal error: unexpected status occurred: " + currentPhase);
 			}
 			
-			List<ResultInfo> resultInfos;
+			ResultInfo resultInfo;
 			try {
-				resultInfos = AsyncCallUtils.callAndWait(new Callable<List<ResultInfo>>() {
+				resultInfo = AsyncCallUtils.callAndWait(new Callable<ResultInfo>() {
 					@Override
-					public List<ResultInfo> call() throws Exception {
-						List<ResultInfo> result = port.getResults(id);
+					public ResultInfo call() throws Exception {
+						ResultInfo result = port.getResult(id);
 						return result;
 					}
 				}, callId);
@@ -465,19 +448,16 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 				// re throw
 				throw e;
 			}
-			if (resultInfos == null) {
+			if (resultInfo == null) {
 				throw new JobExecutionException(new RuntimeException("Exception on server side: ResultInfo must not be null."));
 			}
-			if (resultInfos.size() != 1) {
-				throw new JobExecutionException(new RuntimeException("Exception on server side: ResultInfo should have size 1, but is: " + resultInfos.size()));				
-			}
 			
-			String resultURI = resultInfos.get(0).getResultURI();
+			String resultURI = resultInfo.getResultURI();
 			if (resultURI == null) {
 				throw new JobExecutionException(new RuntimeException("Exception on server side: Did not get back a valid URL."));
 			}
 			
-			String message = resultInfos.get(0).getStatusdescription();
+			String message = resultInfo.getDescription();
 			if (message != null) {
 				userLogs.add(new LogRecord(Level.INFO, message));
 			}

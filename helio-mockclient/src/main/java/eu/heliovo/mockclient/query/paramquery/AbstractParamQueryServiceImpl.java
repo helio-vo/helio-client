@@ -42,15 +42,15 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 	}
 
 	@Override
-	public HelioQueryResult[] query(final List<ParamQueryTerm<?>> terms) throws JobExecutionException {
+	public HelioQueryResult query(final List<ParamQueryTerm<?>> terms) throws JobExecutionException {
 		AssertUtil.assertArgumentNotNull(terms, "terms");
 		
 		TermList termList = new TermList(terms);
 		
 		String where = getWhere(termList.whereTerms);
 		
-		HelioQueryResult[] results = queryService.longQuery(termList.starttime, termList.endtime, termList.catalogs, where, termList.maxrecords, termList.startindex, termList.saveto);
-		return results;
+		HelioQueryResult result = queryService.longQuery(termList.starttime, termList.endtime, termList.catalogs, where, termList.maxrecords, termList.startindex, termList.saveto);
+		return result;
 	}
 	
 	/**
@@ -136,7 +136,7 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 		 */
 		@SuppressWarnings("unchecked")
 		protected <T> T getAs(ParamQueryTerm<?> term, Class<T> type) {
-			final T[] values = (T[]) term.getValues();		
+			final T[] values = (T[]) term.getArguments();		
 			if (values == null) {
 				throw new IllegalArgumentException("Attribute values of term " + term + " must not be null");
 			}

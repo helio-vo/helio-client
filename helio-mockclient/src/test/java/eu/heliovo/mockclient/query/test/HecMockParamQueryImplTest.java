@@ -48,7 +48,7 @@ public class HecMockParamQueryImplTest {
 		assertEquals(5, fields);
 		HelioField<?> field = fields[0];
 		
-		assertEquals("STARTTIME", field.getFieldName());
+		assertEquals("STARTTIME", field.getName());
 		assertEquals("the start date. Format: java.util.Date or 2005-01-01T00:00:00", field.getDescription());
 		assertEquals("xsd:dateTime", field.getType());
 		
