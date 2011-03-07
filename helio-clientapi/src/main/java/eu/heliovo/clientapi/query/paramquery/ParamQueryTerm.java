@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.query.paramquery.expression;
+package eu.heliovo.clientapi.query.paramquery;
 
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.model.field.Operator;

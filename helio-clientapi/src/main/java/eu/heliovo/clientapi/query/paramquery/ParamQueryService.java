@@ -5,7 +5,6 @@ import java.util.List;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.paramquery.expression.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
