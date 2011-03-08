@@ -75,6 +75,6 @@ public class FieldTypeRegistry {
 	 * @return the found type or null if not applicable.
 	 */
 	public FieldType getType(String name) {
-		return fieldMap.get(name.toLowerCase());
+		return fieldMap.get(name == null ? null : name.toLowerCase());
 	}
 }
