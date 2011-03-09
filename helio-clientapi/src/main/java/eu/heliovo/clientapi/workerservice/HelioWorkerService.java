@@ -43,7 +43,7 @@ public interface HelioWorkerService {
 		ERROR       ("The job failed to complete. No further work will be done nor Results produced. Results may be unavailable or " +
 				     "available but invalid; either way the Results should not be trusted."),
 		/**
-		 * The job has been manually aborted by the user, or the system has aborted the job due to lack of or overuse " +
+		 * The job has been manually aborted by the user, or the system has aborted the job due to lack of or overuse
 		 * of resources.
 		 */
 		ABORTED     ("The job has been manually aborted by the user, or the system has aborted the job due to lack of or overuse " +

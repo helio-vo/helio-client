@@ -103,7 +103,8 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	}
 
 	/**
-	 * Create the connector and open the connection to the WSDL file.
+	 * Create the connector and open the connection to the WSDL file. This constructor can be used to submit the port from outside. This
+	 * is of particular interest for testing purposes.
 	 * @param port the port to be used by this query service
 	 * @param wsdlLocation the location of the wsdl. Must not be null
 	 * @param name the name of the service
@@ -268,19 +269,14 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 		private final String id;
 
 		/**
-		 * Default timeout is 30 seconds
+		 * Default timeout is 10 seconds
 		 */
-		private final static long DEFAULT_TIMEOUT = 30000;
+		private final static long DEFAULT_TIMEOUT = 10000;
 
 		/**
-		 * Default number of polls.
+		 * Default timeout between two polls in ms.
 		 */
-		private static final int DEFAULT_POLL_RETRY = 10;
-
-		/**
-		 * Default timeout for the poll.
-		 */
-		private static final long DEFAULT_POLL_TIMEOUT = 200;
+		private static final long DEFAULT_POLL_INTERVAL = 200;
 
 		/**
 		 * Store the port to access the long running query service. Apparently the port is thread-safe and can be reused.
@@ -308,14 +304,9 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 		private URL resultURL;
 
 		/**
-		 * number of retries when polling for a result.
+		 * number of milliseconds between two polls.
 		 */
-		private int pollRetry = DEFAULT_POLL_RETRY;
-
-		/**
-		 * number of milliseconds to wait when polling.
-		 */
-		private long pollTimeout = DEFAULT_POLL_TIMEOUT;
+		private long pollInterval = DEFAULT_POLL_INTERVAL;
 
 		/**
 		 * Create a Helio query result
@@ -404,17 +395,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 				return resultURL;
 			}
 			
-			// poll the service status until it is not pending anymore.
-			Phase currentPhase = getPhase();
-			for (int i = 0; i < pollRetry && currentPhase == Phase.PENDING; i++, currentPhase = getPhase()) {
-				try {
-					Thread.sleep(pollTimeout);
-				} catch (InterruptedException e) {
-					// ignore this exception
-				}
-//				System.out.println(currentPhase);
-			}
-//			System.out.println(currentPhase);
+			Phase currentPhase = pollStatus(timeout, unit);
 			
 			if (_LOGGER.isDebugEnabled()) {
 				_LOGGER.debug("Current phase is " + currentPhase);
@@ -422,11 +403,13 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 			
 			switch (currentPhase) {
 			case ERROR:
-				throw new JobExecutionException("An error occurred while executing the query. Check the logs for more information (call getUserLogs() on this object).");				
+				throw new JobExecutionException("An error occurred while executing the query. Check the logs for more information (call getUserLogs() on this object).");
+			case ABORTED:
+				throw new JobExecutionException("Execution of the query has been aborted by the remote host. Check the logs for more information (call getUserLogs() on this object).");				
 			case UNKNOWN:
 				throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue.");
 			case PENDING:
-				throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time: " + formatSeconds(pollRetry * pollTimeout));
+				throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time: " + formatSeconds(timeout));
 			case COMPLETED:
 				// just continue
 				break;
@@ -475,6 +458,34 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 			return resultURL;
 		}
 		
+		/**
+		 * Poll for the status until the status is not PENDING anymore or
+		 * the given pollTime has exceeded.
+		 * @param pollTime the time to poll. This time my be exceeded by the timeout value 
+		 * to wait for a result from the getStatus method on the remote host (see {@link AsyncCallUtils#DEFAULT_TIMEOUT}).
+		 * @param unit the unit of the poll time. Microseconds will be truncated to milliseconds.
+		 * @return the current status.
+		 */
+		public Phase pollStatus(long pollTime, TimeUnit unit) {
+			long startTime = System.currentTimeMillis();			
+			long pollTimeInMs = TimeUnit.MILLISECONDS.convert(pollTime, unit);
+						
+			// poll the service status until it is not pending anymore.
+			Phase currentPhase = getPhase();
+			long currentTime = System.currentTimeMillis();
+			while (currentPhase == Phase.PENDING && (pollTimeInMs > (currentTime - startTime))) {
+				try {
+					Thread.sleep(pollInterval);
+				} catch (InterruptedException e) {
+					// ignore this exception
+				}
+				currentPhase = getPhase();
+				currentTime = System.currentTimeMillis();				
+			}
+			
+			return currentPhase;
+		}
+
 		/**
 		 * Format milliseconds as string, converting large values to seconds.
 		 * @param time time in Milliseconds 
