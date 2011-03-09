@@ -130,10 +130,10 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	@Override
 	public HelioQueryResult longQuery(final List<String> startTime, final List<String> endTime, final List<String> from, final String where,
 			final Integer maxrecords, final Integer startindex, final String saveto) throws JobExecutionException {
+		final long jobStartTime = System.currentTimeMillis();
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
 		AssertUtil.assertArgumentNotEmpty(from, "from");
-		AssertUtil.assertArgumentHasText(where, "where");
 		
 		if (startTime.size() != endTime.size()) {
 			throw new IllegalArgumentException("Argument 'startTime' and 'endTime' must have equal size: " + startTime.size() + "!=" + endTime.size());
@@ -174,7 +174,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, new LogRecord(Level.INFO, message.toString()));
+		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, new LogRecord(Level.INFO, message.toString()));
 		
 		return helioQueryResult;
 	}
@@ -189,6 +189,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	@Override
 	public HelioQueryResult longTimeQuery(final List<String> startTime, final List<String> endTime, final List<String> from,
 			final Integer maxrecords, final Integer startindex, final String saveto) throws JobExecutionException {
+		final long jobStartTime = System.currentTimeMillis();
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
 		AssertUtil.assertArgumentNotEmpty(from, "from");
@@ -231,7 +232,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, new LogRecord(Level.INFO, message.toString()));
+		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, new LogRecord(Level.INFO, message.toString()));
 		
 		return helioQueryResult;
 	}	
@@ -309,17 +310,28 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 		private long pollInterval = DEFAULT_POLL_INTERVAL;
 
 		/**
+		 * The system time when this call has been started.
+		 */
+		private final long jobStartTime;
+		
+		/**
+		 * Time when the status turned to completed
+		 */
+		private long jobEndTime = 0;
+
+		/**
 		 * Create a Helio query result
-		 * 
 		 * @param id the assigned id
 		 * @param port the port to be used to retrieve the results of this call.
 		 * @param callId identifier of the called function. For user feedback.
-		 * @param logRecords 
+		 * @param jobStartTime the time when this call has been started.
+		 * @param logRecords the log records from the parent query. 
 		 */
-		LongRunningQueryResultImpl(String id, LongHelioQueryService port, String callId, LogRecord ... logRecords) {
+		LongRunningQueryResultImpl(String id, LongHelioQueryService port, String callId, long jobStartTime, LogRecord ... logRecords) {
 			this.id = id;
 			this.port = port;
 			this.callId = callId;
+			this.jobStartTime = jobStartTime;
 			this.phase = Phase.QUEUED;
 			Collections.addAll(this.userLogs, logRecords);
 		}
@@ -347,12 +359,15 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 			switch (statusValue) {
 			case COMPLETED:
 				phase = Phase.COMPLETED;
-				break;
+				jobEndTime = System.currentTimeMillis();
+				break;	
 			case ERROR:
 				phase = Phase.ERROR;
+				jobEndTime = System.currentTimeMillis();
 				break;
 			case TIMEOUT:
 				phase = Phase.ABORTED;
+				jobEndTime = System.currentTimeMillis();
 				break;
 			case PENDING: 
 				phase = Phase.PENDING;
@@ -539,29 +554,14 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 
 		@Override
 		public int getExecutionDuration() {
-			return 0;
+			return jobEndTime == 0 ? 0 : (int)(jobEndTime-jobStartTime);
 		}
 
 		@Override
 		public Date getDestructionTime() {
-			return null;
+			return jobEndTime == 0 ? null : new Date(jobEndTime);
 		}
 
-		
-		/**
-		 * Create a LogRecord for a user message at a given time.
-		 * @param level the log level. May be null.
-		 * @param message the message. May be null.
-		 * @param e any throwable. May be null.
-		 * @return
-		 */
-		static LogRecord getMessage(Level level, String message,
-				Throwable e) {
-			LogRecord msg = new LogRecord(level, message);
-			msg.setThrown(e);
-			return msg;
-		}
-		
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
