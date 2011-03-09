@@ -10,7 +10,7 @@ public interface HelioWorkerServiceManager {
 	 * Gets a specific long-running job.
 	 * @param id the id of the job to retrieve.
 	 */
-	public HelioWorkerService getHelioJob(String id);
+	public HelioWorkerServiceHandler getHelioJob(String id);
 	
 	
 	/**
@@ -19,6 +19,6 @@ public interface HelioWorkerServiceManager {
 	 * result has not been collected.
 	 * @return 
 	 */
-	public HelioWorkerService[] getHelioJobs();
+	public HelioWorkerServiceHandler[] getHelioJobs();
 
 }

@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
-import eu.heliovo.clientapi.workerservice.HelioWorkerService;
+import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
@@ -12,7 +12,7 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 /**
  * Container object for a set of results. 
  */
-public interface HelioQueryResult extends HelioWorkerService {
+public interface HelioQueryResult extends HelioWorkerServiceHandler {
 
 	/**
 	 * Return the unique id of this result set. This id can be further used to query

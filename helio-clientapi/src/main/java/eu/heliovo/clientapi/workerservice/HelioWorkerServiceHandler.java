@@ -10,7 +10,7 @@ import java.util.Date;
  * Classes that implement this interface should be called asynchronously.
  * @author marco soldati at fhnw ch
  */
-public interface HelioWorkerService {
+public interface HelioWorkerServiceHandler {
 	/**
 	 * Enumeration of the possible phases of a worker service. Borrowed from UWS.
 	 *
