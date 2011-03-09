@@ -2,6 +2,8 @@ package eu.heliovo.clientapi.query.longrunningquery.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
@@ -14,9 +16,51 @@ import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.longrunningquery.impl.MockLongRunningQueryService.MockPort;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
-import eu.heliovo.clientapi.workerservice.HelioWorkerService.Phase;
+import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
 
 public class LongRunningQueryServiceTest {
+	
+	@Test public void testLongQuery() {
+		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.PENDING, StatusValue.PENDING, StatusValue.COMPLETED};
+		URL resultFile = getDefaultVoTable();
+		
+		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
+		MockLongRunningQueryService service = new MockLongRunningQueryService(port);
+		assertNotNull(service.getName());
+		assertNotNull(service.getDescription());
+		
+		HelioQueryResult result = service.longQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), null, 100, 0, null);
+		
+		assertEquals(Phase.PENDING, result.getPhase());
+		assertEquals(Phase.PENDING, result.getPhase());
+		assertEquals(Phase.PENDING, result.getPhase());
+		assertEquals(Phase.COMPLETED, result.getPhase());
+		
+		assertNotNull(result.asURL());
+		assertNotNull(result.asVOTable());
+		
+		// test invalid calls
+		try {
+			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			fail("IllegalArgumentException expected.");
+		} catch (IllegalArgumentException e) {
+			// we're fine
+		}
+		try {
+			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			fail("IllegalArgumentException expected.");
+		} catch (IllegalArgumentException e) {
+			// we're fine
+		}
+		try {
+			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
+			fail("IllegalArgumentException expected.");
+		} catch (IllegalArgumentException e) {
+			// we're fine
+		}
+		
+		assertNotNull(result.toString());
+	}
 	
 	@Test public void testLongTimeQuery() {
 		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.PENDING, StatusValue.PENDING, StatusValue.COMPLETED};
@@ -56,6 +100,8 @@ public class LongRunningQueryServiceTest {
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
+		
+		assertNotNull(result.toString());
 	}
 	
 	/**
@@ -82,6 +128,7 @@ public class LongRunningQueryServiceTest {
 		} catch (JobExecutionException e) {
 			// we're fine
 		}
+		assertNotNull(result.toString());
 	}
 
 	/**
@@ -108,6 +155,7 @@ public class LongRunningQueryServiceTest {
 		} catch (JobExecutionException e) {
 			// we're fine
 		}
+		assertNotNull(result.toString());
 	}
 
 	/**
@@ -132,6 +180,7 @@ public class LongRunningQueryServiceTest {
 		} catch (JobExecutionException e) {
 			// we're fine
 		}
+		assertNotNull(result.toString());
 		try {
 			// poll another three times
 			result.asVOTable(700, TimeUnit.MILLISECONDS);
@@ -139,6 +188,7 @@ public class LongRunningQueryServiceTest {
 		} catch (JobExecutionException e) {
 			// we're fine
 		}
+		assertNotNull(result.toString());
 		
 		try {
 			// poll once
@@ -147,6 +197,7 @@ public class LongRunningQueryServiceTest {
 		} catch (JobExecutionException e) {
 			// we're fine
 		}
+		assertNotNull(result.toString());
 		try {
 			// poll once again
 			result.asVOTable(0, TimeUnit.MILLISECONDS);
@@ -154,11 +205,17 @@ public class LongRunningQueryServiceTest {
 		} catch (JobExecutionException e) {
 			// we're fine
 		}
+		assertNotNull(result.toString());
+		
+		assertEquals(0, result.getExecutionDuration());
+		assertNull(result.getDestructionTime());
 		
 		// poll once more
 		assertEquals(Phase.COMPLETED, result.getPhase());
+
+		assertTrue(result.getExecutionDuration() >= 2000);
+		assertNotNull(result.getDestructionTime());
 	}
-	
 	
 
 	private URL getDefaultVoTable() {
