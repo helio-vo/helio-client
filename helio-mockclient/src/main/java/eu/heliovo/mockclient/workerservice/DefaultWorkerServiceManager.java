@@ -1,6 +1,6 @@
 package eu.heliovo.mockclient.workerservice;
 
-import eu.heliovo.clientapi.workerservice.HelioWorkerService;
+import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceManager;
 
 
@@ -17,13 +17,13 @@ public class DefaultWorkerServiceManager implements HelioWorkerServiceManager {
 	
 	
 	@Override
-	public HelioWorkerService getHelioJob(String id) {
+	public HelioWorkerServiceHandler getHelioJob(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public HelioWorkerService[] getHelioJobs() {
+	public HelioWorkerServiceHandler[] getHelioJobs() {
 		// TODO Auto-generated method stub
 		return null;
 	}

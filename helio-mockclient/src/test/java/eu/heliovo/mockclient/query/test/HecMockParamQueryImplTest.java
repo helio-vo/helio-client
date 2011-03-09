@@ -15,7 +15,7 @@ import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.ConversionService;
 
 import eu.heliovo.clientapi.model.field.HelioField;
-import eu.heliovo.mockclient.query.paramquery.HecMockParamQueryServiceImpl;
+import eu.heliovo.clientapi.query.paramquery.impl.HecMockParamQueryServiceImpl;
 
 /**
  * Test the {@link HecMockParamQueryServiceImpl}.
