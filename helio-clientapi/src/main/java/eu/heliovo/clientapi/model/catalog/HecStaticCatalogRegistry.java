@@ -1,6 +1,5 @@
 package eu.heliovo.clientapi.model.catalog;
 
-import java.math.BigInteger;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -25,7 +24,7 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	 * The registry instance
 	 */
 	private static CatalogRegistry instance;
-
+	
 	/**
 	 * Get the singleton instance of the catalog registry
 	 * 
@@ -53,85 +52,76 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	 * Populate the registry
 	 */
 	private HecStaticCatalogRegistry() {
-		try {
-			DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-			// parse catalog descriptions
-			Document dLists = docBuilder.parse(SimpleInterface.class.getResourceAsStream("/HEC_Lists.xml"));
-			Document dFields = docBuilder.parse(SimpleInterface.class.getResourceAsStream("/HEC_Fields.xml"));
-			dLists.normalize();
-			dFields.normalize();
-
-			// create xpath
-			XPath xpath = XPathFactory.newInstance().newXPath();
-
-			NodeList lists = dLists.getElementsByTagName("HEC_Lists");
-			for (int i = 0; i < lists.getLength(); i++) {
-				Element listElement = (Element) lists.item(i);
-
-				// create catalog
-				int catInternalId = Integer.parseInt(listElement.getElementsByTagName("ListDBID").item(0)
-						.getTextContent());
-				String catName = listElement.getElementsByTagName("ListID").item(0).getTextContent();
-				String catLabel = listElement.getElementsByTagName("ListName").item(0).getTextContent();
-				String catDescription = listElement.getElementsByTagName("ListDesc").item(0).getTextContent();
-				HelioCatalog catalog = new HelioCatalog(catName, catLabel, catDescription);
-
-				System.out.println(catName);
-
-				// find associated fields
-				NodeList fields = (NodeList) xpath.evaluate("//HEC_Fields[ListDBID=" + catInternalId + "]", dFields,
-						XPathConstants.NODESET);
-				for (int j = 0; j < fields.getLength(); j++) {
-					Element fieldElement = (Element) fields.item(j);
-
-					String fieldId = fieldElement.getElementsByTagName("OldFieldName").item(0).getTextContent();
-					String fieldName = fieldElement.getElementsByTagName("FieldName").item(0).getTextContent();
-
-					String fieldDescription = null;
-					NodeList nl = fieldElement.getElementsByTagName("FieldDesc");
-					if (nl.getLength() > 0)
-						fieldDescription = nl.item(0).getTextContent();
-
-					String fieldDataType = fieldElement.getElementsByTagName("FieldDataType").item(0).getTextContent();
-
-					FieldType ft = null;
-					if ("integer".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("int");
-					else if ("real".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("double");
-					else if ("text".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("string");
-					else if ("ISO8601 Time".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("dateTime");
-					else if ("Special - Xclass".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("xclass");
-					else if ("Special - Oclass".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("oclass");
-					else
-						ft = fieldTypeRegistry.getType(fieldDataType);
-
-					/*
-					 * <FieldDBID>5</FieldDBID>
-					 * <OldFieldName>goes_id</OldFieldName>
-					 * <FieldType>Private</FieldType>
-					 * <FieldEntity>Index</FieldEntity>
-					 * <FieldProperty>Catalogue</FieldProperty> <FieldUnits>HEC
-					 * id</FieldUnits> <FieldSIConv>1&gt;Unitless</FieldSIConv>
-					 * <FieldProdNotes>rename to standard id (e.g.
-					 * hec_id)</FieldProdNotes>
-					 */
-
-					System.out.println("      " + fieldName);
-
-					catalog.addField(new HelioField<Object>(fieldId, fieldName, fieldDescription, ft));
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		HelioCatalog catalog = new HelioCatalog("goes_xray_flare", "goes_xray_flare", "Goes list of xray flares");
+    try
+    {
+      DocumentBuilder docBuilder=DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      
+      //parse catalog descriptions
+      Document dLists=docBuilder.parse(SimpleInterface.class.getResourceAsStream("/HEC_Lists.xml"));
+      Document dFields=docBuilder.parse(SimpleInterface.class.getResourceAsStream("/HEC_Fields.xml"));
+      dLists.normalize();
+      dFields.normalize();
+      
+      //create xpath
+      XPath xpath=XPathFactory.newInstance().newXPath();
+      
+      NodeList lists=dLists.getElementsByTagName("HEC_Lists");
+      for(int i=0;i<lists.getLength();i++)
+      {
+        Element listElement=(Element)lists.item(i);
+        
+        //create catalog
+        int catInternalId=Integer.parseInt(listElement.getElementsByTagName("ListDBID").item(0).getTextContent());
+        String catName=listElement.getElementsByTagName("ListID").item(0).getTextContent();
+        
+        String catLabel=getChildValue(listElement,"ListName");
+        String catDescription=getChildValue(listElement,"ListDesc");
+        
+        HelioCatalog catalog=new HelioCatalog(catName,catLabel,catDescription);
+        add(catalog);
+        
+        //find associated fields
+        NodeList fields=(NodeList)xpath.evaluate("//HEC_Fields[ListDBID="+catInternalId+"]",dFields,XPathConstants.NODESET);
+        for(int j=0;j<fields.getLength();j++)
+        {
+          Element fieldElement=(Element)fields.item(j);
+          
+          String fieldId=fieldElement.getElementsByTagName("OldFieldName").item(0).getTextContent();
+          String fieldName=fieldElement.getElementsByTagName("FieldName").item(0).getTextContent();
+          String fieldDescription=getChildValue(fieldElement,"FieldDesc");
+          String fieldDataType=getChildValue(fieldElement,"FieldDataType");
+          
+          FieldType ft;
+          if("integer".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("int");
+          else if("real".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("double");
+          else if("text".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("string");
+          else if("ISO8601 Time".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("dateTime");
+          else if("Special - Xclass".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("xclass");
+          else if("Special - Oclass".equalsIgnoreCase(fieldDataType))
+            ft=fieldTypeRegistry.getType("oclass");
+          else if(fieldDataType==null)
+            ft=null;
+          else
+            ft=fieldTypeRegistry.getType(fieldDataType);
+          
+          if(ft==null)
+            ft=fieldTypeRegistry.getType("unknown");
+          
+          catalog.addField(new HelioField<Object>(fieldId,fieldName,fieldDescription,ft));
+        }
+      }
+    }
+    catch(Exception e)
+    {
+      e.printStackTrace();
+    }
+    
+		/*HelioCatalog catalog = new HelioCatalog("goes_xray_flare", "goes_xray_flare", "Goes list of xray flares");
 		catalog.addField(new HelioField<Date>("ntime_start", "ntime_start", "selection start time", fieldTypeRegistry
 				.getType("dateTime")));
 		catalog.addField(new HelioField<Date>("time_start", "time_start", "event start time", fieldTypeRegistry
@@ -155,9 +145,9 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 		catalog.addField(new HelioField<String>("optical_class", "optical_class", "optical importance class",
 				fieldTypeRegistry.getType("string")));
 
-		add(catalog);
+		add(catalog);*/
 
-		catalog = new HelioCatalog("test_catalog", "Test Catalog", "catalog for testing purposed only.");
+    HelioCatalog catalog = new HelioCatalog("test_catalog", "Test Catalog", "catalog for testing purposed only.");
 		catalog.addField(new HelioField<Integer>("delay", "delay",
 				"Add an artifical delay in milliseconds to the service. For testing purposes only.", fieldTypeRegistry
 						.getType("integer"), new Integer(0)));
@@ -166,6 +156,15 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 						+ "if <=0: never throw an exception, if >= 1.0: always throw an exception. "
 						+ "For testing purposes only.", fieldTypeRegistry.getType("float"), new Float(0)));
 		add(catalog);
+	}
+	
+	private static String getChildValue(Element _e,String _childTag)
+	{
+    NodeList nl=_e.getElementsByTagName(_childTag);
+    if(nl.getLength()>0)
+      return nl.item(0).getTextContent();
+    
+    return null;
 	}
 
 	/**

@@ -56,6 +56,8 @@ public class FieldTypeRegistry {
     
 		add(new SimpleFieldType("xclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
     add(new SimpleFieldType("oclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+    
+    add(new SimpleFieldType("unknown", java.lang.String.class, "xsd:string" ,new Operator[] {}));
 	}
 
 	/**
