@@ -97,4 +97,15 @@ public class LongRunningQueryServiceFactory {
 		URL wsdlLocation = serviceRegistry.getMdes();
 		return new MdesLongRunningQueryServiceImpl(wsdlLocation);
 	}
+
+	/**
+	 * Get a new instance of the "best" UOC service provider.
+	 * @return client for the best UOC service provider.
+	 * @throws ServiceResolutionException if no service end point can be found.
+	 * @throws JobExecutionException if the service client cannot be created.
+	 */
+	public UocLongRunningQueryService getUocService() {
+		URL wsdlLocation = serviceRegistry.getUoc();
+		return new UocLongRunningQueryServiceImpl(wsdlLocation);
+	}
 }

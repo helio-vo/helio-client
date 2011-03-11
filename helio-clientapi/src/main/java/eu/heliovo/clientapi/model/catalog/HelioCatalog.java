@@ -18,31 +18,6 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 	public static final String CATALOG_FIELD = "catalog";
 
 	/**
-	 * The end time field name.
-	 */
-	public static final String FIELD_ENDTIME = "endtime";
-
-	/**
-	 * The start time field name.
-	 */
-	public static final String FIELD_STARTTIME = "starttime";
-
-	/**
-	 * the maximum of records to display
-	 */
-	public static final String FIELD_MAX_RECORDS = "maxrecords";
-
-	/**
-	 * start index of a query.
-	 */
-	public static final String FIELD_STARTINDEX = "startindex";
-
-	/**
-	 * name of the stored VOTable.
-	 */
-	public static final String FIELD_SAVE_TO = "saveto";
-
-	/**
 	 * Linked hash set of fields in this catalog.
 	 */
 	private final Set<HelioField<?>> fields = new LinkedHashSet<HelioField<?>>();

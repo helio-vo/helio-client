@@ -18,7 +18,7 @@ import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.shared.util.AssertUtil;
 /**
- * Abstract base class for param query mock ups. 
+ * Abstract base class for the implementations of the param query service 
  * @author marco soldati at fhnw ch 
  */
 abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
@@ -103,15 +103,15 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 				HelioField<?> field = term.getHelioField();
 				if (field.getId().equals(HelioCatalog.CATALOG_FIELD)) {
 					catalogs = Arrays.asList(getAs(term, String[].class));
-				} else if (field.getId().equals(HelioCatalog.FIELD_STARTTIME)) {					
+				} else if (field.getId().equals(HelioField.FIELD_STARTTIME)) {					
 					starttime = Arrays.asList(getAs(term, String[].class));
-				} else if (field.getId().equals(HelioCatalog.FIELD_ENDTIME)) {
+				} else if (field.getId().equals(HelioField.FIELD_ENDTIME)) {
 					endtime = Arrays.asList(getAs(term, String[].class));
-				} else if (field.getId().equals(HelioCatalog.FIELD_MAX_RECORDS)) {
+				} else if (field.getId().equals(HelioField.FIELD_MAX_RECORDS)) {
 					maxrecords = getAs(term, Integer.class);
-				} else if (field.getId().equals(HelioCatalog.FIELD_STARTINDEX)) {
+				} else if (field.getId().equals(HelioField.FIELD_STARTINDEX)) {
 					startindex = getAs(term, Integer.class);
-				} else if (field.getId().equals(HelioCatalog.FIELD_SAVE_TO)) {					
+				} else if (field.getId().equals(HelioField.FIELD_SAVE_TO)) {					
 					saveto = getAs(term, String.class);
 				} else {
 					whereTerms.add(term);
@@ -123,32 +123,31 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 			AssertUtil.assertArgumentNotEmpty(starttime, HelioCatalog.CATALOG_FIELD);
 			AssertUtil.assertArgumentNotEmpty(endtime, HelioCatalog.CATALOG_FIELD);
 		}
+	}	
+	
+	/**
+	 * Get object from map and convert to an appropriate type if possible.
+	 * This method only works for binary operator types.
+	 * Simple types will be converted to arrays if possible.
+	 * @param terms the map to check
+	 * @param key the key to search for
+	 * @param type the excepted type
+	 * @return the converted value. 
+	 */
+	@SuppressWarnings("unchecked")
+	protected <T> T getAs(ParamQueryTerm<?> term, Class<T> type) {
+		final T[] values = (T[]) term.getArguments();		
+		if (values == null) {
+			throw new IllegalArgumentException("Attribute values of term " + term + " must not be null");
+		}
 		
-
-		/**
-		 * Get object from map and convert to an appropriate type if possible.
-		 * This method only works for binary operator types.
-		 * Simple types will be converted to arrays if possible.
-		 * @param terms the map to check
-		 * @param key the key to search for
-		 * @param type the excepted type
-		 * @return the converted value. 
-		 */
-		@SuppressWarnings("unchecked")
-		protected <T> T getAs(ParamQueryTerm<?> term, Class<T> type) {
-			final T[] values = (T[]) term.getArguments();		
-			if (values == null) {
-				throw new IllegalArgumentException("Attribute values of term " + term + " must not be null");
-			}
-			
-			// convert to array if single value
-			if (type.isArray() && !values[0].getClass().isArray()) {
-				Object array = Array.newInstance(type.getComponentType(), 1);
-				Array.set(array, 0, conversionService.convert(values[0], type.getComponentType()));
-				return (T) array;
-			}
-			return conversionService.convert(values[0], type);
-		}		
+		// convert to array if single value
+		if (type.isArray() && !values[0].getClass().isArray()) {
+			Object array = Array.newInstance(type.getComponentType(), 1);
+			Array.set(array, 0, conversionService.convert(values[0], type.getComponentType()));
+			return (T) array;
+		}
+		return conversionService.convert(values[0], type);
 	}
 	
 	/**

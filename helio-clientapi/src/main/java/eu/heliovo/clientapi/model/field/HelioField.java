@@ -14,6 +14,31 @@ import eu.heliovo.shared.util.AssertUtil;
  */
 public class HelioField<T extends Object> {
 	/**
+	 * name of the stored VOTable.
+	 */
+	public static final String FIELD_SAVE_TO = "saveto";
+
+	/**
+	 * start index of a query.
+	 */
+	public static final String FIELD_STARTINDEX = "startindex";
+
+	/**
+	 * the maximum of records to display
+	 */
+	public static final String FIELD_MAX_RECORDS = "maxrecords";
+
+	/**
+	 * The start time field name.
+	 */
+	public static final String FIELD_STARTTIME = "starttime";
+
+	/**
+	 * The end time field name.
+	 */
+	public static final String FIELD_ENDTIME = "endtime";
+	
+	/**
 	 * Unique id of the field.
 	 * This id is required to distinguish between fields with the same name.  
 	 */

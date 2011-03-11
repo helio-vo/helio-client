@@ -23,15 +23,17 @@ public class ParamQueryTerm<T> {
 	/**
 	 * Get the arguments of this query term. 
 	 */
-	private final T[] arguments;
+	private final Object[] arguments;
 	
+
 	/**
 	 * Create a term
 	 * @param field the field. must not be null.
 	 * @param operator the operator. must not be null.
-	 * @param arguments the arguments for the field-operator tuple. The length must match the arity of the operator.
+	 * @param arguments the arguments for the field-operator tuple. The length of this array must match the arity of the operator.
+	 * Multi-value selections should be modeled as arrays. E.g. Object[][] of type <code>T</code>. First dimension is the number of arguments, second dimension is the actually selected values  
 	 */
-	public ParamQueryTerm(HelioField<T> field, Operator operator, T... arguments) {
+	public ParamQueryTerm(HelioField<T> field, Operator operator, Object... arguments) {
 		AssertUtil.assertArgumentNotNull(field, "field");
 		AssertUtil.assertArgumentNotNull(operator, "operator");
 		AssertUtil.assertArgumentNotNull(arguments, "arguments");
@@ -64,9 +66,9 @@ public class ParamQueryTerm<T> {
 	 * For unary operators this will be an empty array. 
 	 * For binary operators this will contain one element. 
 	 * In general, n-ary operators will contain n-1 elements. 
-	 * @return the arguments to be used.
+	 * @return the arguments to be used for the given operator. Multi-value selections will return an Object[][].
 	 */
-	public T[] getArguments() {
+	public Object[] getArguments() {
 		return arguments;
 	};
 }

@@ -5,10 +5,10 @@ import eu.heliovo.clientapi.model.catalog.HecStaticCatalogRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.longrunningquery.impl.LongRunningQueryServiceFactory;
 /**
- * Mock implementation of the param query for the HEC service. 
+ * Default implementation of the param query for the HEC service. 
  * @author marco soldati at fhnw ch 
  */
-public class HecMockParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
+public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 
 	/**
 	 * Keep a reference to the HecCatalogRegistry
@@ -23,7 +23,7 @@ public class HecMockParamQueryServiceImpl extends AbstractParamQueryServiceImpl 
 	/**
 	 * Create a mock implementation of the DPAS.
 	 */
-	public HecMockParamQueryServiceImpl() {
+	public HecParamQueryServiceImpl() {
 		super(queryServiceFactory.getHecService());	
 	}
 

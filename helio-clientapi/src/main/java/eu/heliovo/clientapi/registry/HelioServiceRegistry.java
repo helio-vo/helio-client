@@ -14,6 +14,13 @@ public interface HelioServiceRegistry {
 	public URL getHec() throws ServiceResolutionException;
 
 	/**
+	 * Get the "best" URL for the UOC.
+	 * 
+	 * @throws ServiceResolutionException if the service cannot be found.
+	 */
+	public URL getUoc() throws ServiceResolutionException;
+
+	/**
 	 * Get the "best" URL for the DPAS.
 	 * 
 	 * @throws ServiceResolutionException if the service cannot be found.

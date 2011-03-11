@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.query.longrunningquery.impl;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.LogRecord;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
@@ -18,8 +19,21 @@ public class LongRunningQueryServiceDemo {
 
 //		BaseLongRunningQueryService baseLongRunningQueryService = new BaseLongRunningQueryService(url);
 		
-		LongRunningQueryService icsService = LongRunningQueryServiceFactory.getInstance().getIcsService();
-		HelioQueryResult result = icsService.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+		LongRunningQueryServiceFactory queryServiceFactory = LongRunningQueryServiceFactory.getInstance();
+		testLongRunningService(queryServiceFactory.getIcsService(), Arrays.asList("instrument"));
+		testLongRunningService(queryServiceFactory.getIlsService(), Arrays.asList("instrument"));
+		testLongRunningService(queryServiceFactory.getDpasService(), Arrays.asList("instrument"));
+		testLongRunningService(queryServiceFactory.getHecService(), Arrays.asList("instrument"));
+		testLongRunningService(queryServiceFactory.getUocService(), Arrays.asList("instrument"));
+		testLongRunningService(queryServiceFactory.getMdesService(), Arrays.asList("instrument"));
+	}
+	
+	
+	
+	private static void testLongRunningService(LongRunningQueryService queryService, List<String> from) {
+		System.out.println("--------------------" + queryService.getName() + "--------------------");
+		
+		HelioQueryResult result = queryService.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), from, 100, 0, null);
 
 		System.out.println(result);
 		if (result != null) {
@@ -35,5 +49,6 @@ public class LongRunningQueryServiceDemo {
 			}
 			System.out.println(sb.toString());
 		}
+		System.out.println();
 	}
 }

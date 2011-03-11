@@ -1,5 +1,6 @@
 package eu.heliovo.clientapi.workerservice;
 
+import eu.heliovo.clientapi.HelioClientException;
 
 /**
  * Wrapper RuntimeException for any exception that occurs during execution of a 
@@ -8,7 +9,7 @@ package eu.heliovo.clientapi.workerservice;
  * or if they just want to ignore them.
  * @author marco soldati at fhnw ch
  */
-public class JobExecutionException extends RuntimeException {
+public class JobExecutionException extends HelioClientException {
 	
 	/**
 	 * version id to serialize this exception. 

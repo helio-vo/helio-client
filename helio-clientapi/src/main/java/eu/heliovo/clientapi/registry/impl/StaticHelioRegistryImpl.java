@@ -15,7 +15,12 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 
 	@Override
 	public URL getHec() throws ServiceResolutionException {
-		throw new ServiceResolutionException("No service available yet");
+		return asURL("http://140.105.77.30:8080/helio-hec/HelioLongQueryService?wsdl");
+	}
+	
+	@Override
+	public URL getUoc() throws ServiceResolutionException {
+		return asURL("http://140.105.77.30:8080/helio-uoc/HelioLongQueryService?wsdl");
 	}
 
 	@Override
