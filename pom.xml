@@ -7,6 +7,7 @@
   </parent>
   <groupId>eu.heliovo</groupId>
   <artifactId>helio-client</artifactId>
+  <name>helio-client</name>
   <version>0.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <description>Parent project of the helio client API and all implementations.</description>
