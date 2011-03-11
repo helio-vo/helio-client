@@ -30,8 +30,7 @@ public class SimpleInterface
 	/**
 	 * Name of the query service
 	 */
-	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/QueryService/v0.1", "HelioQueryService");
-
+	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/QueryService/v0.1", "HelioQueryServiceService");
   
   static
   {
