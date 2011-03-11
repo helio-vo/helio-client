@@ -1,9 +1,12 @@
 package eu.heliovo.clientapi.frontend;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
@@ -23,6 +26,12 @@ public class SimpleInterface
   }
   
   static Map<String,Catalog> catalogs;
+  
+	/**
+	 * Name of the query service
+	 */
+	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/QueryService/v0.1", "HelioQueryService");
+
   
   static
   {
@@ -68,7 +77,14 @@ public class SimpleInterface
     if(maxDate.size()==0)
       return null;
     
-    HelioQueryServiceService service=new HelioQueryServiceService();
+    URL portURL;
+	try {
+		portURL = new URL(portAddress);
+	} catch (MalformedURLException e) {
+		throw new RuntimeException("Illegal port address found: " + portAddress);
+	}
+    
+    HelioQueryServiceService service=new HelioQueryServiceService(portURL, SERVICE_NAME);
     HelioQueryService port=service.getHelioQueryServicePort();
     int numberOfDatePairs=minDate.size();
     int numberOfFromSingles=from.size();
