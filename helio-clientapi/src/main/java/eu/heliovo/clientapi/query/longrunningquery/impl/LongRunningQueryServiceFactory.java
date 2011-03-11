@@ -30,7 +30,7 @@ public class LongRunningQueryServiceFactory {
 	/**
 	 * the service registry bean.
 	 */
-	private HelioServiceRegistry serviceRegistry = new StaticHelioRegistryImpl();
+	private HelioServiceRegistry serviceRegistry = StaticHelioRegistryImpl.getInstance();
 	
 	/**
 	 * Get a new instance of the "best" ILS service provider.

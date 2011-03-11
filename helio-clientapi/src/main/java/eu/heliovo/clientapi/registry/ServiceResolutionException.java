@@ -1,11 +1,13 @@
 package eu.heliovo.clientapi.registry;
 
+import eu.heliovo.clientapi.HelioClientException;
+
 /**
  * Exception that is thrown if a service cannot be resolved.
  * @author marco soldati at fhnw ch
  *
  */
-public class ServiceResolutionException extends RuntimeException {
+public class ServiceResolutionException extends HelioClientException {
 
 	/**
 	 * the serial id
