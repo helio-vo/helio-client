@@ -43,14 +43,15 @@ import eu.heliovo.shared.util.AssertUtil;
 /**
  * Base implementation of the long running query. This wraps the client stub to access all
  * HELIO services that implement the long running query service. 
+ * Instances of this class should be retrieved through the {@link LongRunningQueryServiceFactory}.
  * @author marco soldati at fhnw ch
  *
  */
-abstract class AbstractLongRunningQueryService implements LongRunningQueryService, HelioService {
+class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioService {
 	/**
 	 * The logger instance
 	 */
-	private static final Logger _LOGGER = Logger.getLogger(AbstractLongRunningQueryService.class);
+	private static final Logger _LOGGER = Logger.getLogger(LongRunningQueryServiceImpl.class);
 	
 	/**
 	 * Name of the long query service
@@ -83,7 +84,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	 * @param description a short text to describe the service
 	 * @param wsdlLocation the location of the wsdl. Must not be null
 	 */
-	public AbstractLongRunningQueryService(URL wsdlLocation, String name, String description) {
+	public LongRunningQueryServiceImpl(URL wsdlLocation, String name, String description) {
 		this(getPort(wsdlLocation), wsdlLocation, name, description);
 	}
 
@@ -110,7 +111,7 @@ abstract class AbstractLongRunningQueryService implements LongRunningQueryServic
 	 * @param name the name of the service
 	 * @param description a short text to describe the service
 	 */
-	public AbstractLongRunningQueryService(LongHelioQueryService port, URL wsdlLocation, String name, String description) {
+	LongRunningQueryServiceImpl(LongHelioQueryService port, URL wsdlLocation, String name, String description) {
 		AssertUtil.assertArgumentNotNull(port, "port");
 		AssertUtil.assertArgumentNotNull(wsdlLocation, "wsdlLocation");
 		AssertUtil.assertArgumentNotNull(name, "name");

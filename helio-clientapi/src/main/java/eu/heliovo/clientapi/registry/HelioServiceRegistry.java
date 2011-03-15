@@ -8,7 +8,7 @@ public interface HelioServiceRegistry {
 	 * Get a list of service descriptors.
 	 * @return a read-only list of all service descriptors in no particular order.
 	 */
-	public HelioServiceDescriptor[] getServiceDescriptors();
+	public HelioServiceDescriptor[] getAllServiceDescriptors();
 	
 	/**
 	 * Get a service descriptor by name
@@ -21,18 +21,17 @@ public interface HelioServiceRegistry {
 	/**
 	 * Get all endpoints for an instance of a service. 
 	 * @param descriptor the descriptor to use
-	 * @return an array of URL pointing to the WSDL files.
-	 * @throws ServiceResolutionException
+	 * @return an array of URL pointing to the WSDL files and
+	 * an empty array if no endpoints have been found.
 	 */
-	public URL[] getAllEndpoints(HelioServiceDescriptor descriptor) throws ServiceResolutionException;
+	public URL[] getAllEndpoints(HelioServiceDescriptor descriptor);
 	
 	/**
 	 * Get the endpoint for the "best" instance of a service. 
 	 * @param descriptor the descriptor to use
-	 * @return the URL pointing to the WSDL files.
-	 * @throws ServiceResolutionException
+	 * @return the URL pointing to the WSDL files or null if no endpoint has been found.
 	 */
-	public URL getBestEndpoint(HelioServiceDescriptor descriptor) throws ServiceResolutionException;
+	public URL getBestEndpoint(HelioServiceDescriptor descriptor);
 	
 	/**
 	 * 

@@ -10,11 +10,14 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceInstanceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistry;
 import eu.heliovo.clientapi.registry.HelioServiceType;
+import eu.heliovo.clientapi.registry.LongRunningServiceDescriptor;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.shared.util.AssertUtil;
 
 public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	/**
@@ -29,37 +32,37 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 
 	@Override
 	public URL getHec() throws ServiceResolutionException {
-		return asURL("http://140.105.77.30:8080/helio-hec/HelioLongQueryService?wsdl");
+		return getBestEndpoint("hec", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
 	}
 	
 	@Override
 	public URL getUoc() throws ServiceResolutionException {
-		return asURL("http://140.105.77.30:8080/helio-uoc/HelioLongQueryService?wsdl");
+		return getBestEndpoint("uoc", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
 	}
 
 	@Override
 	public URL getDpas() throws ServiceResolutionException {
-		return asURL("http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
+		return getBestEndpoint("dpas", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
 	}
 
 	@Override
 	public URL getIcs() throws ServiceResolutionException {
-		return asURL("http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioLongQueryService?wsdl");
+		return getBestEndpoint("ics", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
 	}
 
 	@Override
 	public URL getIls() throws ServiceResolutionException {
-		return asURL("http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioLongQueryService?wsdl");
+		return getBestEndpoint("ils", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
 	}
 
 	@Override
 	public URL getCea() throws ServiceResolutionException {
-		throw new ServiceResolutionException("No service available yet");
+		return getBestEndpoint("cea", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
 	}
 
 	@Override
 	public URL getMdes() throws ServiceResolutionException {
-		return asURL("http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService_MDES.wsdl");		
+		return getBestEndpoint("mdes", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
 	}
 
 	private static StaticHelioRegistryImpl instance = null;
@@ -82,8 +85,53 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	 * Init the registry with current values.
 	 */
 	private void init() {
-		HelioServiceDescriptor serviceDescriptor = new HelioServiceDescriptor("HEC", HelioServiceType.LONGRUNNING_QUERY_SERVICE, "HEC - HELIO Query Interface", null);
-		registerServiceDescriptor(serviceDescriptor);
+		register(LongRunningServiceDescriptor.ASYNC_HEC, "http://140.105.77.30:8080/helio-hec/HelioLongQueryService?wsdl");
+		register(LongRunningServiceDescriptor.ASYNC_UOC, "http://140.105.77.30:8080/helio-uoc/HelioLongQueryService?wsdl");
+		register(LongRunningServiceDescriptor.ASYNC_DPAS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
+		register(LongRunningServiceDescriptor.ASYNC_ICS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioLongQueryService?wsdl");
+		register(LongRunningServiceDescriptor.ASYNC_ILS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioLongQueryService?wsdl");
+		register(LongRunningServiceDescriptor.ASYNC_MDES, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService.wsdl");		
+	}
+
+	/**
+	 * Register a service
+	 * @param serviceName name of the service
+	 * @param type type of the service
+	 * @param label the label for the service
+	 * @param description the description of the service.
+	 * @param wsdlFiles the wsdlFiles pointing to valid endpoints for this service.
+	 */
+	@SuppressWarnings("unused")
+	private void register(String serviceName, 
+			HelioServiceType type, String label,
+			String description, String... wsdlFiles) {
+		// create the descriptor
+		HelioServiceDescriptor serviceDescriptor = 
+			new GenericHelioServiceDescriptor(serviceName, type, label, description);
+		register(serviceDescriptor, wsdlFiles);
+	}
+
+	/**
+	 * Register a service.
+	 * @param serviceDescriptor the descriptor of the service
+	 * @param wsdlFiles URLs pointing to the WSDL endpoints.
+	 */
+	private void register(HelioServiceDescriptor serviceDescriptor, String... wsdlFiles) {
+		boolean success = registerServiceDescriptor(serviceDescriptor);
+		// sanity check
+		if (success == false) {
+			throw new ServiceResolutionException("service descriptor " + serviceDescriptor + " has been previously registered.");
+		}
+
+		// create the instance descriptor.
+		for (String wsdlFile : wsdlFiles) {
+			HelioServiceInstanceDescriptor instanceDescriptor = new HelioServiceInstanceDescriptor(serviceDescriptor, asURL(wsdlFile));
+			success = registerServiceInstanceDescriptor(instanceDescriptor);
+			// sanity check
+			if (success == false) {
+				throw new ServiceResolutionException("service instance descriptor " + instanceDescriptor + " has been previously registered.");
+			}
+		}
 	}
 	
 	/**
@@ -94,9 +142,9 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	 */
 	private URL asURL(String url) throws ServiceResolutionException {
 		try {
-			return new URL("http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
+			return new URL(url);
 		} catch (MalformedURLException e) {
-			throw new ServiceResolutionException("Unable to parse URL: " + e.getMessage(), e);
+			throw new ServiceResolutionException("Unable to parse URL '" + url + "'. Cause: " + e.getMessage(), e);
 		}
 	}
 
@@ -153,7 +201,7 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	
 	
 	@Override
-	public HelioServiceDescriptor[] getServiceDescriptors() {
+	public HelioServiceDescriptor[] getAllServiceDescriptors() {
 		return serviceDescriptors.toArray(new HelioServiceDescriptor[serviceDescriptors.size()]);
 	}
 
@@ -170,16 +218,57 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	}
 
 	@Override
-	public URL[] getAllEndpoints(HelioServiceDescriptor descriptor)
-			throws ServiceResolutionException {
-		// TODO Auto-generated method stub
-		return null;
+	public URL[] getAllEndpoints(HelioServiceDescriptor descriptor) {
+		AssertUtil.assertArgumentNotNull(descriptor, "descriptor");
+		Set<HelioServiceInstanceDescriptor> serviceInstances = instanceDescriptors.get(descriptor);
+		if (serviceInstances == null) {
+			return new URL[0];
+		}
+
+		// fill in array of URLs
+		URL[] ret = new URL[serviceInstances.size()];
+		int i = 0;
+		for (HelioServiceInstanceDescriptor helioServiceInstanceDescriptor : serviceInstances) {
+			ret[i] = helioServiceInstanceDescriptor.getWsdlFile();
+			i++;
+		}
+		
+		return ret;
 	}
 
+	/**
+	 * This implementation just takes the first match.
+	 */
 	@Override
-	public URL getBestEndpoint(HelioServiceDescriptor descriptor)
-			throws ServiceResolutionException {
-		// TODO Auto-generated method stub
-		return null;
+	public URL getBestEndpoint(HelioServiceDescriptor descriptor) {
+		AssertUtil.assertArgumentNotNull(descriptor, "descriptor");
+		Set<HelioServiceInstanceDescriptor> serviceInstances = instanceDescriptors.get(descriptor);
+		if (serviceInstances == null || serviceInstances.isEmpty()) {
+			return null;
+		}
+		
+		// just take the first entry
+		for (HelioServiceInstanceDescriptor helioServiceInstanceDescriptor : serviceInstances) {
+			return helioServiceInstanceDescriptor.getWsdlFile();
+		}
+		
+		// will never be reached
+		return null; 
 	}
+	
+
+	public URL getBestEndpoint(String name,
+			HelioServiceType type) {
+		HelioServiceDescriptor serviceDescsriptor = getServiceDescriptor(name, type);
+		if (serviceDescsriptor == null) {
+			throw new ServiceResolutionException("No service found with name " + name + " and type " + type);
+		}
+		URL bestEndpoint = getBestEndpoint(serviceDescsriptor);
+		if (bestEndpoint == null) {
+			throw new ServiceResolutionException("No service instance found for " + serviceDescsriptor);
+		}
+		return bestEndpoint;
+	}
+
+
 }

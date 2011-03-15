@@ -24,7 +24,7 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	 * Create a mock implementation of the DPAS.
 	 */
 	public HecParamQueryServiceImpl() {
-		super(queryServiceFactory.getHecService());	
+		super(null);	
 	}
 
 	@Override

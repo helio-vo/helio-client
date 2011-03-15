@@ -43,4 +43,19 @@ public class HelioServiceInstanceDescriptor {
 		return wsdlFile;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof HelioServiceInstanceDescriptor)) {
+			return false;
+		}
+		
+		return serviceDescriptor.equals(((HelioServiceInstanceDescriptor)other).serviceDescriptor) &&
+			wsdlFile.equals(((HelioServiceInstanceDescriptor)other).wsdlFile);
+		
+	}
+	
+	@Override
+	public int hashCode() {
+		return wsdlFile.hashCode() *13 + serviceDescriptor.hashCode() *11;
+	}
 }

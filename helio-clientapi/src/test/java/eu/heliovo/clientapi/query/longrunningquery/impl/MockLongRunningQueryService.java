@@ -15,7 +15,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author marco soldati at fhnw ch
  *
  */
-class MockLongRunningQueryService extends AbstractLongRunningQueryService {
+class MockLongRunningQueryService extends LongRunningQueryServiceImpl {
 
 	private static final URL wsdlLocation = asURL("http://localhost/test/LongRunningQuery.wsdl");
 	private static final String name = "test_service";
