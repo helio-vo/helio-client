@@ -219,7 +219,7 @@ public class LongRunningQueryServiceTest {
 	
 
 	private URL getDefaultVoTable() {
-		String resource = "/" + getClass().getPackage().getName().replaceAll("\\.", "/") + "/resource/hec_goes_xray.xml";
+		String resource = "/eu/heliovo/clientapi/query/resource/hec_goes_xray.xml";
 		URL resultFile = getClass().getResource(resource);
 		assertNotNull("resource not found: " + resource, resultFile);
 		return resultFile;

@@ -3,8 +3,7 @@ package eu.heliovo.clientapi.query.syncquery;
 import java.util.List;
 
 import eu.heliovo.clientapi.model.service.HelioService;
-
-import net.ivoa.xml.votable.v1.VOTABLE;
+import eu.heliovo.clientapi.query.HelioQueryResult;
 
 /**
  * Client wrapper for a synchronous query service.
@@ -23,9 +22,9 @@ public interface SyncQueryService extends HelioService {
      * @param startindex position of first record.
      * @param join ???
      * @return
-     *     returns net.ivoa.xml.votable.v1.VOTABLE
+     *     returns a result object to access the returned VoTable.
      */
-    public VOTABLE query(
+    public HelioQueryResult query(
         List<String> starttime,
         List<String> endtime,
         List<String> from,
@@ -43,9 +42,9 @@ public interface SyncQueryService extends HelioService {
      * @param maxrecords max number of records to display
      * @param startindex position of first record.
      * @return
-     *     returns net.ivoa.xml.votable.v1.VOTABLE
+     *     returns an result object to access the returned VoTable.
      */
-    public VOTABLE timeQuery(
+    public HelioQueryResult timeQuery(
         List<String> starttime,
         List<String> endtime,
         List<String> from,

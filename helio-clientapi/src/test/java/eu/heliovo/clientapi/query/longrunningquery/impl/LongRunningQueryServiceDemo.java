@@ -7,7 +7,7 @@ import java.util.logging.LogRecord;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.longrunningquery.LongRunningQueryService;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.LongRunningServiceDescriptor;
+import eu.heliovo.clientapi.registry.impl.LongRunningServiceDescriptor;
 
 public class LongRunningQueryServiceDemo {
 	public static void main(String[] args) throws Exception {

@@ -1,4 +1,7 @@
-package eu.heliovo.clientapi.registry;
+package eu.heliovo.clientapi.registry.impl;
+
+import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
+import eu.heliovo.clientapi.registry.HelioServiceType;
 
 /**
  * Convenience enum for known ServiceDescriptor that implement then long running query service.

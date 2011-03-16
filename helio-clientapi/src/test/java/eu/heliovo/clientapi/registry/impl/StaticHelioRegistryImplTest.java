@@ -1,17 +1,18 @@
-package eu.heliovo.clientapi.registry;
+package eu.heliovo.clientapi.registry.impl;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.net.URL;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.registry.impl.StaticHelioRegistryImpl;
+import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
+import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
+import eu.heliovo.clientapi.registry.HelioServiceType;
 
 /**
  * Unit test for the {@link StaticHelioRegistryImpl}.
@@ -52,7 +53,7 @@ public class StaticHelioRegistryImplTest {
 	}
 	
 	/**
-	 * Test {@link StaticHelioRegistryImpl#registerServiceInstanceDescriptor(HelioServiceInstanceDescriptor)}
+	 * Test {@link StaticHelioRegistryImpl#registerServiceInstance(HelioServiceDescriptor, URL...)}
 	 * @throws Exception if anything goes wrong
 	 */
 	@Test public void testRegisterServiceInstanceDescriptor() throws Exception {
@@ -62,25 +63,12 @@ public class StaticHelioRegistryImplTest {
 		GenericHelioServiceDescriptor descriptor = new GenericHelioServiceDescriptor("test2", HelioServiceType.UNKNOWN_SERVICE, "test service", "a test service");
 		
 		// create service instance descriptor
-		HelioServiceInstanceDescriptor instanceDescriptor = new HelioServiceInstanceDescriptor(descriptor, new URL("http://www.example.com/test.wsdl"));
-		try {
-			helioRegistry.registerServiceInstanceDescriptor(instanceDescriptor);
-			fail(ServiceResolutionException.class.getName() + " expected.");
-		} catch (ServiceResolutionException e) {
-			// fine
-		}
-		
-		// now register the descriptor and then try again.
-		assertTrue(helioRegistry.registerServiceDescriptor(descriptor));
-		assertTrue(helioRegistry.registerServiceInstanceDescriptor(instanceDescriptor));
-
-		
+		helioRegistry.registerServiceInstance(descriptor, new URL("http://www.example.com/test.wsdl"));
 		
 		assertNotNull(helioRegistry.getServiceDescriptor("test", HelioServiceType.UNKNOWN_SERVICE));
 		
 		// register a service with the same name and type
-		HelioServiceInstanceDescriptor instanceDescriptor2 = new HelioServiceInstanceDescriptor(descriptor, new URL("http://www.example.com/test.wsdl"));
-		assertFalse(helioRegistry.registerServiceInstanceDescriptor(instanceDescriptor2));
+		assertFalse(helioRegistry.registerServiceInstance(descriptor, new URL("http://www.example.com/test.wsdl")));
 	}
 	
 	/**
@@ -91,9 +79,9 @@ public class StaticHelioRegistryImplTest {
 		StaticHelioRegistryImpl helioRegistry = StaticHelioRegistryImpl.getInstance();
 		GenericHelioServiceDescriptor descriptor = new GenericHelioServiceDescriptor("test3", HelioServiceType.UNKNOWN_SERVICE, "test service", "a test service");
 		assertTrue(helioRegistry.registerServiceDescriptor(descriptor));
-		assertTrue(helioRegistry.registerServiceInstanceDescriptor(new HelioServiceInstanceDescriptor(descriptor, new URL("http://www.example.com/test2.wsdl"))));
-		assertTrue(helioRegistry.registerServiceInstanceDescriptor(new HelioServiceInstanceDescriptor(descriptor, new URL("http://www.example.com/test3.wsdl"))));
-		assertTrue(helioRegistry.registerServiceInstanceDescriptor(new HelioServiceInstanceDescriptor(descriptor, new URL("http://www.example.com/test1.wsdl"))));
+		assertTrue(helioRegistry.registerServiceInstance(descriptor, new URL("http://www.example.com/test2.wsdl")));
+		assertTrue(helioRegistry.registerServiceInstance(descriptor, new URL("http://www.example.com/test3.wsdl")));
+		assertTrue(helioRegistry.registerServiceInstance(descriptor, new URL("http://www.example.com/test1.wsdl")));
 		
 		URL bestEndPoint = helioRegistry.getBestEndpoint(descriptor);
 		assertNotNull(bestEndPoint);
