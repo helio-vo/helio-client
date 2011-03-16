@@ -144,7 +144,10 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from);
 		}
 		
+		List<LogRecord> logRecords = new ArrayList<LogRecord>();
+
 		String callId = wsdlLocation + "::longQuery";
+		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
 		StringBuilder message = new StringBuilder();
 		message.append("Executing 'result=longTimeQuery(");
@@ -160,6 +163,8 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 		if (_LOGGER.isTraceEnabled()) {
 			_LOGGER.trace(message.toString());
 		}
+		
+		logRecords.add(new LogRecord(Level.INFO, message.toString()));
 
 		// wait for result
 		String resultId = AsyncCallUtils.callAndWait(new Callable<String>() {
@@ -175,7 +180,7 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, new LogRecord(Level.INFO, message.toString()));
+		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
 		
 		return helioQueryResult;
 	}
@@ -203,7 +208,9 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from);
 		}
 
+		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 		String callId = wsdlLocation + "::longTimeQuery";
+		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 		
 		StringBuilder message = new StringBuilder();
 		message.append("longTimeQuery(");
@@ -219,6 +226,8 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 			_LOGGER.trace(message.toString());
 		}
 		
+		logRecords.add(new LogRecord(Level.INFO, message.toString()));
+
 		// wait for result
 		String resultId = AsyncCallUtils.callAndWait(new Callable<String>() {
 			@Override
@@ -233,7 +242,7 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, new LogRecord(Level.INFO, message.toString()));
+		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
 		
 		return helioQueryResult;
 	}	
@@ -328,13 +337,13 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 		 * @param jobStartTime the time when this call has been started.
 		 * @param logRecords the log records from the parent query. 
 		 */
-		LongRunningQueryResultImpl(String id, LongHelioQueryService port, String callId, long jobStartTime, LogRecord ... logRecords) {
+		LongRunningQueryResultImpl(String id, LongHelioQueryService port, String callId, long jobStartTime, List<LogRecord> logRecords) {
 			this.id = id;
 			this.port = port;
 			this.callId = callId;
 			this.jobStartTime = jobStartTime;
 			this.phase = Phase.QUEUED;
-			Collections.addAll(this.userLogs, logRecords);
+			this.userLogs.addAll(logRecords);
 		}
 			
 		@Override
