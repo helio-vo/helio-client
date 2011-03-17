@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistry;
@@ -51,7 +52,7 @@ public class SyncQueryServiceFactory {
 	 * @param serviceDescriptor the service descriptor to use
 	 * @return a {@link SyncQueryService} implementation to send out queries to this service.
 	 */
-	public SyncQueryService getSyncQueryService(HelioServiceDescriptor serviceDescriptor) {
+	public HelioQueryService getSyncQueryService(HelioServiceDescriptor serviceDescriptor) {
 		if (serviceDescriptor.getType() != HelioServiceType.SYNC_QUERY_SERVICE) {
 			throw new IllegalArgumentException("serviceDescriptor should be of type " + HelioServiceType.SYNC_QUERY_SERVICE + ", but is " + serviceDescriptor.getType() + ": " + serviceDescriptor);
 		}

@@ -114,8 +114,8 @@ class SyncQueryServiceImpl implements SyncQueryService {
 	
 	@Override
 	public HelioQueryResult query(final List<String> startTime, final List<String> endTime,
-			final List<String> from, final String where, final String instrument,
-			final Integer maxrecords, final Integer startindex, final String join) {
+			final List<String> from, final String where, final Integer maxrecords,
+			final Integer startindex, final String join) {
 		final long jobStartTime = System.currentTimeMillis();
 		
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
@@ -138,7 +138,6 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		message.append(", ").append("endTime=").append(endTime);
 		message.append(", ").append("from=").append(from);
 		message.append(", ").append("where=").append(where);
-		message.append(", ").append("instrument=").append(instrument);
 		message.append(", ").append("maxrecords=").append(maxrecords);
 		message.append(", ").append("startIndex=").append(startindex);
 		message.append(", ").append("join=").append(join);

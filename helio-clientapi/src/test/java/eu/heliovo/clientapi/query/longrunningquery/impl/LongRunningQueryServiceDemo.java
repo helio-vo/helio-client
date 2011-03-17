@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.logging.LogRecord;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.longrunningquery.LongRunningQueryService;
+import eu.heliovo.clientapi.query.longrunningquery.AsyncQueryService;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.impl.LongRunningServiceDescriptor;
 
@@ -23,8 +23,8 @@ public class LongRunningQueryServiceDemo {
 		System.out.println("--------------------" + serviceDescriptor.getLabel() + "--------------------");
 		try {
 			LongRunningQueryServiceFactory queryServiceFactory = LongRunningQueryServiceFactory.getInstance();
-			LongRunningQueryService queryService = queryServiceFactory.getLongRunningQueryService(serviceDescriptor);
-			HelioQueryResult result = queryService.longTimeQuery(startTime, endTime, from, 100, 0, saveto);
+			AsyncQueryService queryService = queryServiceFactory.getLongRunningQueryService(serviceDescriptor);
+			HelioQueryResult result = queryService.timeQuery(startTime, endTime, from, 100, 0, saveto);
 
 			System.out.println(result);
 			if (result != null) {
@@ -51,8 +51,8 @@ public class LongRunningQueryServiceDemo {
 		System.out.println("--------------------" + serviceDescriptor.getLabel() + "--------------------");
 		try {
 			LongRunningQueryServiceFactory queryServiceFactory = LongRunningQueryServiceFactory.getInstance();
-			LongRunningQueryService queryService = queryServiceFactory.getLongRunningQueryService(serviceDescriptor);
-			HelioQueryResult result = queryService.longQuery(startTime, endTime, from, where, 100, 0, saveto);
+			AsyncQueryService queryService = queryServiceFactory.getLongRunningQueryService(serviceDescriptor);
+			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null, saveto);
 			
 			System.out.println(result);
 			if (result != null) {

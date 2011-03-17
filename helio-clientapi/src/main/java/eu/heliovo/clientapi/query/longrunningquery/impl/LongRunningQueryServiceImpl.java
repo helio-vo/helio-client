@@ -34,7 +34,7 @@ import eu.heliovo.clientapi.help.annotation.Description;
 import eu.heliovo.clientapi.help.annotation.TypeHelp;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.longrunningquery.LongRunningQueryService;
+import eu.heliovo.clientapi.query.longrunningquery.AsyncQueryService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.shared.util.AssertUtil;
@@ -47,7 +47,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  *
  */
-class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioService {
+class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 	/**
 	 * The logger instance
 	 */
@@ -122,15 +122,21 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 	}
 
 	@Override
-	public HelioQueryResult longQuery(String starttime, String endtime, String from, String where, 
-			Integer maxrecords, Integer startindex, String saveto) throws JobExecutionException {
-		HelioQueryResult result = longQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), where, maxrecords, startindex, saveto);
+	public HelioQueryResult query(List<String> startTime, List<String> endTime, List<String> from, String where, Integer maxrecords, Integer startindex, String join)
+			throws JobExecutionException, IllegalArgumentException {
+		return query(startTime, endTime, from, where, maxrecords, startindex, join, null);
+	}
+
+	@Override
+	public HelioQueryResult query(String starttime, String endtime, String from, String where, 
+			Integer maxrecords, Integer startindex, String join, String saveto) throws JobExecutionException {
+		HelioQueryResult result = query(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), where, maxrecords, startindex, join, saveto);
 		return result;
 	}
 	
 	@Override
-	public HelioQueryResult longQuery(final List<String> startTime, final List<String> endTime, final List<String> from, final String where,
-			final Integer maxrecords, final Integer startindex, final String saveto) throws JobExecutionException {
+	public HelioQueryResult query(final List<String> startTime, final List<String> endTime, final List<String> from, final String where,
+			final Integer maxrecords, final Integer startindex, String join, final String saveto) throws JobExecutionException {
 		final long jobStartTime = System.currentTimeMillis();
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
@@ -186,14 +192,20 @@ class LongRunningQueryServiceImpl implements LongRunningQueryService, HelioServi
 	}
 
 	@Override
-	public HelioQueryResult longTimeQuery(String starttime, String endtime, String from, Integer maxrecords,
+	public HelioQueryResult timeQuery(List<String> startTime, List<String> endTime, List<String> from, Integer maxrecords, Integer startindex) throws JobExecutionException,
+			IllegalArgumentException {
+		return timeQuery(startTime, endTime, from, maxrecords, startindex, null);
+	}
+
+	@Override
+	public HelioQueryResult timeQuery(String starttime, String endtime, String from, Integer maxrecords,
 			Integer startindex, String saveto) throws JobExecutionException {
-		HelioQueryResult result = longTimeQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), maxrecords, startindex, saveto);
+		HelioQueryResult result = timeQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), maxrecords, startindex, saveto);
 		return result;
 	}
 
 	@Override
-	public HelioQueryResult longTimeQuery(final List<String> startTime, final List<String> endTime, final List<String> from,
+	public HelioQueryResult timeQuery(final List<String> startTime, final List<String> endTime, final List<String> from,
 			final Integer maxrecords, final Integer startindex, final String saveto) throws JobExecutionException {
 		final long jobStartTime = System.currentTimeMillis();
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");

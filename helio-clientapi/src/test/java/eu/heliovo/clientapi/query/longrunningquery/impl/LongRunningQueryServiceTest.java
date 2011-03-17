@@ -29,7 +29,7 @@ public class LongRunningQueryServiceTest {
 		assertNotNull(service.getName());
 		assertNotNull(service.getDescription());
 		
-		HelioQueryResult result = service.longQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), null, 100, 0, null);
+		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), null, 100, 0, null, null);
 		
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.PENDING, result.getPhase());
@@ -41,19 +41,19 @@ public class LongRunningQueryServiceTest {
 		
 		// test invalid calls
 		try {
-			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
@@ -71,7 +71,7 @@ public class LongRunningQueryServiceTest {
 		assertNotNull(service.getName());
 		assertNotNull(service.getDescription());
 		
-		HelioQueryResult result = service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 		
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.PENDING, result.getPhase());
@@ -83,19 +83,19 @@ public class LongRunningQueryServiceTest {
 		
 		// test invalid calls
 		try {
-			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
@@ -112,7 +112,7 @@ public class LongRunningQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
 		MockLongRunningQueryService service = new MockLongRunningQueryService(port);
-		HelioQueryResult result = service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ERROR, result.getPhase());
 		
@@ -139,7 +139,7 @@ public class LongRunningQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
 		MockLongRunningQueryService service = new MockLongRunningQueryService(port);
-		HelioQueryResult result = service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ABORTED, result.getPhase());
 		
@@ -169,7 +169,7 @@ public class LongRunningQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 200, 200, 200);
 		MockLongRunningQueryService service = new MockLongRunningQueryService(port);
-		HelioQueryResult result = service.longTimeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
 		// poll one time
 		assertEquals(Phase.PENDING, result.getPhase());
 		

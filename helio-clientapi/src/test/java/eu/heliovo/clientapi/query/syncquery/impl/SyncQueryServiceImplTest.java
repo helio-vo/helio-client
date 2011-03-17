@@ -25,7 +25,7 @@ public class SyncQueryServiceImplTest {
 		assertNotNull(service.getName());
 		assertNotNull(service.getDescription());
 		
-		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), "where", null, 100, 0, null);
+		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), "where", 100, 0, null);
 		
 		assertEquals(Phase.COMPLETED, result.getPhase());
 		
@@ -42,19 +42,19 @@ public class SyncQueryServiceImplTest {
 		
 		// test invalid calls
 		try {
-			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), "where", null, 100, 0, null);
+			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), "where", 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.query(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), "where", null, 100, 0, null);
+			service.query(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), "where", 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), "where", null, 100, 0, null);
+			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), "where", 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine

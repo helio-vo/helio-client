@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
+import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceType;
@@ -31,7 +31,7 @@ public class SyncQueryServiceFactoryTest {
 	 * Test {@link SyncQueryServiceFactory#getLongRunningQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
 	 */
 	@Test public void testGetSyncQueryService() {
-		SyncQueryService queryService = instance.getSyncQueryService(SyncServiceDescriptor.SYNC_ICS);
+		HelioQueryService queryService = instance.getSyncQueryService(SyncServiceDescriptor.SYNC_ICS);
 		assertNotNull(queryService);
 	}
 	

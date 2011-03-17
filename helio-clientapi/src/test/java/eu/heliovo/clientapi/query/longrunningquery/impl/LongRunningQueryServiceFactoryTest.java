@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.heliovo.clientapi.query.longrunningquery.LongRunningQueryService;
+import eu.heliovo.clientapi.query.longrunningquery.AsyncQueryService;
 import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceType;
@@ -31,7 +31,7 @@ public class LongRunningQueryServiceFactoryTest {
 	 * Test {@link LongRunningQueryServiceFactory#getLongRunningQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
 	 */
 	@Test public void testGetLongRunningQueryService() {	
-		LongRunningQueryService queryService = instance.getLongRunningQueryService(LongRunningServiceDescriptor.ASYNC_HEC);
+		AsyncQueryService queryService = instance.getLongRunningQueryService(LongRunningServiceDescriptor.ASYNC_HEC);
 		assertNotNull(queryService);
 	}
 	

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import eu.heliovo.clientapi.query.longrunningquery.LongRunningQueryService;
+import eu.heliovo.clientapi.query.longrunningquery.AsyncQueryService;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistry;
 import eu.heliovo.clientapi.registry.HelioServiceType;
@@ -51,7 +51,7 @@ public class LongRunningQueryServiceFactory {
 	 * @param serviceDescriptor the service descriptor to use
 	 * @return a LongRunningQueryService implementation to send out queries to this service.
 	 */
-	public LongRunningQueryService getLongRunningQueryService(HelioServiceDescriptor serviceDescriptor) {
+	public AsyncQueryService getLongRunningQueryService(HelioServiceDescriptor serviceDescriptor) {
 		if (serviceDescriptor.getType() != HelioServiceType.LONGRUNNING_QUERY_SERVICE) {
 			throw new IllegalArgumentException("serviceDescriptor should be of type " + HelioServiceType.LONGRUNNING_QUERY_SERVICE + ", but is " + serviceDescriptor.getType() + ": " + serviceDescriptor);
 		}

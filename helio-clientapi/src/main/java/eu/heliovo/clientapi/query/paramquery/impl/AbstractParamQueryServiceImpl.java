@@ -12,7 +12,7 @@ import org.springframework.core.convert.ConversionService;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.longrunningquery.LongRunningQueryService;
+import eu.heliovo.clientapi.query.longrunningquery.AsyncQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -31,13 +31,13 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 	/**
 	 * Service to access a remote resource.
 	 */
-	protected final LongRunningQueryService queryService;
+	protected final AsyncQueryService queryService;
 	
 	/**
 	 * Create the param query impl and assign a query Service.
 	 * @param queryService instance of the query service to use.
 	 */
-	public AbstractParamQueryServiceImpl(LongRunningQueryService queryService) {
+	public AbstractParamQueryServiceImpl(AsyncQueryService queryService) {
 		this.queryService = queryService;
 	}
 
@@ -49,7 +49,7 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 		
 		String where = getWhere(termList.whereTerms);
 		
-		HelioQueryResult result = queryService.longQuery(termList.starttime, termList.endtime, termList.catalogs, where, termList.maxrecords, termList.startindex, termList.saveto);
+		HelioQueryResult result = queryService.query(termList.starttime, termList.endtime, termList.catalogs, where, termList.maxrecords, termList.startindex, termList.join, termList.saveto);
 		return result;
 	}
 	
@@ -59,6 +59,7 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 	 *
 	 */
 	private class TermList {
+
 		/**
 		 * list of catalogs
 		 */
@@ -83,6 +84,11 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 		 *start index
 		 */
 		private Integer startindex;
+
+		/**
+		 * Join table
+		 */
+		public String join;
 
 		/**
 		 * Name of the saved votable
