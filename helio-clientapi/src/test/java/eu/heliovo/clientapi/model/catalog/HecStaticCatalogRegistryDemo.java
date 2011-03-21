@@ -1,15 +1,11 @@
 package eu.heliovo.clientapi.model.catalog;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.HelioField;
 
 public class HecStaticCatalogRegistryDemo {
-  @Ignore
-	@Test
-	public void testStaticRegistry()
+
+	public static void main (String[] args)
 	{
 	  CatalogRegistry reg=HecStaticCatalogRegistry.getInstance();
 	  

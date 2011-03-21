@@ -17,52 +17,17 @@ import eu.heliovo.clientapi.registry.HelioServiceType;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
 import eu.heliovo.shared.util.AssertUtil;
 
+/**
+ * Implementation of a static serach registry
+ * @author MarcoSoldati
+ *
+ */
 public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	/**
 	 * The logger for this registry impl
 	 */
 	private static final Logger _LOGGER = Logger.getLogger(StaticHelioRegistryImpl.class);
 	
-	@Override
-	public URL getHfc() throws ServiceResolutionException {
-		throw new ServiceResolutionException("No service available yet");
-	}
-
-	@Override
-	public URL getHec() throws ServiceResolutionException {
-		return getBestEndpoint("hec", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
-	}
-	
-	@Override
-	public URL getUoc() throws ServiceResolutionException {
-		return getBestEndpoint("uoc", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
-	}
-
-	@Override
-	public URL getDpas() throws ServiceResolutionException {
-		return getBestEndpoint("dpas", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
-	}
-
-	@Override
-	public URL getIcs() throws ServiceResolutionException {
-		return getBestEndpoint("ics", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
-	}
-
-	@Override
-	public URL getIls() throws ServiceResolutionException {
-		return getBestEndpoint("ils", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
-	}
-
-	@Override
-	public URL getCea() throws ServiceResolutionException {
-		return getBestEndpoint("cea", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
-	}
-
-	@Override
-	public URL getMdes() throws ServiceResolutionException {
-		return getBestEndpoint("mdes", HelioServiceType.LONGRUNNING_QUERY_SERVICE);
-	}
-
 	private static StaticHelioRegistryImpl instance = null;
 	
 	public synchronized static StaticHelioRegistryImpl getInstance() {
@@ -310,6 +275,7 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 		 * Get the descriptor of the service.
 		 * @return the service descriptor.
 		 */
+		@SuppressWarnings("unused")
 		public HelioServiceDescriptor getServiceDescriptor() {
 			return serviceDescriptor;
 		}

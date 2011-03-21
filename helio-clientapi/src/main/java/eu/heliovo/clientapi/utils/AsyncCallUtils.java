@@ -51,11 +51,11 @@ public class AsyncCallUtils {
 		try {
 			result = callFuture.get(timeoutInMs, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
-			throw new JobExecutionException("Got interrupted while calling: " + callId + ".", e);
+			throw new JobExecutionException("Got interrupted while calling '" + callId + "': " + e.getMessage(), e);
 		} catch (ExecutionException e) {
-			throw new JobExecutionException("Exception while calling: " + callId + ".", e);
+			throw new JobExecutionException("Exception while calling '" + callId + "': " + e.getMessage(), e);
 		} catch (TimeoutException e) {
-			throw new JobExecutionException("Unable to connect to: " + callId + ". The service may be down", e);			
+			throw new JobExecutionException("Unable to connect to '" + callId + "'. The service may be down. Cause: " + e.getMessage(), e);			
 		} finally {
 			executor.shutdown();
 		}

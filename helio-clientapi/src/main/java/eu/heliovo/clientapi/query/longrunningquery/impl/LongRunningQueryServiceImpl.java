@@ -371,7 +371,7 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 					Status status = port.getStatus(id);
 					return status;
 				}
-			}, callId);
+			}, callId + "::getPhase");
 			
 			if (status == null) {
 				throw new JobExecutionException("Unspecified error occured on '" + callId  + ".getStatus()'. Got back null.");
@@ -462,7 +462,7 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 						ResultInfo result = port.getResult(id);
 						return result;
 					}
-				}, callId);
+				}, callId + "::asURL");
 			} catch (JobExecutionException e) {
 				phase = Phase.ERROR;
 				// re throw
