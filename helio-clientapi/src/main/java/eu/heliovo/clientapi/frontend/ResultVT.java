@@ -19,7 +19,12 @@ public class ResultVT
   public List<TableVT> tables;
   public String queryInfo;
   
-  // Delete
+  /**
+   * Method added temporarily to edit directly the rows to remove when a selected result download is activated.
+   */
+  public VOTABLE getVOTABLE(){
+	return VOTABLE;
+  }
   public int getTotalSize()
   {
     int count=0;
@@ -92,12 +97,12 @@ public class ResultVT
   {
     return tables;
   }
-
+/*
   public void setStringTable()
   {
 
   }
-
+*/
   public String getStringTable()
   {
     try
@@ -117,11 +122,12 @@ public class ResultVT
       return "";
     }
   }
-
+/*
   public void setStack(List<List<String>> stack)
   {
     this.stack=stack;
   }
+  */
 
   public void parse(VOTABLE res)
   {
