@@ -23,7 +23,7 @@ public class ResultVT
    * Method added temporarily to edit directly the rows to remove when a selected result download is activated.
    */
   public VOTABLE getVOTABLE(){
-	return VOTABLE;
+	return this.res;
   }
   public int getTotalSize()
   {
