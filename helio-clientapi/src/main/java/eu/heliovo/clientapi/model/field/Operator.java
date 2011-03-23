@@ -7,9 +7,9 @@ package eu.heliovo.clientapi.model.field;
  */
 public enum Operator {
 	EQUALS("=", 2),
-	LESS_THAN("<", 2),
+	//LESS_THAN("<", 2),
 	LESS_EQUAL_THAN("<=", 2),
-	LARGER_THAN(">", 2),
+	//LARGER_THAN(">", 2),
 	LARGER_EQUAL_THAN(">=", 2),
 	LIKE("like", 2),
 	NOT("not", 1),

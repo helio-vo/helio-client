@@ -3,6 +3,7 @@ package eu.heliovo.clientapi.query.paramquery.serialize;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 
 /**
@@ -11,7 +12,52 @@ import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
  *
  */
 public class PQLSerializer implements QuerySerializer {
+	/**
+	 * Main template.
+	 */
+	private static final String ASSIGN_TEMPLATE = "%1$s=%2$s&";
 	
+	/**
+	 * template for =
+	 */
+	private static final String EQUAL_TEMPLATE = "%1$s";
+	
+	/**
+	 * template for &lt;=
+	 */
+	private static final String LESS_EQUAL_THAN_TEMPLATE = "/%1$s";
+	
+	/**
+	 * template for &gt;=
+	 */
+	private static final String GREATER_EQUAL_THAN_TEMPLATE = "51$s/";
+	
+	/**
+	 * Template for LIKE constructs
+	 */
+	private static final String LIKE_TEMPLATE = "*51$s*";
+
+	/**
+	 * Template for between constructs
+	 */
+	private static final String BETWEEN_TEMPLATE = "%1$s/%2$s";
+	
+	/**
+	 * Symbol for OR
+	 */
+	private static final String OR_SYMBOL = ",";
+	
+	/**
+	 * Symbol for AND.
+	 */
+	@SuppressWarnings("unused")
+	private static final String AND_SYMBOL = ";";
+	
+	/**
+	 * Separator between two parameters
+	 */
+	private static final String PARAMETER_SEPARATOR = "&";
+
 	@Override
 	public String getWhereClause(List<ParamQueryTerm<?>> paramQueryTerms) throws QuerySerializationException {
 		List<QuerySerializationException> exceptions = new ArrayList<QuerySerializationException>();
@@ -21,30 +67,25 @@ public class PQLSerializer implements QuerySerializer {
 		// iterate over the terms
 		for (ParamQueryTerm<?> term : paramQueryTerms) {
 			try {
-				switch (term.getOperator()) {
-				case EQUALS:
-					handleEquals(sb, term);
-					break;
-				case LESS_THAN:
-				case LESS_EQUAL_THAN:
-				case LARGER_THAN:
-				case LARGER_EQUAL_THAN:
-					handleUnequal(sb, term);
-					break;
-				case BETWEEN:
-					
-				default:
-					throw new QuerySerializationException("Unsupported operator (" + term.getOperator() + ") in term " + term);
+				if (sb.length() > 0) {
+					sb.append(PARAMETER_SEPARATOR);
 				}
 				
-				// handle the field
-				term.getHelioField();
+				String paramName = term.getHelioField().getName();
+				String template = getTemplate(term);
 				
-				// handle the operator
-				term.getOperator();
-				
-				// handle the arguments
-				term.getArguments();
+				switch (term.getOperator().getArity()) {
+				case 1:
+					sb.append(handleUnaryTerm(paramName, template));
+				case 2:
+					sb.append(handleBinaryTerm(paramName, template, term.getArguments()[0]));
+					break;
+				case 3:
+					sb.append(handleTernaryTerm(paramName, template, term.getArguments()[0], term.getArguments()[1]));
+					break;
+				default:
+					break;
+				}
 			} catch (QuerySerializationException e) {
 				exceptions.add(e);
 				// continue, but throw exception at a later stage
@@ -60,60 +101,82 @@ public class PQLSerializer implements QuerySerializer {
 	}
 
 	/**
-	 * Handle the equals
-	 * @param sb
-	 * @param term
+	 * Get the template according to the selected operator.
+	 * @param term the query term.
+	 * @return the template.
 	 */
-	private void handleEquals(StringBuilder sb, ParamQueryTerm<?> term) {
-		sb.append(term.getHelioField().getName());
-		sb.append(",");
-		Object[] args=term.getArguments();
-		// sanity check
-		if (args.length != 1) {
-			throw new RuntimeException("Internal Error: term.arguments() should have lenght 1, but is " + args.length + " for term: " + term);
+	private String getTemplate(ParamQueryTerm<?> term) {
+		Operator operator = term.getOperator();
+		switch (operator) {
+		case EQUALS:
+			return EQUAL_TEMPLATE;
+		case LESS_EQUAL_THAN:
+			return LESS_EQUAL_THAN_TEMPLATE;
+		case LARGER_EQUAL_THAN:
+			return GREATER_EQUAL_THAN_TEMPLATE;
+		case BETWEEN:
+			return BETWEEN_TEMPLATE;
+		case LIKE:
+			return LIKE_TEMPLATE;
+		default:
+			throw new QuerySerializationException("Unsupported operator (" + operator + ") in term " + term.toString());
+		}
+	}
+	
+	/**
+	 * Generate a PQL term of an unary operator
+	 * @param paramName the name of the parameter (left side)
+	 * @param template the template to use.
+	 * @return String that applies the unary operator to the paramName.
+	 */
+	private String handleUnaryTerm(String paramName, String template) {
+		throw new RuntimeException("Unary operators are not supported by PQL.");
+		//return String.format(template, paramName);
+	}
+
+	/**
+	 * Generate a PQL term for a binary operator.
+	 * @param paramName name of the parameter (left side of =)
+ 	 * @param template the template to apply to the arguments
+	 * @param args the arguments to fill into the template. arguments will be or connected. 
+	 * @return a string with the param name on the left side and the arguments as OR connected list.
+	 */
+	private String handleBinaryTerm(String paramName, String template, Object... args) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < args.length; i++) {
+			if (i > 0) { 
+				// prepend OR
+				sb.append(OR_SYMBOL);
+			}
+			sb.append(String.format(template, args[i]));
+		}
+		return String.format(ASSIGN_TEMPLATE, paramName, sb.toString());
+	}
+	
+	/**
+	 * Generate a PQL term for a ternary operator.
+	 * @param paramName the name of the parater (left side of =)
+	 * @param template the template to apply to the arguments
+	 * @param args1 first argument. May be an object or an object array.
+	 * @param args2 second argument. May be an object or an object array.
+	 * @return a string with the param name on the left side and the arguments as or connected list.
+	 */
+	private String handleTernaryTerm(String paramName, String template, Object args1, Object args2) {
+		Object[] argArray1 = args1 instanceof Object[] ? (Object[])args1 : new Object[] {args1};
+		Object[] argArray2 = args2 instanceof Object[] ? (Object[])args2 : new Object[] {args2};
+
+		if (argArray1.length != argArray2.length) {
+			throw new IllegalArgumentException("Internal error: arrays must have the same size: " + argArray1.length + "!=" + argArray2.length);
 		}
 		
-		if (args[0] instanceof Object[]) {
-			handleArgumentList(sb, (Object[]) args[0]);			
-		} else {
-			sb.append(args[0]);
-		}
-	}
-
-	/**
-	 * Handle the <code>&lt;, &gt;, &lt;=, and &gt;=</code>
-	 * @param sb the string buffer to append to
-	 * @param term the term to render
-	 */
-	private void handleUnequal(StringBuilder sb, ParamQueryTerm<?> term) {
-		sb.append(term.getHelioField().getName());
-		sb.append(",");
-		Object[] args=term.getArguments();		
-		if (args.length != 1) {
-			throw new RuntimeException("Internal Error: term.arguments() should have lenght 1, but is " + args.length + " for term: " + term);
-		}
-		if (args[0] instanceof Object[]) {
-			throw new QuerySerializationException("Unequality with multiple values is currently not supported: " + term);			
-		} else {
-			
-		}
-	}
-
-	/**
-	 * Handle the arguments in a term
-	 * @param sb the stringbuilder to append to
-	 * @param term the term to process
-	 */
-	private void handleArgumentList(StringBuilder sb, Object[] values) {
-		if (values.length == 0) {
-			// nothing todo
-		} else {
-			sb.append(values[0]);			
-			for (int i = 1; i < values.length; i++) {
-				Object value = values[i];
-				sb.append(",");
-				sb.append(value);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < argArray1.length; i++) {
+			if (i > 0) {
+				// prepend OR
+				sb.append(OR_SYMBOL);
 			}
+			sb.append(String.format(template, argArray1[i], argArray2[i]));
 		}
+		return String.format(ASSIGN_TEMPLATE, paramName, sb.toString());
 	}
 }

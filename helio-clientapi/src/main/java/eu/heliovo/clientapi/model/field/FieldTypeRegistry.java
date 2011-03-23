@@ -31,31 +31,31 @@ public class FieldTypeRegistry {
 	 */
 	private FieldTypeRegistry() {
 		add(new SimpleFieldType("string", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("integer", java.math.BigInteger.class, "xsd:integer" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("int", int.class, "xsd:int" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("long", long.class, "xsd.long" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("short", short.class, "xsd:short" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("decimal", java.math.BigDecimal.class, "xsd:decimal" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("float", float.class, "xsd:float" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("double", double.class, "xsd:double" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("integer", java.math.BigInteger.class, "xsd:integer" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("int", int.class, "xsd:int" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("long", long.class, "xsd.long" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("short", short.class, "xsd:short" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("decimal", java.math.BigDecimal.class, "xsd:decimal" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("float", float.class, "xsd:float" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("double", double.class, "xsd:double" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("boolean ", boolean.class, "xsd:boolean" , new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("byte", byte.class, "xsd:byte" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("byte", byte.class, "xsd:byte" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("Qname", javax.xml.namespace.QName.class, "xsd:QName" , new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("dateTime", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:dateTime" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("dateTime", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:dateTime" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("base64Binary", byte[].class, "xsd:base64Binary" , new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("hexBinary", byte[].class, "xsd:hexBinary" , new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("unsignedInt", long.class, "xsd:unsignedInt" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("unsignedShort", int.class, "xsd:unsignedShort" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("unsignedByte", short.class, "xsd:unsignedByte" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("time", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:time" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("date", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:date" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("g", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:g" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("unsignedInt", long.class, "xsd:unsignedInt" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("unsignedShort", int.class, "xsd:unsignedShort" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("unsignedByte", short.class, "xsd:unsignedByte" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("time", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:time" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("date", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:date" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("g", javax.xml.datatype.XMLGregorianCalendar.class, "xsd:g" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("object", java.lang.Object.class, "xsd:anySimpleType" , new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("duration", javax.xml.datatype.Duration.class, "xsd:duration" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("duration", javax.xml.datatype.Duration.class, "xsd:duration" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("NOTATION", javax.xml.namespace.QName.class, "xsd:NOTATION" , new Operator[] {Operator.EQUALS}));
     
-		add(new SimpleFieldType("xclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
-    add(new SimpleFieldType("oclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_THAN, Operator.LESS_EQUAL_THAN, Operator.LARGER_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("xclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+    add(new SimpleFieldType("oclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
     
     add(new SimpleFieldType("unknown", java.lang.String.class, "xsd:string" ,new Operator[] {}));
 	}
