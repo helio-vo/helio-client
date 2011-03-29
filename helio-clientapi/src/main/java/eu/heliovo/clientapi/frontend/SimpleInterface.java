@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
@@ -53,6 +54,9 @@ public class SimpleInterface {
 		int maxrecords = 0;
 		int startindex = 0;
 
+		// timeout to wait for a response
+		int timeout = 15;
+		
 		int numberOfDatePairs = startTime.size();
 		int numberOfFromSingles = from.size();
 
@@ -60,6 +64,7 @@ public class SimpleInterface {
 			startTime = normalizeList(numberOfFromSingles, startTime);
 			endTime = normalizeList(numberOfFromSingles, endTime);
 			from = normalizeList(numberOfDatePairs, from);
+			timeout = 30;
 		}
 		
 		HelioQueryService service;
@@ -75,7 +80,7 @@ public class SimpleInterface {
 		
 		HelioQueryResult result = service.query(startTime, endTime, from, where, maxrecords, startindex, null);
 
-		VOTABLE voTable = result.asVOTable();
+		VOTABLE voTable = result.asVOTable(timeout, TimeUnit.SECONDS);
 		ResultVT resvt = new ResultVT(voTable);
 
 		return resvt;
