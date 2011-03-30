@@ -28,7 +28,8 @@ public class PQLSerializerTest {
 		
 		HelioField<String> field = new HelioField<String>("string_test", "astring", "a description", fieldTypeRegistry.getType("string"));
 		paramQueryTerms.add(new ParamQueryTerm<String>(field, Operator.EQUALS, "a value"));
-		System.out.println(serializer.getWhereClause(paramQueryTerms));
+		assertEquals("astring=a%20value", serializer.getWhereClause(paramQueryTerms));
+		
+		
 	}
-	
 }
