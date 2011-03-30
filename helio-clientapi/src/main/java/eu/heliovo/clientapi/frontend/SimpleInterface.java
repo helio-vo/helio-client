@@ -93,7 +93,10 @@ public class SimpleInterface {
 	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/QueryService/v0.1", "HelioQueryServiceService");
   
 	
-	  public static ResultVT queryService(List<String> minDate,List<String> maxDate,List<String> from,String portAddress,String where)
+	/**
+	 * @deprecated use {@link #queryService(String, List, List, List, String)} instead.
+	 */
+	@Deprecated public static ResultVT queryService(List<String> minDate,List<String> maxDate,List<String> from,String portAddress,String where)
 	  {
 	    int maxrecords=0;
 	    int startindex=0;
