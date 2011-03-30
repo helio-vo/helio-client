@@ -1,5 +1,7 @@
-package eu.heliovo.clientapi.model.catalog;
+package eu.heliovo.clientapi.model.catalog.impl;
 
+import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.impl.HecStaticCatalogRegistry;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.HelioField;
 

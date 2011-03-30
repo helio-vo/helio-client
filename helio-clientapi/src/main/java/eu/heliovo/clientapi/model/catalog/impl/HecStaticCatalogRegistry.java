@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.model.catalog;
+package eu.heliovo.clientapi.model.catalog.impl;
 
 import java.io.IOException;
 import java.net.URL;
@@ -13,6 +13,8 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
 import eu.heliovo.clientapi.frontend.SimpleInterface;
+import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.field.*;
 
 /**

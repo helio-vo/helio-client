@@ -1,7 +1,7 @@
 package eu.heliovo.clientapi.query.paramquery.impl;
 
 import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
-import eu.heliovo.clientapi.model.catalog.HecStaticCatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.impl.HecStaticCatalogRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.longrunningquery.impl.LongRunningQueryServiceFactory;
 /**
