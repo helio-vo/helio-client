@@ -48,11 +48,11 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	 * Init the registry with current values.
 	 */
 	private void init() {
-		register(LongRunningServiceDescriptor.ASYNC_HEC, "http://140.105.77.30:8080/helio-hec/HelioLongQueryService?wsdl");
-		register(SyncServiceDescriptor.SYNC_HEC, "http://140.105.77.30:8080/helio-hec/HelioService?wsdl");
+		register(LongRunningServiceDescriptor.ASYNC_HEC, "http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService?wsdl");
+		register(SyncServiceDescriptor.SYNC_HEC, "http://festung1.oats.inaf.it:8080/helio-hec/HelioService?wsdl");
 		
-		register(LongRunningServiceDescriptor.ASYNC_UOC, "http://140.105.77.30:8080/helio-uoc/HelioLongQueryService?wsdl");
-		register(SyncServiceDescriptor.SYNC_UOC, "http://140.105.77.30:8080/helio-uoc/HelioService?wsdl");
+		register(LongRunningServiceDescriptor.ASYNC_UOC, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioLongQueryService?wsdl");
+		register(SyncServiceDescriptor.SYNC_UOC, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioService?wsdl");
 		
 		register(LongRunningServiceDescriptor.ASYNC_DPAS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
 		register(SyncServiceDescriptor.SYNC_DPAS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioService?wsdl");
