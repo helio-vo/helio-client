@@ -8,12 +8,6 @@ import eu.heliovo.clientapi.model.field.HelioField;
  *
  */
 public interface CatalogRegistry {
-	
-	/**
-	 * Get the parent service of the registered catalogs. 
-	 * @return the parent service.
-	 */
-	//public abstract HelioCatalogService getCatalogService();
 
 	/**
 	 * Get the Field that describes the available catalogs. The catalogs are available through {@link HelioField#getValueDomain()}.
@@ -24,9 +18,17 @@ public interface CatalogRegistry {
 
 	/**
 	 * Get the fields assigned to a given catalog.
+	 * This is a convenience method for {@link #getCatalogById(String)}.{@link HelioCatalog#getFields() getFields()}.
 	 * @param catalogId the catalog to query for
 	 * @return the fields or null if the catalog does not exist.
 	 */
 	public abstract HelioField<?>[] getFields(String catalogId);
+	
+	/**
+	 * Get the catalog with a given id.
+	 * @param catalogId the id to look up. Must not be null.
+	 * @return the catalog with the given name or null if not found.
+	 */
+	public abstract HelioCatalog getCatalogById(String catalogId);
 
 }

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Configuration of the fields of a catalogues. This consists of a list of links to the parameters.
@@ -40,12 +41,13 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 	/**
 	 * Create a new Helio catalog
 	 * @param catalogName name of the catalog.
-	 * @param catalogLabel label of the catalog.
-	 * @param catalogDescription description for the catalog.
+	 * @param catalogLabel label of the catalog. Defaults to name if null or empty
+	 * @param catalogDescription description for the catalog. May be null.
 	 */
 	public HelioCatalog(String catalogName, String catalogLabel, String catalogDescription) {
+		AssertUtil.assertArgumentHasText(catalogName, "catalogName");
 		this.catalogName = catalogName;
-		this.catalogLabel = catalogLabel;
+		this.catalogLabel = catalogLabel == null || catalogLabel.isEmpty() ? catalogName : catalogLabel;
 		this.catalogDescription = catalogDescription;
 	}
 	

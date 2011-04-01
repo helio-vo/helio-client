@@ -1,21 +1,42 @@
 package eu.heliovo.clientapi.model.catalog.impl;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
-import org.w3c.dom.*;
+import net.ivoa.xml.votable.v1.VOTABLE;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import eu.heliovo.clientapi.frontend.SimpleInterface;
 import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
-import eu.heliovo.clientapi.model.field.*;
+import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.field.FieldType;
+import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
+import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.HelioQueryService;
+import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
+import eu.heliovo.clientapi.registry.impl.SyncServiceDescriptor;
+import eu.heliovo.clientapi.utils.VOTableUtils;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Registry that holds the configuration of the HEC catalogs. The insert order
@@ -29,7 +50,12 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	/**
 	 * Name of the default catalog
 	 */
-	private static final String DEFAULT_CATALOG_NAME = "goes_xray_flare"; 
+	private static final String DEFAULT_CATALOG_NAME = "goes_xray_flare";
+
+	/**
+	 * The logger to use.
+	 */
+	private static final Logger _LOGGER = Logger.getLogger(HecStaticCatalogRegistry.class); 
 	
 	/**
 	 * The registry instance
@@ -156,13 +182,58 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to initialize registry: " + e.getMessage(), e);
 		}
+		
+		VOTABLE hecCatalogs = getHecCatalogs();
+	}
 
-//		HelioCatalog catalog = new HelioCatalog("test_catalog", "Test Catalog", "catalog for testing purposed only.");
-//		catalog.addField(new HelioField<Integer>("delay", "delay", "Add an artifical delay in milliseconds to the service. For testing purposes only.", fieldTypeRegistry
-//				.getType("integer"), new Integer(0)));
-//		catalog.addField(new HelioField<Float>("exception-probability", "exception-probability", "Add a probability that the service throws an exception. "
-//				+ "if <=0: never throw an exception, if >= 1.0: always throw an exception. " + "For testing purposes only.", fieldTypeRegistry.getType("float"), new Float(0)));
-//		add(catalog);
+	/**
+	 * Get the hec_catalogs either from remote or from the local cache.
+	 * @return the hec_catalogs.
+	 */
+	private VOTABLE getHecCatalogs() {
+		// create the cache dir
+		File cacheDir = new File(System.getProperty("java.io.tmpdir"), ".helio/hec_cache");
+		if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+			_LOGGER.warn("Unable to create cache dir: " + cacheDir);
+			cacheDir = null;
+		}
+		
+		File cacheFile = cacheDir == null ? null : new File(cacheDir, "hec_catalogs.xml");
+		
+		VOTABLE votable;
+		try {
+			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService(SyncServiceDescriptor.SYNC_HEC);
+			HelioQueryResult result = hec.timeQuery("2008-01-10T00:00:00", "2008-11-10T23:59:59", "catalogues", 0, 0);
+			votable = result.asVOTable();
+		} catch (Exception e) {
+			votable = null;
+		}
+		
+		if (cacheFile != null) {
+			if (votable != null) {
+				// cache VOTable
+				FileWriter fileWriter;
+				try {
+					fileWriter = new FileWriter(cacheFile);
+					VOTableUtils.getInstance().voTable2Writer(votable, fileWriter, false);
+				} catch (IOException e) {
+					_LOGGER.warn("Unable to cache '" + cacheFile + "': " + e.getMessage(), e); 
+				}
+			} else {
+				// try to read from cache
+				try {
+					FileReader reader = new FileReader(cacheFile);
+					votable = VOTableUtils.getInstance().reader2VoTable(reader);
+				} catch (Exception e) {
+					_LOGGER.warn("Unable to load hec_catalogs.xml from cache: " + e.getMessage(), e);
+				}
+			}
+		}
+		
+		if (votable == null ) {
+			throw new RuntimeException("Unable to load hec_catalogs.xml from remote or cache.");
+		}
+		return votable;
 	}
 
 	/**
@@ -231,10 +302,16 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	 */
 	@Override
 	public HelioField<?>[] getFields(String catalogId) {
-		HelioCatalog catalog = helioCatalogMap.get(catalogId);
+		HelioCatalog catalog = getCatalogById(catalogId);
 		if (catalog == null) {
 			return null;
 		}
 		return catalog.getFields();
+	}
+	
+	@Override
+	public HelioCatalog getCatalogById(String catalogId) {
+		AssertUtil.assertArgumentHasText(catalogId, "catalogId");
+		return helioCatalogMap.get(catalogId);
 	}
 }
