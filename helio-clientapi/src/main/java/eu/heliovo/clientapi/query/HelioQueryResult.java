@@ -59,6 +59,23 @@ public interface HelioQueryResult extends HelioWorkerServiceHandler {
 	 */
 	public VOTABLE asVOTable(long timeout, TimeUnit unit)    
     	throws JobExecutionException;
+	
+	
+	/**
+	 * Read the VOTable as String.
+	 * @return the VOTable as String.
+	 * @throws JobExecutionException wrapper exception for all exception that may occur during execution of this job.
+	 */
+	public String asString() throws JobExecutionException;
+
+	/**
+	 * Read the VOTable as String
+	 * @param timeout the maximum time to block for a result. 0 waits forever.
+	 * @param unit the unit of the timeout value.
+	 * @return the VOTable as String
+	 * @throws JobExecutionException
+	 */
+	public String asString(long timeout, TimeUnit unit) throws JobExecutionException;
 		
 	/**
 	 * Get log messages that are of particular interest for the end user.
@@ -73,5 +90,6 @@ public interface HelioQueryResult extends HelioWorkerServiceHandler {
 	 * @return the user log messages.
 	 */
 	public LogRecord[] getUserLogs();
+
 
 }

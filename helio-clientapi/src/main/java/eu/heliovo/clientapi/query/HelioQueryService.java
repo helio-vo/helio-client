@@ -12,6 +12,29 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  *
  */
 public interface HelioQueryService extends HelioService {
+	
+	/**
+	 * Execute a query on a HELIO query service.
+	 * @param starttime the start date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null.
+	 * @param endtime the end date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null.
+	 * @param from the table to query. Must not be null.
+	 * @param where where clause of the query in PQL.
+	 * @param maxrecords max number of records to display. 0 means all. defaults to 0.
+	 * @param startindex position of first record to return. Starting at 0. 
+	 * @param join ???
+	 * @return returns a result object to access the returned data in a generic way.
+	 * @throws JobExecutionException in case of any problem during execution of the query.
+	 * @throws IllegalArgumentException if any of the submitted arguments is not valid.
+	 */
+	public HelioQueryResult query(
+			String startTime, 
+			String endTime, 
+			String from, 
+			String where, 
+			Integer maxrecords, 
+			Integer startindex, 
+			String join)
+	throws JobExecutionException, IllegalArgumentException;
 
 	/**
 	 * Execute a query on a HELIO query service.
@@ -35,6 +58,25 @@ public interface HelioQueryService extends HelioService {
 			Integer startindex, 
 			String join)
 				throws JobExecutionException, IllegalArgumentException;
+
+	/**
+	 * Execute a time query on a HELIO query service.
+	 * @param starttime the start date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null.
+	 * @param endtime the end date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null.
+	 * @param from the table to query. Must not be null.
+	 * @param maxrecords max number of records to display
+	 * @param startindex position of first record.
+	 * @return returns an result object to access the returned data.
+	 * @throws JobExecutionException in case of any problem during execution of the query.
+	 * @throws IllegalArgumentException if any of the submitted arguments is not valid.
+	 */
+	public HelioQueryResult timeQuery(
+			String startTime, 
+			String endTime,
+			String from,
+			Integer maxrecords,
+			Integer startindex) 
+	throws JobExecutionException, IllegalArgumentException;
 
 	/**
 	 * Execute a time query on a HELIO query service.

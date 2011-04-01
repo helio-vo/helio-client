@@ -2,6 +2,7 @@ package eu.heliovo.clientapi.query.syncquery.impl;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -19,6 +20,7 @@ import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
+import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -111,6 +113,12 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		this.description = description;
 	}
 
+	@Override
+	public HelioQueryResult query(String startTime, String endTime, String from, String where, Integer maxrecords, Integer startindex, String join) throws JobExecutionException,
+			IllegalArgumentException {
+		HelioQueryResult result = query(Collections.singletonList(startTime), Collections.singletonList(endTime), Collections.singletonList(from), where, maxrecords, startindex, join);
+		return result;
+	}
 	
 	@Override
 	public HelioQueryResult query(final List<String> startTime, final List<String> endTime,
@@ -165,6 +173,12 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		return result;
 	}
 
+	@Override
+	public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords, Integer startindex) throws JobExecutionException, IllegalArgumentException {
+		HelioQueryResult result = timeQuery(Collections.singletonList(startTime), Collections.singletonList(endTime), Collections.singletonList(from), maxrecords, startindex);
+		return result;
+	}
+	
 	@Override
 	public HelioQueryResult timeQuery(final List<String> startTime, final List<String> endTime,
 			final List<String> from, final Integer maxrecords, final Integer startindex) {
@@ -278,6 +292,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 
 		@Override
 		public URL asURL() throws JobExecutionException {
+			
 			throw new JobExecutionException("Method asUrl not supported by the synchronous query");
 		}
 
@@ -302,7 +317,16 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		public LogRecord[] getUserLogs() {
 			return userLogs.toArray(new LogRecord[userLogs.size()]);
 		}
-		
-	}
 
+		@Override
+		public String asString() throws JobExecutionException {
+			return asString(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+		}
+		
+		@Override
+		public String asString(long timeout, TimeUnit unit) throws JobExecutionException {
+			VOTABLE voTable = asVOTable(timeout, unit);
+			return VOTableUtils.getInstance().voTable2String(voTable, true);
+		}
+	}
 }

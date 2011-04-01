@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
@@ -122,15 +123,22 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 	}
 
 	@Override
+	public HelioQueryResult query(String startTime, String endTime, String from, String where, Integer maxrecords, Integer startindex, String join) throws JobExecutionException,
+			IllegalArgumentException {
+		HelioQueryResult result = query(Collections.singletonList(startTime), Collections.singletonList(endTime), Collections.singletonList(from), where, maxrecords, startindex, join);
+		return result;
+	}
+	
+	@Override
 	public HelioQueryResult query(List<String> startTime, List<String> endTime, List<String> from, String where, Integer maxrecords, Integer startindex, String join)
 			throws JobExecutionException, IllegalArgumentException {
 		return query(startTime, endTime, from, where, maxrecords, startindex, join, null);
 	}
 
 	@Override
-	public HelioQueryResult query(String starttime, String endtime, String from, String where, 
+	public HelioQueryResult query(String startTime, String endTime, String from, String where, 
 			Integer maxrecords, Integer startindex, String join, String saveto) throws JobExecutionException {
-		HelioQueryResult result = query(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), where, maxrecords, startindex, join, saveto);
+		HelioQueryResult result = query(Collections.singletonList(startTime), Collections.singletonList(endTime), Collections.singletonList(from), where, maxrecords, startindex, join, saveto);
 		return result;
 	}
 	
@@ -190,6 +198,12 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 		
 		return helioQueryResult;
 	}
+	
+	@Override
+	public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords, Integer startindex) throws JobExecutionException, IllegalArgumentException {
+		HelioQueryResult result = timeQuery(Collections.singletonList(startTime), Collections.singletonList(endTime), Collections.singletonList(from), maxrecords, startindex);
+		return result;
+	}
 
 	@Override
 	public HelioQueryResult timeQuery(List<String> startTime, List<String> endTime, List<String> from, Integer maxrecords, Integer startindex) throws JobExecutionException,
@@ -198,9 +212,9 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 	}
 
 	@Override
-	public HelioQueryResult timeQuery(String starttime, String endtime, String from, Integer maxrecords,
+	public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords,
 			Integer startindex, String saveto) throws JobExecutionException {
-		HelioQueryResult result = timeQuery(Collections.singletonList(starttime), Collections.singletonList(endtime), Collections.singletonList(from), maxrecords, startindex, saveto);
+		HelioQueryResult result = timeQuery(Collections.singletonList(startTime), Collections.singletonList(endTime), Collections.singletonList(from), maxrecords, startindex, saveto);
 		return result;
 	}
 
@@ -568,6 +582,21 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 				}
 			}
 		}
+		
+		@Override
+		public String asString() throws JobExecutionException {
+			return asString(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+		}
+
+		
+		public String asString(long timeout, TimeUnit unit) throws JobExecutionException {
+			try {
+				return IOUtils.toString(asURL().openStream());
+			} catch (IOException e) {
+				throw new JobExecutionException("Unable to convert result to String: " + e.getMessage(), e);
+			}
+		}
+
 
 		@Override
 		public LogRecord[] getUserLogs() {
@@ -593,5 +622,6 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 			sb.append("wsdl:").append(callId).append("}");
 			return sb.toString();
 		}
+
 	}
 }
