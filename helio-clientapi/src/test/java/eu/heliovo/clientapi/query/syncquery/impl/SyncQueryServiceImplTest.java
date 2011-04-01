@@ -37,6 +37,7 @@ public class SyncQueryServiceImplTest {
 		
 		assertNotNull(result.asVOTable());
 		assertNotNull(result.toString());
+		assertNotNull(result.asString());
 		assertNotNull(result.getDestructionTime());
 		assertTrue(1 < result.getExecutionDuration());
 		
