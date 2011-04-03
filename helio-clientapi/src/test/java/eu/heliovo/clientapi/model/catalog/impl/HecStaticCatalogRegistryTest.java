@@ -31,7 +31,7 @@ public class HecStaticCatalogRegistryTest {
 		assertEquals("catalog", catalogField.getName());
 		assertEquals("catalog", catalogField.getLabel());
 		assertNotNull(catalogField.getDescription());
-		assertEquals("goes_xray_flare", catalogField.getDefaultValue());
+		assertEquals("goes_sxr_flare", catalogField.getDefaultValue());
 		assertEquals(fieldTypeRegistry.getType("string"), catalogField.getType());
 		assertTrue(2 < catalogField.getValueDomain().length);
 	}

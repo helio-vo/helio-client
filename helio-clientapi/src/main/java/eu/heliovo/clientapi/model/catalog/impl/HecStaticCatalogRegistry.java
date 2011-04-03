@@ -50,7 +50,7 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	/**
 	 * Name of the default catalog
 	 */
-	private static final String DEFAULT_CATALOG_NAME = "goes_xray_flare";
+	private static final String DEFAULT_CATALOG_NAME = "goes_sxr_flare";
 
 	/**
 	 * The logger to use.
@@ -148,8 +148,8 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 				for (int j = 0; j < fields.getLength(); j++) {
 					Element fieldElement = (Element) fields.item(j);
 
-					String fieldId = fieldElement.getElementsByTagName("OldFieldName").item(0).getTextContent();
-					String fieldName = fieldElement.getElementsByTagName("FieldName").item(0).getTextContent();
+					String fieldId = getTextContent(fieldElement, "OldFieldName"); 
+					String fieldName = getTextContent(fieldElement, "FieldName");
 					String fieldDescription = getChildValue(fieldElement, "FieldDesc");
 					String fieldDataType = getChildValue(fieldElement, "FieldDataType");
 
@@ -174,9 +174,8 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 					if (ft == null)
 						ft = fieldTypeRegistry.getType("unknown");
 
-					HelioField<?> field = new HelioField<Object>(fieldId, fieldName, fieldDescription, ft);
+					HelioField<?> field = new HelioField<Object>(fieldId == null ? fieldName: fieldId, fieldName, fieldDescription, ft);
 					catalog.addField(field);
-					
 				}
 			}
 		} catch (Exception e) {
@@ -184,6 +183,17 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 		}
 		
 		VOTABLE hecCatalogs = getHecCatalogs();
+	}
+
+	private String getTextContent(Element fieldElement, String tagName) {
+		if (fieldElement == null) {
+			return null;
+		}
+		NodeList tag = fieldElement.getElementsByTagName(tagName);
+		if (tag == null || tag.getLength() == 0) {
+			return null;
+		}
+		return tag.item(0).getTextContent();
 	}
 
 	/**
