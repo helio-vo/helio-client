@@ -3,9 +3,11 @@ package eu.heliovo.clientapi.frontend;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
 import net.ivoa.xml.votable.v1.*;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
@@ -16,8 +18,6 @@ public class ResultVT {
 	 */
 	private VOTABLE res;
 	
-	
-	private List<List<String>> stack;
 	
 	private List<String> headers;
 	
@@ -33,6 +33,9 @@ public class ResultVT {
 	 * Query info string.
 	 */
 	public String queryInfo;
+
+
+	private final LogRecord[] logRecords;
 
 	/**
 	 * Method added temporarily to edit directly the rows to remove when a
@@ -96,33 +99,47 @@ public class ResultVT {
 			return data;
 		}
 	}
-
+	
 	/**
-	 * Create an empty resultVT.
-	 * @deprecated not in use
-	 * 
-	 */
-	@Deprecated public ResultVT() {
-	}
-
-	/**
-	 * Craeate a Result VT that wraps a given {@link VOTABLE}
+	 * Create a Result VT that wraps a given {@link VOTABLE}
 	 * @param res the VOTable to wrap
 	 */
 	public ResultVT(VOTABLE res) {
-		this.res = res;
+		this(res, null);
+	}
+
+	/**
+	 * Create an ResultVT that wraps a given {@link VOTABLE}.
+	 * @param voTable the votable to wrao.
+	 * @param logRecords the log records for user feedback
+	 * 
+	 */
+	public ResultVT(VOTABLE voTable, LogRecord[] logRecords) {
+		this.res = voTable;
+		this.logRecords = logRecords;
 		this.tables = new LinkedList<TableVT>();
 		parse(res);
 	}
-
+	
+	/**
+	 * Get the list of tables stored within this VOTable.
+	 * @return the list of tables
+	 */
 	public List<TableVT> getTables() {
 		return tables;
 	}
-
-	/*
-	 * public void setStringTable() {
-	 * 
-	 * }
+	
+	/**
+	 * Get the array of log records that are associated with the VOTable.
+	 * @return the log records.
+	 */
+	public LogRecord[] getLogRecords() {
+		return logRecords;
+	}
+	
+	/**
+	 * Transform the VOTable into a string.
+	 * @return the string representation of this VOTable.
 	 */
 	public String getStringTable() {
 		try {
@@ -146,7 +163,6 @@ public class ResultVT {
 	 */
 	private void parse(VOTABLE res) {
 		headers = new ArrayList<String>();
-		stack = new ArrayList<List<String>>();
 
 		// loop over all tables
 		for (RESOURCE resource : res.getRESOURCE()) {
@@ -174,13 +190,10 @@ public class ResultVT {
 				tableVT.setHeaders(headersVT);
 				ArrayList<List<String>> dataVT = new ArrayList<List<String>>();
 				for (TR tr : table.getDATA().getTABLEDATA().getTR()) {
-					Stack<String> row = new Stack<String>();
 					ArrayList<String> rowVT = new ArrayList<String>();
 					for (TD td : tr.getTD()) {
-						row.add(td.getValue());
 						rowVT.add(td.getValue());
 					}
-					stack.add(row);
 					dataVT.add(rowVT);
 				}
 				tableVT.setData(dataVT);
