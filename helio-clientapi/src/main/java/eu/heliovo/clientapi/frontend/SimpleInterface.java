@@ -51,37 +51,40 @@ public class SimpleInterface {
 		AssertUtil.assertArgumentHasText(serviceName, "serviceName");
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
+
+		// set the default values. The may be overwritten further down in the script.
 		int maxrecords = 0;
 		int startindex = 0;
-
 		// timeout to wait for a response
 		int timeout = 15;
+		HelioServiceType serviceType = SERVICE_TYPE;
 		
-		int numberOfDatePairs = startTime.size();
-		int numberOfFromSingles = from.size();
-
 		if (serviceName.equalsIgnoreCase("DPAS")) {
+			int numberOfDatePairs = startTime.size();
+			int numberOfFromSingles = from.size();
 			startTime = normalizeList(numberOfFromSingles, startTime);
 			endTime = normalizeList(numberOfFromSingles, endTime);
 			from = normalizeList(numberOfDatePairs, from);
 			timeout = 30;
+		} else if (serviceName.equalsIgnoreCase("HEC")) {
+			serviceType = HelioServiceType.SYNC_QUERY_SERVICE;
 		}
 		
 		HelioQueryService service;
-		if (SERVICE_TYPE == HelioServiceType.LONGRUNNING_QUERY_SERVICE) {
-			HelioServiceDescriptor descriptor = registry.getServiceDescriptor(serviceName.toUpperCase(), SERVICE_TYPE);
+		if (serviceType == HelioServiceType.LONGRUNNING_QUERY_SERVICE) {
+			HelioServiceDescriptor descriptor = registry.getServiceDescriptor(serviceName.toUpperCase(), serviceType);
 			service = LongRunningQueryServiceFactory.getInstance().getLongRunningQueryService(descriptor);
-		} else 		if (SERVICE_TYPE == HelioServiceType.LONGRUNNING_QUERY_SERVICE) {
-			HelioServiceDescriptor descriptor = registry.getServiceDescriptor(serviceName.toUpperCase(), SERVICE_TYPE);
+		} else if (serviceType == HelioServiceType.SYNC_QUERY_SERVICE) {
+			HelioServiceDescriptor descriptor = registry.getServiceDescriptor(serviceName.toUpperCase(), serviceType);
 			service = SyncQueryServiceFactory.getInstance().getSyncQueryService(descriptor);
 		} else {
 			throw new RuntimeException("Internal Error: Unknown service type " + SERVICE_TYPE);
 		}
 		
 		HelioQueryResult result = service.query(startTime, endTime, from, where, maxrecords, startindex, null);
-
+		
 		VOTABLE voTable = result.asVOTable(timeout, TimeUnit.SECONDS);
-		ResultVT resvt = new ResultVT(voTable);
+		ResultVT resvt = new ResultVT(voTable, result.getUserLogs());
 
 		return resvt;
 	}
