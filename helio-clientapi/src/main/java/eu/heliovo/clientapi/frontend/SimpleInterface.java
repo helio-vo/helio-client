@@ -53,7 +53,7 @@ public class SimpleInterface {
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
 
 		// set the default values. The may be overwritten further down in the script.
-		int maxrecords = 0;
+		int maxrecords = 1000;
 		int startindex = 0;
 		// timeout to wait for a response
 		int timeout = 15;
