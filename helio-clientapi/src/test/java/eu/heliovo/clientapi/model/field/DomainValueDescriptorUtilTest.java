@@ -25,7 +25,7 @@ public class DomainValueDescriptorUtilTest {
 			assertNotNull(value);
 			assertEquals("string", value.getValue());
 			assertEquals("string", value.getLabel());
-			assertEquals("string", value.toString());
+			assertEquals("[value: string, label: string]", value.toString());
 			assertNull(value.getDescription());
 		}
 		{
@@ -33,7 +33,7 @@ public class DomainValueDescriptorUtilTest {
 			assertNotNull(value);
 			assertEquals(new Integer(5), value.getValue());
 			assertEquals("5", value.getLabel());
-			assertEquals("5", value.toString());
+			assertEquals("[value: 5, label: 5]", value.toString());
 			assertNull(value.getDescription());
 		}
 		

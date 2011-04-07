@@ -119,4 +119,14 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 	public HelioField<?>[] getFields() {
 		return fields.toArray(new HelioField[fields.size()]);
 	}
+	
+	public HelioField<?> getFieldById(String id) {
+	    AssertUtil.assertArgumentHasText(id, "id");
+	    for (HelioField<?> current : fields) {
+            if (id.equals(current.getId())) {
+                return current;
+            }
+        }
+	    return null;
+	}
 }
