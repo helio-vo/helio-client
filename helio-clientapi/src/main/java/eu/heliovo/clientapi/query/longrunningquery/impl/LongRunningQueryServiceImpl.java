@@ -37,6 +37,7 @@ import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.longrunningquery.AsyncQueryService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
+import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -413,9 +414,13 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 				break;
 			}
 			
+			if (jobEndTime != 0) {
+				userLogs.add(new LogRecord(Level.INFO, "Query terminated in " + MessageUtils.formatSeconds(getExecutionDuration()) + " with status '" + statusValue + "'"));
+			}
+			
 			String message = status.getDescription();
 			if (message != null) {
-				userLogs.add(new LogRecord(Level.INFO, message));
+				userLogs.add(new LogRecord(Level.INFO, "Status message returned by service: " + message));
 			}
 			
 			if (_LOGGER.isTraceEnabled()) {
@@ -460,7 +465,7 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 			case UNKNOWN:
 				throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue.");
 			case PENDING:
-				throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time: " + formatSeconds(timeout));
+				throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time: " + MessageUtils.formatSeconds(timeout));
 			case COMPLETED:
 				// just continue
 				break;
@@ -536,19 +541,6 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 			
 			return currentPhase;
 		}
-
-		/**
-		 * Format milliseconds as string, converting large values to seconds.
-		 * @param time time in Milliseconds 
-		 * @return user friendly string representation of the time.
-		 */
-		private String formatSeconds(long time) {
-			if (time > 999) {
-				return String.format("%1$1.3fs", (double)time/1000.0);
-			} 
-			return String.format("%1$1dms", time);
-		}
-
 
 		public VOTABLE asVOTable() throws JobExecutionException {
 			return asVOTable(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import javax.xml.namespace.QName;
@@ -20,6 +21,7 @@ import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
+import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.shared.util.AssertUtil;
@@ -137,8 +139,11 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		if (startTime.size() > 1 && from.size() > 1 && startTime.size() != from.size()) {
 			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from);
 		}
-		
+
+		List<LogRecord> logRecords = new ArrayList<LogRecord>();
+
 		String callId = wsdlLocation + "::syncQuery";
+		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
 		StringBuilder message = new StringBuilder();
 		message.append("Executing 'result=query(");
@@ -154,6 +159,8 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		if (_LOGGER.isTraceEnabled()) {
 			_LOGGER.trace(message.toString());
 		}
+		
+		logRecords.add(new LogRecord(Level.INFO, message.toString()));
 
 		// wait for result
 		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
@@ -168,7 +175,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
 		}
 		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
-		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, null);
+		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
 
 		return result;
 	}
@@ -196,8 +203,11 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		if (startTime.size() > 1 && from.size() > 1 && startTime.size() != from.size()) {
 			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from);
 		}
+
+		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 		
 		String callId = wsdlLocation + "::syncTimeQuery";
+		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
 		StringBuilder message = new StringBuilder();
 		message.append("Executing 'result=timeQuery(");
@@ -211,6 +221,8 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		if (_LOGGER.isTraceEnabled()) {
 			_LOGGER.trace(message.toString());
 		}
+		
+		logRecords.add(new LogRecord(Level.INFO, message.toString()));
 
 		// wait for result
 		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
@@ -225,7 +237,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
 		}
 		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
-		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, null);
+		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
 		return result;
 	}
 	
@@ -272,6 +284,9 @@ class SyncQueryServiceImpl implements SyncQueryService {
 			this.executionDuration = executionDuration;
 			if (userLogs != null) {
 				this.userLogs.addAll(userLogs);
+			}
+			if (executionDuration > 0) {
+				this.userLogs.add(new LogRecord(Level.INFO, "Query terminated in " + MessageUtils.formatSeconds(getExecutionDuration()) + "."));
 			}
 		}
 		

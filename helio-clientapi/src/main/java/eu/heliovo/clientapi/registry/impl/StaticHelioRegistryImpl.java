@@ -1,6 +1,5 @@
 package eu.heliovo.clientapi.registry.impl;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +14,7 @@ import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistry;
 import eu.heliovo.clientapi.registry.HelioServiceType;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -99,7 +99,7 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 
 		// create the instance descriptor.
 		for (String wsdlFile : wsdlFiles) {
-			success = registerServiceInstance(serviceDescriptor, asURL(wsdlFile));
+			success = registerServiceInstance(serviceDescriptor, HelioFileUtil.asURL(wsdlFile));
 			// sanity check
 			if (success == false) {
 				throw new ServiceResolutionException("Unable to register services. Check log for more information.");
@@ -107,20 +107,6 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 		}
 	}
 	
-	/**
-	 * Convert String to URL. 
-	 * @param url the url to convert
-	 * @return the url as URL object
-	 * @throws ServiceResolutionException if the URL is not valid
-	 */
-	private URL asURL(String url) throws ServiceResolutionException {
-		try {
-			return new URL(url);
-		} catch (MalformedURLException e) {
-			throw new ServiceResolutionException("Unable to parse URL '" + url + "'. Cause: " + e.getMessage(), e);
-		}
-	}
-
 	/**
 	 * Store the registered service descriptors.
 	 */
