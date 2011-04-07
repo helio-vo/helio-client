@@ -131,6 +131,10 @@ public class DpasStaticCatalogRegistry implements CatalogRegistry {
 			File pat = HelioFileUtil.getFileFromRemoteOrCache("dpas_cache", "pat_summary.csv", patTable);
 			LineIterator it = FileUtils.lineIterator(pat, "UTF-8");
 			try {
+			    // skip first line.
+			    if (it.hasNext()) {
+			        it.nextLine();
+			    }
 				while (it.hasNext()) {
 					String line = it.nextLine();
 					String[] entries = line.split(",");
