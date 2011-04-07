@@ -11,12 +11,16 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
@@ -50,6 +54,11 @@ public class VOTableUtils {
 	private final JAXBContext jaxbContext;
 	
 	/**
+	 * The docbuilder factor to use for DOM creation
+	 */
+    private final DocumentBuilderFactory docBuilderFactory;
+    
+	/**
 	 * Create the VOTableUtils bean.
 	 */
 	private VOTableUtils() {
@@ -59,6 +68,7 @@ public class VOTableUtils {
 		} catch (JAXBException e) {
 			throw new RuntimeException("Unable to setup JAXBContext: " + e.getMessage(), e);
 		}
+		docBuilderFactory = DocumentBuilderFactory.newInstance();
 	}
 	
 	/**
@@ -123,7 +133,7 @@ public class VOTableUtils {
 	}
 	
 	/**
-	 * Convert a reader to a votable
+	 * Convert a reader to a votable by using JAXB
 	 * @param reader the input reader
 	 * @return the marshalled voTable
 	 * @throws JAXBException if the table cannot be created.
@@ -138,5 +148,21 @@ public class VOTableUtils {
 		}
 	}
 	
-	
+	/**
+	 * Convert a JAXB object to a DOM document.
+	 * @param pObject
+	 * @return
+	 * @throws JAXBException
+	 * @throws javax.xml.parsers.ParserConfigurationException
+	 */
+    public Document asDOMDocument(Object pObject)
+                throws JAXBException, ParserConfigurationException {
+    	DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+    	Document result = docBuilder.newDocument();
+
+    	Marshaller marshaller = jaxbContext.createMarshaller();
+    	marshaller.marshal(pObject, result);
+
+    	return result;
+    }
 }

@@ -35,10 +35,21 @@ public class DomainValueDescriptorUtil {
 	 * @return the value wrapped in a {@link GenericDomainValueDescriptor}.
 	 */
 	public static <T> DomainValueDescriptor<T> asDomainValue(T value) {
-		GenericDomainValueDescriptor<T> descriptor = new GenericDomainValueDescriptor<T>(value);
+		GenericDomainValueDescriptor<T> descriptor = new GenericDomainValueDescriptor<T>(value, value.toString(), null);
 		return descriptor;
 	}
 	
+	/**
+	 * Create a new DomainValue Descriptor
+	 * @param <T> type of the wrapped value
+	 * @param value the value itself
+	 * @param label the label to use. defaults to label.toString() if null.
+	 * @param description the description. May be null.
+	 * @return the domain value descriptor
+	 */
+	public static <T> DomainValueDescriptor<T> asDomainValue(T value, String label, String description) {
+		return new GenericDomainValueDescriptor<T>(value, label, description);
+	}
 
 	static class GenericDomainValueDescriptor<T> implements DomainValueDescriptor<T> {
 		/**
@@ -46,13 +57,21 @@ public class DomainValueDescriptorUtil {
 		 */
 		private final T value;
 		
+		
+		private final String label;
+		
+		
+		private final String description;
+		
 		/**
 		 * Create the domain value with an emtpy description, the value submitted in the constructor. The label is the toString value.
 		 * @param value the value to wrap. Msut not be null.
 		 */
-		public GenericDomainValueDescriptor(T value) {
+		public GenericDomainValueDescriptor(T value, String label, String description) {
 			AssertUtil.assertArgumentNotNull(value, "value");
 			this.value = value;
+			this.label = label == null ? value.toString() : label;
+			this.description = description;
 		}
 
 		@Override
@@ -62,17 +81,24 @@ public class DomainValueDescriptorUtil {
 
 		@Override
 		public String getLabel() {
-			return value.toString();
+			return label;
 		}
 
 		@Override
 		public String getDescription() {
-			return null;
+			return description;
 		}
 		
 		@Override
 		public String toString() {
-			return value.toString();
+			StringBuilder sb = new StringBuilder("[");
+			sb.append("value: ").append(value.toString());
+			sb.append(", label: ").append(label);
+			if (description != null) {
+				sb.append(", description: ").append(description);
+			}
+			sb.append("]");
+			return sb.toString();
 		}
 		
 		@Override
@@ -89,5 +115,6 @@ public class DomainValueDescriptorUtil {
 		}
 
 	}
+
 
 }

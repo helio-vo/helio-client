@@ -36,6 +36,7 @@ import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
 import eu.heliovo.clientapi.registry.impl.SyncServiceDescriptor;
 import eu.heliovo.clientapi.utils.VOTableUtils;
+import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -202,12 +203,12 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	 */
 	private VOTABLE getHecCatalogs() {
 		// create the cache dir
-		File cacheDir = new File(System.getProperty("java.io.tmpdir"), ".helio/hec_cache");
-		if (!cacheDir.exists() && !cacheDir.mkdirs()) {
-			_LOGGER.warn("Unable to create cache dir: " + cacheDir);
+		File cacheDir;
+		try { 
+			cacheDir = HelioFileUtil.getHelioTempDir("hec_cache");
+		} catch (RuntimeException e) {
 			cacheDir = null;
 		}
-		
 		File cacheFile = cacheDir == null ? null : new File(cacheDir, "hec_catalogs.xml");
 		
 		VOTABLE votable;
