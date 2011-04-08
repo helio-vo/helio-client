@@ -1,12 +1,20 @@
 package eu.heliovo.clientapi.registry.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
@@ -27,9 +35,21 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	 * The logger for this registry impl
 	 */
 	private static final Logger _LOGGER = Logger.getLogger(StaticHelioRegistryImpl.class);
+
+	/**
+	 * Name of the serialized registry.
+	 */
+    private static final String REGISTRY_FILE = "static_registry.properties";
 	
+    /**
+     * The instance of this registry
+     */
 	private static StaticHelioRegistryImpl instance = null;
 	
+	/**
+	 * Get the singleton instance of this registry.
+	 * @return the singleton instance
+	 */
 	public synchronized static StaticHelioRegistryImpl getInstance() {
 		if (instance == null) {
 			instance = new StaticHelioRegistryImpl();
@@ -48,23 +68,100 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 	 * Init the registry with current values.
 	 */
 	private void init() {
-		register(LongRunningServiceDescriptor.ASYNC_HEC, "http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService?wsdl");
-		register(SyncServiceDescriptor.SYNC_HEC, "http://festung1.oats.inaf.it:8080/helio-hec/HelioService?wsdl");
-		
-		register(LongRunningServiceDescriptor.ASYNC_UOC, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioLongQueryService?wsdl");
-		register(SyncServiceDescriptor.SYNC_UOC, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioService?wsdl");
-		
-		register(LongRunningServiceDescriptor.ASYNC_DPAS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
-		register(SyncServiceDescriptor.SYNC_DPAS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioService?wsdl");
-		
-		register(LongRunningServiceDescriptor.ASYNC_ICS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioLongQueryService?wsdl");
-		register(SyncServiceDescriptor.SYNC_ICS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioService?wsdl");
-		
-		register(LongRunningServiceDescriptor.ASYNC_ILS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioLongQueryService?wsdl");
-		register(SyncServiceDescriptor.SYNC_ILS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioService?wsdl");
-		
-		register(LongRunningServiceDescriptor.ASYNC_MDES, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService.wsdl");		
-		register(SyncServiceDescriptor.SYNC_MDES, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioService.wsdl");		
+	    // check if config exists
+	    File registryDir = HelioFileUtil.getHelioHomeDir("registry");
+	    File registryFile = new File(registryDir, REGISTRY_FILE);
+	    
+	    // read config from stored file
+	    if (registryFile.exists())  {
+	        _LOGGER.info("Reading from service registry at " + registryFile.getAbsolutePath());
+	        FileInputStream is = null;
+            try {
+                is = FileUtils.openInputStream(registryFile);
+           
+                Properties props = new Properties();
+                props.load(is);
+                
+                for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                    HelioServiceDescriptor desc;
+                    String key = (String)entry.getKey();
+                    String value = (String)entry.getValue();
+                    if (key.startsWith("LongRunningServiceDescriptor")) {
+                        desc = LongRunningServiceDescriptor.valueOf(key.substring("LongRunningServiceDescriptor.".length()));
+                    } else if (key.startsWith("SyncServiceDescriptor"))  {
+                        desc = SyncServiceDescriptor.valueOf(key.substring("SyncServiceDescriptor.".length()));
+                    } else {
+                        throw new RuntimeException("Unknown service descriptor found: " + key);
+                    }
+                    String[] wsdlFiles = value.split(",");
+                    register(desc, wsdlFiles);
+                }
+                
+                if (instanceDescriptors.isEmpty()) {
+                    _LOGGER.info("No data has been retrieved from " + registryFile.getAbsolutePath() + ". Trying to recreate the file.");
+                    File backup = new File(registryDir, REGISTRY_FILE + ".bak0");
+                    int i = 0;
+                    while (backup.exists() && i < 10) {
+                        backup = new File(backup.getAbsolutePath().replace(i-1 + "", i + ""));
+                        i++;
+                    }
+                    FileUtils.copyFile(registryFile, backup);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot load the registryFile " + registryFile + ": " + e.getMessage(), e);
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+	    }
+	    
+	    if (instanceDescriptors.isEmpty()) {
+	        _LOGGER.info("Storing service registry to " + registryFile.getAbsolutePath());
+	        
+	        // populate registry
+	        register(LongRunningServiceDescriptor.ASYNC_HEC, "http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService?wsdl");
+            register(SyncServiceDescriptor.SYNC_HEC, "http://festung1.oats.inaf.it:8080/helio-hec/HelioService?wsdl");
+            
+            register(LongRunningServiceDescriptor.ASYNC_UOC, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioLongQueryService?wsdl");
+            register(SyncServiceDescriptor.SYNC_UOC, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioService?wsdl");
+            
+            register(LongRunningServiceDescriptor.ASYNC_DPAS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
+            register(SyncServiceDescriptor.SYNC_DPAS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioService?wsdl");
+            
+            register(LongRunningServiceDescriptor.ASYNC_ICS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioLongQueryService?wsdl");
+            register(SyncServiceDescriptor.SYNC_ICS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioService?wsdl");
+            
+            register(LongRunningServiceDescriptor.ASYNC_ILS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioLongQueryService?wsdl");
+            register(SyncServiceDescriptor.SYNC_ILS, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioService?wsdl");
+            
+            register(LongRunningServiceDescriptor.ASYNC_MDES, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService.wsdl");      
+            register(SyncServiceDescriptor.SYNC_MDES, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioService.wsdl");       
+
+            // and serialize to registry file
+            FileOutputStream os = null;
+            Properties props = new Properties();
+            for (Entry<HelioServiceDescriptor, Set<HelioServiceInstanceDescriptor>> entry : instanceDescriptors.entrySet()) {
+                StringBuilder urls = new StringBuilder();
+                Set<HelioServiceInstanceDescriptor> instanceDescs = entry.getValue();
+                boolean first = true;
+                for (HelioServiceInstanceDescriptor desc : instanceDescs) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        urls.append(",");
+                    }
+                    urls.append(desc.getWsdlFile());
+                }
+                props.put(entry.getKey().getClass().getSimpleName() + "." + entry.getKey().toString(), urls.toString());
+            }
+            try {
+                os = FileUtils.openOutputStream(registryFile);
+                props.store(os, "Static registry created by " + StaticHelioRegistryImpl.class.getName());
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to write registry file " + registryFile);
+            } finally {
+                IOUtils.closeQuietly(os);
+            }
+	    }
 	}
 
 	/**
@@ -236,10 +333,11 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 
 	/**
 	 * Descriptor of a concrete instance of a service.
+	 * Do not instanciate this class outside of {@link StaticHelioRegistryImpl}. It's public for the XMLEncoder
 	 * @author MarcoSoldati
 	 *
 	 */
-	private class HelioServiceInstanceDescriptor {
+	private static class HelioServiceInstanceDescriptor {
 		/**
 		 * The assigned service descriptor
 		 */
@@ -250,13 +348,14 @@ public class StaticHelioRegistryImpl implements HelioServiceRegistry {
 		 */
 		private final URL wsdlFile;
 		
+		
 		public HelioServiceInstanceDescriptor(HelioServiceDescriptor serviceDescriptor, URL wsdlFile) {
 			AssertUtil.assertArgumentNotNull(serviceDescriptor, "serviceDescriptor");
 			AssertUtil.assertArgumentNotNull(wsdlFile, "wsdlFile");
 			this.serviceDescriptor = serviceDescriptor;
 			this.wsdlFile = wsdlFile;
 		}
-
+		
 		/**
 		 * Get the descriptor of the service.
 		 * @return the service descriptor.
