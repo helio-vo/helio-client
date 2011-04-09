@@ -465,7 +465,7 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 			case UNKNOWN:
 				throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue.");
 			case PENDING:
-				throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time: " + MessageUtils.formatSeconds(timeout));
+				throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time: " + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)));
 			case COMPLETED:
 				// just continue
 				break;
