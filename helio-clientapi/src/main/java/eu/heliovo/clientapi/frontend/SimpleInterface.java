@@ -31,7 +31,8 @@ public class SimpleInterface {
 	/**
 	 * which service type shall we use.
 	 */
-	private static final HelioServiceType SERVICE_TYPE = HelioServiceType.LONGRUNNING_QUERY_SERVICE;
+	//private static final HelioServiceType SERVICE_TYPE = HelioServiceType.LONGRUNNING_QUERY_SERVICE;
+	private static final HelioServiceType SERVICE_TYPE =  HelioServiceType.SYNC_QUERY_SERVICE;
 	
 	/**
 	 * The registry used to lookup the service
