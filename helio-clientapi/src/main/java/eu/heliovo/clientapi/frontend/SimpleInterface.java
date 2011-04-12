@@ -56,7 +56,7 @@ public class SimpleInterface {
 		int maxrecords = 1000;
 		int startindex = 0;
 		// timeout to wait for a response
-		int timeout = 30;
+		int timeout = 300;
 		HelioServiceType serviceType = SERVICE_TYPE;
 		
 		if (serviceName.equalsIgnoreCase("DPAS")) {
@@ -65,7 +65,7 @@ public class SimpleInterface {
 			startTime = normalizeList(numberOfFromSingles, startTime);
 			endTime = normalizeList(numberOfFromSingles, endTime);
 			from = normalizeList(numberOfDatePairs, from);
-			timeout = 49;
+			timeout = 300;
 		} else if (serviceName.equalsIgnoreCase("HEC")) {
 			serviceType = HelioServiceType.SYNC_QUERY_SERVICE;
 		}
