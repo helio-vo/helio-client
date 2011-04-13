@@ -31,7 +31,7 @@ public class SimpleInterface {
 	/**
 	 * which service type shall we use.
 	 */
-	private static final HelioServiceType SERVICE_TYPE = HelioServiceType.LONGRUNNING_QUERY_SERVICE;
+	private static final HelioServiceType SERVICE_TYPE = HelioServiceType.SYNC_QUERY_SERVICE;
 	
 	/**
 	 * The registry used to lookup the service
@@ -56,19 +56,17 @@ public class SimpleInterface {
 		int maxrecords = 1000;
 		int startindex = 0;
 		// timeout to wait for a response
-		int timeout = 30;
+		int timeout = 300;
 		HelioServiceType serviceType = SERVICE_TYPE;
 		
-		if (serviceName.equalsIgnoreCase("DPAS")) {
-			int numberOfDatePairs = startTime.size();
-			int numberOfFromSingles = from.size();
-			startTime = normalizeList(numberOfFromSingles, startTime);
-			endTime = normalizeList(numberOfFromSingles, endTime);
-			from = normalizeList(numberOfDatePairs, from);
-			timeout = 49;
-		} else if (serviceName.equalsIgnoreCase("HEC")) {
-			serviceType = HelioServiceType.SYNC_QUERY_SERVICE;
-		}
+		//if (serviceName.equalsIgnoreCase("DPAS")) {
+		// normalize all lists
+		int sizeOfTime = startTime.size();
+		int sizeOfFrom = from.size();
+		startTime = normalizeList(sizeOfFrom, startTime);
+		endTime = normalizeList(sizeOfFrom, endTime);
+		from = normalizeList(sizeOfTime, from);
+		//}
 		
 		HelioQueryService service;
 		if (serviceType == HelioServiceType.LONGRUNNING_QUERY_SERVICE) {
