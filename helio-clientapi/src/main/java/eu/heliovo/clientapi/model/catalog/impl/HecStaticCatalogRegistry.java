@@ -5,9 +5,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,8 +20,16 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import net.ivoa.xml.votable.v1.DATA;
+import net.ivoa.xml.votable.v1.FIELD;
+import net.ivoa.xml.votable.v1.RESOURCE;
+import net.ivoa.xml.votable.v1.TABLE;
+import net.ivoa.xml.votable.v1.TABLEDATA;
+import net.ivoa.xml.votable.v1.TD;
+import net.ivoa.xml.votable.v1.TR;
 import net.ivoa.xml.votable.v1.VOTABLE;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -183,7 +195,55 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 			throw new RuntimeException("Unable to initialize registry: " + e.getMessage(), e);
 		}
 		
-		VOTABLE hecCatalogs = getHecCatalogs();
+//		VOTABLE hecCatalogs = getHecCatalogs();
+		VOTABLE hecCatalogs = null;
+		if (hecCatalogs != null ) {
+    		Set<String> catalogNames = new HashSet<String>();
+    		
+    		List<RESOURCE> resources = hecCatalogs.getRESOURCE();
+    		for (RESOURCE resource : resources) {
+                List<TABLE> tables = resource.getTABLE();
+                for (TABLE table : tables) {
+                    
+                    // extract the position of hte table name field
+                    List<Object> fields = table.getFIELDOrPARAMOrGROUP();
+                    int rowpos = 0;
+                    for (Object fieldOrGroup : fields) {
+                        if (fieldOrGroup instanceof FIELD) {
+                            FIELD field = (FIELD)(fieldOrGroup);
+                            if ("table_name".equals(field.getName())) {
+                                break;
+                            }
+                        }
+                        rowpos++;
+                    }
+                    if (rowpos < fields.size()) {
+                        DATA data = table.getDATA();
+                        TABLEDATA tableData = data.getTABLEDATA();
+                        List<TR> rows = tableData.getTR();
+                        for (TR row : rows) {
+                            TD cell = row.getTD().get(rowpos);
+                            catalogNames.add(cell.getValue());
+                        }
+                    }
+                }
+            }
+    		
+    		//System.out.println(catalogNames);
+    		//System.out.println(catalogNames.size() + ", " + helioCatalogMap.size());
+    		
+    		Set<String> toRemove = new HashSet<String>();
+    		for (String catName : helioCatalogMap.keySet()) {
+    		    if (catalogNames.contains(catName)) {
+    		        catalogNames.remove(catName);
+    		    } else {
+    		        toRemove.add(catName);		        
+    		    }
+            }
+    		//System.out.println("toRemove: " + toRemove);
+    		//System.out.println("not defined: " + catalogNames);
+        }
+		
 	}
 
 	private String getTextContent(Element fieldElement, String tagName) {
@@ -214,36 +274,39 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 		VOTABLE votable;
 		try {
 			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService(SyncServiceDescriptor.SYNC_HEC);
-			HelioQueryResult result = hec.timeQuery("2008-01-10T00:00:00", "2008-11-10T23:59:59", "catalogues", 0, 0);
+			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {
+		    _LOGGER.warn("Unable to load hec catalogues from remote: " + e.getMessage(), e);
 			votable = null;
 		}
 		
 		if (cacheFile != null) {
 			if (votable != null) {
 				// cache VOTable
-				FileWriter fileWriter;
+				FileWriter fileWriter = null;
 				try {
 					fileWriter = new FileWriter(cacheFile);
 					VOTableUtils.getInstance().voTable2Writer(votable, fileWriter, false);
 				} catch (IOException e) {
 					_LOGGER.warn("Unable to cache '" + cacheFile + "': " + e.getMessage(), e); 
+				} finally {
+				    IOUtils.closeQuietly(fileWriter);
 				}
 			} else {
 				// try to read from cache
+			    FileReader  reader = null;
 				try {
-					FileReader reader = new FileReader(cacheFile);
+					reader = new FileReader(cacheFile);
 					votable = VOTableUtils.getInstance().reader2VoTable(reader);
 				} catch (Exception e) {
 					_LOGGER.warn("Unable to load hec_catalogs.xml from cache: " + e.getMessage(), e);
+				} finally {
+				    IOUtils.closeQuietly(reader);
 				}
 			}
 		}
 		
-		if (votable == null ) {
-			throw new RuntimeException("Unable to load hec_catalogs.xml from remote or cache.");
-		}
 		return votable;
 	}
 
