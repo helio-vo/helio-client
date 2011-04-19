@@ -3,6 +3,8 @@ package eu.heliovo.clientapi.query.paramquery.serialize;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.core.convert.ConversionService;
+
 import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 
@@ -30,12 +32,12 @@ public class PQLSerializer implements QuerySerializer {
 	/**
 	 * template for &gt;=
 	 */
-	private static final String GREATER_EQUAL_THAN_TEMPLATE = "51$s/";
+	private static final String GREATER_EQUAL_THAN_TEMPLATE = "%1$s/";
 	
 	/**
 	 * Template for LIKE constructs
 	 */
-	private static final String LIKE_TEMPLATE = "*51$s*";
+	private static final String LIKE_TEMPLATE = "*%1$s*";
 
 	/**
 	 * Template for between constructs
@@ -57,6 +59,12 @@ public class PQLSerializer implements QuerySerializer {
 	 * Separator between two parameters
 	 */
 	private static final String PARAMETER_SEPARATOR = "&";
+	
+    /**
+     * Hold the conversion service for data type conversion.
+     */
+    protected ConversionService conversionService;
+    
 
 	@Override
 	public String getWhereClause(List<ParamQueryTerm<?>> paramQueryTerms) throws QuerySerializationException {
@@ -66,7 +74,6 @@ public class PQLSerializer implements QuerySerializer {
 		
 		// iterate over the terms
 		for (ParamQueryTerm<?> term : paramQueryTerms) {
-			System.out.println("term " + term);
 			try {
 				if (sb.length() > 0) {
 					sb.append(PARAMETER_SEPARATOR);
@@ -149,9 +156,9 @@ public class PQLSerializer implements QuerySerializer {
 				// prepend OR
 				sb.append(OR_SYMBOL);
 			}
-			sb.append(String.format(template, args[i]));
+			sb.append(String.format(template, convertToString(args[i])));
 		}
-		return String.format(ASSIGN_TEMPLATE, paramName, encodeURLPart(sb.toString()));
+		return String.format(ASSIGN_TEMPLATE, paramName, sb.toString());
 	}
 	
 	/**
@@ -176,21 +183,23 @@ public class PQLSerializer implements QuerySerializer {
 				// prepend OR
 				value.append(OR_SYMBOL);
 			}
-			value.append(String.format(template, argArray1[i], argArray2[i]));
+			value.append(String.format(template, convertToString(argArray1[i]), convertToString(argArray2[i])));
 		}
-		return String.format(ASSIGN_TEMPLATE, paramName, encodeURLPart(value.toString()));
+		return String.format(ASSIGN_TEMPLATE, paramName, value.toString());
 	}
 	
 	/**
-	 * Encode a part of the URL.
-	 * @param urlPart the url part.
-	 * @return the encoded url part.
+	 * Convert a value to a string and encode as URL part.
+	 * @param value the value to convert. Will be converted to a string.
+	 * @return the encoded value.
 	 */
-	private String encodeURLPart(String urlPart) {
+	private String convertToString(Object value) {
+	    String stringValue =  conversionService.convert(value, String.class);
+	    
 		StringBuilder uri = new StringBuilder(); // Encoded URL
 
-		for(int i = 0; i < urlPart.length(); i++) {
-			char c = urlPart.charAt(i);
+		for(int i = 0; i < stringValue.length(); i++) {
+			char c = stringValue.charAt(i);
 			if((c >= '0' && c <= '9') || 
 			   (c >= 'a' && c <= 'z') ||
 			   (c >= 'A' && c <= 'Z') ||
@@ -212,4 +221,20 @@ public class PQLSerializer implements QuerySerializer {
 		}
 		return uri.toString();
 	}
+
+	/**
+	 * Get the conversion service to convert object from one type to another.
+	 * @return the conversion service
+	 */
+    public ConversionService getConversionService() {
+        return conversionService;
+    }
+
+    /**
+     * Set the conversion service to convert objects from one type to another.
+     * @param conversionService the conversion service
+     */
+    public void setConversionService(ConversionService conversionService) {
+        this.conversionService = conversionService;
+    }
 }
