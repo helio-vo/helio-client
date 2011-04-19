@@ -3,7 +3,8 @@
   <parent>
     <artifactId>heliovo</artifactId>
     <groupId>eu.heliovo</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>eu.heliovo</groupId>
   <artifactId>helio-client</artifactId>

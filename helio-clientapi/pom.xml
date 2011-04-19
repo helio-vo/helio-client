@@ -5,6 +5,7 @@
     <artifactId>helio-client</artifactId>
     <groupId>eu.heliovo</groupId>
     <version>0.4-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.heliovo</groupId>
@@ -24,7 +25,7 @@
   	<dependency>
   		<groupId>eu.heliovo</groupId>
   		<artifactId>helio-shared</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.4-SNAPSHOT</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
