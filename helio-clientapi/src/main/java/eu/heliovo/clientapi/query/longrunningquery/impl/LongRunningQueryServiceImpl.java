@@ -156,7 +156,7 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 		
 		if (startTime.size() > 1 && from.size() > 1 && startTime.size() != from.size()) {
-			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from);
+			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from.size());
 		}
 		
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
@@ -232,7 +232,7 @@ class LongRunningQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 		
 		if (startTime.size() > 1 && from.size() > 1 && startTime.size() != from.size()) {
-			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from);
+			throw new IllegalArgumentException("Either 'startTime/endTime' or 'from' must have size 1 or all must have equal size, but got " + startTime.size() + "!=" + from.size());
 		}
 
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
