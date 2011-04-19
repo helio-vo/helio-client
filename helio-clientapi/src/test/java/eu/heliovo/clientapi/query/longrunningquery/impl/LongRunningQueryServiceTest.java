@@ -29,7 +29,7 @@ public class LongRunningQueryServiceTest {
 		assertNotNull(service.getName());
 		assertNotNull(service.getDescription());
 		
-		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), null, 100, 0, null, null);
+		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), null, 100, 0, null);
 		
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.PENDING, result.getPhase());
@@ -59,6 +59,10 @@ public class LongRunningQueryServiceTest {
 			// we're fine
 		}
 		
+		// test variations of time query
+        result = service.query("2003-02-01T00:00:00", "2003-02-10T00:00:00", "instrument", null, 100, 0, null, null);
+        assertEquals(Phase.COMPLETED, result.getPhase());
+        
 		assertNotNull(result.toString());
 	}
 	
@@ -71,7 +75,7 @@ public class LongRunningQueryServiceTest {
 		assertNotNull(service.getName());
 		assertNotNull(service.getDescription());
 		
-		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0);
 		
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.PENDING, result.getPhase());
@@ -102,6 +106,9 @@ public class LongRunningQueryServiceTest {
 		}
 		
 		assertNotNull(result.toString());
+		
+	    result = service.timeQuery("2003-02-01T00:00:00", "2003-02-10T00:00:00", "instrument", 100, 0);
+
 	}
 	
 	/**
