@@ -1,7 +1,7 @@
 package eu.heliovo.clientapi.query.paramquery.impl;
 
-import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
-import eu.heliovo.clientapi.model.catalog.impl.HecStaticCatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
+import eu.heliovo.clientapi.model.catalog.impl.HelioCatalogDaoFactory;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.longrunningquery.impl.LongRunningQueryServiceFactory;
 /**
@@ -11,10 +11,10 @@ import eu.heliovo.clientapi.query.longrunningquery.impl.LongRunningQueryServiceF
 public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 
 	/**
-	 * Keep a reference to the HecCatalogRegistry
+	 * Keep a reference to the hecDao
 	 */
-	private CatalogRegistry catalogRegistry = HecStaticCatalogRegistry.getInstance();
-	
+	private HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("hec");;
+
 	/**
 	 * Reference to the query service factory.
 	 */
@@ -40,10 +40,10 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	@Override
 	public HelioField<?>[] getFieldDescriptions(String catalog) throws IllegalArgumentException {
 		if (catalog == null) {
-			return new HelioField[] {catalogRegistry.getCatalogField()};
+			return new HelioField[] {hecDao.getCatalogField()};
 		}
 		
-		HelioField<?>[] helioFields = catalogRegistry.getFields(catalog);
+		HelioField<?>[] helioFields = hecDao.getFields(catalog);
 		return helioFields;
 	}		
 }

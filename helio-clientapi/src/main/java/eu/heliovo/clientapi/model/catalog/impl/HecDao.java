@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -37,8 +36,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import eu.heliovo.clientapi.frontend.SimpleInterface;
-import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldType;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
@@ -52,40 +51,28 @@ import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
- * Registry that holds the configuration of the HEC catalogs. The insert order
- * of the catalogs is preserved. The registry guarantees that these catalogs are
- * returned in the same sort order.
+ * Dao to access the configuration of the HEC catalogs. The insert order
+ * of the catalogs is preserved. The dao guarantees that these catalogs are
+ * returned in the same order.
  * 
  * @author marco soldati at fhnw ch
  * 
  */
-public class HecStaticCatalogRegistry implements CatalogRegistry {
+class HecDao implements HelioCatalogDao {
 	/**
 	 * Name of the default catalog
 	 */
 	private static final String DEFAULT_CATALOG_NAME = "goes_sxr_flare";
 
 	/**
-	 * The logger to use.
+	 * Name of the service
 	 */
-	private static final Logger _LOGGER = Logger.getLogger(HecStaticCatalogRegistry.class); 
+	private static final String SERVICE_NAME = "hec";
 	
 	/**
-	 * The registry instance
+	 * The logger to use.
 	 */
-	private static CatalogRegistry instance;
-
-	/**
-	 * Get the singleton instance of the catalog registry
-	 * 
-	 * @return
-	 */
-	public static synchronized CatalogRegistry getInstance() {
-		if (instance == null) {
-			instance = new HecStaticCatalogRegistry();
-		}
-		return instance;
-	}
+	private static final Logger _LOGGER = Logger.getLogger(HecDao.class);
 
 	/**
 	 * Location of the HEC lists.
@@ -114,9 +101,9 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	private FieldTypeRegistry fieldTypeRegistry = FieldTypeRegistry.getInstance();
 
 	/**
-	 * Populate the registry
+	 * Populate the underlying registry
 	 */
-	private HecStaticCatalogRegistry() {
+	public HecDao() {
 		DocumentBuilder docBuilder;
 		try {
 			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -195,8 +182,8 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 			throw new RuntimeException("Unable to initialize registry: " + e.getMessage(), e);
 		}
 		
-//		VOTABLE hecCatalogs = getHecCatalogs();
-		VOTABLE hecCatalogs = null;
+		VOTABLE hecCatalogs = getHecCatalogs();
+//		VOTABLE hecCatalogs = null;
 		if (hecCatalogs != null ) {
     		Set<String> catalogNames = new HashSet<String>();
     		
@@ -387,5 +374,10 @@ public class HecStaticCatalogRegistry implements CatalogRegistry {
 	public HelioCatalog getCatalogById(String catalogId) {
 		AssertUtil.assertArgumentHasText(catalogId, "catalogId");
 		return helioCatalogMap.get(catalogId);
+	}
+	
+	@Override
+	public String getServiceName() {
+	    return SERVICE_NAME;
 	}
 }

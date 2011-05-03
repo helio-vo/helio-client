@@ -3,15 +3,14 @@ package eu.heliovo.clientapi.model.catalog;
 import eu.heliovo.clientapi.model.field.HelioField;
 
 /**
- * Registry that holds the catalogs of one catalog service.
+ * A data access object to access the catalogs of one catalog service.
  * @author marco soldati at fhnw ch
  *
  */
-public interface CatalogRegistry {
+public interface HelioCatalogDao {
 
 	/**
 	 * Get the Field that describes the available catalogs. The catalogs are available through {@link HelioField#getValueDomain()}.
-	 * The order of the value domain is defined by the insertion time of catalogs into the registry.
 	 * @return catalog field.
 	 */
 	public abstract HelioField<String> getCatalogField();
@@ -31,4 +30,9 @@ public interface CatalogRegistry {
 	 */
 	public abstract HelioCatalog getCatalogById(String catalogId);
 
+	/**
+	 * The name of the parent service that provides the catalogs.
+	 * @return the name of the parent service.
+	 */
+	public abstract String getServiceName();
 }

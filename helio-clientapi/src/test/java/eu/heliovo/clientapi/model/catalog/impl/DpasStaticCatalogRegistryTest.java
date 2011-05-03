@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
@@ -25,8 +25,8 @@ public class DpasStaticCatalogRegistryTest {
 	 */
 	@Test
 	public void testGetCatalogField() {
-		CatalogRegistry registry = DpasStaticCatalogRegistry.getInstance();
-		HelioField<String> catalogField = registry.getCatalogField();
+		HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("dpas");;
+		HelioField<String> catalogField = dpasDao.getCatalogField();
 
 		assertEquals("dpas_catalog", catalogField.getId());
 		assertEquals("catalog", catalogField.getName());
@@ -38,9 +38,9 @@ public class DpasStaticCatalogRegistryTest {
 	}
 
 	@Test public void test() {
-		CatalogRegistry registry = DpasStaticCatalogRegistry.getInstance();
-		for (DomainValueDescriptor<String> c : registry.getCatalogField().getValueDomain()) {
-			for (HelioField<?> hf : registry.getFields(c.getValue())) {
+	    HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("dpas");;
+		for (DomainValueDescriptor<String> c : dpasDao.getCatalogField().getValueDomain()) {
+			for (HelioField<?> hf : dpasDao.getFields(c.getValue())) {
 				assertNotNull(hf);
 				if (hf.getValueDomain() != null) {
 				System.out.println(Arrays.toString(hf.getValueDomain()));

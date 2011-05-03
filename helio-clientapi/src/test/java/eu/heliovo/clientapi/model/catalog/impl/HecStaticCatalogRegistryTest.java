@@ -6,8 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
-import eu.heliovo.clientapi.model.catalog.impl.HecStaticCatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
@@ -24,8 +23,8 @@ public class HecStaticCatalogRegistryTest {
 	 */
 	@Test
 	public void testGetCatalogField() {
-		CatalogRegistry registry = HecStaticCatalogRegistry.getInstance();
-		HelioField<String> catalogField = registry.getCatalogField();
+	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("hec");;
+		HelioField<String> catalogField = hecDao.getCatalogField();
 
 		assertEquals("hec_catalog", catalogField.getId());
 		assertEquals("catalog", catalogField.getName());
@@ -37,9 +36,9 @@ public class HecStaticCatalogRegistryTest {
 	}
 
 	@Test public void test() {
-		CatalogRegistry registry = HecStaticCatalogRegistry.getInstance();
-		for (DomainValueDescriptor<String> c : registry.getCatalogField().getValueDomain()) {
-			for (HelioField<?> hf : registry.getFields(c.getValue())) {
+	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("hec");;
+		for (DomainValueDescriptor<String> c : hecDao.getCatalogField().getValueDomain()) {
+			for (HelioField<?> hf : hecDao.getFields(c.getValue())) {
 				assertNotNull(hf);
 			}
 		}

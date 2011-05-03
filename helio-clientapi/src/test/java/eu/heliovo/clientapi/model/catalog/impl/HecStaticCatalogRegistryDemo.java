@@ -1,21 +1,18 @@
 package eu.heliovo.clientapi.model.catalog.impl;
 
-import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
-import eu.heliovo.clientapi.model.catalog.impl.HecStaticCatalogRegistry;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.HelioField;
 
 public class HecStaticCatalogRegistryDemo {
 
-	public static void main (String[] args)
-	{
-	  CatalogRegistry reg=HecStaticCatalogRegistry.getInstance();
-	  
-	  for(DomainValueDescriptor<String> c:reg.getCatalogField().getValueDomain())
-	  {
-	    System.out.println(c.getValue());
-	    for(HelioField<?> hf:reg.getFields(c.getValue()))
-	      System.out.println("    "+hf.getId());
-	  }
-	}
+    public static void main(String[] args) {
+        HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("hec");
+        
+        for (DomainValueDescriptor<String> c : hecDao.getCatalogField().getValueDomain()) {
+            System.out.println(c.getValue());
+            for (HelioField<?> hf : hecDao.getFields(c.getValue()))
+                System.out.println("    " + hf.getId());
+        }
+    }
 }

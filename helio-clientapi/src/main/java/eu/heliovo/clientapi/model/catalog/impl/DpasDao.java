@@ -17,12 +17,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import eu.heliovo.clientapi.model.catalog.CatalogRegistry;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptorUtil;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
@@ -36,30 +37,18 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  * 
  */
-public class DpasStaticCatalogRegistry implements CatalogRegistry {
+class DpasDao implements HelioCatalogDao {
 	/**
 	 * The logger to use.
 	 */
 	@SuppressWarnings("unused")
-	private static final Logger _LOGGER = Logger.getLogger(DpasStaticCatalogRegistry.class); 
+	private static final Logger _LOGGER = Logger.getLogger(DpasDao.class);
+
+	/**
+	 * The name of the service
+	 */
+    private static final String SERVICE_NAME = "dpas"; 
 	
-	/**
-	 * The registry instance
-	 */
-	private static CatalogRegistry instance;
-
-	/**
-	 * Get the singleton instance of the catalog registry
-	 * 
-	 * @return
-	 */
-	public static synchronized CatalogRegistry getInstance() {
-		if (instance == null) {
-			instance = new DpasStaticCatalogRegistry();
-		}
-		return instance;
-	}
-
 	/**
 	 * Location of the instruments list.
 	 */
@@ -89,7 +78,7 @@ public class DpasStaticCatalogRegistry implements CatalogRegistry {
 	/**
 	 * Populate the registry
 	 */
-	private DpasStaticCatalogRegistry() {
+	public DpasDao() {
 		DocumentBuilder docBuilder;
 		try {
 			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -113,18 +102,18 @@ public class DpasStaticCatalogRegistry implements CatalogRegistry {
 			Map<String, String> instrumentsMap = new HashMap<String, String>();
 
 			// loop over the instruments.xsd
-//			Document dInstruments = docBuilder.parse(instrumentsSource);
-//			dInstruments.normalize();
-//			
-//			//NodeList lists = dInstruments.getChildNodes();
-//			NodeList lists = dInstruments.getElementsByTagName("enumeration");
-//			for (int i = 0; i < lists.getLength(); i++) {
-//				Element listElement = (Element) lists.item(i);
-//				String instrumentName = listElement.getAttribute("value");
-//				System.out.println(instrumentName);
-//				String instrumentLabel = getTextContent(listElement, "documentation");
-//				instrumentsMap.put(instrumentName, instrumentLabel);
-//			}
+			Document dInstruments = docBuilder.parse(instrumentsSource);
+			dInstruments.normalize();
+			
+			//NodeList lists = dInstruments.getChildNodes();
+			NodeList lists = dInstruments.getElementsByTagName("enumeration");
+			for (int i = 0; i < lists.getLength(); i++) {
+				Element listElement = (Element) lists.item(i);
+				String instrumentName = listElement.getAttribute("value");
+				//System.out.println(instrumentName);
+				String instrumentLabel = getTextContent(listElement, "documentation");
+				instrumentsMap.put(instrumentName, instrumentLabel);
+			}
 			
 			// now parse the pat table and create the instrument domain descriptor.
 			List<DomainValueDescriptor<String>> instrumentDomain = new ArrayList<DomainValueDescriptor<String>>();
@@ -241,5 +230,10 @@ public class DpasStaticCatalogRegistry implements CatalogRegistry {
 	public HelioCatalog getCatalogById(String catalogId) {
 		AssertUtil.assertArgumentHasText(catalogId, "catalogId");
 		return helioCatalogMap.get(catalogId);
+	}
+	
+	@Override
+	public String getServiceName() {
+	    return SERVICE_NAME;
 	}
 }
