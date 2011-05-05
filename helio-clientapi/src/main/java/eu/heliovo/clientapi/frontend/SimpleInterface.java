@@ -138,10 +138,6 @@ public class SimpleInterface {
 	  }
 
 	
-	public static String test(List<String> minDate, List<String> maxDate, List<String> from, String portAddress, String where) {
-		return "test: " + portAddress + " " + where;
-	}
-
 	// TODO: need to check if functionality will hold for propagation model
 	// usecase
 	private static List<String> normalizeList(int max, List<String> list) {
