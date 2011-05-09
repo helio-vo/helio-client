@@ -16,7 +16,8 @@ import uk.ac.starlink.votable.*;
  * Facade class of the STIL library. The library provides facilities to
  * - load VOTables from a variety of sources
  * - persist VOTables
- * - create views/subsets of VOTables 
+ * - create views/subsets of VOTables
+ * - concatenate multiple tables
  * 
  * @author SimonFelix
  */
@@ -31,7 +32,7 @@ public class STILUtils
   /**
    * The hibernate session factory
    */
-  private static final SessionFactory sessionFactory=new AnnotationConfiguration().configure().buildSessionFactory();
+  private static final SessionFactory sessionFactory=new AnnotationConfiguration().configure(STILUtils.class.getResource("/clientapi-hibernate.cfg.xml")).buildSessionFactory();
   
   
   static
@@ -48,97 +49,102 @@ public class STILUtils
   }
   
   
+  
+  private static int columnIndex(StarTable _table,String _columnName)
+  {
+    for(int i=0;i<_table.getColumnCount();i++)
+      if(_columnName.equals(_table.getColumnInfo(i).getName()))
+        return i;
+    return -1;
+  }
+  
   /**
    * Concatenates several tables into a single table. Identity of columns is determined by column name.
    * 
    * Please not that this method currently is not optimized and may exhibit very bad performance
    * when joining many or large tables.
    * 
-   * @param _onlyColumnsInBoth If true only columns are included that exist in all supplied tables
-   * @param _table Source tables
+   * @param _onlyColumnsInAll If true only columns are included that exist in all supplied tables
+   * @param _tables Source tables
    * @throws IOException
    * @return A single table with all the records of the supplied tables
    */
-  public static StarTable concatenate(boolean _onlyColumnsInBoth,StarTable... _table) throws IOException
+  public static StarTable concatenate(boolean _onlyColumnsInAll,StarTable... _tables) throws IOException
   {
-    if(_table.length==0)
+    if(_tables.length==0)
       return null;
+    if(_tables.length==1)
+      return _tables[0];
     
-    StarTable res=_table[0];
-    for(int i=1;i<_table.length;i++)
+    
+    long totalRows=0;
+    for(StarTable t:_tables)
+      totalRows+=t.getRowCount();
+    
+    ColumnStarTable res=ColumnStarTable.makeTableWithRows(totalRows);
+    
+    //PHASE 1: combine the columns of all tables
+    if(_onlyColumnsInAll)
+      /*
+       * for each column of the first table
+       *   check whether this column appears in all other tables
+       *   if it does --> add the column to the result table 
+       */
+      for(int i=0;i<_tables[0].getColumnCount();i++)
+      {
+        ColumnInfo curColumn=_tables[0].getColumnInfo(i);
+        
+        boolean containedInAllOtherTables=true;
+        for(int j=1;j<_tables.length;j++)
+          if(columnIndex(_tables[j],curColumn.getName())==-1)
+          {
+            containedInAllOtherTables=false;
+            break;
+          }
+        
+        if(containedInAllOtherTables)
+          res.addColumn(ArrayColumn.makeColumn(curColumn,totalRows));
+      }
+    else
     {
-      StarTable a=res;
-      StarTable b=_table[i];
-      long totalRows=a.getRowCount()+b.getRowCount();
-      
-      ColumnStarTable cst=ColumnStarTable.makeTableWithRows(totalRows);
-      
-      //PHASE 1: add the columns of a and b combined
-      if(_onlyColumnsInBoth)
+      //add all columns of each table if the column does not yet exist
+      //in the results table
+      for(StarTable t:_tables)
+        for(int i=0;i<t.getColumnCount();i++)
+        {
+          ColumnInfo colI=t.getColumnInfo(i);
+          if(columnIndex(res,colI.getName())==-1)
+            res.addColumn(ArrayColumn.makeColumn(colI,totalRows));
+        }
+    }
+    
+    
+    //PHASE 2: add all data to this new table
+    long offset=0;
+    for(StarTable t:_tables)
+    {
+      for(int i=0;i<res.getColumnCount();i++)
       {
-        //add equal columns in o(n^2)
-        for(int j=0;j<a.getColumnCount();j++)
-        {
-          ColumnInfo colJ=a.getColumnInfo(j);
-          for(int k=0;k<b.getColumnCount();k++)
-          {
-            ColumnInfo colK=b.getColumnInfo(k);
-            
-            if(colJ.getName().equals(colK.getName()))
-              cst.addColumn(ArrayColumn.makeColumn(colJ,totalRows));
-          }
-        }
-      }
-      else
-      {
-        Set<String> columns=new HashSet<String>();
-        
-        //add all columns of table a
-        for(int j=0;j<a.getColumnCount();j++)
-        {
-          ColumnInfo colJ=a.getColumnInfo(j);
-          cst.addColumn(ArrayColumn.makeColumn(colJ,totalRows));
-          columns.add(colJ.getName());
-        }
-        
-        //add not yet included columns of table b
-        for(int j=0;j<b.getColumnCount();j++)
-        {
-          ColumnInfo colJ=b.getColumnInfo(j);
-          if(!columns.contains(colJ.getName()))
-          {
-            cst.addColumn(ArrayColumn.makeColumn(colJ,totalRows));
-            columns.add(colJ.getName());
-          }
-        }
+        int colSrc=columnIndex(t,res.getColumnInfo(i).getName());
+        if(colSrc==-1)
+          /*
+           * if current table does not contain a column with the
+           * desired name, just set all cells to NULL instead
+           */
+          for(int row=0;row<t.getRowCount();row++)
+            res.setCell(offset+row,i,null);
+        else
+          /*
+           * otherwise, copy all contents from the current table
+           * to the result-table
+           */
+          for(int row=0;row<t.getRowCount();row++)
+            res.setCell(offset+row,i,t.getCell(row,colSrc));
       }
       
-      //PHASE 2: add all data to this new table
-      for(int j=0;j<cst.getColumnCount();j++)
-      {
-        ColumnInfo colJ=cst.getColumnInfo(j);
-        for(int row=0;row<totalRows;row++)
-          cst.setCell(row,j,null);
-        
-        for(int k=0;k<a.getColumnCount();k++)
-          if(a.getColumnInfo(k).getName().equals(colJ.getName()))
-          {
-            for(int row=0;row<a.getRowCount();row++)
-              cst.setCell(row,j,a.getCell(row,k));
-            break;
-          }
-        
-        for(int k=0;k<b.getColumnCount();k++)
-          if(b.getColumnInfo(k).getName().equals(colJ.getName()))
-          {
-            long rowOffset=a.getRowCount();
-            for(int row=0;row<b.getRowCount();row++)
-              cst.setCell(row+rowOffset,j,b.getCell(row,k));
-            break;
-          }
-      }
-      
-      res=cst;
+      //move offset so that the next table will be written in
+      //the rows below the current table
+      offset+=t.getRowCount();
     }
     
     return res;

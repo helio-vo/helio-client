@@ -107,6 +107,12 @@
       <artifactId>ejb3-persistence</artifactId>
       <version>3.3.2.Beta1</version>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.5.8</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <dependencyManagement>
   	<dependencies>
