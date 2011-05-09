@@ -42,6 +42,16 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+        <groupId>starlink</groupId>
+        <artifactId>registryclient</artifactId>
+        <version>1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>ivoaregistry</groupId>
+        <artifactId>ivoaregistry</artifactId>
+        <version>1.0</version>
+    </dependency>
   	<dependency>
   		<groupId>commons-io</groupId>
   		<artifactId>commons-io</artifactId>
@@ -49,10 +59,6 @@
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
-    
-    
-    
-    
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
@@ -101,12 +107,6 @@
       <artifactId>ejb3-persistence</artifactId>
       <version>3.3.2.Beta1</version>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.5.8</version>
-    </dependency>
-        
   </dependencies>
   <dependencyManagement>
   	<dependencies>
