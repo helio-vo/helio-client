@@ -11,7 +11,7 @@ import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
 
-public class HecStaticCatalogRegistryTest {
+public class HecCatalogDaoTest {
 
 	/**
 	 * The field type registry to use

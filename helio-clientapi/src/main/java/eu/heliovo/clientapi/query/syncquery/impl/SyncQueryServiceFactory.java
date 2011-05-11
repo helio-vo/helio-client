@@ -9,9 +9,10 @@ import org.apache.log4j.Logger;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.HelioServiceRegistry;
-import eu.heliovo.clientapi.registry.HelioServiceType;
-import eu.heliovo.clientapi.registry.impl.StaticHelioRegistryImpl;
+import eu.heliovo.clientapi.registry.HelioServiceRegistryDao;
+import eu.heliovo.clientapi.registry.HelioServiceCapability;
+import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.clientapi.registry.impl.LocalHelioServiceRegistryDao;
 
 /**
  * Factory to get instances of the SyncQueryService.
@@ -45,19 +46,25 @@ public class SyncQueryServiceFactory {
 	/**
 	 * the service registry bean.
 	 */
-	private HelioServiceRegistry serviceRegistry = StaticHelioRegistryImpl.getInstance();
+	private HelioServiceRegistryDao serviceRegistry = LocalHelioServiceRegistryDao.getInstance();
 	
 	/**
 	 * Get a new instance of the "best" service provider for a given descriptor
 	 * @param serviceDescriptor the service descriptor to use
 	 * @return a {@link SyncQueryService} implementation to send out queries to this service.
 	 */
-	public HelioQueryService getSyncQueryService(HelioServiceDescriptor serviceDescriptor) {
-		if (serviceDescriptor.getType() != HelioServiceType.SYNC_QUERY_SERVICE) {
-			throw new IllegalArgumentException("serviceDescriptor should be of type " + HelioServiceType.SYNC_QUERY_SERVICE + ", but is " + serviceDescriptor.getType() + ": " + serviceDescriptor);
+	public HelioQueryService getSyncQueryService(String serviceName) {
+	    
+	    HelioServiceDescriptor serviceDescriptor = serviceRegistry.getServiceDescriptor(serviceName);
+	    if (serviceDescriptor == null) {
+	        throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
+	    }
+	    
+	    URL bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor, HelioServiceCapability.SYNC_QUERY_SERVICE);
+	    if (bestWsdlLocation == null) {
+			throw new IllegalArgumentException("Unable to find any endpoint for service " + serviceName + " and capabilty " + HelioServiceCapability.SYNC_QUERY_SERVICE);
 		}
 		
-		URL bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor);
 		_LOGGER.info("Using service at: " + bestWsdlLocation);
 		SyncQueryServiceImpl queryService = serviceImplCache.get(bestWsdlLocation);
 		if (queryService == null) {

@@ -3,7 +3,7 @@ package eu.heliovo.clientapi.query.paramquery.impl;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.catalog.impl.HelioCatalogDaoFactory;
 import eu.heliovo.clientapi.model.field.HelioField;
-import eu.heliovo.clientapi.query.longrunningquery.impl.LongRunningQueryServiceFactory;
+import eu.heliovo.clientapi.query.longrunningquery.impl.AsyncQueryServiceFactory;
 /**
  * Default implementation of the param query for the HEC service. 
  * @author marco soldati at fhnw ch 
@@ -18,7 +18,7 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	/**
 	 * Reference to the query service factory.
 	 */
-	private static LongRunningQueryServiceFactory queryServiceFactory = LongRunningQueryServiceFactory.getInstance();
+	private static AsyncQueryServiceFactory queryServiceFactory = AsyncQueryServiceFactory.getInstance();
 	
 	/**
 	 * Create a mock implementation of the DPAS.

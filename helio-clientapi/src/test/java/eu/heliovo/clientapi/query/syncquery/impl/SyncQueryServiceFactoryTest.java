@@ -11,8 +11,9 @@ import org.junit.Test;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.HelioServiceType;
-import eu.heliovo.clientapi.registry.impl.StaticHelioRegistryImpl;
+import eu.heliovo.clientapi.registry.HelioServiceCapability;
+import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.clientapi.registry.impl.LocalHelioServiceRegistryDao;
 
 /**
  * Test {@link SyncQueryServiceFactory}
@@ -26,7 +27,7 @@ public class SyncQueryServiceFactoryTest {
 	/**
 	 * Descriptor for testing purposes
 	 */
-	HelioServiceDescriptor testDescriptor = new GenericHelioServiceDescriptor("testService", HelioServiceType.SYNC_QUERY_SERVICE, "test service", "a test service descriptor");
+	HelioServiceDescriptor testDescriptor = new GenericHelioServiceDescriptor("testService", "test service", "a test service descriptor", HelioServiceCapability.SYNC_QUERY_SERVICE);
 	
 	@Before
 	public void setUp() {
@@ -34,26 +35,26 @@ public class SyncQueryServiceFactoryTest {
 		assertNotNull(instance);
 		String wsdlPath = "/wsdl/helio_full_query.wsdl";
 		URL wsdlUrl = getClass().getResource(wsdlPath);
-		StaticHelioRegistryImpl.getInstance().registerServiceInstance(testDescriptor, wsdlUrl);
+		LocalHelioServiceRegistryDao.getInstance().registerServiceInstance(testDescriptor, HelioServiceCapability.SYNC_QUERY_SERVICE, wsdlUrl);
 	}
 	
 	/**
-	 * Test {@link SyncQueryServiceFactory#getLongRunningQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
+	 * Test {@link SyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
 	 */
 	@Test public void testGetSyncQueryService() {
-		HelioQueryService queryService = instance.getSyncQueryService(testDescriptor);		
+		HelioQueryService queryService = instance.getSyncQueryService("testService");
 		assertNotNull(queryService);
 	}
 	
 	/**
-	 * Test {@link SyncQueryServiceFactory#getLongRunningQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
+	 * Test {@link SyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
 	 */
 	@Test public void testInvalidRequest() {
-		HelioServiceDescriptor invalidDescriptor = new GenericHelioServiceDescriptor("test", HelioServiceType.UNKNOWN_SERVICE, "invalid service", "invalid service");
+		//HelioServiceDescriptor invalidDescriptor = new GenericHelioServiceDescriptor("test", HelioServiceCapability.UNKNOWN, "invalid service", "invalid service");
 		try {
-			instance.getSyncQueryService(invalidDescriptor);
-			fail(IllegalArgumentException.class.getName() + " expected.");
-		} catch (IllegalArgumentException e) {
+			instance.getSyncQueryService("unknown");
+			fail(ServiceResolutionException.class.getName() + " expected.");
+		} catch (ServiceResolutionException e) {
 			// fine
 		}
 	}

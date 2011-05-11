@@ -13,12 +13,9 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
-import eu.heliovo.clientapi.query.longrunningquery.impl.LongRunningQueryServiceFactory;
+import eu.heliovo.clientapi.query.longrunningquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
-import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.HelioServiceRegistry;
-import eu.heliovo.clientapi.registry.HelioServiceType;
-import eu.heliovo.clientapi.registry.impl.StaticHelioRegistryImpl;
+import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -31,13 +28,8 @@ public class SimpleInterface {
 	/**
 	 * which service type shall we use.
 	 */
-	private static final HelioServiceType SERVICE_TYPE = HelioServiceType.SYNC_QUERY_SERVICE;
+	private static final HelioServiceCapability SERVICE_TYPE = HelioServiceCapability.SYNC_QUERY_SERVICE;
 	
-	/**
-	 * The registry used to lookup the service
-	 */
-	private static HelioServiceRegistry registry = StaticHelioRegistryImpl.getInstance();
-
 	/**
 	 * Execute a query on the specified server.
 	 * @param serviceName the name of the service to query
@@ -57,7 +49,7 @@ public class SimpleInterface {
 		int startindex = 0;
 		// timeout to wait for a response
 		int timeout = 300;
-		HelioServiceType serviceType = SERVICE_TYPE;
+		HelioServiceCapability serviceType = SERVICE_TYPE;
 		
 		//if (serviceName.equalsIgnoreCase("DPAS")) {
 		// normalize all lists
@@ -69,12 +61,10 @@ public class SimpleInterface {
 		//}
 		
 		HelioQueryService service;
-		if (serviceType == HelioServiceType.LONGRUNNING_QUERY_SERVICE) {
-			HelioServiceDescriptor descriptor = registry.getServiceDescriptor(serviceName.toUpperCase(), serviceType);
-			service = LongRunningQueryServiceFactory.getInstance().getLongRunningQueryService(descriptor);
-		} else if (serviceType == HelioServiceType.SYNC_QUERY_SERVICE) {
-			HelioServiceDescriptor descriptor = registry.getServiceDescriptor(serviceName.toUpperCase(), serviceType);
-			service = SyncQueryServiceFactory.getInstance().getSyncQueryService(descriptor);
+		if (serviceType == HelioServiceCapability.ASYNC_QUERY_SERVICE) {
+			service = AsyncQueryServiceFactory.getInstance().getAsyncQueryService(serviceName.toUpperCase());
+		} else if (serviceType == HelioServiceCapability.SYNC_QUERY_SERVICE) {
+			service = SyncQueryServiceFactory.getInstance().getSyncQueryService(serviceName.toUpperCase());
 		} else {
 			throw new RuntimeException("Internal Error: Unknown service type " + SERVICE_TYPE);
 		}

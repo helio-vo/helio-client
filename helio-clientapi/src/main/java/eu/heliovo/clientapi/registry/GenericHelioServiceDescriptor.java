@@ -1,11 +1,16 @@
 package eu.heliovo.clientapi.registry;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Describe a service in general (i.e. not a particular instance of the service). 
- * The description can be retrieved through the {@link HelioServiceRegistry}.
- * The business key of this object is the "name - type" tuple. 
+ * The description can be retrieved through the {@link HelioServiceRegistryDao}.
+ * The business key of this object is the "name". Thus the name must be unique. 
  * @author MarcoSoldati
  *
  */
@@ -29,22 +34,41 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 	/**
 	 * The type of this service
 	 */
-	private final HelioServiceType type;
+	private final Set<HelioServiceCapability> capabilities = new HashSet<HelioServiceCapability>();
 	
 	/**
 	 * Create a descriptor for a service.
 	 * @param name the name of the service, must not be null.
-	 * @param the type of the service, Must not be null
 	 * @param label the label of the service. Will match the name if null.
 	 * @param description the description of the service. May be null.
+	 * @param capabilities the capabilities assigned with this service. Ignored if null. More capabilities can be added later.
+	 * 
 	 */
-	public GenericHelioServiceDescriptor(String name, HelioServiceType type, String label, String description) {
+	public GenericHelioServiceDescriptor(String name, String label, String description, HelioServiceCapability ... capabilities) {
 		AssertUtil.assertArgumentHasText(name, "name");
-		AssertUtil.assertArgumentNotNull(type, "type");
 		this.name = name;
-		this.type = type;
 		this.label = label == null ? name : label;
 		this.description = description;
+		if (capabilities != null) {
+		    Collections.addAll(this.capabilities, capabilities);
+		}
+	}
+
+	/**
+	 * Create a descriptor for a service.
+	 * @param name the name of the service, must not be null.
+	 * @param label the label of the service. Will match the name if null.
+	 * @param description the description of the service. May be null.
+	 * @param capabilities the capabilities assigned with this service. Ignored if null.
+	 */
+	public GenericHelioServiceDescriptor(String name, String label, String description, Collection<HelioServiceCapability> capabilities) {
+	    AssertUtil.assertArgumentHasText(name, "name");
+	    this.name = name;
+	    this.label = label == null ? name : label;
+	    this.description = description;
+	    if (capabilities != null) {
+            this.capabilities.addAll(capabilities);
+        }
 	}
 	
 	/* (non-Javadoc)
@@ -75,10 +99,21 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 	 * @see eu.heliovo.clientapi.registry.HelioServiceDescriptor#getType()
 	 */
 	@Override
-	public HelioServiceType getType() {
-		return type;
+	public Set<HelioServiceCapability> getCapabilities() {
+		return Collections.unmodifiableSet(capabilities);
 	}
 	
+	   
+    /**
+     * Add a capability to this entry.
+     * @param capability the capability to add
+     * @return true if the capability did not already exist, false otherwise.
+     */
+    @Override
+    public boolean addCapability(HelioServiceCapability capability) {
+        return this.capabilities.add(capability);
+    }
+    
 	/* (non-Javadoc)
 	 * @see eu.heliovo.clientapi.registry.HelioServiceDescriptor#equals(java.lang.Object)
 	 */
@@ -86,8 +121,7 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof GenericHelioServiceDescriptor))
 			return false;
-		
-		return name.equals(((GenericHelioServiceDescriptor)obj).name) && type.equals(((GenericHelioServiceDescriptor)obj).type);
+		return name.equals(((GenericHelioServiceDescriptor)obj).name);
 	}
 	
 	/* (non-Javadoc)
@@ -95,6 +129,6 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 	 */
 	@Override
 	public int hashCode() {
-		return 37 * name.hashCode() + 11 * type.hashCode();
+		return 37 * name.hashCode();
 	}
 }

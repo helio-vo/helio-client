@@ -45,7 +45,6 @@ import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
-import eu.heliovo.clientapi.registry.impl.SyncServiceDescriptor;
 import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
@@ -260,7 +259,7 @@ class HecDao implements HelioCatalogDao {
 		
 		VOTABLE votable;
 		try {
-			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService(SyncServiceDescriptor.SYNC_HEC);
+			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService("HEC");
 			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {

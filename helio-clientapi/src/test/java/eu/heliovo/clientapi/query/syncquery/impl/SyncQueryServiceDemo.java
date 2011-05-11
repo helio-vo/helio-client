@@ -6,24 +6,22 @@ import java.util.logging.LogRecord;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
-import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.impl.SyncServiceDescriptor;
 
 public class SyncQueryServiceDemo {
 	public static void main(String[] args) throws Exception {
-		testSyncService(SyncServiceDescriptor.SYNC_ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
-		testSyncService(SyncServiceDescriptor.SYNC_ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
-		testSyncService(SyncServiceDescriptor.SYNC_DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
-		testSyncService(SyncServiceDescriptor.SYNC_HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("goes_xray_flares"), null);
-		testSyncService(SyncServiceDescriptor.SYNC_UOC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);
-		//testSyncService(SyncServiceDescriptor.SYNC_MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "SIR.DELTAT,100;SIR.DELTAV,/900;SIR.AVERAGETIME,600", null);
+		testSyncService("ICS", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
+		testSyncService("ILS", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
+		testSyncService("DPAS", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
+		testSyncService("HEC", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("goes_xray_flares"), null);
+		testSyncService("UOC", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);
+		testSyncService("MDES", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "SIR.DELTAT,100;SIR.DELTAV,/900;SIR.AVERAGETIME,600", null);
 	}
 	
-	private static synchronized void testSyncService(HelioServiceDescriptor serviceDescriptor, List<String> startTime, List<String> endTime, List<String> from, String saveto) {
-		System.out.println("--------------------" + serviceDescriptor.getLabel() + "--------------------");
+	private static synchronized void testSyncService(String serviceName, List<String> startTime, List<String> endTime, List<String> from, String saveto) {
+		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
 			SyncQueryServiceFactory queryServiceFactory = SyncQueryServiceFactory.getInstance();
-			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceDescriptor);
+			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceName);
 			HelioQueryResult result = queryService.timeQuery(startTime, endTime, from, 100, 0);
 
 			System.out.println(result);
@@ -46,11 +44,11 @@ public class SyncQueryServiceDemo {
 		}
 	}
 
-	private static synchronized void testSyncService(HelioServiceDescriptor serviceDescriptor, List<String> startTime, List<String> endTime, List<String> from, String where, String saveto) {
-		System.out.println("--------------------" + serviceDescriptor.getLabel() + "--------------------");
+	private static synchronized void testSyncService(String serviceName, List<String> startTime, List<String> endTime, List<String> from, String where, String saveto) {
+		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
 			SyncQueryServiceFactory queryServiceFactory = SyncQueryServiceFactory.getInstance();
-			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceDescriptor);
+			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceName);
 			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null);
 			
 			System.out.println(result);
