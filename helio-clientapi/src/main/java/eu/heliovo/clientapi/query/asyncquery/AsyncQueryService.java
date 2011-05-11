@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.query.longrunningquery;
+package eu.heliovo.clientapi.query.asyncquery;
 
 import java.util.List;
 

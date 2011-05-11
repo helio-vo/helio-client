@@ -13,7 +13,7 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
-import eu.heliovo.clientapi.query.longrunningquery.impl.AsyncQueryServiceFactory;
+import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;

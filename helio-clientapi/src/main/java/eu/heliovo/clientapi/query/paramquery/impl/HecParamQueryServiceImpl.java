@@ -3,7 +3,7 @@ package eu.heliovo.clientapi.query.paramquery.impl;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.catalog.impl.HelioCatalogDaoFactory;
 import eu.heliovo.clientapi.model.field.HelioField;
-import eu.heliovo.clientapi.query.longrunningquery.impl.AsyncQueryServiceFactory;
+import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 /**
  * Default implementation of the param query for the HEC service. 
  * @author marco soldati at fhnw ch 

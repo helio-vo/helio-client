@@ -12,7 +12,7 @@ import org.springframework.core.convert.ConversionService;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.longrunningquery.AsyncQueryService;
+import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;

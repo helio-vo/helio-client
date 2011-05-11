@@ -35,6 +35,7 @@ public class SyncQueryServiceFactoryTest {
 		assertNotNull(instance);
 		String wsdlPath = "/wsdl/helio_full_query.wsdl";
 		URL wsdlUrl = getClass().getResource(wsdlPath);
+		assertNotNull(wsdlUrl);
 		LocalHelioServiceRegistryDao.getInstance().registerServiceInstance(testDescriptor, HelioServiceCapability.SYNC_QUERY_SERVICE, wsdlUrl);
 	}
 	
