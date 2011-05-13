@@ -10,10 +10,10 @@ import org.junit.Test;
 
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
-import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.clientapi.registry.impl.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.impl.LocalHelioServiceRegistryDao;
 
 /**

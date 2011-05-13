@@ -12,7 +12,6 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 

@@ -14,7 +14,6 @@ import uk.ac.starlink.registry.BasicCapability;
 import uk.ac.starlink.registry.BasicRegistryClient;
 import uk.ac.starlink.registry.BasicResource;
 import uk.ac.starlink.registry.SoapClient;
-import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;

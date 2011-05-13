@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import eu.heliovo.clientapi.registry.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistryDao;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
@@ -192,7 +191,6 @@ public class AbstractHelioServiceRegistryDao implements HelioServiceRegistryDao 
     }
 
     /**
-     * TODO: Remove
      * This implementation just takes the first match.
      */
     @Override

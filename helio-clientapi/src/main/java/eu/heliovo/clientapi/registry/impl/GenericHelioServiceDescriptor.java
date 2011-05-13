@@ -1,10 +1,13 @@
-package eu.heliovo.clientapi.registry;
+package eu.heliovo.clientapi.registry.impl;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import eu.heliovo.clientapi.registry.HelioServiceCapability;
+import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
+import eu.heliovo.clientapi.registry.HelioServiceRegistryDao;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
