@@ -63,6 +63,9 @@ public enum HelioServiceCapability {
      * @return
      */
     public static HelioServiceCapability findCapabilityById(String capabilityId) {
+        if (capabilityId == null) {
+            return null;
+        } 
         for (HelioServiceCapability cap : values()) {
             if (capabilityId.equals(cap.capabilityId)) {
                 return cap;

@@ -8,29 +8,12 @@ import eu.heliovo.clientapi.registry.HelioServiceCapability;
  * @author MarcoSoldati
  *
  */
-public class LocalHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
-	
+class LocalHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
     /**
-     * The instance of this registry
-     */
-	private static LocalHelioServiceRegistryDao instance = null;
-	
-	/**
-	 * Get the singleton instance of this registry.
-	 * @return the singleton instance
+	 * Public constructor is package local for testing
 	 */
-	public synchronized static LocalHelioServiceRegistryDao getInstance() {
-		if (instance == null) {
-			instance = new LocalHelioServiceRegistryDao();
-			instance.init();
-		}
-		return instance;
-	}
-	
-	/**
-	 * Hide the default constructor
-	 */
-	private LocalHelioServiceRegistryDao() {
+	LocalHelioServiceRegistryDao() {
+	    init();
 	}
 
 	/**

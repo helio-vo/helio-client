@@ -9,12 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
-import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
-import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
+import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.clientapi.registry.impl.DummyHelioServiceRegistryDao;
 import eu.heliovo.clientapi.registry.impl.GenericHelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.impl.LocalHelioServiceRegistryDao;
+import eu.heliovo.clientapi.registry.impl.HelioServiceRegistryDaoFactory;
 
 /**
  * Test {@link AsyncQueryServiceFactory}
@@ -28,11 +28,14 @@ public class AsyncQueryServiceFactoryTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		instance = AsyncQueryServiceFactory.getInstance();
 		String wsdlPath = "/wsdl/long_runningquery.wsdl";
 		URL wsdlUrl = getClass().getResource(wsdlPath);
 		assertNotNull(wsdlUrl);
-		LocalHelioServiceRegistryDao.getInstance().registerServiceInstance(testDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE, wsdlUrl);
+
+		DummyHelioServiceRegistryDao helioServiceRegistryDao = DummyHelioServiceRegistryDao.getInstance();
+		helioServiceRegistryDao.registerServiceInstance(testDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE, wsdlUrl);
+		HelioServiceRegistryDaoFactory.getInstance().setHelioServiceRegistryDao(helioServiceRegistryDao);      
+		instance = AsyncQueryServiceFactory.getInstance();
 		assertNotNull(instance);
 	}
 	

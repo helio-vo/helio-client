@@ -75,7 +75,7 @@ public class HelioCatalogDaoFactory {
             } catch (InterruptedException e) {
                 throw new ServiceResolutionException("Got interrupted while initializing the HelioCatalogDao " + e.getMessage(), e);
             } catch (ExecutionException e) {
-                throw new ServiceResolutionException("Exception while initializing the HelioCatalogDao " + e.getMessage(), e);
+                throw new ServiceResolutionException("Exception while initializing the HelioCatalogDao: " + e.getMessage(), e);
             }
             helioCatalogDaoMap.put(helioCatalogDao.getServiceName(), helioCatalogDao);
         }

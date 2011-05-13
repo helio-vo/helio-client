@@ -25,7 +25,7 @@ import eu.heliovo.shared.props.HelioFileUtil;
  * @author donal k fellows
  * @author marco soldati at fhnw ch
  */
-public class RemoteHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
+class RemoteHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
 	private static final Logger _LOGGER = Logger.getLogger(RemoteHelioServiceRegistryDao.class);
 
 	/** The default address of the registry. */

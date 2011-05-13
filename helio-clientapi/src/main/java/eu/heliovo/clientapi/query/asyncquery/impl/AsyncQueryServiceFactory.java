@@ -11,7 +11,7 @@ import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistryDao;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
-import eu.heliovo.clientapi.registry.impl.LocalHelioServiceRegistryDao;
+import eu.heliovo.clientapi.registry.impl.HelioServiceRegistryDaoFactory;
 
 /**
  * Factory to get async running query service instances.
@@ -42,10 +42,6 @@ public class AsyncQueryServiceFactory {
 	 */
 	private final Map<URL, AsyncQueryServiceImpl> serviceImplCache = new HashMap<URL, AsyncQueryServiceImpl>();
 	
-	/**
-	 * the service registry bean.
-	 */
-	private HelioServiceRegistryDao serviceRegistry = LocalHelioServiceRegistryDao.getInstance();
 	
 	/**
 	 * Get a new instance of the "best" service provider for a given descriptor
@@ -53,6 +49,8 @@ public class AsyncQueryServiceFactory {
 	 * @return a AsyncQueryService implementation to send out queries to this service.
 	 */
 	public AsyncQueryService getAsyncQueryService(String serviceName) {
+	    HelioServiceRegistryDao serviceRegistry = HelioServiceRegistryDaoFactory.getInstance().getHelioServiceRegistryDao();
+
 	    HelioServiceDescriptor serviceDescriptor = serviceRegistry.getServiceDescriptor(serviceName);
 	    if (serviceDescriptor == null) {
 	        throw new ServiceResolutionException("Unable to find service with name " +  serviceName);

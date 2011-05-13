@@ -10,19 +10,26 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
+import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 
 /**
  * Unit test for the {@link LocalHelioServiceRegistryDao}.
  */
 public class LocalHelioRegistryImplTest {
 
+    private AbstractHelioServiceRegistryDao helioRegistry;
+    
+    
+    @Before public void setUp() {
+        helioRegistry = new LocalHelioServiceRegistryDao();
+        //HelioRegistryDaoFactory.getInstance().setHelioServiceRegistryDao(helioRegistry);
+    }
+    
 	@Test public void initialize() {
-		AbstractHelioServiceRegistryDao helioRegistry = LocalHelioServiceRegistryDao.getInstance();
-		
 		assertNotNull(helioRegistry);
 		HelioServiceDescriptor[] serviceDescriptors = helioRegistry.getAllServiceDescriptors();
 		assertNotNull(serviceDescriptors);
@@ -39,8 +46,6 @@ public class LocalHelioRegistryImplTest {
 	 * Test {@link LocalHelioServiceRegistryDao#registerServiceDescriptor(GenericHelioServiceDescriptor)}.
 	 */
 	@Test public void testRegisterServiceDescriptor() {
-		AbstractHelioServiceRegistryDao helioRegistry = LocalHelioServiceRegistryDao.getInstance();
-		
 		// register new service
 		HelioServiceDescriptor descriptor = new GenericHelioServiceDescriptor("test", "test service", "a test service", HelioServiceCapability.UNKNOWN);
 		HelioServiceDescriptor descriptor2 = helioRegistry.registerServiceDescriptor(descriptor);
@@ -59,7 +64,6 @@ public class LocalHelioRegistryImplTest {
 	 * @throws Exception if anything goes wrong
 	 */
 	@Test public void testRegisterServiceInstanceDescriptor() throws Exception {
-		AbstractHelioServiceRegistryDao helioRegistry = LocalHelioServiceRegistryDao.getInstance();
 		
 		// create service descriptor
 		HelioServiceDescriptor descriptor = new GenericHelioServiceDescriptor("test2", "test service", "a test service", HelioServiceCapability.UNKNOWN);
@@ -67,7 +71,7 @@ public class LocalHelioRegistryImplTest {
 		// create service instance descriptor
 		helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test.wsdl"));
 		
-		assertNotNull(helioRegistry.getServiceDescriptor("test"));
+		assertNotNull(helioRegistry.getServiceDescriptor("test2"));
 		
 		// register a service with the same name and type
 		assertFalse(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test.wsdl")));
@@ -78,7 +82,6 @@ public class LocalHelioRegistryImplTest {
 	 * @throws Exception in case of an error
 	 */
 	@Test public void testGetBestEndpoint() throws Exception {
-		AbstractHelioServiceRegistryDao helioRegistry = LocalHelioServiceRegistryDao.getInstance();
 		HelioServiceDescriptor descriptor = new GenericHelioServiceDescriptor("test3", "test service", "a test service", HelioServiceCapability.UNKNOWN);
 		assertNotNull(helioRegistry.registerServiceDescriptor(descriptor));
 		assertTrue(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test2.wsdl")));

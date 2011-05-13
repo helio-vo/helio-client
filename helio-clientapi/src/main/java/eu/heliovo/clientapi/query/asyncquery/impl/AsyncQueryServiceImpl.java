@@ -195,7 +195,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
+		HelioQueryResult helioQueryResult = new AsyncQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
 		
 		return helioQueryResult;
 	}
@@ -269,7 +269,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new LongRunningQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
+		HelioQueryResult helioQueryResult = new AsyncQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
 		
 		return helioQueryResult;
 	}	
@@ -295,11 +295,11 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	@TypeHelp(
 		help=@Description("")
 	)
-	static class LongRunningQueryResultImpl implements HelioQueryResult {
+	static class AsyncQueryResultImpl implements HelioQueryResult {
 		/**
 		 * The logger instance
 		 */
-		private static final Logger _LOGGER = Logger.getLogger(LongRunningQueryResultImpl.class);
+		private static final Logger _LOGGER = Logger.getLogger(AsyncQueryResultImpl.class);
 		
 		/**
 		 * The id of the call
@@ -364,7 +364,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		 * @param jobStartTime the time when this call has been started.
 		 * @param logRecords the log records from the parent query. 
 		 */
-		LongRunningQueryResultImpl(String id, LongHelioQueryService port, String callId, long jobStartTime, List<LogRecord> logRecords) {
+		AsyncQueryResultImpl(String id, LongHelioQueryService port, String callId, long jobStartTime, List<LogRecord> logRecords) {
 			this.id = id;
 			this.port = port;
 			this.callId = callId;

@@ -8,17 +8,19 @@ import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.utils.DebugUtils;
+import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 public class AsyncQueryServiceDemo {
 	public static void main(String[] args) throws Exception {
 		testLongRunningService("ICS", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
 		testLongRunningService("ILS", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
 		testLongRunningService("DPAS", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), null);
-		DebugUtils.enableDump();
 		testLongRunningService("ICS", Arrays.asList("2003-02-01T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("instrument"), null);
-		DebugUtils.disableDump();
 		testLongRunningService("UOC", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);
-		testLongRunningService("MDES", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "SIR.DELTAT,100;SIR.DELTAV,/900;SIR.AVERAGETIME,600", null);
+		DebugUtils.enableDump();
+		DebugUtils.disableDump();
+		testLongRunningService("MDES", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "DERIV.DELTAT,100;DERIV.DELTAV,/900;DERIV.AVERAGETIME,600", null);
+	    testLongRunningService("MDES", Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "SIR.DELTAT,100;SIR.DELTAV,/900;SIR.AVERAGETIME,600", null);	//DebugUtils.disableDump();
 	}
 	
 	private static synchronized void testLongRunningService(String serviceName, List<String> startTime, List<String> endTime, List<String> from, String saveto) {
@@ -61,9 +63,15 @@ public class AsyncQueryServiceDemo {
 			
 			System.out.println(result);
 			if (result != null) {
+			    try {
 				System.out.println("Phase: " + result.getPhase());
 				System.out.println("Result URL: " + result.asURL());
 				System.out.println("Result VOTable: " + result.asVOTable());
+				System.out.println(result.asString());
+			    } catch (JobExecutionException e) {
+			        e.printStackTrace();
+			        // try to display logs
+                }
 				StringBuilder sb = new StringBuilder("User log: ");
 				for (LogRecord logRecord : result.getUserLogs()) {
 					if (sb.length() > 0) {
@@ -72,7 +80,11 @@ public class AsyncQueryServiceDemo {
 					sb.append(logRecord.getMessage());
 				}
 				System.out.println(sb.toString());
-			}System.out.println();
+				
+			}
+			System.out.println();
+			
+			
 		} catch (Exception e) {
 			System.err.println("Error occured: " + e.getMessage());
 			e.printStackTrace();

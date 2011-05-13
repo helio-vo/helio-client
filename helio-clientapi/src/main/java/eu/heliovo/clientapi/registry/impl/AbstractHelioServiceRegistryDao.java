@@ -21,7 +21,7 @@ public class AbstractHelioServiceRegistryDao implements HelioServiceRegistryDao 
     /**
      * The logger for this registry impl
      */
-    protected static final Logger _LOGGER = Logger.getLogger(LocalHelioServiceRegistryDao.class);
+    protected final Logger _LOGGER = Logger.getLogger(getClass());
     
     /**
      * Store the registered service descriptors.
