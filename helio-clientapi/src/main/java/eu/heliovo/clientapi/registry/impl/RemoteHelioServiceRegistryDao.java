@@ -50,7 +50,7 @@ class RemoteHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
 	 * @param url the url to use.
 	 */
 	public void setRegistryURL(URL url)  {
-		registry = new PatchedBasicRegistryClient(new SoapClient(url));
+		registry = new HelioBasicRegistryClient(new SoapClient(url));
 		reinit();
 	}
 
@@ -89,7 +89,7 @@ class RemoteHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
             // register capabilities
             for (BasicCapability c : r.getCapabilities()) {
                 HelioServiceCapability cap = HelioServiceCapability.findCapabilityById(c.getStandardId());
-                System.out.println(c.getStandardId() + ", " + c.getXsiType() + ", " +  c.getDescription() + ", " + c.getVersion() + ", "+ c.getAccessUrl());
+                //System.out.println(c.getStandardId() + ", " + c.getXsiType() + ", " +  c.getDescription() + ", " + c.getVersion() + ", "+ c.getAccessUrl());
                 if (cap == null) {
                     //cap = HelioServiceCapability.register(c.getStandardId(), c.getXsiType(), c.getDescription(), c.getVersion());
                     cap = HelioServiceCapability.UNKNOWN;

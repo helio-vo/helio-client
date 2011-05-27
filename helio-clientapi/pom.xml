@@ -45,7 +45,7 @@
     <dependency>
         <groupId>starlink</groupId>
         <artifactId>registryclient</artifactId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </dependency>
     <dependency>
         <groupId>ivoaregistry</groupId>

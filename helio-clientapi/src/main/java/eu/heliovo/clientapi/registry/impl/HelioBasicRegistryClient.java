@@ -2,6 +2,7 @@ package eu.heliovo.clientapi.registry.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,20 +35,20 @@ import uk.ac.starlink.registry.SoapClient;
  * @author Marco Soldati 
  * @history MSo 26/05/2011 added access to the property /interface/@xsi-type 
  */
-public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicResource> {
+public class HelioBasicRegistryClient extends AbstractRegistryClient<BasicResource> {
 
     /**
      * Constructor.
      *
      * @param   soapClient  object which performs SOAP communications
      */
-    public PatchedBasicRegistryClient( SoapClient soapClient ) {
+    public HelioBasicRegistryClient( SoapClient soapClient ) {
         super( soapClient );
     }
 
     @Override
     protected ContentHandler
-            createResourceHandler( ResourceSink<BasicResource> sink ) {
+    createResourceHandler( ResourceSink<BasicResource> sink ) {
         return new BasicResourceHandler( sink );
     }
 
@@ -58,7 +59,7 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
      * @author   Mark Taylor
      */
     private static class BasicResourceHandler extends DefaultHandler {
-    
+
         /* Define XPath-like strings representing the location in the XML
          * content model of resource and capability items that we are
          * interested in. */
@@ -78,6 +79,8 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
             RESOURCE_PATH + "/curation/contact/name";
         private static final String CONTACTEMAIL_PATH =
             RESOURCE_PATH + "/curation/contact/email";
+        private static final String SUBJECT_PATH =
+            RESOURCE_PATH + "/content/subject";
         private static final String REFURL_PATH =
             RESOURCE_PATH + "/content/referenceURL";
         private static final String CAPABILITY_PATH =
@@ -93,19 +96,19 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
         private static final String ACCESSURL_PATH =
             CAPINTERFACE_PATH + "/accessURL";
         private static final String VERSION_PATH =
-            CAPINTERFACE_PATH + "/@version"; // BUG: remove the interface part
+            CAPINTERFACE_PATH + "/@version";
         private static final String INTERFACE_XSITYPE_PATH =
-            CAPINTERFACE_PATH + "/@xsi:type"; // NEW: add the xsi:type 
-    
-        private Map<String, String> resourceMap_;
-        private Map<String, String> capabilityMap_;
+            CAPINTERFACE_PATH + "/@xsi:type";
+
+        private Store resourceStore_;
+        private Store capabilityStore_;
         private StringBuffer txtBuf_;
         private List<BasicCapability> capabilityList_;
         private final Set<String> resourcePathSet_;
         private final Set<String> capabilityPathSet_;
         private final StringBuffer path_;
         private final ResourceSink<BasicResource> sink_;
-    
+
         /**
          * Constructor.
          *
@@ -118,56 +121,57 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
             /* Identify the infoset items that will be associated with one
              * generated BasicResource object. */
             resourcePathSet_ = new HashSet<String>( Arrays
-                                                   .asList( new String[] {
-                TITLE_PATH,
-                IDENTIFIER_PATH,
-                SHORTNAME_PATH,
-                PUBLISHER_PATH,
-                CONTACTNAME_PATH,
-                CONTACTEMAIL_PATH,
-                REFURL_PATH,
-                STATUS_PATH,
-            } ) );
+                    .asList( new String[] {
+                            TITLE_PATH,
+                            IDENTIFIER_PATH,
+                            SHORTNAME_PATH,
+                            PUBLISHER_PATH,
+                            CONTACTNAME_PATH,
+                            CONTACTEMAIL_PATH,
+                            SUBJECT_PATH,
+                            REFURL_PATH,
+                            STATUS_PATH,
+                    } ) );
 
             /* Identify the infoset items that will be associated with one
              * generated BasicCapability object. */
             capabilityPathSet_ = new HashSet<String>( Arrays
-                                                     .asList( new String[] {
-                STDID_PATH,
-                XSITYPE_PATH,
-                DESCRIPTION_PATH,
-                ACCESSURL_PATH,
-                VERSION_PATH,
-                INTERFACE_XSITYPE_PATH
-            } ) );
+                    .asList( new String[] {
+                            STDID_PATH,
+                            XSITYPE_PATH,
+                            DESCRIPTION_PATH,
+                            ACCESSURL_PATH,
+                            VERSION_PATH,
+                            INTERFACE_XSITYPE_PATH
+                    } ) );
         }
-    
+
         @Override
         public void startElement( String namespaceURI, String localName,
-                                  String qName, Attributes atts )
-                throws SAXException {
+                String qName, Attributes atts )
+        throws SAXException {
             try {
                 path_.append( '/' )
-                     .append( localName );
+                .append( localName );
                 String path = path_.toString();
 
                 /* If this is the start of a Resource element, prepare to
                  * accumulate items which will form a BasicResource object. */
                 if ( RESOURCE_PATH.equals( path ) ) {
-                    resourceMap_ = new HashMap<String, String>();
+                    resourceStore_ = new Store();
                     capabilityList_ = new ArrayList<BasicCapability>();
                 }
 
                 /* If this is the start of a capability element, prepare to
                  * accumulate items which will form a BasicCapability object. */
                 else if ( CAPABILITY_PATH.equals( path ) ) {
-                    capabilityMap_ = new HashMap<String, String>();
+                    capabilityStore_ = new Store();
                 }
 
                 /* If this is a string-containing element we're interested in,
                  * prepare to collect its text. */
                 else if ( resourcePathSet_.contains( path ) ||
-                          capabilityPathSet_.contains( path ) ) {
+                        capabilityPathSet_.contains( path ) ) {
                     txtBuf_ = new StringBuffer();
                 }
 
@@ -177,10 +181,10 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
                 for ( int ia = 0; ia < natt; ia++ ) {
                     String apath = path + "/@" + atts.getQName( ia );
                     if ( resourcePathSet_.contains( apath ) ) {
-                        resourceMap_.put( apath, atts.getValue( ia ) );
+                        resourceStore_.put( apath, atts.getValue( ia ) );
                     }
                     else if ( capabilityPathSet_.contains( apath ) ) {
-                        capabilityMap_.put( apath, atts.getValue( ia ) );
+                        capabilityStore_.put( apath, atts.getValue( ia ) );
                     }
                 }
             }
@@ -188,11 +192,11 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
                 throw new SAXException( e );
             }
         }
-    
+
         @Override
         public void endElement( String namepaceURI, String localName,
-                                String qName )
-                throws SAXException {
+                String qName )
+        throws SAXException {
             try {
                 String path = path_.toString();
 
@@ -202,35 +206,34 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
                     BasicCapability[] caps =
                         capabilityList_.toArray( new BasicCapability[ 0 ] );
                     capabilityList_ = null;
-                    trimValues( resourceMap_ );
-                    sink_.addResource( createBasicResource( resourceMap_,
-                                                            caps ) );
-                    resourceMap_ = null;
+                    sink_.addResource( createBasicResource( resourceStore_,
+                            caps ) );
+                    resourceStore_ = null;
                 }
+
                 /* If this is the end of a capability/interface element,
                  * produce a new BasicCapability and associate it with
                  * the current resource. */
                 else if ( CAPINTERFACE_PATH.equals( path ) ) {
-                    trimValues( capabilityMap_ );
                     capabilityList_.add( createBasicCapability(
-                                             capabilityMap_ ) );
-                    for ( Iterator<String> it = capabilityMap_.keySet()
-                                                              .iterator();
-                          it.hasNext(); ) {
+                            capabilityStore_ ) );
+                    for ( Iterator<String> it =
+                        capabilityStore_.keySet().iterator();
+                    it.hasNext(); ) {
                         if ( it.next().startsWith( path ) ) {
                             it.remove();
                         }
                     }
                 }
                 else if ( CAPABILITY_PATH.equals( path ) ) {
-                    capabilityMap_ = null;
+                    capabilityStore_ = null;
                 }
                 else if ( resourcePathSet_.contains( path ) ) {
-                    resourceMap_.put( path, txtBuf_.toString() );
+                    resourceStore_.put( path, txtBuf_.toString() );
                     txtBuf_ = null;
                 }
                 else if ( capabilityPathSet_.contains( path ) ) {
-                    capabilityMap_.put( path, txtBuf_.toString() );
+                    capabilityStore_.put( path, txtBuf_.toString() );
                     txtBuf_ = null;
                 }
                 path_.setLength( path_.length() - localName.length() - 1 );
@@ -239,7 +242,7 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
                 throw new SAXException( e );
             }
         }
-    
+
         @Override
         public void characters( char[] ch, int start, int length ) {
 
@@ -248,31 +251,7 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
                 txtBuf_.append( ch, start, length );
             }
         }
-    
-        /**
-         * Strips leading and trailing whitespace from string values of
-         * map entries.
-         *
-         * @param  map to trim in place
-         */
-        private static void trimValues( Map<String, String> map ) {
-            for ( Iterator<Map.Entry<String, String>> it =
-                      map.entrySet().iterator();
-                  it.hasNext(); ) {
-                Map.Entry<String, String> entry = it.next();
-                String val = entry.getValue();
-                if ( val != null ) {
-                    String tval = val.trim();
-                    if ( tval.length() == 0 ) {
-                        it.remove();
-                    }
-                    else {
-                        entry.setValue( tval );
-                    }
-                }
-            }
-        }
-    
+
         /**
          * Constructs and returns a new BasicResource.
          *
@@ -280,43 +259,46 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
          * @param  capabilities  capabilities of this resource
          */
         private static BasicResource
-             createBasicResource( final Map<String, String> rMap,
-                                  final BasicCapability[] caps ) {
-            return new PatchedBasicResource() {{
-                capabilities_ = caps;
-                title_ = rMap.remove( TITLE_PATH );
-                identifier_ = rMap.remove( IDENTIFIER_PATH );
-                shortName_ = rMap.remove( SHORTNAME_PATH );
-                publisher_ = rMap.remove( PUBLISHER_PATH );
-                contact_ = makeContact( rMap.remove( CONTACTNAME_PATH ),
-                                        rMap.remove( CONTACTEMAIL_PATH ) );
-                referenceUrl_ = rMap.remove( REFURL_PATH );
-                String status = rMap.remove( STATUS_PATH );
-                assert rMap.isEmpty();
-            }};
+        createBasicResource( final Store rStore,
+                final BasicCapability[] caps ) {
+            BasicResource resource = new BasicResource();
+            resource.setCapabilities( caps );
+            resource.setTitle( rStore.removeScalar( TITLE_PATH ) );
+            resource.setIdentifier( rStore.removeScalar( IDENTIFIER_PATH ) );
+            resource.setShortName( rStore.removeScalar( SHORTNAME_PATH ) );
+            resource.setPublisher( rStore.removeScalar( PUBLISHER_PATH ) );
+            resource.setContact( makeContact(
+                    rStore.removeScalar( CONTACTNAME_PATH ),
+                    rStore.removeScalar( CONTACTEMAIL_PATH ) ) );
+            resource.setReferenceUrl( rStore.removeScalar( REFURL_PATH ) );
+            resource.setSubjects( rStore.removeArray( SUBJECT_PATH ) );
+            @SuppressWarnings("unused")
+            String status = rStore.removeScalar( STATUS_PATH );
+            assert rStore.keySet().isEmpty();
+            return resource;
         }
-    
+
         /**
          * Constructs and returns a new BasicCapability.
          *
          * @param  cMap  map of capability values with XPath-like paths as keys
          */
         private static BasicCapability
-                createBasicCapability( final Map<String, String> cMap ) {
-            return new PatchedBasicCapability() {{
-                accessUrl_ = cMap.remove( ACCESSURL_PATH );
-                description_ = cMap.remove( DESCRIPTION_PATH );
-                standardId_ = cMap.remove( STDID_PATH );
-                version_ = cMap.remove( VERSION_PATH );
-                
-                // interface_xsitype_path wins over xsitype_path
-                String xsiType = cMap.remove( XSITYPE_PATH );
-                String intXsiType = cMap.remove( INTERFACE_XSITYPE_PATH );
-                xsiType_ = intXsiType == null ? xsiType : intXsiType;
-                assert cMap.isEmpty();
-            }};
+        createBasicCapability( final Store cStore ) {
+            BasicCapability cap = new BasicCapability();
+            cap.setAccessUrl( cStore.removeScalar( ACCESSURL_PATH ) );
+            cap.setDescription( cStore.removeScalar( DESCRIPTION_PATH ) );
+            cap.setStandardId( cStore.removeScalar( STDID_PATH ) );
+            cap.setVersion( cStore.removeScalar( VERSION_PATH ) );
+            // interface_xsitype_path wins over xsitype_path
+            String xsiType = cStore.removeScalar( XSITYPE_PATH );
+            String intXsiType = cStore.removeScalar( INTERFACE_XSITYPE_PATH );
+            cap.setXsiType(intXsiType == null ? xsiType : intXsiType);
+
+            assert cStore.keySet().isEmpty();
+            return cap;
         }
-    
+
         /**
          * Amalgamates a name and email address into a single string.
          *
@@ -336,6 +318,73 @@ public class PatchedBasicRegistryClient extends AbstractRegistryClient<BasicReso
             }
             else {
                 return null;
+            }
+        }
+
+        /**
+         * Map-like store for key-value pairs.  The values can store multiple
+         * items however.
+         */
+        private static class Store {
+            private final Map<String,Collection<String>> map_;
+
+            /**
+             * Constructor.
+             */
+            Store() {
+                map_ = new HashMap<String,Collection<String>>();
+            }
+
+            /**
+             * Adds an item under a given key.
+             * String values are trimmed, and null or empty ones are ignored.
+             *
+             * @param  key   key string
+             * @param  value  value element
+             */
+            public void put( String key, String value ) {
+                String tval = value.trim();
+                if ( tval.length() > 0 ) {
+                    if ( ! map_.containsKey( key ) ) {
+                        map_.put( key, new ArrayList<String>() );
+                    }
+                    map_.get( key ).add( tval );
+                }
+            }
+
+            /**
+             * Retrieves a single value from the store, and removes its entry.
+             * If multiple values have been stored under that key, the
+             * first one is returned.
+             *
+             * @param   key  key
+             * @return  single entry, or null
+             */
+            public String removeScalar( String key ) {
+                Collection<String> list = map_.remove( key );
+                return list == null ? null : list.iterator().next();
+            }
+
+            /**
+             * Retrieves an array of values from the store, and removes its
+             * entry.
+             *
+             * @param  key key
+             * @return  array entry, possibly with zero elements
+             */
+            public String[] removeArray( String key ) {
+                Collection<String> list = map_.remove( key );
+                return list == null ? new String[ 0 ]
+                                                  : list.toArray( new String[ 0 ] );
+            }
+
+            /**
+             * Returns a modifiable set of keys currently present in the store.
+             *
+             * @return  key set
+             */
+            public Set<String> keySet() {
+                return map_.keySet();
             }
         }
     }

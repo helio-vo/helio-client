@@ -52,7 +52,7 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 		this.name = name;
 		this.label = label == null ? name : label;
 		this.description = description;
-		if (capabilities != null) {
+		if (capabilities != null && capabilities.length > 0) {
 		    Collections.addAll(this.capabilities, capabilities);
 		}
 	}
@@ -69,7 +69,7 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 	    this.name = name;
 	    this.label = label == null ? name : label;
 	    this.description = description;
-	    if (capabilities != null) {
+	    if (capabilities != null && !capabilities.isEmpty()) {
             this.capabilities.addAll(capabilities);
         }
 	}
@@ -141,7 +141,7 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 	@Override
 	public String toString() {
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("GenericHelioSerivceDescriptor: [");
+	    sb.append("GenericHelioServiceDescriptor: [");
 	    sb.append("name: ").append(name);
 	    if (label != null) {
 	        sb.append(", label: ").append(label);
