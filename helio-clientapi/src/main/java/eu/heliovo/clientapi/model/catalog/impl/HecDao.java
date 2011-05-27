@@ -42,6 +42,7 @@ import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldType;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.service.HelioServiceName;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
@@ -62,11 +63,6 @@ class HecDao implements HelioCatalogDao {
 	 * Name of the default catalog
 	 */
 	private static final String DEFAULT_CATALOG_NAME = "goes_sxr_flare";
-
-	/**
-	 * Name of the service
-	 */
-	private static final String SERVICE_NAME = "hec";
 	
 	/**
 	 * The logger to use.
@@ -259,7 +255,7 @@ class HecDao implements HelioCatalogDao {
 		
 		VOTABLE votable;
 		try {
-			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService("HEC");
+			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService(HelioServiceName.HEC.getName());
 			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {
@@ -377,6 +373,6 @@ class HecDao implements HelioCatalogDao {
 	
 	@Override
 	public String getServiceName() {
-	    return SERVICE_NAME;
+	    return HelioServiceName.HEC.getName();
 	}
 }

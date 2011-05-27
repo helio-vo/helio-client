@@ -1,6 +1,9 @@
 package eu.heliovo.clientapi.registry.impl;
 
+import eu.heliovo.clientapi.model.service.HelioServiceName;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
+import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
  * Data access object to get access a local search registry implementation.
@@ -22,26 +25,26 @@ class LocalHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
 	 */
 	private void init() {
 	    // populate registry
-	    register("HEC", HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService?wsdl");
-	    register("HEC", HelioServiceCapability.SYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-hec/HelioService?wsdl");
+	    register(HelioServiceName.HEC, HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService?wsdl");
+	    register(HelioServiceName.HEC, HelioServiceCapability.SYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-hec/HelioService?wsdl");
 
-	    register("UOC", HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioLongQueryService?wsdl");
-	    register("UOC", HelioServiceCapability.SYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioService?wsdl");
+	    register(HelioServiceName.UOC, HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioLongQueryService?wsdl");
+	    register(HelioServiceName.UOC, HelioServiceCapability.SYNC_QUERY_SERVICE, "http://festung1.oats.inaf.it:8080/helio-uoc/HelioService?wsdl");
 
-	    register("DPAS", HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
-	    register("DPAS", HelioServiceCapability.SYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioService?wsdl");
+	    register(HelioServiceName.DPAS, HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
+	    register(HelioServiceName.DPAS, HelioServiceCapability.SYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioService?wsdl");
 
-	    register("ICS", HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioLongQueryService?wsdl");
-	    register("ICS", HelioServiceCapability.SYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioService?wsdl");
+	    register(HelioServiceName.ICS, HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioLongQueryService?wsdl");
+	    register(HelioServiceName.ICS, HelioServiceCapability.SYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ics/HelioService?wsdl");
 
-	    register("ILS", HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioLongQueryService?wsdl");
-	    register("ILS", HelioServiceCapability.SYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioService?wsdl");
+	    register(HelioServiceName.ILS, HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioLongQueryService?wsdl");
+	    register(HelioServiceName.ILS, HelioServiceCapability.SYNC_QUERY_SERVICE, "http://msslxw.mssl.ucl.ac.uk:8080/helio-ils/HelioService?wsdl");
 
-	    register("MDES", HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService.wsdl");      
-	    register("MDES", HelioServiceCapability.SYNC_QUERY_SERVICE, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioService.wsdl");       
+	    register(HelioServiceName.MDES, HelioServiceCapability.ASYNC_QUERY_SERVICE, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService.wsdl");      
+	    register(HelioServiceName.MDES, HelioServiceCapability.SYNC_QUERY_SERVICE, "http://manunja.cesr.fr/Amda-Helio/WebServices/HelioService.wsdl");       
 	}
 
-    private void register(String serviceName, HelioServiceCapability capability, String wsdlFile) {
-        registerServiceInstance(serviceName, serviceName, null, null, capability, wsdlFile);
+    private void register(HelioServiceName serviceName, HelioServiceCapability capability, String wsdlFile) {
+        registerServiceInstance(serviceName.getName(), serviceName.getName(), null, capability, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, HelioFileUtil.asURL(wsdlFile)));
     }
 }

@@ -1,6 +1,5 @@
 package eu.heliovo.clientapi.registry;
 
-import java.net.URL;
 
 /**
  * Data access object to get access to a Helio Service Registry.
@@ -27,22 +26,24 @@ public interface HelioServiceRegistryDao {
 	 * @return an array of URL pointing to the WSDL files and
 	 * an empty array if no endpoints have been found.
 	 */
-	public URL[] getAllEndpoints(HelioServiceDescriptor descriptor) throws ServiceResolutionException;
+	public AccessInterface[] getAllEndpoints(HelioServiceDescriptor descriptor) throws ServiceResolutionException;
 	
     /**
      * Convenience method to get the "best" endpoint by service name and capability.
      * @param name the name of the service
      * @param capability the capability to look for
+     * @param type the desired type of the access interface (SOAP, REST, ...)
      * @return URL pointing to the WSDL file or null if no endpoint has been found.
      * @throws ServiceResolutionException in case the service cannot be found.
      */
-    public URL getBestEndpoint(String name, HelioServiceCapability capability) throws ServiceResolutionException;
+    public AccessInterface getBestEndpoint(String name, HelioServiceCapability capability, AccessInterfaceType type) throws ServiceResolutionException;
     
     /**
 	 * Get the endpoint for the "best" endpoint by service descriptor and capability. 
 	 * @param descriptor the descriptor to use
 	 * @param capability the capability to look for
+	 * @param type the desired type of the access interface (SOAP, REST, ...)
 	 * @return the URL pointing to the WSDL files or null if no endpoint has been found.
 	 */
-	public URL getBestEndpoint(HelioServiceDescriptor descriptor, HelioServiceCapability capability) throws ServiceResolutionException;
+	public AccessInterface getBestEndpoint(HelioServiceDescriptor descriptor, HelioServiceCapability capability, AccessInterfaceType type) throws ServiceResolutionException;
 }

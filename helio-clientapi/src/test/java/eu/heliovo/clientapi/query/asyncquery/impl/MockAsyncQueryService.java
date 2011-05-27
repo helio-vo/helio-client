@@ -1,6 +1,5 @@
 package eu.heliovo.clientapi.query.asyncquery.impl;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -8,8 +7,10 @@ import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
 import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
 import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
-import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceImpl;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
+import eu.heliovo.clientapi.registry.impl.AccessInterfaceImpl;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
  * A local mock implementation of a long running query service. For testing purposes only
@@ -18,20 +19,12 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  */
 class MockAsyncQueryService extends AsyncQueryServiceImpl {
 
-	private static final URL wsdlLocation = asURL("http://localhost/test/LongRunningQuery.wsdl");
+	private static final URL wsdlLocation = HelioFileUtil.asURL("http://localhost/test/LongRunningQuery.wsdl");
 	private static final String name = "test_service";
 	private static final String description = "a dummy test service";
 
 	public MockAsyncQueryService(MockPort port) {	
-		super(port, wsdlLocation, name, description);
-	}
-
-	private static URL asURL(String url) {
-		try {
-			return new URL(url);
-		} catch (MalformedURLException e) {
-			throw new IllegalArgumentException("Unable to parse URL: '" + url + "'. Cause: " + e.getMessage(), e);
-		}
+		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlLocation), name, description);
 	}
 
 	/**

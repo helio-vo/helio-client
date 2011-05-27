@@ -114,7 +114,10 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
      */
     @Override
     public boolean addCapability(HelioServiceCapability capability) {
-        return this.capabilities.add(capability);
+        if (capability != null) {
+            return this.capabilities.add(capability);
+        }
+        return false;
     }
     
 	/* (non-Javadoc)
@@ -133,5 +136,18 @@ public class GenericHelioServiceDescriptor implements HelioServiceDescriptor {
 	@Override
 	public int hashCode() {
 		return 37 * name.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("GenericHelioSerivceDescriptor: [");
+	    sb.append("name: ").append(name);
+	    if (label != null) {
+	        sb.append(", label: ").append(label);
+	    }
+	    sb.append(", capabilities: " + capabilities);
+	    sb.append("]");
+	    return sb.toString();
 	}
 }

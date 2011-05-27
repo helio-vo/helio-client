@@ -3,6 +3,7 @@ package eu.heliovo.clientapi.query.paramquery.impl;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.catalog.impl.HelioCatalogDaoFactory;
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.service.HelioServiceName;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 /**
  * Default implementation of the param query for the HEC service. 
@@ -13,7 +14,7 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	/**
 	 * Keep a reference to the hecDao
 	 */
-	private HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("hec");;
+	private HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC.getName());
 
 	/**
 	 * Reference to the query service factory.

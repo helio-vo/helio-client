@@ -10,6 +10,7 @@ import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.service.HelioServiceName;
 
 public class HecCatalogDaoTest {
 
@@ -23,7 +24,7 @@ public class HecCatalogDaoTest {
 	 */
 	@Test
 	public void testGetCatalogField() {
-	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("hec");;
+	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC.getName());
 		HelioField<String> catalogField = hecDao.getCatalogField();
 
 		assertEquals("hec_catalog", catalogField.getId());
@@ -36,7 +37,7 @@ public class HecCatalogDaoTest {
 	}
 
 	@Test public void test() {
-	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao("hec");;
+	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC.getName());
 		for (DomainValueDescriptor<String> c : hecDao.getCatalogField().getValueDomain()) {
 			for (HelioField<?> hf : hecDao.getFields(c.getValue())) {
 				assertNotNull(hf);

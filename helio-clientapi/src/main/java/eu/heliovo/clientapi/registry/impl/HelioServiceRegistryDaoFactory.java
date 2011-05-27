@@ -13,8 +13,8 @@ public class HelioServiceRegistryDaoFactory {
     /**
      * The default DAO to use if none has been set.
      */
-    //private final static Class<? extends HelioServiceRegistryDao> DEFAULT_REGISTRY_DAO = RemoteHelioServiceRegistryDao.class;
-    private final static Class<? extends HelioServiceRegistryDao> DEFAULT_REGISTRY_DAO = LocalHelioServiceRegistryDao.class;
+    private final static Class<? extends HelioServiceRegistryDao> DEFAULT_REGISTRY_DAO = RemoteHelioServiceRegistryDao.class;
+    //private final static Class<? extends HelioServiceRegistryDao> DEFAULT_REGISTRY_DAO = LocalHelioServiceRegistryDao.class;
     
     /**
      * Get the singleton instance of this factory

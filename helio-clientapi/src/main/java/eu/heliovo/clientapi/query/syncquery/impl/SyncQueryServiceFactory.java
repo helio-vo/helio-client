@@ -1,6 +1,5 @@
 package eu.heliovo.clientapi.query.syncquery.impl;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +7,8 @@ import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
+import eu.heliovo.clientapi.registry.AccessInterface;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistryDao;
@@ -41,7 +42,7 @@ public class SyncQueryServiceFactory {
 	/**
 	 * Map to cache the client stubs to the sync query service implementations.
 	 */
-	private final Map<URL, SyncQueryServiceImpl> serviceImplCache = new HashMap<URL, SyncQueryServiceImpl>();
+	private final Map<AccessInterface, SyncQueryServiceImpl> serviceImplCache = new HashMap<AccessInterface, SyncQueryServiceImpl>();
 	
 	/**
 	 * Get a new instance of the "best" service provider for a given descriptor
@@ -56,16 +57,16 @@ public class SyncQueryServiceFactory {
 	        throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
 	    }
 	    
-	    URL bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor, HelioServiceCapability.SYNC_QUERY_SERVICE);
-	    if (bestWsdlLocation == null) {
+	    AccessInterface accessInterface = serviceRegistry.getBestEndpoint(serviceDescriptor, HelioServiceCapability.SYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
+	    if (accessInterface == null) {
 			throw new IllegalArgumentException("Unable to find any endpoint for service " + serviceName + " and capabilty " + HelioServiceCapability.SYNC_QUERY_SERVICE);
 		}
 		
-		_LOGGER.info("Using service at: " + bestWsdlLocation);
-		SyncQueryServiceImpl queryService = serviceImplCache.get(bestWsdlLocation);
+		_LOGGER.info("Using service at: " + accessInterface);
+		SyncQueryServiceImpl queryService = serviceImplCache.get(accessInterface);
 		if (queryService == null) {
-			queryService = new SyncQueryServiceImpl(bestWsdlLocation, serviceDescriptor.getName(), serviceDescriptor.getLabel());
-			serviceImplCache.put(bestWsdlLocation, queryService);
+			queryService = new SyncQueryServiceImpl(accessInterface, serviceDescriptor.getName(), serviceDescriptor.getLabel());
+			serviceImplCache.put(accessInterface, queryService);
 		}
 		return queryService;
 	}

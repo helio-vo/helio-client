@@ -13,6 +13,8 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.heliovo.clientapi.registry.AccessInterface;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 
@@ -34,9 +36,9 @@ public class LocalHelioRegistryImplTest {
 		HelioServiceDescriptor[] serviceDescriptors = helioRegistry.getAllServiceDescriptors();
 		assertNotNull(serviceDescriptors);
 		for (HelioServiceDescriptor helioServiceDescriptor : serviceDescriptors) {
-			URL[] endpoints = helioRegistry.getAllEndpoints(helioServiceDescriptor);
+			AccessInterface[] endpoints = helioRegistry.getAllEndpoints(helioServiceDescriptor);
 			assertNotNull(endpoints);
-			for (URL url : endpoints) {
+			for (AccessInterface url : endpoints) {
 				assertNotNull(url);
 			}
 		}
@@ -69,12 +71,12 @@ public class LocalHelioRegistryImplTest {
 		HelioServiceDescriptor descriptor = new GenericHelioServiceDescriptor("test2", "test service", "a test service", HelioServiceCapability.UNKNOWN);
 		
 		// create service instance descriptor
-		helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test.wsdl"));
+		helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, new URL("http://www.example.com/test.wsdl")));
 		
 		assertNotNull(helioRegistry.getServiceDescriptor("test2"));
 		
 		// register a service with the same name and type
-		assertFalse(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test.wsdl")));
+		assertFalse(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, new URL("http://www.example.com/test.wsdl"))));
 	}
 	
 	/**
@@ -84,19 +86,23 @@ public class LocalHelioRegistryImplTest {
 	@Test public void testGetBestEndpoint() throws Exception {
 		HelioServiceDescriptor descriptor = new GenericHelioServiceDescriptor("test3", "test service", "a test service", HelioServiceCapability.UNKNOWN);
 		assertNotNull(helioRegistry.registerServiceDescriptor(descriptor));
-		assertTrue(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test2.wsdl")));
-		assertTrue(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test3.wsdl")));
-		assertTrue(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new URL("http://www.example.com/test1.wsdl")));
+		assertTrue(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, new URL("http://www.example.com/test2.wsdl"))));
+		assertTrue(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, new URL("http://www.example.com/test3.wsdl"))));
+		assertTrue(helioRegistry.registerServiceInstance(descriptor, HelioServiceCapability.UNKNOWN, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, new URL("http://www.example.com/test1.wsdl"))));
 		
-		URL bestEndPoint = helioRegistry.getBestEndpoint(descriptor, HelioServiceCapability.UNKNOWN);
+		AccessInterface bestEndPoint = helioRegistry.getBestEndpoint(descriptor, HelioServiceCapability.UNKNOWN, AccessInterfaceType.SOAP_SERVICE);
 		assertNotNull(bestEndPoint);
-		assertEquals(new URL("http://www.example.com/test2.wsdl"), bestEndPoint);
+		assertEquals(new URL("http://www.example.com/test2.wsdl"), bestEndPoint.getUrl());
 		
-		bestEndPoint = helioRegistry.getBestEndpoint("test3", HelioServiceCapability.UNKNOWN);
+		bestEndPoint = helioRegistry.getBestEndpoint("test3", HelioServiceCapability.UNKNOWN, AccessInterfaceType.SOAP_SERVICE);
 		assertNotNull(bestEndPoint);
-		assertEquals(new URL("http://www.example.com/test2.wsdl"), bestEndPoint);		
+		assertEquals(new URL("http://www.example.com/test2.wsdl"), bestEndPoint.getUrl());		
 		
-		URL[] bestEndPoints = helioRegistry.getAllEndpoints(descriptor);
+		AccessInterface[] allEndpoints = helioRegistry.getAllEndpoints(descriptor);
+		URL[] bestEndPoints = new URL[allEndpoints.length];
+		for (int i = 0; i < allEndpoints.length; i++) {
+            bestEndPoints[i] = allEndpoints[i].getUrl();
+        }
 		assertNotNull(bestEndPoints);
 		assertArrayEquals(new URL[] {new URL("http://www.example.com/test2.wsdl"), new URL("http://www.example.com/test3.wsdl"), new URL("http://www.example.com/test1.wsdl")}, bestEndPoints);
 	}

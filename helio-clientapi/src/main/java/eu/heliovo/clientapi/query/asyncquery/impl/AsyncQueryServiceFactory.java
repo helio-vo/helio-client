@@ -1,12 +1,13 @@
 package eu.heliovo.clientapi.query.asyncquery.impl;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.registry.AccessInterface;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.HelioServiceRegistryDao;
@@ -40,7 +41,7 @@ public class AsyncQueryServiceFactory {
 	/**
 	 * Map to cache the client stubs to the async running query service impls.
 	 */
-	private final Map<URL, AsyncQueryServiceImpl> serviceImplCache = new HashMap<URL, AsyncQueryServiceImpl>();
+	private final Map<AccessInterface, AsyncQueryServiceImpl> serviceImplCache = new HashMap<AccessInterface, AsyncQueryServiceImpl>();
 	
 	
 	/**
@@ -56,7 +57,7 @@ public class AsyncQueryServiceFactory {
 	        throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
 	    }
 
-	    URL bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE);
+	    AccessInterface bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
 	    if (bestWsdlLocation == null) {
 	        throw new IllegalArgumentException("Unable to find any endpoint for service " + serviceName + " and capabilty " + HelioServiceCapability.ASYNC_QUERY_SERVICE);
 	    }

@@ -9,9 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.clientapi.registry.impl.AccessInterfaceImpl;
 import eu.heliovo.clientapi.registry.impl.DummyHelioServiceRegistryDao;
 import eu.heliovo.clientapi.registry.impl.GenericHelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.impl.HelioServiceRegistryDaoFactory;
@@ -33,7 +35,7 @@ public class AsyncQueryServiceFactoryTest {
 		assertNotNull(wsdlUrl);
 
 		DummyHelioServiceRegistryDao helioServiceRegistryDao = DummyHelioServiceRegistryDao.getInstance();
-		helioServiceRegistryDao.registerServiceInstance(testDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE, wsdlUrl);
+		helioServiceRegistryDao.registerServiceInstance(testDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlUrl));
 		HelioServiceRegistryDaoFactory.getInstance().setHelioServiceRegistryDao(helioServiceRegistryDao);      
 		instance = AsyncQueryServiceFactory.getInstance();
 		assertNotNull(instance);

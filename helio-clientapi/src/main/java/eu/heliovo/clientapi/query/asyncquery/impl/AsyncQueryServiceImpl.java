@@ -36,6 +36,8 @@ import eu.heliovo.clientapi.help.annotation.TypeHelp;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.registry.AccessInterface;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -63,7 +65,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	/**
 	 * The location of the target WSDL file
 	 */
-	private final URL wsdlLocation;
+	private final AccessInterface accessInterface;
 
 	/**
 	 * Store the port to access the long running query service. Apparently the port is thread-safe and can be reused.
@@ -84,43 +86,47 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	 * Create the connector and open the connection to the WSDL file.
 	 * @param name the name of the service
 	 * @param description a short text to describe the service
-	 * @param wsdlLocation the location of the wsdl. Must not be null
+	 * @param accessInterface the location of the wsdl. Must not be null
 	 */
-	public AsyncQueryServiceImpl(URL wsdlLocation, String name, String description) {
-		this(getPort(wsdlLocation), wsdlLocation, name, description);
-	}
-
-	/**
-	 * Use JAXWS to create a new service port for a given WSDL location.
-	 * @param wsdlLocation the service endpoint
-	 * @return the port to access the service.
-	 */
-	private static LongHelioQueryService getPort(URL wsdlLocation) {
-		AssertUtil.assertArgumentNotNull(wsdlLocation, "wsdlLocation");
-		LongHelioQueryService_Service queryService = new LongHelioQueryService_Service(wsdlLocation, SERVICE_NAME);		
-		LongHelioQueryService port = queryService.getLongHelioQueryServicePort();
-		if (_LOGGER.isDebugEnabled()) {
-			_LOGGER.debug("Created " + port.getClass().getSimpleName() + " for " + wsdlLocation);
-		}
-		return port;
+	public AsyncQueryServiceImpl(AccessInterface accessInterface, String name, String description) {
+		this(getPort(accessInterface), accessInterface, name, description);
 	}
 
 	/**
 	 * Create the connector and open the connection to the WSDL file. This constructor can be used to submit the port from outside. This
 	 * is of particular interest for testing purposes.
 	 * @param port the port to be used by this query service
-	 * @param wsdlLocation the location of the wsdl. Must not be null
+	 * @param accessInterface the location of the wsdl. Must not be null
 	 * @param name the name of the service
 	 * @param description a short text to describe the service
 	 */
-	AsyncQueryServiceImpl(LongHelioQueryService port, URL wsdlLocation, String name, String description) {
+	AsyncQueryServiceImpl(LongHelioQueryService port, AccessInterface accessInterface, String name, String description) {
 		AssertUtil.assertArgumentNotNull(port, "port");
-		AssertUtil.assertArgumentNotNull(wsdlLocation, "wsdlLocation");
+		AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
 		AssertUtil.assertArgumentNotNull(name, "name");
+		if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
+		    throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
+		}
+
 		this.port = port;
-		this.wsdlLocation = wsdlLocation;
+		this.accessInterface = accessInterface;
 		this.name = name;
 		this.description = description;
+	}
+	
+	/**
+	 * Use JAXWS to create a new service port for a given WSDL location.
+	 * @param accessInterface the service endpoint
+	 * @return the port to access the service.
+	 */
+	private static LongHelioQueryService getPort(AccessInterface accessInterface) {
+	    AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
+	    LongHelioQueryService_Service queryService = new LongHelioQueryService_Service(accessInterface.getUrl(), SERVICE_NAME);		
+	    LongHelioQueryService port = queryService.getLongHelioQueryServicePort();
+	    if (_LOGGER.isDebugEnabled()) {
+	        _LOGGER.debug("Created " + port.getClass().getSimpleName() + " for " + accessInterface);
+	    }
+	    return port;
 	}
 
 	@Override
@@ -161,7 +167,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 
-		String callId = wsdlLocation + "::longQuery";
+		String callId = accessInterface.getUrl() + "::longQuery";
 		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
 		StringBuilder message = new StringBuilder();
@@ -236,7 +242,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
-		String callId = wsdlLocation + "::longTimeQuery";
+		String callId = accessInterface.getUrl() + "::longTimeQuery";
 		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 		
 		StringBuilder message = new StringBuilder();

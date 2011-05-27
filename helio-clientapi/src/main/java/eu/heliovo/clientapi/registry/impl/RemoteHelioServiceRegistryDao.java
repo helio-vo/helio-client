@@ -4,6 +4,7 @@ package eu.heliovo.clientapi.registry.impl;
 import static uk.ac.starlink.registry.RegistryRequestFactory.keywordSearch;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -11,9 +12,10 @@ import org.apache.log4j.Logger;
 
 import uk.ac.starlink.registry.AbstractRegistryClient;
 import uk.ac.starlink.registry.BasicCapability;
-import uk.ac.starlink.registry.BasicRegistryClient;
 import uk.ac.starlink.registry.BasicResource;
 import uk.ac.starlink.registry.SoapClient;
+import eu.heliovo.clientapi.registry.AccessInterface;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.registry.HelioServiceCapability;
 import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
 import eu.heliovo.clientapi.registry.ServiceResolutionException;
@@ -30,11 +32,6 @@ class RemoteHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
 
 	/** The default address of the registry. */
 	public static final String REGISTRY_AT_MSSL = "http://msslxw.mssl.ucl.ac.uk:8080/helio_registry/services/RegistryQueryv1_0";
-
-	/**
-	 * XSI Type of web service capabilities
-	 */
-    private static final String CAPABILITY_TYPE_WEBSERVICE = "vr:WebService";
 	
 	/**
 	 * Client stub to the registry.
@@ -53,7 +50,7 @@ class RemoteHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
 	 * @param url the url to use.
 	 */
 	public void setRegistryURL(URL url)  {
-		registry = new BasicRegistryClient(new SoapClient(url));
+		registry = new PatchedBasicRegistryClient(new SoapClient(url));
 		reinit();
 	}
 
@@ -92,13 +89,22 @@ class RemoteHelioServiceRegistryDao extends AbstractHelioServiceRegistryDao {
             // register capabilities
             for (BasicCapability c : r.getCapabilities()) {
                 HelioServiceCapability cap = HelioServiceCapability.findCapabilityById(c.getStandardId());
+                System.out.println(c.getStandardId() + ", " + c.getXsiType() + ", " +  c.getDescription() + ", " + c.getVersion() + ", "+ c.getAccessUrl());
                 if (cap == null) {
+                    //cap = HelioServiceCapability.register(c.getStandardId(), c.getXsiType(), c.getDescription(), c.getVersion());
                     cap = HelioServiceCapability.UNKNOWN;
-                    if (CAPABILITY_TYPE_WEBSERVICE.equals(c.getXsiType())) {
-                        registerServiceInstance(serviceDescriptor, cap, c.getAccessUrl());
-                    } else {
-                        _LOGGER.info("Ignoring capabilty with type " + c.getXsiType());
-                    }
+                }
+                
+                AccessInterfaceType accessInterfaceType = AccessInterfaceType.findInterfaceTypeByXsiType(c.getXsiType());
+                
+                if (accessInterfaceType == null) {
+                    accessInterfaceType = AccessInterfaceType.register(c.getXsiType(), c.getXsiType());
+                }
+                try {
+                    AccessInterface accessInterface = new AccessInterfaceImpl(accessInterfaceType, new URL(c.getAccessUrl()));
+                    registerServiceInstance(serviceDescriptor, cap, accessInterface);
+                } catch (MalformedURLException e) {
+                    _LOGGER.warn("Unable to register URL " + c.getAccessUrl() + " for " + serviceDescriptor + "::" + cap + ": " + e.getMessage(), e);
                 }
             }
         }

@@ -2,7 +2,6 @@ package eu.heliovo.clientapi.query.syncquery.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -17,7 +16,10 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
+import eu.heliovo.clientapi.registry.AccessInterfaceType;
+import eu.heliovo.clientapi.registry.impl.AccessInterfaceImpl;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
  * A local mock implementation of a HELIO query service. For testing purposes only
@@ -28,22 +30,14 @@ class MockQueryService extends SyncQueryServiceImpl {
 	
 	private static final Logger _LOGGER = Logger.getLogger(MockQueryService.class);
 
-	private static final URL wsdlLocation = asURL("http://localhost/test/HelioQuery.wsdl");
+	private static final URL wsdlLocation = HelioFileUtil.asURL("http://localhost/test/HelioQuery.wsdl");
 	private static final String name = "test_service";
 	private static final String description = "a dummy test service";
 
 	public MockQueryService(MockQueryServicePort port) {	
-		super(port, wsdlLocation, name, description);
+		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlLocation), name, description);
 	}
-
-	private static URL asURL(String url) {
-		try {
-			return new URL(url);
-		} catch (MalformedURLException e) {
-			throw new IllegalArgumentException("Unable to parse URL: '" + url + "'. Cause: " + e.getMessage(), e);
-		}
-	}
-
+	
 	/**
 	 * Mock implementation of a helio query service. For testing purposes.
 	 * @author marco soldati at fhnw ch

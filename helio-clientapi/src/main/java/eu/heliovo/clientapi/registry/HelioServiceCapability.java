@@ -11,12 +11,12 @@ public enum HelioServiceCapability {
 	/**
 	 * Services that implement the long running query service interface
 	 */
-	ASYNC_QUERY_SERVICE ("longhqi:0.2", "ivo://helio-vo.eu/std/LongFullQuery/v0.2"),
+	ASYNC_QUERY_SERVICE ("longhqi:1.0", "ivo://helio-vo.eu/std/LongFullQuery/Soap/v1.0"),
 
 	/**
 	 * Synchronous helio query services
 	 */
-	SYNC_QUERY_SERVICE("hqi:0.2","ivo://helio-vo.eu/std/FullQuery/v0.2"),
+	SYNC_QUERY_SERVICE("hqi:1.0","ivo://helio-vo.eu/std/FullQuery/Soap/v1.0"),
 
 	/**
 	 * provider of a VOSI cababilites table.
