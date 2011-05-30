@@ -35,7 +35,7 @@ public class SyncQueryServiceFactory {
 	 * Get the singleton of this factory
 	 * @return the singleton instance.
 	 */
-	public static SyncQueryServiceFactory getInstance() {
+	public static synchronized SyncQueryServiceFactory getInstance() {
 		return instance;
 	}
 	

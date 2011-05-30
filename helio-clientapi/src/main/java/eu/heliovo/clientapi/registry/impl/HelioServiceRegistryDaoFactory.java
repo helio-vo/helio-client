@@ -20,7 +20,7 @@ public class HelioServiceRegistryDaoFactory {
      * Get the singleton instance of this factory
      * @return the factory instance
      */
-    public static HelioServiceRegistryDaoFactory getInstance() {
+    public static synchronized HelioServiceRegistryDaoFactory getInstance() {
         return instance;
     }
     
@@ -39,7 +39,7 @@ public class HelioServiceRegistryDaoFactory {
      * Get the service registry dao to access the registry.
      * @return the registry dao
      */
-    public HelioServiceRegistryDao getHelioServiceRegistryDao() {
+    public synchronized HelioServiceRegistryDao getHelioServiceRegistryDao() {
         if (this.helioServiceRegistryDao == null) {
             try {
                 this.helioServiceRegistryDao = DEFAULT_REGISTRY_DAO.newInstance();
@@ -56,7 +56,7 @@ public class HelioServiceRegistryDaoFactory {
      * Set the HelioServiceRegistryDao. This is only needed for testing.
      * @param helioServiceRegistryDao
      */
-    public void setHelioServiceRegistryDao(HelioServiceRegistryDao helioServiceRegistryDao) {
+    public synchronized void setHelioServiceRegistryDao(HelioServiceRegistryDao helioServiceRegistryDao) {
 //        if (this.helioServiceRegistryDao != null && !this.helioServiceRegistryDao.equals(helioServiceRegistryDao)) {
 //            throw new IllegalArgumentException("Argument 'helioServiceRegistryDao' must not be changed once it has been set.");
 //        }

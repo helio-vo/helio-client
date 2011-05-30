@@ -28,6 +28,7 @@ import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptorUtil;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.service.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -43,11 +44,6 @@ class DpasDao implements HelioCatalogDao {
 	 */
 	@SuppressWarnings("unused")
 	private static final Logger _LOGGER = Logger.getLogger(DpasDao.class);
-
-	/**
-	 * The name of the service
-	 */
-    private static final String SERVICE_NAME = "dpas"; 
 	
 	/**
 	 * Location of the instruments list.
@@ -234,6 +230,6 @@ class DpasDao implements HelioCatalogDao {
 	
 	@Override
 	public String getServiceName() {
-	    return SERVICE_NAME;
+	    return HelioServiceName.DPAS.getName();
 	}
 }

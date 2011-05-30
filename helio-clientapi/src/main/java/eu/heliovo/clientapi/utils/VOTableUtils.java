@@ -44,7 +44,7 @@ public class VOTableUtils {
 	 * Get the singleton instance of the vo tables
 	 * @return the utils
 	 */
-	public static VOTableUtils getInstance() {
+	public static synchronized VOTableUtils getInstance() {
 		return instance;
 	}
 	
