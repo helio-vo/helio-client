@@ -174,9 +174,11 @@ public class STILUtilsTest
     //assertEquals("Helio HEC time based query V1.16.25",tables[0].getParameterByName("DESCRIPTION").getValue());
     
     //can read file header?
-    String expectedQueryURL="http://festung1.oats.inaf.it:8080/helio-hec/HelioQueryService?STARTTIME=2003-01-01T00:00:00,2003-01-01T00:00:00&amp;ENDTIME=2003-01-03T00:00:00,2003-01-03T00:00:00&amp;FROM=goes_sxr_flare,rhessi_hxr_flare";
-    assertEquals(expectedQueryURL,tables[0].getParameterByName("QUERY_URL").getValue());
-    assertEquals(expectedQueryURL,tables[1].getParameterByName("QUERY_URL").getValue());
+    String expectedQueryURL1="http://festung1.oats.inaf.it:8080/helio-hec/HelioQueryService?STARTTIME=2003-01-01T00:00:00&ENDTIME=2003-01-03T00:00:00&FROM=goes_sxr_flare";
+    assertEquals(expectedQueryURL1,tables[0].getParameterByName("QUERY_URL").getValue());
+    
+    String expectedQueryURL2="http://festung1.oats.inaf.it:8080/helio-hec/HelioQueryService?STARTTIME=2003-01-01T00:00:00&ENDTIME=2003-01-03T00:00:00&FROM=rhessi_hxr_flare";
+    assertEquals(expectedQueryURL2,tables[1].getParameterByName("QUERY_URL").getValue());
   }
   
   private URL getTestVOTable()
