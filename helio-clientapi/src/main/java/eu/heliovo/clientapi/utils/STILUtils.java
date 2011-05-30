@@ -42,14 +42,20 @@ public class STILUtils
     new File(PersistedFile.PERSISTED_FILES_PATH).mkdirs();
     
     //clean up files & database
-    purgeOutdatedPersistedFiles();
+    purgeExpiredPersistedFiles();
     cleanupPersistedFilesDirectory();
     
     LOGGER.info("Initialization of STILUtils completed");
   }
   
   
-  
+  /**
+   * Returns the index of a column for a given name. 
+   * 
+   * @param _table The table that should be searched
+   * @param _columnName The title of the column to look for
+   * @return The index of the column or -1 if no column with a matching name can be found
+   */
   private static int columnIndex(StarTable _table,String _columnName)
   {
     for(int i=0;i<_table.getColumnCount();i++)
@@ -258,17 +264,17 @@ public class STILUtils
    * 
    * The tables will be stored for at least 180 days.
    * 
-   * @see #persist(StarTable[], Date)
+   * @see #persist(Date, StarTable...)
    * @param _src The VOTables to store
    * @return Returns a handle to the persisted data.
    * @throws IOException
    */
-  public static String persist(StarTable[] _src) throws IOException
+  public static String persist(StarTable... _src) throws IOException
   {
     Calendar expiration=Calendar.getInstance();
     expiration.add(Calendar.DATE,180);
     
-    return persist(_src,expiration.getTime());
+    return persist(expiration.getTime(),_src);
   }
   
   
@@ -321,7 +327,10 @@ public class STILUtils
   }
   
   
-  private static void purgeOutdatedPersistedFiles()
+  /**
+   * Forces the deletion of expired persisted files.
+   */
+  public static void purgeExpiredPersistedFiles()
   {
     Session s=sessionFactory.openSession();
     
@@ -349,15 +358,14 @@ public class STILUtils
    * The tables will be stored at least until the supplied
    * expiration date.
    * 
-   * @see #persist(StarTable[], Date)
-   * @param _src The VOTables to store
    * @param _expiration The expiration date
+   * @param _src The VOTables to store
    * @return Returns a handle to the persisted data.
    * @throws IOException
    */
-  public static String persist(StarTable[] _src,Date _expiration) throws IOException
+  public static String persist(Date _expiration,StarTable... _src) throws IOException
   {
-    purgeOutdatedPersistedFiles();
+    purgeExpiredPersistedFiles();
     
     QueueTableSequence tables=new QueueTableSequence();
     for(StarTable t:_src)
