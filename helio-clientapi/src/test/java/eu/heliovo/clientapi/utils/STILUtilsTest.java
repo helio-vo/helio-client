@@ -168,10 +168,12 @@ public class STILUtilsTest
     //can read table header?
     assertEquals("2011-05-02 11:56:16",tables[0].getParameterByName("EXECUTED_AT").getValue());
     
-    //can read table description?
+    //can read column description?
+    assertEquals("Event identification number (HEC internal number)",tables[0].getColumnInfo(0).getDescription());
     
+    //can read table description?
     //TODO: reading DESCRIPTION elements does not yet work
-    //assertEquals("Helio HEC time based query V1.16.25",tables[0].getParameterByName("DESCRIPTION").getValue());
+    //assertEquals("Helio HEC time based query V1.16.25",tables[0].getParameterByName("Description").getValue());    
     
     //can read file header?
     String expectedQueryURL1="http://festung1.oats.inaf.it:8080/helio-hec/HelioQueryService?STARTTIME=2003-01-01T00:00:00&ENDTIME=2003-01-03T00:00:00&FROM=goes_sxr_flare";
