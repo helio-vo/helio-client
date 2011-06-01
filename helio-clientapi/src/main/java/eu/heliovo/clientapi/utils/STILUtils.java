@@ -1,16 +1,40 @@
 package eu.heliovo.clientapi.utils;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 
-import uk.ac.starlink.table.*;
-import uk.ac.starlink.util.*;
-import uk.ac.starlink.votable.*;
+import uk.ac.starlink.table.ArrayColumn;
+import uk.ac.starlink.table.ColumnInfo;
+import uk.ac.starlink.table.ColumnPermutedStarTable;
+import uk.ac.starlink.table.ColumnStarTable;
+import uk.ac.starlink.table.QueueTableSequence;
+import uk.ac.starlink.table.RowPermutedStarTable;
+import uk.ac.starlink.table.StarTable;
+import uk.ac.starlink.table.StoragePolicy;
+import uk.ac.starlink.table.TableSequence;
+import uk.ac.starlink.util.ByteArrayDataSource;
+import uk.ac.starlink.util.DataSource;
+import uk.ac.starlink.util.FileDataSource;
+import uk.ac.starlink.util.URLDataSource;
+import uk.ac.starlink.votable.DataFormat;
+import uk.ac.starlink.votable.VOTableBuilder;
+import uk.ac.starlink.votable.VOTableWriter;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Facade class of the STIL library. The library provides facilities to
@@ -341,8 +365,12 @@ public class STILUtils
       
       LOGGER.info("Purging outdated file "+pf.getPersistedFilePath());
       
-      new File(pf.getPersistedFilePath()).delete();
-      s.delete(pf);
+      File fileToDelete = new File(pf.getPersistedFilePath());
+      if (FileUtil.removeFile(fileToDelete)) {
+          s.delete(pf);          
+      } else {
+          LOGGER.warn("Unable to remove expired file: " + pf.getPersistedFilePath() + ". Reason unknown.");
+      }
     }
     
     tx.commit();
