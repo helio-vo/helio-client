@@ -3,7 +3,6 @@ package eu.heliovo.clientapi.help.plain;
 import java.text.BreakIterator;
 import java.util.Locale;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 class PlainTextFormatter {

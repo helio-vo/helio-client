@@ -7,9 +7,9 @@ import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
 import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
 import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
-import eu.heliovo.clientapi.registry.AccessInterfaceType;
-import eu.heliovo.clientapi.registry.impl.AccessInterfaceImpl;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
 
 /**

@@ -10,7 +10,7 @@ import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
-import eu.heliovo.clientapi.model.service.HelioServiceName;
+import eu.heliovo.registryclient.HelioServiceName;
 
 public class HecCatalogDaoTest {
 

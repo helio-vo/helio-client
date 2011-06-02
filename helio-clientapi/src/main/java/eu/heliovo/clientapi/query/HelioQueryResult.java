@@ -4,10 +4,9 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
+import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
-
-import net.ivoa.xml.votable.v1.VOTABLE;
 
 /**
  * Container object for a set of results. 

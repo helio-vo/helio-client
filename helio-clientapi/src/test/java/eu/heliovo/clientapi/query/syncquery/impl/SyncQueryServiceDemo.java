@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.LogRecord;
 
-import eu.heliovo.clientapi.model.service.HelioServiceName;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
+import eu.heliovo.registryclient.HelioServiceName;
 
 public class SyncQueryServiceDemo {
 	public static void main(String[] args) throws Exception {

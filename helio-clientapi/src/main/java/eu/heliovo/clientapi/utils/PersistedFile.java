@@ -3,7 +3,9 @@ package eu.heliovo.clientapi.utils;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Entity class to represent a persisted VOTable. The actual table is stored in a

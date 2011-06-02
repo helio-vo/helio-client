@@ -1,15 +1,24 @@
 package eu.heliovo.clientapi.frontend;
 
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
-import net.ivoa.xml.votable.v1.*;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
+import net.ivoa.xml.votable.v1.FIELD;
+import net.ivoa.xml.votable.v1.INFO;
+import net.ivoa.xml.votable.v1.RESOURCE;
+import net.ivoa.xml.votable.v1.TABLE;
+import net.ivoa.xml.votable.v1.TD;
+import net.ivoa.xml.votable.v1.TR;
+import net.ivoa.xml.votable.v1.VOTABLE;
 
 public class ResultVT {
 

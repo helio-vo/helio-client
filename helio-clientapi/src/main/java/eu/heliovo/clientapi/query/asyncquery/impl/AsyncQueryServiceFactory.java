@@ -6,13 +6,13 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
-import eu.heliovo.clientapi.registry.AccessInterface;
-import eu.heliovo.clientapi.registry.AccessInterfaceType;
-import eu.heliovo.clientapi.registry.HelioServiceCapability;
-import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.HelioServiceRegistryDao;
-import eu.heliovo.clientapi.registry.ServiceResolutionException;
-import eu.heliovo.clientapi.registry.impl.HelioServiceRegistryDaoFactory;
+import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.ServiceCapability;
+import eu.heliovo.registryclient.ServiceDescriptor;
+import eu.heliovo.registryclient.ServiceRegistryClient;
+import eu.heliovo.registryclient.ServiceResolutionException;
+import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
 
 /**
  * Factory to get async running query service instances.
@@ -50,16 +50,16 @@ public class AsyncQueryServiceFactory {
 	 * @return a AsyncQueryService implementation to send out queries to this service.
 	 */
 	public AsyncQueryService getAsyncQueryService(String serviceName) {
-	    HelioServiceRegistryDao serviceRegistry = HelioServiceRegistryDaoFactory.getInstance().getHelioServiceRegistryDao();
+	    ServiceRegistryClient serviceRegistry = ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
 
-	    HelioServiceDescriptor serviceDescriptor = serviceRegistry.getServiceDescriptor(serviceName);
+	    ServiceDescriptor serviceDescriptor = serviceRegistry.getServiceDescriptor(serviceName);
 	    if (serviceDescriptor == null) {
 	        throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
 	    }
 
-	    AccessInterface bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
+	    AccessInterface bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
 	    if (bestWsdlLocation == null) {
-	        throw new IllegalArgumentException("Unable to find any endpoint for service " + serviceName + " and capabilty " + HelioServiceCapability.ASYNC_QUERY_SERVICE);
+	        throw new IllegalArgumentException("Unable to find any endpoint for service " + serviceName + " and capabilty " + ServiceCapability.ASYNC_QUERY_SERVICE);
 	    }
 
 	    _LOGGER.info("Using service at: " + bestWsdlLocation);

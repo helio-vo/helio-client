@@ -9,14 +9,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
-import eu.heliovo.clientapi.registry.AccessInterfaceType;
-import eu.heliovo.clientapi.registry.HelioServiceCapability;
-import eu.heliovo.clientapi.registry.HelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.ServiceResolutionException;
-import eu.heliovo.clientapi.registry.impl.AccessInterfaceImpl;
-import eu.heliovo.clientapi.registry.impl.DummyHelioServiceRegistryDao;
-import eu.heliovo.clientapi.registry.impl.GenericHelioServiceDescriptor;
-import eu.heliovo.clientapi.registry.impl.HelioServiceRegistryDaoFactory;
+import eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient;
+import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.ServiceCapability;
+import eu.heliovo.registryclient.ServiceDescriptor;
+import eu.heliovo.registryclient.ServiceResolutionException;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
+import eu.heliovo.registryclient.impl.GenericServiceDescriptor;
+import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
 
 /**
  * Test {@link AsyncQueryServiceFactory}
@@ -26,7 +26,7 @@ import eu.heliovo.clientapi.registry.impl.HelioServiceRegistryDaoFactory;
 public class AsyncQueryServiceFactoryTest {
 
 	AsyncQueryServiceFactory instance;
-	HelioServiceDescriptor testDescriptor = new GenericHelioServiceDescriptor("testService", "test service", "a test service descriptor", HelioServiceCapability.ASYNC_QUERY_SERVICE);
+	ServiceDescriptor testDescriptor = new GenericServiceDescriptor("testService", "test service", "a test service descriptor", ServiceCapability.ASYNC_QUERY_SERVICE);
 	
 	@Before
 	public void setUp() throws Exception {
@@ -34,15 +34,15 @@ public class AsyncQueryServiceFactoryTest {
 		URL wsdlUrl = getClass().getResource(wsdlPath);
 		assertNotNull(wsdlUrl);
 
-		DummyHelioServiceRegistryDao helioServiceRegistryDao = DummyHelioServiceRegistryDao.getInstance();
-		helioServiceRegistryDao.registerServiceInstance(testDescriptor, HelioServiceCapability.ASYNC_QUERY_SERVICE, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlUrl));
-		HelioServiceRegistryDaoFactory.getInstance().setHelioServiceRegistryDao(helioServiceRegistryDao);      
+		HelioDummyServiceRegistryClient ServiceRegistryClient = HelioDummyServiceRegistryClient.getInstance();
+		ServiceRegistryClient.registerServiceInstance(testDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlUrl));
+		ServiceRegistryClientFactory.getInstance().setServiceRegistryClient(ServiceRegistryClient);      
 		instance = AsyncQueryServiceFactory.getInstance();
 		assertNotNull(instance);
 	}
 	
 	/**
-	 * Test {@link AsyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
+	 * Test {@link AsyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.ServiceDescriptor)}
 	 */
 	@Test public void testGetLongRunningQueryService() {	
 		AsyncQueryService queryService = instance.getAsyncQueryService("testService");
@@ -50,10 +50,10 @@ public class AsyncQueryServiceFactoryTest {
 	}
 	
 	/**
-	 * Test {@link AsyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.HelioServiceDescriptor)}
+	 * Test {@link AsyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.ServiceDescriptor)}
 	 */
 	@Test public void testInvalidRequest() {
-		//HelioServiceDescriptor invalidDescriptor = new GenericHelioServiceDescriptor("bad", "invalid service", "invalid service", HelioServiceCapability.UNKNOWN);
+		//ServiceDescriptor invalidDescriptor = new GenericServiceDescriptor("bad", "invalid service", "invalid service", ServiceCapability.UNKNOWN);
 		try {
 			instance.getAsyncQueryService("bad");
 			fail(ServiceResolutionException.class.getName() + " expected.");

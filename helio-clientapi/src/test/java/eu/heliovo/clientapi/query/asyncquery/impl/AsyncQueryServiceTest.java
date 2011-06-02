@@ -15,8 +15,8 @@ import org.junit.Test;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.impl.MockAsyncQueryService.MockPort;
-import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
+import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 public class AsyncQueryServiceTest {
 	

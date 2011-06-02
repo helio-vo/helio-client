@@ -1,14 +1,16 @@
 package eu.heliovo.clientapi.utils;
 
-import java.io.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Calendar;
 
 import org.junit.Test;
 
-import uk.ac.starlink.table.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import uk.ac.starlink.table.StarTable;
+import uk.ac.starlink.table.Tables;
 
 /**
  * Tests various functions of the STULUtils class

@@ -12,7 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
-import eu.heliovo.clientapi.registry.ServiceResolutionException;
+import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceResolutionException;
 import eu.heliovo.shared.util.AssertUtil;
 
 public class HelioCatalogDaoFactory {
@@ -97,7 +98,8 @@ public class HelioCatalogDaoFactory {
     }
     
     /**
-     * Get the catalog dao by service name. Possible service names are 'HEC', 'DPAS', ....
+     * Get the catalog dao by service name. Possible service names are 
+     * {@link HelioServiceName#HEC HelioServiceName#HEC.getName()}, {@link HelioServiceName#DPAS HelioServiceName.DPAS.getName()}, ....
      * @param serviceName the service name. must not be null
      * @return the catalog dao
      */

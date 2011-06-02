@@ -15,7 +15,7 @@ import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
-import eu.heliovo.clientapi.registry.HelioServiceCapability;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -28,7 +28,7 @@ public class SimpleInterface {
 	/**
 	 * which service type shall we use.
 	 */
-	private static final HelioServiceCapability SERVICE_TYPE = HelioServiceCapability.SYNC_QUERY_SERVICE;
+	private static final ServiceCapability DEFAULT_CAPABILITY = ServiceCapability.SYNC_QUERY_SERVICE;
 	
 	/**
 	 * Execute a query on the specified server.
@@ -49,7 +49,7 @@ public class SimpleInterface {
 		int startindex = 0;
 		// timeout to wait for a response
 		int timeout = 300;
-		HelioServiceCapability serviceType = SERVICE_TYPE;
+		ServiceCapability serviceCapability = DEFAULT_CAPABILITY;
 		
 		//if (serviceName.equalsIgnoreCase("DPAS")) {
 		// normalize all lists
@@ -61,12 +61,12 @@ public class SimpleInterface {
 		//}
 		
 		HelioQueryService service;
-		if (serviceType == HelioServiceCapability.ASYNC_QUERY_SERVICE) {
-			service = AsyncQueryServiceFactory.getInstance().getAsyncQueryService(serviceName.toUpperCase());
-		} else if (serviceType == HelioServiceCapability.SYNC_QUERY_SERVICE) {
-			service = SyncQueryServiceFactory.getInstance().getSyncQueryService(serviceName.toUpperCase());
+		if (serviceCapability == ServiceCapability.ASYNC_QUERY_SERVICE) {
+			service = AsyncQueryServiceFactory.getInstance().getAsyncQueryService(serviceName);
+		} else if (serviceCapability == ServiceCapability.SYNC_QUERY_SERVICE) {
+			service = SyncQueryServiceFactory.getInstance().getSyncQueryService(serviceName);
 		} else {
-			throw new RuntimeException("Internal Error: Unknown service type " + SERVICE_TYPE);
+			throw new RuntimeException("Internal Error: Unknown service type " + DEFAULT_CAPABILITY);
 		}
 		
 		HelioQueryResult result = service.query(startTime, endTime, from, where, maxrecords, startindex, null);

@@ -16,9 +16,9 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
-import eu.heliovo.clientapi.registry.AccessInterfaceType;
-import eu.heliovo.clientapi.registry.impl.AccessInterfaceImpl;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
 
 /**

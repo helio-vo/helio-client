@@ -36,11 +36,11 @@ import eu.heliovo.clientapi.help.annotation.TypeHelp;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
-import eu.heliovo.clientapi.registry.AccessInterface;
-import eu.heliovo.clientapi.registry.AccessInterfaceType;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.shared.util.AssertUtil;
 
 

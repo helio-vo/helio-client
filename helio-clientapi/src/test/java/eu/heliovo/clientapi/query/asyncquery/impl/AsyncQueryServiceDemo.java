@@ -4,12 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.LogRecord;
 
-import eu.heliovo.clientapi.model.service.HelioServiceName;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
-import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.registryclient.HelioServiceName;
 
 public class AsyncQueryServiceDemo {
 	public static void main(String[] args) throws Exception {
