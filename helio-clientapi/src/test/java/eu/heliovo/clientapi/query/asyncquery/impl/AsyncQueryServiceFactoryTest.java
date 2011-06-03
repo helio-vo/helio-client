@@ -35,7 +35,7 @@ public class AsyncQueryServiceFactoryTest {
 		assertNotNull(wsdlUrl);
 
 		HelioDummyServiceRegistryClient ServiceRegistryClient = HelioDummyServiceRegistryClient.getInstance();
-		ServiceRegistryClient.registerServiceInstance(testDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlUrl));
+		ServiceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlUrl));
 		ServiceRegistryClientFactory.getInstance().setServiceRegistryClient(ServiceRegistryClient);      
 		instance = AsyncQueryServiceFactory.getInstance();
 		assertNotNull(instance);

@@ -39,7 +39,7 @@ public class SyncQueryServiceFactoryTest {
 		assertNotNull(wsdlUrl);
 		
 		HelioDummyServiceRegistryClient ServiceRegistryClient = HelioDummyServiceRegistryClient.getInstance();
-		ServiceRegistryClient.registerServiceInstance(testDescriptor, ServiceCapability.SYNC_QUERY_SERVICE, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlUrl));
+		ServiceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlUrl));
 		ServiceRegistryClientFactory.getInstance().setServiceRegistryClient(ServiceRegistryClient);		
 
 		instance = SyncQueryServiceFactory.getInstance();

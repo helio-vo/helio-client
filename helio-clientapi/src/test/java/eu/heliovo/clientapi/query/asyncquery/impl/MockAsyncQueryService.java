@@ -9,6 +9,7 @@ import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
 
@@ -24,7 +25,7 @@ class MockAsyncQueryService extends AsyncQueryServiceImpl {
 	private static final String description = "a dummy test service";
 
 	public MockAsyncQueryService(MockPort port) {	
-		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlLocation), name, description);
+		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlLocation), name, description);
 	}
 
 	/**

@@ -26,6 +26,7 @@ import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -110,6 +111,9 @@ class SyncQueryServiceImpl implements SyncQueryService {
 	public SyncQueryServiceImpl(HelioQueryService port, AccessInterface accessInterface, String name, String description) {
 		AssertUtil.assertArgumentNotNull(port, "port");
 		AssertUtil.assertArgumentNotNull(accessInterface, "wsdlLocation");
+		if (!ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
+		    throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.SYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
+		}
         if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
             throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
         }

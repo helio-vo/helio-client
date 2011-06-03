@@ -290,7 +290,9 @@ class HecDao implements HelioCatalogDao {
 		}
 		
 		if (votable != null) {
-		    _LOGGER.warn("Successfully loaded list of HEC catalogs.");		    
+		    _LOGGER.info("Successfully loaded list of HEC catalogs: " + votable.getRESOURCE() != null && votable.getRESOURCE().size() >= 1 && votable.getRESOURCE().get(0).getTABLE() != null ? votable.getRESOURCE().get(0).getTABLE().size() : 0);
+		} else {
+		    _LOGGER.info("Unable to load list of HEC catalogs.");		    
 		}
 		
 		return votable;

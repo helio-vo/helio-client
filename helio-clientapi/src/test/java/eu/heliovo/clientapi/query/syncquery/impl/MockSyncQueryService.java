@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
 
@@ -26,16 +27,16 @@ import eu.heliovo.shared.props.HelioFileUtil;
  * @author marco soldati at fhnw ch
  *
  */
-class MockQueryService extends SyncQueryServiceImpl {
+class MockSyncQueryService extends SyncQueryServiceImpl {
 	
-	private static final Logger _LOGGER = Logger.getLogger(MockQueryService.class);
+	private static final Logger _LOGGER = Logger.getLogger(MockSyncQueryService.class);
 
 	private static final URL wsdlLocation = HelioFileUtil.asURL("http://localhost/test/HelioQuery.wsdl");
 	private static final String name = "test_service";
 	private static final String description = "a dummy test service";
 
-	public MockQueryService(MockQueryServicePort port) {	
-		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, wsdlLocation), name, description);
+	public MockSyncQueryService(MockQueryServicePort port) {	
+		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation), name, description);
 	}
 	
 	/**

@@ -41,6 +41,7 @@ import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
 
@@ -102,8 +103,11 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	 */
 	AsyncQueryServiceImpl(LongHelioQueryService port, AccessInterface accessInterface, String name, String description) {
 		AssertUtil.assertArgumentNotNull(port, "port");
-		AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
+		AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");		
 		AssertUtil.assertArgumentNotNull(name, "name");
+		if (!ServiceCapability.ASYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
+		    throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.ASYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
+		}
 		if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
 		    throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
 		}

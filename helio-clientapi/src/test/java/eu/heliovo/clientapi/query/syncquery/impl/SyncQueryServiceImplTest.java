@@ -11,7 +11,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.syncquery.impl.MockQueryService.MockQueryServicePort;
+import eu.heliovo.clientapi.query.syncquery.impl.MockSyncQueryService.MockQueryServicePort;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
@@ -20,7 +20,7 @@ public class SyncQueryServiceImplTest {
 	@Test public void testQuery() {
 		URL resultFile = getDefaultVoTable();
 		MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
-		MockQueryService service = new MockQueryService(port);
+		MockSyncQueryService service = new MockSyncQueryService(port);
 		
 		assertNotNull(service.getName());
 		assertNotNull(service.getDescription());
@@ -66,7 +66,7 @@ public class SyncQueryServiceImplTest {
 	@Test public void testTimeQuery() {
 		URL resultFile = getDefaultVoTable();
 		MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
-		MockQueryService service = new MockQueryService(port);
+		MockSyncQueryService service = new MockSyncQueryService(port);
 		
 		assertNotNull(service.getName());
 		assertNotNull(service.getDescription());
