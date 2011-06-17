@@ -25,7 +25,7 @@ class MockAsyncQueryService extends AsyncQueryServiceImpl {
 	private static final String description = "a dummy test service";
 
 	public MockAsyncQueryService(MockPort port) {	
-		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlLocation), name, description);
+		super(name, description, port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlLocation));
 	}
 
 	/**

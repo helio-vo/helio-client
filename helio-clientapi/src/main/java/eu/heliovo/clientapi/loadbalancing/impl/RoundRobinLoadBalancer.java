@@ -1,0 +1,65 @@
+package eu.heliovo.clientapi.loadbalancing.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import eu.heliovo.clientapi.loadbalancing.LoadBalancer;
+import eu.heliovo.registryclient.AccessInterface;
+
+class RoundRobinLoadBalancer implements LoadBalancer {
+    /**
+     * count how many time a specific service has been accessed
+     */
+    private Map<AccessInterface, Integer> accessPerService = new HashMap<AccessInterface, Integer>();
+    
+    /**
+     * always get the service with the least number of accesses.
+     */
+    @Override
+    public AccessInterface getBestEndPoint(AccessInterface... accessInterfaces) {
+        int bestCount = Integer.MAX_VALUE;
+        AccessInterface best = null;
+        for (AccessInterface accessInterface : accessInterfaces) {
+            int currentCount = getAccessPerService(accessInterface);
+            if (currentCount < bestCount) {
+                best = accessInterface;
+                bestCount = currentCount;
+            }
+        }
+        return best;
+    }
+
+    /**
+     * Get the access counts per interface
+     * @param accessInterface the access interface
+     * @return the current count
+     */
+    private int getAccessPerService(AccessInterface accessInterface) {
+        Integer count = accessPerService.get(accessInterface);
+        if (count == null) {
+            count = new Integer(0);
+            accessPerService.put(accessInterface, count);
+        }
+        return count;
+    }
+
+    @Override
+    public void updateAccessTime(AccessInterface accessInterface, long timeInMillis) {
+        int inc;
+        if (timeInMillis < 0) {
+            inc = 1000;  // penalty for timed out services
+        } else {
+            inc = 1;
+        }
+        incAccessPerService(accessInterface, inc);
+    }
+
+    private void incAccessPerService(AccessInterface accessInterface, int inc) {
+        Integer count = accessPerService.get(accessInterface);
+        if (count == null) {
+            count = new Integer(0);
+        }
+        count += inc;
+        accessPerService.put(accessInterface, count);
+    }
+}

@@ -39,12 +39,6 @@ public class AsyncQueryServiceFactory {
 	}
 	
 	/**
-	 * Map to cache the client stubs to the async running query service impls.
-	 */
-	private final Map<AccessInterface, AsyncQueryServiceImpl> serviceImplCache = new HashMap<AccessInterface, AsyncQueryServiceImpl>();
-	
-	
-	/**
 	 * Get a new instance of the "best" service provider for a given descriptor
 	 * @param serviceDescriptor the service descriptor to use
 	 * @return a AsyncQueryService implementation to send out queries to this service.
@@ -57,17 +51,13 @@ public class AsyncQueryServiceFactory {
 	        throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
 	    }
 
-	    AccessInterface bestWsdlLocation = serviceRegistry.getBestEndpoint(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
-	    if (bestWsdlLocation == null) {
+	    AccessInterface[] accessInterfaces = serviceRegistry.getAllEndpoints(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
+	    if (accessInterfaces == null) {
 	        throw new IllegalArgumentException("Unable to find any endpoint for service " + serviceName + " and capabilty " + ServiceCapability.ASYNC_QUERY_SERVICE);
 	    }
 
-	    _LOGGER.info("Using service at: " + bestWsdlLocation);
-	    AsyncQueryServiceImpl queryService = serviceImplCache.get(bestWsdlLocation);
-	    if (queryService == null) {
-	        queryService = new AsyncQueryServiceImpl(bestWsdlLocation, serviceDescriptor.getName(), serviceDescriptor.getLabel());
-	        serviceImplCache.put(bestWsdlLocation, queryService);
-	    }
+	    _LOGGER.info("Using service at: " + accessInterfaces);
+	    AsyncQueryServiceImpl queryService = new AsyncQueryServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
 	    return queryService;
 	}
 }

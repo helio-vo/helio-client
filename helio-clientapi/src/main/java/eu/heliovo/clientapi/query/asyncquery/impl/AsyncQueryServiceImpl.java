@@ -33,6 +33,8 @@ import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.help.annotation.Description;
 import eu.heliovo.clientapi.help.annotation.TypeHelp;
+import eu.heliovo.clientapi.loadbalancing.LoadBalancer;
+import eu.heliovo.clientapi.loadbalancing.impl.LoadBalancerFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
@@ -59,6 +61,11 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	private static final Logger _LOGGER = Logger.getLogger(AsyncQueryServiceImpl.class);
 	
 	/**
+	 * The load balancer component to use.
+	 */
+	private LoadBalancer loadBalancer = LoadBalancerFactory.getInstance().getLoadBalancer();
+	
+	/**
 	 * Name of the long query service
 	 */
 	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/LongQueryService/v0.9", "LongHelioQueryService");
@@ -66,12 +73,17 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	/**
 	 * The location of the target WSDL file
 	 */
-	private final AccessInterface accessInterface;
+	private final AccessInterface[] accessInterfaces;
 
 	/**
 	 * Store the port to access the long running query service. Apparently the port is thread-safe and can be reused.
 	 */
-	private final LongHelioQueryService port;
+	private LongHelioQueryService currentPort;
+	
+	/**
+	 * store the currently active access interface
+	 */
+	private AccessInterface currentAccessInterface;
 	
 	/**
 	 * Name of the service
@@ -84,16 +96,26 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	private final String description;
 	
 	/**
-	 * Create the connector and open the connection to the WSDL file.
+	 * Create a client stub to a specific {@link AccessInterface}. 
 	 * @param name the name of the service
 	 * @param description a short text to describe the service
-	 * @param accessInterface the location of the wsdl. Must not be null
+	 * @param accessInterface concrete implementation of an AccessInterface. Must not be null
 	 */
-	public AsyncQueryServiceImpl(AccessInterface accessInterface, String name, String description) {
-		this(getPort(accessInterface), accessInterface, name, description);
+	public AsyncQueryServiceImpl(String name, String description, AccessInterface ... accessInterfaces) {
+	    AssertUtil.assertArgumentNotNull(name, "name");
+	    AssertUtil.assertArgumentNotNull(accessInterfaces, "accessInterfaces");
+	    this.name = name;
+	    this.accessInterfaces = accessInterfaces;
+	    this.description = description;
+	    updateCurrentInterface();
 	}
 
-	/**
+	private void updateCurrentInterface() {
+	    this.currentAccessInterface=loadBalancer.getBestEndPoint(accessInterfaces);
+	    this.currentPort = getPort(currentAccessInterface);
+    }
+
+    /**
 	 * Create the connector and open the connection to the WSDL file. This constructor can be used to submit the port from outside. This
 	 * is of particular interest for testing purposes.
 	 * @param port the port to be used by this query service
@@ -101,35 +123,38 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	 * @param name the name of the service
 	 * @param description a short text to describe the service
 	 */
-	AsyncQueryServiceImpl(LongHelioQueryService port, AccessInterface accessInterface, String name, String description) {
+	AsyncQueryServiceImpl(String name, String description, LongHelioQueryService port, AccessInterface accessInterface) {
 		AssertUtil.assertArgumentNotNull(port, "port");
 		AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");		
 		AssertUtil.assertArgumentNotNull(name, "name");
-		if (!ServiceCapability.ASYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
-		    throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.ASYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
-		}
-		if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
-		    throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
-		}
-
-		this.port = port;
-		this.accessInterface = accessInterface;
+		
+	    if (!ServiceCapability.ASYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
+	        throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.ASYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
+	    }
+	    if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
+	        throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
+	    }
+    
+		this.currentPort = port;
+		this.currentAccessInterface = accessInterface;
+		this.accessInterfaces = new AccessInterface[] {accessInterface};		
 		this.name = name;
 		this.description = description;
 	}
 	
 	/**
-	 * Use JAXWS to create a new service port for a given WSDL location.
+	 * Use JAXWS to create a new service port for a given set of WSDL locations.
 	 * @param accessInterface the service endpoint
 	 * @return the port to access the service.
 	 */
 	private static LongHelioQueryService getPort(AccessInterface accessInterface) {
 	    AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
-	    LongHelioQueryService_Service queryService = new LongHelioQueryService_Service(accessInterface.getUrl(), SERVICE_NAME);		
-	    LongHelioQueryService port = queryService.getLongHelioQueryServicePort();
-	    if (_LOGGER.isDebugEnabled()) {
-	        _LOGGER.debug("Created " + port.getClass().getSimpleName() + " for " + accessInterface);
-	    }
+	    
+        LongHelioQueryService_Service queryService = new LongHelioQueryService_Service(accessInterface.getUrl(), SERVICE_NAME);		
+        LongHelioQueryService port = queryService.getLongHelioQueryServicePort();
+        if (_LOGGER.isDebugEnabled()) {
+            _LOGGER.debug("Created " + port.getClass().getSimpleName() + " for " + accessInterface.getUrl());
+        }
 	    return port;
 	}
 
@@ -171,7 +196,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 
-		String callId = accessInterface.getUrl() + "::longQuery";
+		String callId = currentAccessInterface.getUrl() + "::longQuery";
 		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
 		StringBuilder message = new StringBuilder();
@@ -195,7 +220,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		String resultId = AsyncCallUtils.callAndWait(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
-				String resultId = port.longQuery(startTime, endTime, from, where, null, maxrecords, startindex);
+				String resultId = currentPort.longQuery(startTime, endTime, from, where, null, maxrecords, startindex);
 				return resultId;
 			}
 		}, callId);
@@ -205,7 +230,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new AsyncQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
+		HelioQueryResult helioQueryResult = new AsyncQueryResultImpl(resultId, currentPort, callId, jobStartTime, logRecords);
 		
 		return helioQueryResult;
 	}
@@ -246,7 +271,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
-		String callId = accessInterface.getUrl() + "::longTimeQuery";
+		String callId = currentAccessInterface.getUrl() + "::longTimeQuery";
 		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 		
 		StringBuilder message = new StringBuilder();
@@ -269,7 +294,9 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		String resultId = AsyncCallUtils.callAndWait(new Callable<String>() {
 			@Override
 			public String call() throws Exception {
-				String result = port.longTimeQuery(startTime, endTime, from, maxrecords, startindex);
+			    long start = System.currentTimeMillis(); 
+				String result = currentPort.longTimeQuery(startTime, endTime, from, maxrecords, startindex);
+				loadBalancer.updateAccessTime(currentAccessInterface, System.currentTimeMillis() - start);
 				return result;
 			}
 		}, callId);
@@ -279,7 +306,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 		}
 		
 		// prepare return value
-		HelioQueryResult helioQueryResult = new AsyncQueryResultImpl(resultId, port, callId, jobStartTime, logRecords);
+		HelioQueryResult helioQueryResult = new AsyncQueryResultImpl(resultId, currentPort, callId, jobStartTime, logRecords);
 		
 		return helioQueryResult;
 	}	
