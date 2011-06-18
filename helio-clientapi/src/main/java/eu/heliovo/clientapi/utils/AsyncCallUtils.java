@@ -20,7 +20,7 @@ public class AsyncCallUtils {
 	/**
 	 * Default timeout in milliseconds to wait for a result from a call.
 	 */
-	private static final long DEFAULT_TIMEOUT = 5000;
+	private static final long DEFAULT_TIMEOUT = 10000;
 
 	/**
 	 * Execute a callable in its own Thread and wait for a default time ({@value #DEFAULT_TIMEOUT}ms) for the result.
@@ -55,7 +55,7 @@ public class AsyncCallUtils {
 		} catch (ExecutionException e) {
 			throw new JobExecutionException("Exception while calling '" + callId + "': " + e.getMessage(), e);
 		} catch (TimeoutException e) {
-			throw new JobExecutionException("Unable to connect to '" + callId + "'. The service may be down. Cause: " + e.getMessage(), e);			
+			throw new JobExecutionException("Unable to connect to '" + callId + "' within " + MessageUtils.formatSeconds(timeoutInMs) +". The service may be down. Cause: " + e.getMessage(), e);			
 		} finally {
 			executor.shutdown();
 		}

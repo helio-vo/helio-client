@@ -1,7 +1,6 @@
 package eu.heliovo.clientapi.query.asyncquery.impl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
@@ -13,6 +12,7 @@ import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceRegistryClient;
 import eu.heliovo.registryclient.ServiceResolutionException;
 import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Factory to get async running query service instances.
@@ -31,6 +31,11 @@ public class AsyncQueryServiceFactory {
 	private static AsyncQueryServiceFactory instance = new AsyncQueryServiceFactory();
 	
 	/**
+	 * The service registry client to use.
+	 */
+	private final ServiceRegistryClient serviceRegistry = ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
+
+	/**
 	 * Get the singleton of this factory
 	 * @return the singleton instance.
 	 */
@@ -43,21 +48,30 @@ public class AsyncQueryServiceFactory {
 	 * @param serviceDescriptor the service descriptor to use
 	 * @return a AsyncQueryService implementation to send out queries to this service.
 	 */
-	public AsyncQueryService getAsyncQueryService(String serviceName) {
-	    ServiceRegistryClient serviceRegistry = ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
-
-	    ServiceDescriptor serviceDescriptor = serviceRegistry.getServiceDescriptor(serviceName);
-	    if (serviceDescriptor == null) {
-	        throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
+	public AsyncQueryService getAsyncQueryService(String serviceName, AccessInterface ... accessInterfaces) {
+	    AssertUtil.assertArgumentHasText(serviceName, "serviceName");
+	    ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
+	    if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
+	        accessInterfaces = serviceRegistry.getAllEndpoints(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
 	    }
+	    AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
 
-	    AccessInterface[] accessInterfaces = serviceRegistry.getAllEndpoints(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
-	    if (accessInterfaces == null) {
-	        throw new IllegalArgumentException("Unable to find any endpoint for service " + serviceName + " and capabilty " + ServiceCapability.ASYNC_QUERY_SERVICE);
-	    }
-
-	    _LOGGER.info("Using service at: " + accessInterfaces);
+	    _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
 	    AsyncQueryServiceImpl queryService = new AsyncQueryServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
 	    return queryService;
 	}
+
+	/**
+	 * Get the service descriptor from the registry client.
+	 * @param serviceName the name of the service.
+	 * @return the descriptor
+	 * @throws IllegalArgumentException if the descriptor does not exist.
+	 */
+    private ServiceDescriptor getServiceDescriptor(String serviceName) {
+        ServiceDescriptor serviceDescriptor = serviceRegistry.getServiceDescriptor(serviceName);
+        if (serviceDescriptor == null) {
+            throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
+        }
+        return serviceDescriptor;
+    }
 }

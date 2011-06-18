@@ -113,6 +113,7 @@ class AsyncQueryServiceImpl implements AsyncQueryService, HelioService {
 	private void updateCurrentInterface() {
 	    this.currentAccessInterface=loadBalancer.getBestEndPoint(accessInterfaces);
 	    this.currentPort = getPort(currentAccessInterface);
+	    _LOGGER.info("Using service at: " + currentAccessInterface);
     }
 
     /**
