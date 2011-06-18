@@ -10,7 +10,7 @@ import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService_Service;
 import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
 import eu.helio_vo.xml.longqueryservice.v0.Status;
 
-public class DpasTest {
+public class DpasDemo {
     public static void main(String[] args) throws Exception {
 //        URL url = new URL("http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
         URL url = new URL("http://localhost:8080/helio-dpas/HelioLongQueryService?wsdl");
