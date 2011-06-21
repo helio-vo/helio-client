@@ -1,8 +1,5 @@
 package eu.heliovo.clientapi.query.syncquery.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.query.HelioQueryService;
@@ -40,11 +37,6 @@ public class SyncQueryServiceFactory {
 	}
 	
 	/**
-	 * Map to cache the client stubs to the sync query service implementations.
-	 */
-	private final Map<AccessInterface, SyncQueryServiceImpl> serviceImplCache = new HashMap<AccessInterface, SyncQueryServiceImpl>();
-	
-	/**
 	 * Get a new instance of the "best" service provider for a given descriptor
 	 * @param serviceDescriptor the service descriptor to use
 	 * @return a {@link SyncQueryService} implementation to send out queries to this service.
@@ -63,11 +55,7 @@ public class SyncQueryServiceFactory {
 		}
 		
 		_LOGGER.info("Using service at: " + accessInterface);
-		SyncQueryServiceImpl queryService = serviceImplCache.get(accessInterface);
-		if (queryService == null) {
-			queryService = new SyncQueryServiceImpl(accessInterface, serviceDescriptor.getName(), serviceDescriptor.getLabel());
-			serviceImplCache.put(accessInterface, queryService);
-		}
+		SyncQueryServiceImpl queryService = new SyncQueryServiceImpl(accessInterface, serviceDescriptor.getName(), serviceDescriptor.getLabel());
 		return queryService;
 	}
 }
