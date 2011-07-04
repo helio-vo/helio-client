@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>eu.heliovo</groupId>
+    <artifactId>helio-client</artifactId>
+    <version>5.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <groupId>eu.heliovo</groupId>
+  <artifactId>helio-ceaclient</artifactId>
+  <version>5.0-SNAPSHOT</version>
+  <name>helio-ceaclient</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/ws/wsdl</directory>
+        <targetPath>${basedir}/target/classes/wsdl</targetPath>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxws-maven-plugin</artifactId>
+        <version>1.12</version>
+        <executions>
+          <execution>
+            <id>generate-stubs</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>wsimport</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <verbose>true</verbose>
+          <wsdlDirectory>${basedir}/src/main/ws/wsdl/</wsdlDirectory>
+          <!-- as no wsdlFiles section is specified all wsdls will be taken -->
+
+          <!-- *** you need the next line to set the wsdlLocation in the 
+            generated stubs *** <wsdlLocation>http://localhost:8080/test</wsdlLocation> -->
+        </configuration>
+        <!-- if you want to use a specific version of JAX-WS, you can do 
+          so like this > <dependencies> <dependency> <groupId>com.sun.xml.ws</groupId> 
+          <artifactId>jaxws-tools</artifactId> <version>2.1.1</version> </dependency> 
+          </dependencies -->
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${basedir}/target/jaxws/wsimport/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/target/jaxws/wsimport/java</directory>
+              <includes>
+                <include>**/*.java</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
