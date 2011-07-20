@@ -49,7 +49,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 	/**
 	 * The default time in ms to wait for a result.
 	 */
-	private static final long DEFAULT_TIMEOUT = 15000;
+	private static final long DEFAULT_TIMEOUT = 600000;
 
 	/**
 	 * The location of the target WSDL file
