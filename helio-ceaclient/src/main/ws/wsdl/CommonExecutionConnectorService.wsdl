@@ -4,8 +4,8 @@
 Built on Oct 05, 2005 (05:23:37 EDT)-->
  <wsdl:types>
   <schema elementFormDefault="qualified" targetNamespace="urn:impl.cea.applications.astrogrid.org" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://www.astrogrid.org/schema/AGParameterDefinition/v1"/>
    <import namespace="http://www.astrogrid.org/schema/AGWorkflow/v1"/>
+   <import namespace="http://www.astrogrid.org/schema/AGParameterDefinition/v1"/>
    <import namespace="http://www.astrogrid.org/schema/CEATypes/v1"/>
    <element name="init">
     <complexType>
@@ -168,8 +168,8 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
    </complexType>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://www.astrogrid.org/schema/CEATypes/v1" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://www.astrogrid.org/schema/AGParameterDefinition/v1"/>
    <import namespace="http://www.astrogrid.org/schema/AGWorkflow/v1"/>
+   <import namespace="http://www.astrogrid.org/schema/AGParameterDefinition/v1"/>
    <complexType name="job-identifier-type">
     <simpleContent>
      <extension base="xsd:string"/>
@@ -222,42 +222,12 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
    </complexType>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="urn:cea.applications.astrogrid.org" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://www.astrogrid.org/schema/AGParameterDefinition/v1"/>
    <import namespace="http://www.astrogrid.org/schema/AGWorkflow/v1"/>
+   <import namespace="http://www.astrogrid.org/schema/AGParameterDefinition/v1"/>
    <import namespace="http://www.astrogrid.org/schema/CEATypes/v1"/>
    <element name="message" type="xsd:string"/>
   </schema>
  </wsdl:types>
-
-   <wsdl:message name="executeRequest">
-
-      <wsdl:part element="tns1:execute" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getResultsRequest">
-
-      <wsdl:part element="tns1:getResults" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="registerProgressListenerResponse">
-
-      <wsdl:part element="tns1:registerProgressListenerResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="CeaFault">
-
-      <wsdl:part element="impl:message" name="message"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="executeResponse">
-
-      <wsdl:part element="tns1:executeResponse" name="parameters"/>
-
-   </wsdl:message>
 
    <wsdl:message name="registerResultsListenerResponse">
 
@@ -271,21 +241,75 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="queryExecutionStatusResponse">
+
+      <wsdl:part element="tns1:queryExecutionStatusResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="returnRegistryEntryResponse">
+
+      <wsdl:part element="tns1:returnRegistryEntryResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="abortResponse">
+
+      <wsdl:part element="tns1:abortResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="registerProgressListenerResponse">
+
+      <wsdl:part element="tns1:registerProgressListenerResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getExecutionSummaryResponse">
+
+      <wsdl:part element="tns1:getExecutionSummaryResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getResultsRequest">
+
+      <wsdl:part element="tns1:getResults" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getExecutionSummaryRequest">
 
       <wsdl:part element="tns1:getExecutionSummary" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="queryExecutionStatusRequest">
+   <wsdl:message name="CeaFault">
 
-      <wsdl:part element="tns1:queryExecutionStatus" name="parameters"/>
+      <wsdl:part element="impl:message" name="message"/>
 
    </wsdl:message>
 
    <wsdl:message name="abortRequest">
 
       <wsdl:part element="tns1:abort" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="initRequest">
+
+      <wsdl:part element="tns1:init" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="executeResponse">
+
+      <wsdl:part element="tns1:executeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="registerResultsListenerRequest">
+
+      <wsdl:part element="tns1:registerResultsListener" name="parameters"/>
 
    </wsdl:message>
 
@@ -301,45 +325,21 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="registerResultsListenerRequest">
-
-      <wsdl:part element="tns1:registerResultsListener" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="registerProgressListenerRequest">
 
       <wsdl:part element="tns1:registerProgressListener" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="returnRegistryEntryResponse">
+   <wsdl:message name="executeRequest">
 
-      <wsdl:part element="tns1:returnRegistryEntryResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="queryExecutionStatusResponse">
-
-      <wsdl:part element="tns1:queryExecutionStatusResponse" name="parameters"/>
+      <wsdl:part element="tns1:execute" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="initRequest">
+   <wsdl:message name="queryExecutionStatusRequest">
 
-      <wsdl:part element="tns1:init" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getExecutionSummaryResponse">
-
-      <wsdl:part element="tns1:getExecutionSummaryResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="abortResponse">
-
-      <wsdl:part element="tns1:abortResponse" name="parameters"/>
+      <wsdl:part element="tns1:queryExecutionStatus" name="parameters"/>
 
    </wsdl:message>
 
@@ -663,7 +663,7 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
       <wsdl:port binding="impl:CommonExecutionConnectorServiceSoapBinding" name="CommonExecutionConnectorService">
 
-         <wsdlsoap:address location="http://msslxv.mssl.ucl.ac.uk/helio-cea/services/CommonExecutionConnectorService"/>
+         <wsdlsoap:address location="http://msslkz.mssl.ucl.ac.uk/helio-cea/services/CommonExecutionConnectorService"/>
 
       </wsdl:port>
 
