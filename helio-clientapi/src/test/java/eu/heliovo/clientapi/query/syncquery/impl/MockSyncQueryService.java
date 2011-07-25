@@ -36,7 +36,7 @@ class MockSyncQueryService extends SyncQueryServiceImpl {
 	private static final String description = "a dummy test service";
 
 	public MockSyncQueryService(MockQueryServicePort port) {	
-		super(port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation), name, description);
+		super(name, description, port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation));
 	}
 	
 	/**

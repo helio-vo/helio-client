@@ -1,5 +1,6 @@
 package eu.heliovo.clientapi.query.paramquery.serialize;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,14 +150,18 @@ public class PQLSerializer implements QuerySerializer {
 	 * @param args the arguments to fill into the template. arguments will be or connected. 
 	 * @return a string with the param name on the left side and the arguments as OR connected list.
 	 */
-	private String handleBinaryTerm(String paramName, String template, Object... args)  throws QuerySerializationException {
+	private String handleBinaryTerm(String paramName, String template, Object args)  throws QuerySerializationException {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < args.length; i++) {
-			if (i > 0) { 
-				// prepend OR
-				sb.append(OR_SYMBOL);
-			}
-			sb.append(String.format(template, convertToString(args[i])));
+		if (args.getClass().isArray()) {
+    		for (int i = 0; i < Array.getLength(args); i++) {
+    			if (i > 0) { 
+    				// prepend OR
+    				sb.append(OR_SYMBOL);
+    			}
+    			sb.append(String.format(template, convertToString(Array.get(args, i))));
+    		}
+		} else {
+		    sb.append(String.format(template, convertToString(args)));
 		}
 		return String.format(ASSIGN_TEMPLATE, paramName, sb.toString());
 	}

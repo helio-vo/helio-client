@@ -2,6 +2,7 @@ package eu.heliovo.clientapi.query.asyncquery.impl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
@@ -19,13 +20,14 @@ public class AsyncQueryServiceDemo {
 	public static void main(String[] args) throws Exception {
 //	    DebugUtils.enableDump();
 //	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, HelioFileUtil.asURL("http://localhost:8080/helio-dpas/HelioLongQueryService?wsdl")));
-//	    DebugUtils.disableDump();
-		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
+//	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null);
+	    DebugUtils.disableDump();
+//		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
 //		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("goes_sxr_flare"), null);
-		testLongRunningService(HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
+//		testLongRunningService(HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
 //		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("instrument"), null);
 //		testLongRunningService(HelioServiceName.UOC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);
-//		testLongRunningService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "DERIV.DELTAT,100;DERIV.DELTAV,/900;DERIV.AVERAGETIME,600", null);
+		testLongRunningService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "DERIV.DELTAT,100;DERIV.DELTAV,/900;DERIV.AVERAGETIME,600", null);
 //	    testLongRunningService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "SIR.DELTAT,100;SIR.DELTAV,/900;SIR.AVERAGETIME,600", null);	//DebugUtils.disableDump();
 	}
 	
@@ -71,7 +73,7 @@ public class AsyncQueryServiceDemo {
 			if (result != null) {
 			    try {
 				System.out.println("Phase: " + result.getPhase());
-				System.out.println("Result URL: " + result.asURL());
+				System.out.println("Result URL: " + result.asURL(30, TimeUnit.SECONDS));
 				System.out.println("Result VOTable: " + result.asVOTable());
 				//System.out.println(result.asString());
 			    } catch (JobExecutionException e) {

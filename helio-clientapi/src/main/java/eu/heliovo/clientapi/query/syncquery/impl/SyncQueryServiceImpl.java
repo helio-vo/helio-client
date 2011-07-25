@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.asyncquery.impl.AbstractQueryServiceImpl;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
@@ -34,13 +35,13 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author MarcoSoldati
  *
  */
-class SyncQueryServiceImpl implements SyncQueryService {
+class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQueryService {
 
 	/**
 	 * The logger instance
 	 */
 	private static final Logger _LOGGER = Logger.getLogger(SyncQueryServiceImpl.class);
-	
+    
 	/**
 	 * Name of the query service
 	 */
@@ -52,25 +53,15 @@ class SyncQueryServiceImpl implements SyncQueryService {
 	private static final long DEFAULT_TIMEOUT = 600000;
 
 	/**
-	 * The location of the target WSDL file
-	 */
-	private final AccessInterface accessInterface;
-
-	/**
 	 * Store the port to access the query service. Apparently the port is thread-safe and can be reused.
 	 */
-	private final HelioQueryService port;
+	private HelioQueryService currentPort;
 	
 	/**
-	 * Name of the service
-	 */
-	private final String name;
+     * store the currently active access interface
+     */
+    protected AccessInterface currentAccessInterface;
 	
-	/**
-	 * Description of this service.
-	 */
-	private final String description;
-
 	/**
 	 * The timeout to wait for a result.
 	 */
@@ -80,11 +71,40 @@ class SyncQueryServiceImpl implements SyncQueryService {
 	 * Create the connector and open the connection to the WSDL file.
 	 * @param name the name of the service
 	 * @param description a short text to describe the service
-	 * @param accessInterface the location of the wsdl. Must not be null
+	 * @param accessInterfaces the locations of the wsdl files. Must not be null.
 	 */
-	public SyncQueryServiceImpl(AccessInterface accessInterface, String name, String description) {
-		this(getPort(accessInterface), accessInterface, name, description);
+	public SyncQueryServiceImpl(String name, String description, AccessInterface ... accessInterfaces) {
+	    super(name, description, accessInterfaces);
+	    updateCurrentInterface();
 	}
+	
+	/**
+	 * Create the connector and open the connection to the WSDL file. This constructor can be used to submit the port from outside. This
+	 * is of particular interest for testing purposes.
+	 * @param port the port to be used by this query service
+	 * @param accessInterface the location of the wsdl. Must not be null
+	 * @param name the name of the service
+	 * @param description a short text to describe the service
+	 */
+	public SyncQueryServiceImpl(String name, String description, HelioQueryService port, AccessInterface accessInterface) {
+	    super(name, description, new AccessInterface[] {accessInterface});
+        
+	    if (!ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
+	        throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.SYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
+	    }
+	    if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
+	        throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
+	    }
+	    this.currentPort = port;
+	    this.currentAccessInterface = accessInterface;
+	}
+
+    protected void updateCurrentInterface() {
+        this.currentAccessInterface=loadBalancer.getBestEndPoint(accessInterfaces);
+        this.currentPort = getPort(currentAccessInterface);
+        _LOGGER.info("Using service at: " + currentAccessInterface);
+    }
+	
 	/**
 	 * Use JAXWS to create a new service port for a given WSDL location.
 	 * @param accessInterface the service endpoint
@@ -98,30 +118,6 @@ class SyncQueryServiceImpl implements SyncQueryService {
 			_LOGGER.debug("Created " + port.getClass().getSimpleName() + " for " + accessInterface);
 		}
 		return port;
-	}
-
-	/**
-	 * Create the connector and open the connection to the WSDL file. This constructor can be used to submit the port from outside. This
-	 * is of particular interest for testing purposes.
-	 * @param port the port to be used by this query service
-	 * @param accessInterface the location of the wsdl. Must not be null
-	 * @param name the name of the service
-	 * @param description a short text to describe the service
-	 */
-	public SyncQueryServiceImpl(HelioQueryService port, AccessInterface accessInterface, String name, String description) {
-		AssertUtil.assertArgumentNotNull(port, "port");
-		AssertUtil.assertArgumentNotNull(accessInterface, "wsdlLocation");
-		if (!ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
-		    throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.SYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
-		}
-        if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
-            throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
-        }
-		AssertUtil.assertArgumentNotNull(name, "name");
-		this.port = port;
-		this.accessInterface = accessInterface;
-		this.name = name;
-		this.description = description;
 	}
 
 	@Override
@@ -151,7 +147,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 
-		String callId = accessInterface.getUrl() + "::syncQuery";
+		String callId = currentAccessInterface.getUrl() + "::syncQuery";
 		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
 		StringBuilder message = new StringBuilder();
@@ -175,7 +171,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
 			@Override
 			public VOTABLE call() throws Exception {
-				VOTABLE result = port.query(startTime, endTime, from, where, null, maxrecords, startindex, join);
+				VOTABLE result = currentPort.query(startTime, endTime, from, where, null, maxrecords, startindex, join);
 				return result;
 			}
 		}, callId, timeout);
@@ -215,7 +211,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 		
-		String callId = accessInterface.getUrl() + "::syncTimeQuery";
+		String callId = currentAccessInterface.getUrl() + "::syncTimeQuery";
 		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
 		StringBuilder message = new StringBuilder();
@@ -237,7 +233,7 @@ class SyncQueryServiceImpl implements SyncQueryService {
 		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
 			@Override
 			public VOTABLE call() throws Exception {
-				VOTABLE result = port.timeQuery(startTime, endTime, from, maxrecords, startindex);
+				VOTABLE result = currentPort.timeQuery(startTime, endTime, from, maxrecords, startindex);
 				return result;
 			}
 		}, callId, timeout);

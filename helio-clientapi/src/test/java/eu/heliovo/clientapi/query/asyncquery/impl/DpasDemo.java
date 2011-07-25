@@ -12,8 +12,8 @@ import eu.helio_vo.xml.longqueryservice.v0.Status;
 
 public class DpasDemo {
     public static void main(String[] args) throws Exception {
-//        URL url = new URL("http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
-        URL url = new URL("http://localhost:8080/helio-dpas/HelioLongQueryService?wsdl");
+        URL url = new URL("http://msslxw.mssl.ucl.ac.uk:8080/helio-dpas/HelioLongQueryService?wsdl");
+//        URL url = new URL("http://localhost:8080/helio-dpas/HelioLongQueryService?wsdl");
 //         URL url = new URL("http://msslxw.mssl.ucl.ac.uk:8080/helio-ics-r3/HelioLongQueryService?wsdl");
 
         QName serviceName = new QName("http://helio-vo.eu/xml/LongQueryService/v0.9", "LongHelioQueryService");

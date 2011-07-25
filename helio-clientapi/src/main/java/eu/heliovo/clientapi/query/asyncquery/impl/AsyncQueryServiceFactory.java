@@ -4,14 +4,12 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
+import eu.heliovo.clientapi.query.AbstractQueryServiceFactory;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
-import eu.heliovo.registryclient.ServiceRegistryClient;
-import eu.heliovo.registryclient.ServiceResolutionException;
-import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -19,7 +17,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  *
  */
-public class AsyncQueryServiceFactory {
+public class AsyncQueryServiceFactory extends AbstractQueryServiceFactory {
 	/**
 	 * The logger
 	 */
@@ -30,11 +28,6 @@ public class AsyncQueryServiceFactory {
 	 */
 	private static AsyncQueryServiceFactory instance = new AsyncQueryServiceFactory();
 	
-	/**
-	 * The service registry client to use.
-	 */
-	private final ServiceRegistryClient serviceRegistry = ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
-
 	/**
 	 * Get the singleton of this factory
 	 * @return the singleton instance.
@@ -60,18 +53,4 @@ public class AsyncQueryServiceFactory {
 	    AsyncQueryServiceImpl queryService = new AsyncQueryServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
 	    return queryService;
 	}
-
-	/**
-	 * Get the service descriptor from the registry client.
-	 * @param serviceName the name of the service.
-	 * @return the descriptor
-	 * @throws IllegalArgumentException if the descriptor does not exist.
-	 */
-    private ServiceDescriptor getServiceDescriptor(String serviceName) {
-        ServiceDescriptor serviceDescriptor = serviceRegistry.getServiceDescriptor(serviceName);
-        if (serviceDescriptor == null) {
-            throw new ServiceResolutionException("Unable to find service with name " +  serviceName);
-        }
-        return serviceDescriptor;
-    }
 }
