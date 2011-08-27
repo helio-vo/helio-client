@@ -118,6 +118,31 @@ class MockSyncQueryService extends SyncQueryServiceImpl {
 			}
 		}
 
+        @Override
+        public VOTABLE coordinateQuery(List<String> starttime, List<String> endtime, List<String> from, String where, String pos, String size, String region, String instrument,
+                Integer maxrecords, Integer startindex, String join) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public VOTABLE sqlSelect(List<String> what, List<String> from, String where, String orderBY, Integer limit, Integer offset) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public VOTABLE getTableNames() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public VOTABLE getTableFields(String tableName) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
 
 
 		
