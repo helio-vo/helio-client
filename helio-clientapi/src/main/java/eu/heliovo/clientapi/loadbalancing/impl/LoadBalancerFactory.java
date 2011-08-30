@@ -53,7 +53,7 @@ public class LoadBalancerFactory {
     
     /**
      * Set the LoadBalancer. This is only needed for testing.
-     * @param loadBlancer
+     * @param loadBlancer the load balancer to use.
      */
     public synchronized void setLoadBalancer(LoadBalancer loadBlancer) {
         this.loadBalancer = loadBlancer;

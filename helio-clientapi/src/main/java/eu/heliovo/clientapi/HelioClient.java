@@ -1,20 +1,23 @@
 package eu.heliovo.clientapi;
 
 import eu.heliovo.clientapi.model.service.HelioService;
+import eu.heliovo.registryclient.HelioServiceName;
 
 /**
- * Main object to access the HELIO API. Different implementations will be provided
- * for different client types.
+ * Main object to access the HELIO API. This is implemented as facade to the underlying system.
+ * Clients can either user these convenience methods or directly access the available services
  * @author marco soldati at fhnw ch
  *
  */
-public interface HelioClient {
+public class HelioClient {
 
 	/**
 	 * Get all services registered with HelioClient.
 	 * @return all services registered with HelioClient or empty array if none are found.
 	 */
-	public HelioService[] getServices();
+	public HelioServiceName[] getServiceNames() {
+	    return null;
+	}
 	
 	/**
 	 * Get all services that implement a specific interface or are derived from a given class.
@@ -23,7 +26,9 @@ public interface HelioClient {
 	 * @return all {@link HelioService}s that are of the given type or an empty array, if no service matches the criterion.
 	 * @throws IllegalArgumentException if 'clazz' is null.  
 	 */
-	public <T extends Object> T[] getServices(Class<T> clazz) throws IllegalArgumentException;
+	public <T extends Object> T[] getServices(Class<T> clazz) throws IllegalArgumentException {
+	    return null;
+	};
 	
 	/**
 	 * Get a service by its name.
@@ -31,7 +36,9 @@ public interface HelioClient {
 	 * @return the service or null if not found. Must not be null.
 	 * @throws IllegalArgumentException if 'serviceName' is null.  
 	 */
-	public HelioService getService(String serviceName);
+	public HelioServiceName getServiceName(String serviceName) {
+	    return HelioServiceName.valueOf(serviceName);
+	}
 	
 	/**
 	 * Get a service by its name, but only if it is of a given type.
@@ -40,5 +47,7 @@ public interface HelioClient {
 	 * @return the {@link HelioService} or null if it cannot be found.
 	 * @throws IllegalArgumentException if 'serviceName' or 'clazz' is null.
 	 */
-	public <T extends Object> T getService(String serviceName, Class<T> clazz);	
+	public <T extends Object> T getService(String serviceName, Class<T> clazz) {
+	    return null;
+	};	
 }

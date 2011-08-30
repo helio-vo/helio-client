@@ -3,11 +3,14 @@ package eu.heliovo.clientapi.frontend;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
+
+import org.apache.derby.tools.sysinfo;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
@@ -40,6 +43,7 @@ public class SimpleInterface {
 	 * @return
 	 */
 	public static ResultVT queryService(String serviceName, List<String> startTime, List<String> endTime, List<String> from, String where) {
+	    //System.out.println("queryService called");
 		AssertUtil.assertArgumentHasText(serviceName, "serviceName");
 		AssertUtil.assertArgumentNotEmpty(startTime, "startTime");
 		AssertUtil.assertArgumentNotEmpty(endTime, "endTime");
@@ -55,9 +59,11 @@ public class SimpleInterface {
 		// normalize all lists
 		int sizeOfTime = startTime.size();
 		int sizeOfFrom = from.size();
+		//System.out.println("normalizing " + startTime + " - " + endTime + " - " + from + " - " + sizeOfTime + " - " + sizeOfFrom);
 		startTime = normalizeList(sizeOfFrom, startTime);
 		endTime = normalizeList(sizeOfFrom, endTime);
 		from = normalizeList(sizeOfTime, from);
+		//System.out.println("normalizing " + startTime + " - " + endTime + " - " + from + " - " + sizeOfTime + " - " + sizeOfFrom);
 		//}
 		
 		HelioQueryService service;

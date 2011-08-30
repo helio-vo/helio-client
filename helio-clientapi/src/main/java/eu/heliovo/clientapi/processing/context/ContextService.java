@@ -3,7 +3,7 @@ package eu.heliovo.clientapi.processing.context;
 import eu.heliovo.clientapi.model.service.HelioService;
 
 /**
- * Client interface to access the context services.
+ * Marker interface for context services.
  * @author MarcoSoldati
  *
  */

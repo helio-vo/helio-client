@@ -17,7 +17,7 @@ import eu.heliovo.registryclient.ServiceResolutionException;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
- * Factory to get async running query service instances.
+ * Factory to get accessor objects for the context services.
  * @author marco soldati at fhnw ch
  *
  */

@@ -23,7 +23,6 @@ import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
 import eu.heliovo.clientapi.processing.context.GoesPlotterService;
 import eu.heliovo.clientapi.processing.context.SimpleParkerModelService;
-import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.AccessInterface;
 
 public class ContextClientDemo {

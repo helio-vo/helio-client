@@ -1,4 +1,5 @@
 package eu.heliovo.clientapi.monitor;
 /**
- * Handling of results coming from the services.
+ * Access interface to the HELIO monitor.
+ * No implementation available.
  */

@@ -8,6 +8,7 @@ package eu.heliovo.clientapi.frontend;
 /**
  *
  * @author David
+ * @deprecated should not be used anymore.
  */
 public class PortDirectory {
 

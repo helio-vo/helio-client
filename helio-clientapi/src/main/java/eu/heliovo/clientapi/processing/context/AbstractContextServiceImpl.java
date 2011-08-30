@@ -92,6 +92,11 @@ public abstract class AbstractContextServiceImpl extends AbstractQueryServiceImp
         return connector;
     }
     
+    /**
+     * Submit the request to the remote service
+     * @return This object can be used to access the ProcessingResult.
+     * @throws JobExecutionException if anything fails while executing the remote job.
+     */
     public ProcessingResult execute() throws JobExecutionException {
         final long jobStartTime = System.currentTimeMillis();
 

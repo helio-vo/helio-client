@@ -16,6 +16,11 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceResolutionException;
 import eu.heliovo.shared.util.AssertUtil;
 
+/**
+ * Get the catalog for a specific name.
+ * @author MarcoSoldati
+ *
+ */
 public class HelioCatalogDaoFactory {
     /**
      * Number of concurrent threads to initialize the registries.

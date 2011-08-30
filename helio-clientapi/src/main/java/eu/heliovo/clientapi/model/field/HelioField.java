@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import eu.heliovo.shared.util.AssertUtil;
 
-
 /**
  * Description of a helio field.
  * @param <T> Java type of the field. This type has to match the provided type.

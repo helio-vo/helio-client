@@ -1,8 +1,9 @@
-package eu.heliovo.clientapi.core;
+package eu.heliovo.clientapi.config;
 
 /**
  * Interface to deal with configuration settings.
- * TODO: This is just a placeholder for a later, more sophisitcated implementation.
+ * TODO: This is just a placeholder for a later, more sophisticated implementation.
+ * It will depend on the implementation of the CIS.
  * @author marco soldati at fhnw ch
  *
  */

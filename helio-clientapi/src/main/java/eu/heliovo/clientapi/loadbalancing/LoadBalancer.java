@@ -4,7 +4,7 @@ import eu.heliovo.registryclient.AccessInterface;
 
 /**
  * Helper service to return the best endpoint for a given set of services endpoints.
- * The interface is meant to cover several different implementations of a load balancer.
+ * The interface is designed for several different implementations of a load balancer.
  * @author MarcoSoldati
  *
  */

@@ -31,8 +31,6 @@ import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService_Service;
 import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
 import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
-import eu.heliovo.clientapi.help.annotation.Description;
-import eu.heliovo.clientapi.help.annotation.TypeHelp;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
@@ -289,9 +287,6 @@ class AsyncQueryServiceImpl extends AbstractQueryServiceImpl implements AsyncQue
 	 * @author marco soldati at fhnw ch
 	 * 
 	 */
-	@TypeHelp(
-		help=@Description("")
-	)
 	static class AsyncQueryResultImpl implements HelioQueryResult {
 		/**
 		 * The logger instance

@@ -6,7 +6,18 @@ import java.util.Map;
 import eu.heliovo.clientapi.loadbalancing.LoadBalancer;
 import eu.heliovo.registryclient.AccessInterface;
 
+/**
+ * Simple load balancer that follows the round robin scheme. 
+ * Services that are down are fined with a penalty and are skipped for a number of rounds.
+ * @author MarcoSoldati
+ *
+ */
 class RoundRobinLoadBalancer implements LoadBalancer {
+    /**
+     * Number of rounds to skip a service that is down.
+     */
+    private static final int PENALTY = 1000;
+    
     /**
      * count how many time a specific service has been accessed
      */
@@ -47,7 +58,7 @@ class RoundRobinLoadBalancer implements LoadBalancer {
     public void updateAccessTime(AccessInterface accessInterface, long timeInMillis) {
         int inc;
         if (timeInMillis < 0) {
-            inc = 1000;  // penalty for timed out services
+            inc = PENALTY;  // penalty for timed out services
         } else {
             inc = 1;
         }
