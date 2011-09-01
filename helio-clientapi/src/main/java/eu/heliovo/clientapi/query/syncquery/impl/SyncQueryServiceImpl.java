@@ -27,6 +27,7 @@ import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -69,12 +70,12 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	
 	/**
 	 * Create the connector and open the connection to the WSDL file.
-	 * @param name the name of the service
+	 * @param serviceName the name of the service
 	 * @param description a short text to describe the service
 	 * @param accessInterfaces the locations of the wsdl files. Must not be null.
 	 */
-	public SyncQueryServiceImpl(String name, String description, AccessInterface ... accessInterfaces) {
-	    super(name, description, accessInterfaces);
+	public SyncQueryServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
+	    super(serviceName, description, accessInterfaces);
 	    updateCurrentInterface();
 	}
 	
@@ -83,11 +84,11 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	 * is of particular interest for testing purposes.
 	 * @param port the port to be used by this query service
 	 * @param accessInterface the location of the wsdl. Must not be null
-	 * @param name the name of the service
+	 * @param serviceName the name of the service
 	 * @param description a short text to describe the service
 	 */
-	public SyncQueryServiceImpl(String name, String description, HelioQueryService port, AccessInterface accessInterface) {
-	    super(name, description, new AccessInterface[] {accessInterface});
+	public SyncQueryServiceImpl(HelioServiceName serviceName, String description, HelioQueryService port, AccessInterface accessInterface) {
+	    super(serviceName, description, new AccessInterface[] {accessInterface});
         
 	    if (!ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
 	        throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.SYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
@@ -247,7 +248,7 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	}
 	
 	@Override
-	public String getName() {
+	public HelioServiceName getName() {
 		return name;
 	}
 	

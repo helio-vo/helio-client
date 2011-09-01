@@ -3,14 +3,11 @@ package eu.heliovo.clientapi.frontend;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
-
-import org.apache.derby.tools.sysinfo;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
@@ -18,6 +15,7 @@ import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -66,11 +64,13 @@ public class SimpleInterface {
 		//System.out.println("normalizing " + startTime + " - " + endTime + " - " + from + " - " + sizeOfTime + " - " + sizeOfFrom);
 		//}
 		
+		HelioServiceName helioServiceName = HelioServiceName.valueOf(serviceName.toUpperCase());
+		
 		HelioQueryService service;
 		if (serviceCapability == ServiceCapability.ASYNC_QUERY_SERVICE) {
-			service = AsyncQueryServiceFactory.getInstance().getAsyncQueryService(serviceName);
+			service = AsyncQueryServiceFactory.getInstance().getAsyncQueryService(helioServiceName);
 		} else if (serviceCapability == ServiceCapability.SYNC_QUERY_SERVICE) {
-			service = SyncQueryServiceFactory.getInstance().getSyncQueryService(serviceName);
+			service = SyncQueryServiceFactory.getInstance().getSyncQueryService(helioServiceName);
 		} else {
 			throw new RuntimeException("Internal Error: Unknown service type " + DEFAULT_CAPABILITY);
 		}

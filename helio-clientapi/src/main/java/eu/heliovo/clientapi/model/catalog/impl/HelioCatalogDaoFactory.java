@@ -30,7 +30,7 @@ public class HelioCatalogDaoFactory {
     /**
      * The map of catalog DAOs.
      */
-    private final Map<String, HelioCatalogDao> helioCatalogDaoMap = new HashMap<String, HelioCatalogDao>();
+    private final Map<HelioServiceName, HelioCatalogDao> helioCatalogDaoMap = new HashMap<HelioServiceName, HelioCatalogDao>();
     
     
     /**
@@ -108,8 +108,8 @@ public class HelioCatalogDaoFactory {
      * @param serviceName the service name. must not be null
      * @return the catalog dao
      */
-    public HelioCatalogDao getHelioCatalogDao(String serviceName) {
-        AssertUtil.assertArgumentHasText(serviceName, "serviceName");
+    public HelioCatalogDao getHelioCatalogDao(HelioServiceName serviceName) {
+        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
         return helioCatalogDaoMap.get(serviceName);
     }
     

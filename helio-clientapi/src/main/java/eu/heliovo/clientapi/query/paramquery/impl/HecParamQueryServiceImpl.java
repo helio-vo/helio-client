@@ -14,7 +14,7 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	/**
 	 * Keep a reference to the hecDao
 	 */
-	private HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC.getName());
+	private HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC);
 
 	/**
 	 * Reference to the query service factory.
@@ -29,7 +29,7 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	}
 
 	@Override
-	public String getName() {
+	public HelioServiceName getName() {
 		return queryService.getName();
 	}
 	

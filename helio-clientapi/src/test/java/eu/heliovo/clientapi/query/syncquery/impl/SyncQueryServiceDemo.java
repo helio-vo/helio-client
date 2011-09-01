@@ -25,7 +25,7 @@ public class SyncQueryServiceDemo {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
 			SyncQueryServiceFactory queryServiceFactory = SyncQueryServiceFactory.getInstance();
-			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceName.getName());
+			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceName);
 			HelioQueryResult result = queryService.timeQuery(startTime, endTime, from, 100, 0);
 
 			System.out.println(result);
@@ -52,7 +52,7 @@ public class SyncQueryServiceDemo {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
 			SyncQueryServiceFactory queryServiceFactory = SyncQueryServiceFactory.getInstance();
-			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceName.getName());
+			HelioQueryService queryService = queryServiceFactory.getSyncQueryService(serviceName);
 			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null);
 			
 			System.out.println(result);

@@ -9,6 +9,7 @@ import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.registryclient.HelioServiceName;
 
 /**
  * Wrapper class around a {@link ParamQueryService} that accepts {@link ParamQueryTerm} and converts them to the required types.
@@ -33,7 +34,7 @@ public class ConvertingParamQueryServiceImpl implements ParamQueryService {
 	}
 	
 	@Override
-	public String getName() {
+	public HelioServiceName getName() {
 		return paramQueryService.getName();
 	}
 

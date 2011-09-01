@@ -11,6 +11,7 @@ import org.junit.Test;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceResolutionException;
@@ -26,7 +27,8 @@ import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
 public class AsyncQueryServiceFactoryTest {
 
 	AsyncQueryServiceFactory instance;
-	ServiceDescriptor testDescriptor = new GenericServiceDescriptor("testService", "test service", "a test service descriptor", ServiceCapability.ASYNC_QUERY_SERVICE);
+	HelioServiceName testService = HelioServiceName.register("testService", "ivo://test");
+	ServiceDescriptor testDescriptor = new GenericServiceDescriptor(testService, "a test service descriptor", ServiceCapability.ASYNC_QUERY_SERVICE);
 	
 	@Before
 	public void setUp() throws Exception {
@@ -45,7 +47,7 @@ public class AsyncQueryServiceFactoryTest {
 	 * Test {@link AsyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.ServiceDescriptor)}
 	 */
 	@Test public void testGetLongRunningQueryService() {	
-		AsyncQueryService queryService = instance.getAsyncQueryService("testService");
+		AsyncQueryService queryService = instance.getAsyncQueryService(testService);
 		assertNotNull(queryService);
 	}
 	
@@ -54,8 +56,10 @@ public class AsyncQueryServiceFactoryTest {
 	 */
 	@Test public void testInvalidRequest() {
 		//ServiceDescriptor invalidDescriptor = new GenericServiceDescriptor("bad", "invalid service", "invalid service", ServiceCapability.UNKNOWN);
+	    HelioServiceName badService = HelioServiceName.register("badService", "ivo://bad");
+	    
 		try {
-			instance.getAsyncQueryService("bad");
+			instance.getAsyncQueryService(badService);
 			fail(ServiceResolutionException.class.getName() + " expected.");
 		} catch (ServiceResolutionException e) {
 			// fine

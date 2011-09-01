@@ -1,5 +1,7 @@
 package eu.heliovo.clientapi.model.service;
 
+import eu.heliovo.registryclient.HelioServiceName;
+
 
 /**
  * Description of a HELIO service.
@@ -11,7 +13,7 @@ public interface HelioService {
 	 * Get the name of the service. Must not be null.
 	 * @return the name of the service.
 	 */
-	public String getName();
+	public HelioServiceName getName();
 	
 	/**
 	 * A free text description for user feedback. May be null.  

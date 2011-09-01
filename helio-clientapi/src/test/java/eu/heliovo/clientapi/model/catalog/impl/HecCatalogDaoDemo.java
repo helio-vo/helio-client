@@ -8,7 +8,7 @@ import eu.heliovo.registryclient.HelioServiceName;
 public class HecCatalogDaoDemo {
 
     public static void main(String[] args) {
-        HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC.getName());
+        HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC);
         
         for (DomainValueDescriptor<String> c : hecDao.getCatalogField().getValueDomain()) {
             System.out.println(c.getValue());

@@ -8,6 +8,7 @@ import eu.heliovo.clientapi.query.AbstractQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.shared.util.AssertUtil;
@@ -42,8 +43,8 @@ public class SyncQueryServiceFactory extends AbstractQueryServiceFactory {
      * @param serviceDescriptor the service descriptor to use
      * @return a AsyncQueryService implementation to send out queries to this service.
      */
-    public SyncQueryService getSyncQueryService(String serviceName, AccessInterface ... accessInterfaces) {
-        AssertUtil.assertArgumentHasText(serviceName, "serviceName");
+    public SyncQueryService getSyncQueryService(HelioServiceName serviceName, AccessInterface ... accessInterfaces) {
+        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
         ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
         if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
             accessInterfaces = serviceRegistry.getAllEndpoints(serviceDescriptor, ServiceCapability.SYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);

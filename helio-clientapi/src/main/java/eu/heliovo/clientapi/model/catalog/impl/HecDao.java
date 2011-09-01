@@ -255,7 +255,7 @@ class HecDao implements HelioCatalogDao {
 		
 		VOTABLE votable;
 		try {
-			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService(HelioServiceName.HEC.getName());
+			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService(HelioServiceName.HEC);
 			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {
@@ -378,7 +378,7 @@ class HecDao implements HelioCatalogDao {
 	}
 	
 	@Override
-	public String getServiceName() {
-	    return HelioServiceName.HEC.getName();
+	public HelioServiceName getServiceName() {
+	    return HelioServiceName.HEC;
 	}
 }

@@ -11,6 +11,7 @@ import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.SimpleParkerModelService;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
@@ -20,8 +21,8 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
      */
     private Date startDate;
     
-    public SimpleParkerModelServiceImpl(String name, String description, AccessInterface[] accessInterfaces) {
-        super(name, description, accessInterfaces);
+    public SimpleParkerModelServiceImpl(HelioServiceName serviceName, String description, AccessInterface[] accessInterfaces) {
+        super(serviceName, description, accessInterfaces);
     }
     
     @Override

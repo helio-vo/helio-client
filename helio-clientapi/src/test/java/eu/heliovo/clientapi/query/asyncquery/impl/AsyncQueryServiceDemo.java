@@ -32,10 +32,10 @@ public class AsyncQueryServiceDemo {
 	}
 	
 	private static synchronized void testLongRunningService(HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String saveto, AccessInterface... accessInterfaces) {
-		System.out.println("--------------------" + serviceName.getName() + "--------------------");
+		System.out.println("--------------------" + serviceName.getServiceName() + "--------------------");
 		try {
 			AsyncQueryServiceFactory queryServiceFactory = AsyncQueryServiceFactory.getInstance();
-			AsyncQueryService queryService = queryServiceFactory.getAsyncQueryService(serviceName.getName(), accessInterfaces);
+			AsyncQueryService queryService = queryServiceFactory.getAsyncQueryService(serviceName, accessInterfaces);
 			HelioQueryResult result = queryService.timeQuery(startTime, endTime, from, 100, 0, saveto);
 
 			System.out.println(result);
@@ -66,7 +66,7 @@ public class AsyncQueryServiceDemo {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
 			AsyncQueryServiceFactory queryServiceFactory = AsyncQueryServiceFactory.getInstance();
-			AsyncQueryService queryService = queryServiceFactory.getAsyncQueryService(serviceName.getName(), accessInterfaces);
+			AsyncQueryService queryService = queryServiceFactory.getAsyncQueryService(serviceName, accessInterfaces);
 			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null, saveto);
 			
 			System.out.println(result);

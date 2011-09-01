@@ -30,6 +30,7 @@ import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -56,13 +57,13 @@ public abstract class AbstractContextServiceImpl extends AbstractQueryServiceImp
     
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
-     * @param name the name of the service
+     * @param serviceName the name of the service
      * @param description a short text to describe the service
      * @param accessInterface concrete implementation of an AccessInterface. Must not be null. 
      * If multiple interfaces are specified the "best" will be chosen.
      */
-    public AbstractContextServiceImpl(String name, String description, AccessInterface ... accessInterfaces) {
-        super(name, description, accessInterfaces);
+    public AbstractContextServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
+        super(serviceName, description, accessInterfaces);
         updateCurrentInterface();
     }
     

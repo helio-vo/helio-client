@@ -26,7 +26,7 @@ public class DpasCatalogDaoTest {
 	 */
 	@Test
 	public void testGetCatalogField() {
-		HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.DPAS.getName());
+		HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.DPAS);
 		HelioField<String> catalogField = dpasDao.getCatalogField();
 
 		assertEquals("dpas_catalog", catalogField.getId());
@@ -39,7 +39,7 @@ public class DpasCatalogDaoTest {
 	}
 
 	@Test public void test() {
-	    HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.DPAS.getName());;
+	    HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.DPAS);
 		for (DomainValueDescriptor<String> c : dpasDao.getCatalogField().getValueDomain()) {
 			for (HelioField<?> hf : dpasDao.getFields(c.getValue())) {
 				assertNotNull(hf);

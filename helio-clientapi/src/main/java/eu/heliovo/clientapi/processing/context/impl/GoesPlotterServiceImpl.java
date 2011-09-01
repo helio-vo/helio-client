@@ -11,6 +11,7 @@ import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.GoesPlotterService;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
@@ -25,8 +26,8 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
      */
     private Date endDate;
     
-    public GoesPlotterServiceImpl(String name, String description, AccessInterface[] accessInterfaces) {
-        super(name, description, accessInterfaces);
+    public GoesPlotterServiceImpl(HelioServiceName serviceName, String description, AccessInterface[] accessInterfaces) {
+        super(serviceName, description, accessInterfaces);
     }
     
     /* (non-Javadoc)

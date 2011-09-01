@@ -24,7 +24,7 @@ public class HecCatalogDaoTest {
 	 */
 	@Test
 	public void testGetCatalogField() {
-	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC.getName());
+	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC);
 		HelioField<String> catalogField = hecDao.getCatalogField();
 
 		assertEquals("hec_catalog", catalogField.getId());
@@ -37,7 +37,7 @@ public class HecCatalogDaoTest {
 	}
 
 	@Test public void test() {
-	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC.getName());
+	    HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC);
 		for (DomainValueDescriptor<String> c : hecDao.getCatalogField().getValueDomain()) {
 			for (HelioField<?> hf : hecDao.getFields(c.getValue())) {
 				assertNotNull(hf);

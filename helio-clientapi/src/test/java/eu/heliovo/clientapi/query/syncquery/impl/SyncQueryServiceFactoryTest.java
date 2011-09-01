@@ -12,6 +12,7 @@ import org.junit.Test;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceResolutionException;
@@ -28,13 +29,16 @@ public class SyncQueryServiceFactoryTest {
 
 	SyncQueryServiceFactory instance;
 
+	HelioServiceName testService = HelioServiceName.register("test", "ivo://test");
+
 	/**
 	 * Descriptor for testing purposes
 	 */
-	ServiceDescriptor testDescriptor = new GenericServiceDescriptor("testService", "test service", "a test service descriptor", ServiceCapability.SYNC_QUERY_SERVICE);
-		
+	ServiceDescriptor testDescriptor;
 	@Before
 	public void setUp() {
+	    testDescriptor = new GenericServiceDescriptor(testService, "a test service descriptor", ServiceCapability.SYNC_QUERY_SERVICE);
+        
 		String wsdlPath = "/wsdl/helio_full_query.wsdl";
 		URL wsdlUrl = getClass().getResource(wsdlPath);
 		assertNotNull(wsdlUrl);
@@ -51,7 +55,7 @@ public class SyncQueryServiceFactoryTest {
 	 * Test {@link SyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.ServiceDescriptor)}
 	 */
 	@Ignore @Test public void testGetSyncQueryService() {
-		HelioQueryService queryService = instance.getSyncQueryService("testService");
+		HelioQueryService queryService = instance.getSyncQueryService(testService);
 		assertNotNull(queryService);
 	}
 	
@@ -60,8 +64,9 @@ public class SyncQueryServiceFactoryTest {
 	 */
 	@Test public void testInvalidRequest() {
 		//ServiceDescriptor invalidDescriptor = new GenericServiceDescriptor("test", ServiceCapability.UNKNOWN, "invalid service", "invalid service");
+	    HelioServiceName unknownService = HelioServiceName.register("unknown", "ivo://unknown");
 		try {
-			instance.getSyncQueryService("unknown");
+			instance.getSyncQueryService(unknownService);
 			fail(ServiceResolutionException.class.getName() + " expected.");
 		} catch (ServiceResolutionException e) {
 			// fine

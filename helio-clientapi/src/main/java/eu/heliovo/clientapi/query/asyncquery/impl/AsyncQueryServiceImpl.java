@@ -39,6 +39,7 @@ import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -77,7 +78,7 @@ class AsyncQueryServiceImpl extends AbstractQueryServiceImpl implements AsyncQue
 	 * @param description a short text to describe the service
 	 * @param accessInterface concrete implementation of an AccessInterface. Must not be null
 	 */
-	public AsyncQueryServiceImpl(String name, String description, AccessInterface ... accessInterfaces) {
+	public AsyncQueryServiceImpl(HelioServiceName name, String description, AccessInterface ... accessInterfaces) {
 	    super(name, description, accessInterfaces);
 	    updateCurrentInterface();
 	}
@@ -90,7 +91,7 @@ class AsyncQueryServiceImpl extends AbstractQueryServiceImpl implements AsyncQue
 	 * @param name the name of the service
 	 * @param description a short text to describe the service
 	 */
-	AsyncQueryServiceImpl(String name, String description, LongHelioQueryService port, AccessInterface accessInterface) {
+	AsyncQueryServiceImpl(HelioServiceName name, String description, LongHelioQueryService port, AccessInterface accessInterface) {
 	    super(name, description, new AccessInterface[] {accessInterface});
 		
 	    if (!ServiceCapability.ASYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {

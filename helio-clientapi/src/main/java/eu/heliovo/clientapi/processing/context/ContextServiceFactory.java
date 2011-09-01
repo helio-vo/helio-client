@@ -45,8 +45,8 @@ public class ContextServiceFactory extends AbstractQueryServiceFactory {
 	 * @param serviceName the service name to use.
 	 * @return a Context implementation to send out queries to this service.
 	 */
-	public ContextService getContextService(String serviceName, String serviceType, AccessInterface ... accessInterfaces) {
-	    AssertUtil.assertArgumentHasText(serviceName, "serviceName");
+	public ContextService getContextService(HelioServiceName serviceName, String serviceType, AccessInterface ... accessInterfaces) {
+	    AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
 	    AssertUtil.assertArgumentHasText(serviceType, "serviceType");
 	    ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
 	    if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
@@ -75,7 +75,7 @@ public class ContextServiceFactory extends AbstractQueryServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public GoesPlotterService getGoesPlotterService(AccessInterface ... accessInterfaces) {
-	    return (GoesPlotterService) getContextService(HelioServiceName.CXS.getName(), "ivo://helio-vo.eu/cxs/goesplotter", accessInterfaces);
+	    return (GoesPlotterService) getContextService(HelioServiceName.CXS, "ivo://helio-vo.eu/cxs/goesplotter", accessInterfaces);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class ContextServiceFactory extends AbstractQueryServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public FlarePlotterService getFlarePlotterService(AccessInterface ... accessInterfaces) {
-	    return (FlarePlotterService) getContextService(HelioServiceName.CXS.getName(), "ivo://helio-vo.eu/cxs/flareplotter", accessInterfaces);
+	    return (FlarePlotterService) getContextService(HelioServiceName.CXS, "ivo://helio-vo.eu/cxs/flareplotter", accessInterfaces);
 	}
 
 	/**
@@ -93,6 +93,6 @@ public class ContextServiceFactory extends AbstractQueryServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public SimpleParkerModelService getSimpleParkerModelServicesImpl(AccessInterface ... accessInterfaces) {
-	    return (SimpleParkerModelService) getContextService(HelioServiceName.CXS.getName(), "ivo://helio-vo.eu/cxs/parkermodel", accessInterfaces);
+	    return (SimpleParkerModelService) getContextService(HelioServiceName.CXS, "ivo://helio-vo.eu/cxs/parkermodel", accessInterfaces);
 	}
 }

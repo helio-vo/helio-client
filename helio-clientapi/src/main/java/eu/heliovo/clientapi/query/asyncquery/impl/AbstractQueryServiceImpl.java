@@ -4,6 +4,7 @@ import eu.heliovo.clientapi.loadbalancing.LoadBalancer;
 import eu.heliovo.clientapi.loadbalancing.impl.LoadBalancerFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 
 public class AbstractQueryServiceImpl implements HelioService {
@@ -19,13 +20,13 @@ public class AbstractQueryServiceImpl implements HelioService {
     /**
      * Name of the service
      */
-    protected final String name;
+    protected final HelioServiceName name;
     /**
      * Description of this service.
      */
     protected final String description;
 
-    public AbstractQueryServiceImpl(String name, String description, AccessInterface[] accessInterfaces) {
+    public AbstractQueryServiceImpl(HelioServiceName name, String description, AccessInterface[] accessInterfaces) {
         AssertUtil.assertArgumentNotNull(name, "name");
         AssertUtil.assertArgumentNotNull(accessInterfaces, "accessInterfaces");
         this.name = name;
@@ -34,7 +35,7 @@ public class AbstractQueryServiceImpl implements HelioService {
     }
 
     @Override
-    public String getName() {
+    public HelioServiceName getName() {
     	return name;
     }
 

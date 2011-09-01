@@ -229,7 +229,7 @@ class IlsDao implements HelioCatalogDao {
 	}
 	
 	@Override
-	public String getServiceName() {
-	    return HelioServiceName.DPAS.getName();
+	public HelioServiceName getServiceName() {
+	    return HelioServiceName.DPAS;
 	}
 }

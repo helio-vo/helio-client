@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.model.catalog;
 
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.registryclient.HelioServiceName;
 
 /**
  * A data access object to access the catalogs of one catalog service.
@@ -34,5 +35,5 @@ public interface HelioCatalogDao {
 	 * The name of the parent service that provides the catalogs.
 	 * @return the name of the parent service.
 	 */
-	public abstract String getServiceName();
+	public abstract HelioServiceName getServiceName();
 }
