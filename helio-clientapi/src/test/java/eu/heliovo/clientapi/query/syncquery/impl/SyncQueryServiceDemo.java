@@ -6,19 +6,18 @@ import java.util.logging.LogRecord;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
-import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.HelioServiceName;
 
 public class SyncQueryServiceDemo {
 	public static void main(String[] args) throws Exception {
 //		testSyncService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
 //		testSyncService(HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
-        DebugUtils.enableDump();
-		testSyncService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
-        DebugUtils.disableDump();
+//        DebugUtils.enableDump();
+//		testSyncService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
+//       DebugUtils.disableDump();
 //		testSyncService(HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("goes_xray_flares"), null);
 //		testSyncService(HelioServiceName.UOC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);
-//		testSyncService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "SIR.DELTAT,100;SIR.DELTAV,/900;SIR.AVERAGETIME,600", null);
+		testSyncService(HelioServiceName.DES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "ACE.DERIV,V:/100:600;WIND.DERIV,V:/150:600;", null);
 	}
 	
 	private static synchronized void testSyncService(HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String saveto) {
@@ -41,7 +40,7 @@ public class SyncQueryServiceDemo {
 				}
 				System.out.println(sb.toString());
 			}
-			System.out.println();
+			System.out.println(result.asString());
 		} catch (Exception e) {
 			System.err.println("Error occured: " + e.getMessage());
 			e.printStackTrace();

@@ -11,17 +11,10 @@ import eu.heliovo.registryclient.impl.AbstractHelioServiceRegistryClient;
  */
 public class HelioDummyServiceRegistryClient extends AbstractHelioServiceRegistryClient implements ServiceRegistryClient {
 
-    private static final HelioDummyServiceRegistryClient instance = new HelioDummyServiceRegistryClient();
-    
     /**
-     * Get the singleton instance of this registry.
-     * @return
+     * Create the dummy service registry client.
      */
-    public static HelioDummyServiceRegistryClient getInstance() {
-        return instance;
-    }
-    
-    private HelioDummyServiceRegistryClient() {
+    public HelioDummyServiceRegistryClient() {
        
     }
     

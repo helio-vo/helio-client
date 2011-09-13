@@ -1,10 +1,14 @@
 package eu.heliovo.clientapi.query.asyncquery.impl;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import eu.heliovo.clientapi.query.AbstractQueryServiceFactory;
+import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -18,7 +22,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  *
  */
-public class AsyncQueryServiceFactory extends AbstractQueryServiceFactory {
+public class AsyncQueryServiceFactory extends AbstractServiceFactory {
 	/**
 	 * The logger
 	 */
@@ -30,11 +34,28 @@ public class AsyncQueryServiceFactory extends AbstractQueryServiceFactory {
 	private static AsyncQueryServiceFactory instance = new AsyncQueryServiceFactory();
 	
 	/**
+	 * Map of potential implementations of a service. The entry with null will be used as default service impl.
+	 */
+	private static final Map<HelioServiceName, Class<? extends AsyncQueryService>> implClassMap = 
+	    new HashMap<HelioServiceName, Class<? extends AsyncQueryService>>();
+	
+	static {
+	    implClassMap.put(null, AsyncQueryServiceImpl.class);
+	    implClassMap.put(HelioServiceName.DES, DesAsyncQueryServiceImpl.class);
+	}
+	
+	
+	/**
 	 * Get the singleton of this factory
 	 * @return the singleton instance.
 	 */
 	public static synchronized AsyncQueryServiceFactory getInstance() {
 		return instance;
+	}
+	
+	@Override
+	public HelioService getHelioService(HelioServiceName serviceName, String subType, AccessInterface... accessInterfaces) {
+	    return getAsyncQueryService(serviceName, accessInterfaces);
 	}
 	
 	/**
@@ -46,12 +67,24 @@ public class AsyncQueryServiceFactory extends AbstractQueryServiceFactory {
 	    AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
 	    ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
 	    if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
-	        accessInterfaces = serviceRegistry.getAllEndpoints(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
+	        accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
 	    }
 	    AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
 
 	    _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
-	    AsyncQueryServiceImpl queryService = new AsyncQueryServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
+	    
+	    Class<? extends AsyncQueryService> serviceImpl = implClassMap.get(serviceName);
+	    if (serviceImpl == null) {
+	        serviceImpl = implClassMap.get(null);
+	    }
+	    
+	    AsyncQueryService queryService;
+        try {
+            Constructor<? extends AsyncQueryService> constructor = serviceImpl.getConstructor(new Class<?>[] {HelioServiceName.class, String.class, AccessInterface[].class});
+            queryService = constructor.newInstance(new Object[] {serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces});
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to instanciate " + serviceImpl.getName() + ": " + e.getMessage(), e);
+        }
 	    return queryService;
 	}
 }

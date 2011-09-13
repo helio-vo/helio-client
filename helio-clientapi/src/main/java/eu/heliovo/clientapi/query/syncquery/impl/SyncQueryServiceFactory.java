@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
-import eu.heliovo.clientapi.query.AbstractQueryServiceFactory;
+import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -18,7 +19,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author MarcoSoldati
  *
  */
-public class SyncQueryServiceFactory extends AbstractQueryServiceFactory {
+public class SyncQueryServiceFactory extends AbstractServiceFactory {
 	/**
 	 * The logger
 	 */
@@ -37,6 +38,10 @@ public class SyncQueryServiceFactory extends AbstractQueryServiceFactory {
 		return instance;
 	}
 	
+	@Override
+	public HelioService getHelioService(HelioServiceName serviceName, String subType, AccessInterface... accessInterfaces) {
+	    return getSyncQueryService(serviceName, accessInterfaces);
+	}
 
     /**
      * Get a new instance of the "best" service provider for a given descriptor
@@ -47,7 +52,7 @@ public class SyncQueryServiceFactory extends AbstractQueryServiceFactory {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
         ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
         if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
-            accessInterfaces = serviceRegistry.getAllEndpoints(serviceDescriptor, ServiceCapability.SYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
+            accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.SYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
         }
         AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
 

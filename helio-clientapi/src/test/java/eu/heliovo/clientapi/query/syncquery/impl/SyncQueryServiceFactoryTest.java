@@ -27,14 +27,24 @@ import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
  */
 public class SyncQueryServiceFactoryTest {
 
+    /**
+     * Factory instance
+     */
 	SyncQueryServiceFactory instance;
 
+	/**
+	 * a test service.
+	 */
 	HelioServiceName testService = HelioServiceName.register("test", "ivo://test");
 
 	/**
 	 * Descriptor for testing purposes
 	 */
 	ServiceDescriptor testDescriptor;
+	
+	/**
+	 * Init dummy registry.
+	 */
 	@Before
 	public void setUp() {
 	    testDescriptor = new GenericServiceDescriptor(testService, "a test service descriptor", ServiceCapability.SYNC_QUERY_SERVICE);
@@ -43,24 +53,24 @@ public class SyncQueryServiceFactoryTest {
 		URL wsdlUrl = getClass().getResource(wsdlPath);
 		assertNotNull(wsdlUrl);
 		
-		HelioDummyServiceRegistryClient ServiceRegistryClient = HelioDummyServiceRegistryClient.getInstance();
-		ServiceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlUrl));
-		ServiceRegistryClientFactory.getInstance().setServiceRegistryClient(ServiceRegistryClient);		
+		HelioDummyServiceRegistryClient serviceRegistryClient = new HelioDummyServiceRegistryClient();
+		serviceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlUrl));
+		ServiceRegistryClientFactory.getInstance().setServiceRegistryClient(serviceRegistryClient);		
 
 		instance = SyncQueryServiceFactory.getInstance();
 		assertNotNull(instance);
 	}
 	
 	/**
-	 * Test {@link SyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.ServiceDescriptor)}
+	 * Test {@link SyncQueryServiceFactory#getHelioService(HelioServiceName, String, eu.heliovo.registryclient.AccessInterface...)}
 	 */
-	@Ignore @Test public void testGetSyncQueryService() {
+	@Test public void testGetSyncQueryService() {
 		HelioQueryService queryService = instance.getSyncQueryService(testService);
 		assertNotNull(queryService);
 	}
 	
 	/**
-	 * Test {@link SyncQueryServiceFactory#getAsyncQueryService(eu.heliovo.clientapi.registry.ServiceDescriptor)}
+	 * Test {@link SyncQueryServiceFactory#getSyncQueryService(HelioServiceName, eu.heliovo.registryclient.AccessInterface...)}
 	 */
 	@Test public void testInvalidRequest() {
 		//ServiceDescriptor invalidDescriptor = new GenericServiceDescriptor("test", ServiceCapability.UNKNOWN, "invalid service", "invalid service");

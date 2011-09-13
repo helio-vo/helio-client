@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
+import uk.ac.starlink.table.StarTable;
+
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.utils.DebugUtils;
+import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -23,12 +26,12 @@ public class AsyncQueryServiceDemo {
 //	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null);
 	    DebugUtils.disableDump();
 //		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
-//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("goes_sxr_flare"), null);
+		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("hec_catalogue"), null);
 //		testLongRunningService(HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
 //		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("instrument"), null);
 //		testLongRunningService(HelioServiceName.UOC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);
-		testLongRunningService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "DERIV.DELTAT,100;DERIV.DELTAV,/900;DERIV.AVERAGETIME,600", null);
-//	    testLongRunningService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "SIR.DELTAT,100;SIR.DELTAV,/900;SIR.AVERAGETIME,600", null);	//DebugUtils.disableDump();
+//		testLongRunningService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "DERIV.DELTAT,100;DERIV.DELTAV,/900;DERIV.AVERAGETIME,600", null);
+//	    testLongRunningService(HelioServiceName.DES, Arrays.asList("2007-07-10T12:00:00"), Arrays.asList("2007-07-11T12:00:00"), Arrays.asList("ACE", "WIND"), "ACE.DERIV,V:1200:100:600;WIND.DERIV,B:1500:200:300", null, null);	//DebugUtils.disableDump();
 	}
 	
 	private static synchronized void testLongRunningService(HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String saveto, AccessInterface... accessInterfaces) {
@@ -45,7 +48,7 @@ public class AsyncQueryServiceDemo {
 				System.out.println("Phase: " + result.getPhase());
 				System.out.println("Result URL: " + result.asURL());
 				System.out.println("Result VOTable: " + result.asVOTable());
-				//System.out.println("Result VOTable as String: " + result.asString());
+				System.out.println("Result VOTable as String: " + result.asString());
 				StringBuilder sb = new StringBuilder("User log: ");
 				for (LogRecord logRecord : result.getUserLogs()) {
 					if (sb.length() > 0) {
@@ -56,6 +59,9 @@ public class AsyncQueryServiceDemo {
 				System.out.println(sb.toString());
 			}
 			System.out.println();
+	         
+            //StarTable[] table = STILUtils.read(result.asURL());
+
 		} catch (Exception e) {
 			System.err.println("Error occured: " + e.getMessage());
 			e.printStackTrace();
