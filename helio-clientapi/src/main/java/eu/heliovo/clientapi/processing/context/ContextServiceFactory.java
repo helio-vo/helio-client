@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
-import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.GoesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.SimpleParkerModelServiceImpl;
@@ -57,7 +56,7 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	}
 
     @Override
-    public HelioService getHelioService(HelioServiceName serviceName, String subType, AccessInterface... accessInterfaces) {
+    public ContextService getHelioService(HelioServiceName serviceName, String subType, AccessInterface... accessInterfaces) {
         return getContextService(serviceName, subType, accessInterfaces);
     }
 
@@ -91,14 +90,14 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	
     /**
      * Get the context service by name
-     * @param serviceName
-     * @param serviceType
-     * @param accessInterfaces
-     * @return
+     * @param serviceName name of the overall service.
+     * @param subServiceName internal id of the concrete service. Use one of the constants defined by this class.
+     * @param accessInterfaces the interface to use.
+     * @return a proxy to the context service.
      */
-    private ContextService getContextService(HelioServiceName serviceName, String serviceType, AccessInterface ... accessInterfaces) {
+    private ContextService getContextService(HelioServiceName serviceName, String subServiceName, AccessInterface ... accessInterfaces) {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
-        AssertUtil.assertArgumentHasText(serviceType, "serviceType");
+        AssertUtil.assertArgumentHasText(subServiceName, "subServiceName");
         ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
         if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
             accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, AccessInterfaceType.SOAP_SERVICE);
@@ -107,16 +106,15 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 
         _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
         ContextService contextService;
-        if ("ivo://helio-vo.eu/cxs/goesplotter".equals(serviceType)) {
+        if (GOES_PLOTTER.equals(subServiceName)) {
             contextService = new GoesPlotterServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
-        } else if ("ivo://helio-vo.eu/cxs/flareplotter".equals(serviceType)) {
+        } else if (FLARE_PLOTTER.equals(subServiceName)) {
             contextService = new FlarePlotterServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);          
-        } else if ("ivo://helio-vo.eu/cxs/parkermodel".equals(serviceType)) {
+        } else if (PARKER_MODEL.equals(subServiceName)) {
             contextService = new SimpleParkerModelServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);                     
         } else {
-            throw new ServiceResolutionException("Unable to find context service of type " + serviceType);
+            throw new ServiceResolutionException("Unable to find context service of type " + subServiceName);
         }
-        
         return contextService;
     }
 

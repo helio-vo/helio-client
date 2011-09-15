@@ -6,6 +6,11 @@ import eu.heliovo.registryclient.ServiceRegistryClient;
 import eu.heliovo.registryclient.ServiceResolutionException;
 import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
 
+/**
+ * Base implementation for a {@link ServiceFactory}.
+ * @author MarcoSoldati
+ *
+ */
 public abstract class AbstractServiceFactory implements ServiceFactory {
 
     /**

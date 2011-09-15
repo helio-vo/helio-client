@@ -19,7 +19,7 @@ public interface FlarePlotterService extends ContextService {
 
     /**
      * Set the  date.
-     * @param Date the date
+     * @param date the date
      */
     public void setDate(Date date);
 

@@ -15,14 +15,26 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
+/**
+ * Proxy to the Parker model service impl
+ * @author MarcoSoldati
+ *
+ */
 public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl implements SimpleParkerModelService {
     /**
      * The start date
      */
     private Date startDate;
     
+    /**
+     * The parker model plotter.
+     * @param serviceName the name of the service. Must be {@link HelioServiceName#CXS}
+     * @param description
+     * @param accessInterfaces
+     */
     public SimpleParkerModelServiceImpl(HelioServiceName serviceName, String description, AccessInterface[] accessInterfaces) {
         super(serviceName, description, accessInterfaces);
+        AssertUtil.assertArgumentEquals(HelioServiceName.CXS, serviceName, "serviceName");
     }
     
     @Override

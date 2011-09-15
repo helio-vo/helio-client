@@ -4,13 +4,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import eu.heliovo.clientapi.linkprovider.impl.SolarMonitorLinkProvider;
+import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
+import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.HelioServiceName;
 
 /**
  * Factory to get access to the link providers.
  * @author MarcoSoldati
  *
  */
-public class LinkProviderFactory {
+public class LinkProviderFactory extends AbstractServiceFactory {
     
     /**
      * Hold the singleton instance of this factory.
@@ -28,7 +31,7 @@ public class LinkProviderFactory {
     /**
      * Map that holdes the link providers
      */
-    private final Map<String, LinkProvider> linkProviderMap = new LinkedHashMap<String, LinkProvider>();
+    private final Map<String, LinkProviderService> linkProviderMap = new LinkedHashMap<String, LinkProviderService>();
 
     
     /**
@@ -43,7 +46,12 @@ public class LinkProviderFactory {
      * @param linkProvider a link provider.
      */
     private void register(SolarMonitorLinkProvider linkProvider) {
-        linkProviderMap.put(linkProvider.getName(), linkProvider);
+        linkProviderMap.put(linkProvider.getSubServiceName(), linkProvider);
+    }
+
+    @Override
+    public LinkProviderService getHelioService(HelioServiceName serviceName, String subServiceName, AccessInterface... accessInterfaces) {
+        return getLinkProvider(subServiceName);
     }
 
     /**
@@ -51,7 +59,7 @@ public class LinkProviderFactory {
      * @param name the name of the provider.
      * @return the link provider with a given name or null if not found.
      */
-    public LinkProvider getLinkProvider(String name) {
+    public LinkProviderService getLinkProvider(String name) {
         return linkProviderMap.get(name);
     };
     
@@ -67,8 +75,8 @@ public class LinkProviderFactory {
      * Get the list of known link providers.
      * @return list of known link providers or empty array if none have been found.
      */
-    public LinkProvider[] getLinkProviders() {
-        return linkProviderMap.values().toArray(new LinkProvider[linkProviderMap.size()]);
+    public LinkProviderService[] getLinkProviders() {
+        return linkProviderMap.values().toArray(new LinkProviderService[linkProviderMap.size()]);
     }
     
 }

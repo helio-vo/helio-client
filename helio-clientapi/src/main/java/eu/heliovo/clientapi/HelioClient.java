@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
@@ -34,6 +35,7 @@ public class HelioClient {
         factoryMap.put(ServiceCapability.ASYNC_QUERY_SERVICE, AsyncQueryServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.SYNC_QUERY_SERVICE, SyncQueryServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, ContextServiceFactory.getInstance());
+        factoryMap.put(ServiceCapability.LINK_PROVIDER_SERVICE, LinkProviderFactory.getInstance());
     }
     
 	/**
