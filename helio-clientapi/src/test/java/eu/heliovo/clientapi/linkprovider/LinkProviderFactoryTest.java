@@ -43,6 +43,7 @@ public class LinkProviderFactoryTest {
         LinkProviderService[] linkProviders = factory.getLinkProviders();
         assertNotNull(linkProviders);
         assertEquals(names.length, linkProviders.length);
+        
     }
     
     /**
@@ -54,7 +55,7 @@ public class LinkProviderFactoryTest {
         assertNotNull(factory);
         
         // and get solar monitor link provider
-        LinkProviderService solarmonitor = factory.getHelioService(HelioServiceName.CXS, "ivo://helio-vo.eu/lps/solarmonitor", (AccessInterface[])null);
+        LinkProviderService solarmonitor = factory.getHelioService(HelioServiceName.LPS, "ivo://helio-vo.eu/lps/solarmonitor", (AccessInterface[])null);
         assertNotNull(solarmonitor);
         
         // now display the generic title

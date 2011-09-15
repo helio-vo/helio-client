@@ -7,6 +7,7 @@ import eu.heliovo.clientapi.linkprovider.impl.SolarMonitorLinkProvider;
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Factory to get access to the link providers.
@@ -51,6 +52,7 @@ public class LinkProviderFactory extends AbstractServiceFactory {
 
     @Override
     public LinkProviderService getHelioService(HelioServiceName serviceName, String subServiceName, AccessInterface... accessInterfaces) {
+        AssertUtil.assertArgumentEquals(HelioServiceName.LPS, serviceName, "serviceName");
         return getLinkProvider(subServiceName);
     }
 
