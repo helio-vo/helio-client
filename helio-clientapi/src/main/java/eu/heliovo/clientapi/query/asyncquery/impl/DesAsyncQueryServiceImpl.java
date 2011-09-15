@@ -6,6 +6,7 @@ import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * 
@@ -14,8 +15,15 @@ import eu.heliovo.registryclient.HelioServiceName;
  */
 class DesAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     
-    public DesAsyncQueryServiceImpl(HelioServiceName name, String description, AccessInterface ... accessInterfaces) {
-        super(name, description, accessInterfaces);
+    /**
+     * Create the DES query support.
+     * @param serviceName name of the service. Must be equal to {@link HelioServiceName#DES}
+     * @param description a description of the servcie from the registry
+     * @param accessInterfaces the interfaces to use for this service.
+     */
+    public DesAsyncQueryServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
+        super(serviceName, description, accessInterfaces);
+        AssertUtil.assertArgumentEquals(HelioServiceName.DES, serviceName,  "serviceName");
     }
     
     @Override
