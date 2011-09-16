@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.ServiceFactory;
@@ -18,6 +20,7 @@ import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceRegistryClient;
 import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Main object to access the HELIO API. This is implemented as facade to the underlying system.
@@ -26,6 +29,11 @@ import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
  *
  */
 public class HelioClient {
+    /**
+     * The logger to use.
+     */
+    private static final Logger _LOGGER = Logger.getLogger(HelioClient.class);
+    
     /**
      * Map holding the factories that provide a specific capability.
      */
@@ -63,26 +71,36 @@ public class HelioClient {
 	/**
 	 * Get a proxy to a particular service instance
 	 * @param helioServiceName the name of the service to be loaded.
+	 * @param serviceCapability the desired capability of the service.
 	 * @param serviceType optional argument for processing services that need to identify the specific process to be called.
-	 * @param accessInterfaces end points of known services. If null, this value will be retrieved from the registry.  
 	 * @return a HELIO service instance or null if nothing has been found.
 	 */
-	public HelioService getServiceInstance(HelioServiceName helioServiceName,  String serviceType, AccessInterface ... accessInterfaces) {
+	public HelioService getServiceInstance(HelioServiceName helioServiceName, ServiceCapability serviceCapability, String serviceType) {
+	    AssertUtil.assertArgumentNotNull(serviceCapability, "serviceCapability");
 	    ServiceDescriptor descriptor = getServiceDescriptorByName(helioServiceName);
 	    if (descriptor == null) {
 	        return null;
 	    }
+
+	    // check if the service implements the required capability
 	    Set<ServiceCapability> capabilites = descriptor.getCapabilities();
+	    if (capabilites.contains(serviceCapability)) {
+	        // get the factory, if registered.
+	        if (factoryMap.containsKey(serviceCapability)) {
+	            ServiceFactory factory = factoryMap.get(serviceCapability);
+	            HelioService service = factory.getHelioService(helioServiceName, serviceType, (AccessInterface[]) null);
+	            if (service != null) {
+	                return service;
+	            } else {
+	                _LOGGER.warn("Unable to load service with name " + helioServiceName + " and sub service name " + serviceType + " from factory " + factory);
+	            }
+	        } else {
+	            _LOGGER.warn("Unable to load service service factory for capability " + serviceCapability + ". This is most likely due to a limitation of the clientapi.");
+	        }
+	    } else {
+	        _LOGGER.warn("Service " + helioServiceName + " does not provide the capabilty " + serviceCapability);
+	    }
 	    
-	    for (ServiceCapability capability : capabilites) {
-            if (factoryMap.containsKey(capability)) {
-                ServiceFactory factory = factoryMap.get(capability);
-                HelioService service = factory.getHelioService(helioServiceName, serviceType, accessInterfaces);
-                if (service != null) {
-                    return service;
-                }
-            }
-        }
 	    return null;
 	}
 	

@@ -100,6 +100,9 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	    this.currentAccessInterface = accessInterface;
 	}
 
+	/**
+	 * Retrieve the next interface to use from the load balancer. 
+	 */
     protected void updateCurrentInterface() {
         this.currentAccessInterface=loadBalancer.getBestEndPoint(accessInterfaces);
         this.currentPort = getPort(currentAccessInterface);
@@ -264,9 +267,14 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	 *
 	 */
 	private static class HelioSyncQueryResult implements HelioQueryResult {
-
+	    /**
+	     * How long did it take to execute the process.
+	     */
 		private final int executionDuration;
 		
+		/**
+		 * The actual result stored as in memory votable.
+		 */
 		private final VOTABLE voTable;
 		
 		/**

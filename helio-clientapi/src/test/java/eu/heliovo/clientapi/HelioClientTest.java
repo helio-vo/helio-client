@@ -11,8 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.model.service.HelioService;
+import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
@@ -36,7 +37,7 @@ public class HelioClientTest {
     /** 
      * A test service descriptor
      */
-    private ServiceDescriptor testDescriptor = new GenericServiceDescriptor(testService, "a test service descriptor", ServiceCapability.ASYNC_QUERY_SERVICE);
+    private ServiceDescriptor testDescriptor = new GenericServiceDescriptor(testService, "a test service descriptor", ServiceCapability.SYNC_QUERY_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE);
 
     /**
      * Setup dummy registry client
@@ -48,6 +49,12 @@ public class HelioClientTest {
 
         HelioDummyServiceRegistryClient serviceRegistryClient = new HelioDummyServiceRegistryClient();
         serviceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlUrl));
+
+        
+        wsdlPath = "/wsdl/helio_full_query.wsdl";
+        wsdlUrl = getClass().getResource(wsdlPath);
+        assertNotNull(wsdlUrl);
+        serviceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlUrl));
         ServiceRegistryClientFactory.getInstance().setServiceRegistryClient(serviceRegistryClient);      
     }
     
@@ -70,18 +77,23 @@ public class HelioClientTest {
         assertEquals(1, serviceNames.length);
         assertEquals(testService, serviceNames[0]);
         
-        serviceNames = helioClient.getServiceNamesByCapability(ServiceCapability.SYNC_QUERY_SERVICE);
+        serviceNames = helioClient.getServiceNamesByCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
         System.out.println(Arrays.toString(serviceNames));
         assertEquals(0, serviceNames.length);
     }
 
     /**
-     * Test method {@link HelioClient#getServiceInstance(HelioServiceName, String, eu.heliovo.registryclient.AccessInterface...)}
+     * Test method {@link HelioClient#getServiceInstance(HelioServiceName, ServiceCapability, String)}
      */
     @Test public void testGetServiceInstance() {
         HelioClient helioClient = new HelioClient();
-        HelioService service = helioClient.getServiceInstance(testService, null, (AccessInterface[])null);
+        HelioService service = helioClient.getServiceInstance(testService, ServiceCapability.SYNC_QUERY_SERVICE, null);
         assertNotNull(service);
+        assertTrue("Service should be of type " + SyncQueryService.class, service instanceof SyncQueryService);
+        
+        service = helioClient.getServiceInstance(testService, ServiceCapability.ASYNC_QUERY_SERVICE, null);
+        assertNotNull(service);
+        assertTrue("Service should be of type " + AsyncQueryService.class, service instanceof AsyncQueryService);
     }
     
 }

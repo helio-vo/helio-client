@@ -12,6 +12,7 @@ import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
+import eu.heliovo.registryclient.ServiceResolutionException;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -45,7 +46,8 @@ public class SyncQueryServiceFactory extends AbstractServiceFactory {
 
     /**
      * Get a new instance of the "best" service provider for a given descriptor
-     * @param serviceDescriptor the service descriptor to use
+     * @param serviceName the name of the service.
+     * @param accessInterfaces the interfaces where to find the endpoints. If null the registry will be asked.
      * @return a AsyncQueryService implementation to send out queries to this service.
      */
     public SyncQueryService getSyncQueryService(HelioServiceName serviceName, AccessInterface ... accessInterfaces) {
@@ -54,7 +56,9 @@ public class SyncQueryServiceFactory extends AbstractServiceFactory {
         if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
             accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.SYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
         }
-        AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
+        if (accessInterfaces == null || accessInterfaces.length == 0) {
+            throw new ServiceResolutionException("Unable to find any endpoint for service " + serviceName + ". Please check the registry settings.");
+        }
 
         _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
         SyncQueryServiceImpl queryService = new SyncQueryServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
