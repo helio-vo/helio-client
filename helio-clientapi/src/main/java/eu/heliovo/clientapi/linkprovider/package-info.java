@@ -1,4 +1,5 @@
 package eu.heliovo.clientapi.linkprovider;
 /**
- * Various link providers for external pages.
+ * Various providers for links to external pages.
+ * LinkProviders are simple services that run just on the HELIO clientapi.
  */

@@ -39,10 +39,10 @@ public interface LinkProviderService extends HelioService {
     public String getTitle(Date startTime, Date endTime);
     
     /**
-     * Get the internal identifier of a concrete implementation of a LinkProviderService.
-     * @return the internal name of the service.
+     * Get the name of this variant of a LinkProviderService.
+     * @return the service variant name.
      */
-    public String getSubServiceName();
+    public String getServiceVariant();
     
     /**
      * Return a general purpose description for help texts.

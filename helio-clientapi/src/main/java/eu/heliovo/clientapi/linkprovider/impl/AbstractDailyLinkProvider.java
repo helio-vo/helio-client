@@ -31,9 +31,9 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
     private final String titleTemplate;
     
     /**
-     * Name of the subservice. Should start with ivo:// and must be unique.
+     * Name of the service variant. Should start with ivo:// and must be unique.
      */
-    private final String subServiceName;
+    private final String serviceVariant;
     
     /**
      * Description
@@ -45,14 +45,14 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
      * @param providerTemplate the template to create the URL, will be passed the start and end time.
      * @param title the simple title
      * @param titleTemplate the context aware title, will be passed the start and end time.
-     * @param subServiceName the unique name of the link provider.
+     * @param serviceVariant the unique name of the link provider.
      * @param description a general purpose description.
      */
-    public AbstractDailyLinkProvider(String providerTemplate, String title, String titleTemplate, String subServiceName, String description) {
+    public AbstractDailyLinkProvider(String providerTemplate, String title, String titleTemplate, String serviceVariant, String description) {
         this.providerTemplate = providerTemplate;
         this.title = title;
         this.titleTemplate = titleTemplate;
-        this.subServiceName = subServiceName;
+        this.serviceVariant = serviceVariant;
         this.description = description;
     }
     
@@ -76,8 +76,8 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
     }
     
     @Override
-    public String getSubServiceName() {
-        return subServiceName;
+    public String getServiceVariant() {
+        return serviceVariant;
     }
 
     @Override

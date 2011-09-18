@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
-import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -54,37 +53,40 @@ public class AsyncQueryServiceFactory extends AbstractServiceFactory {
 	}
 	
 	@Override
-	public HelioService getHelioService(HelioServiceName serviceName, String subType, AccessInterface... accessInterfaces) {
-	    return getAsyncQueryService(serviceName, accessInterfaces);
-	}
-	
-	/**
-	 * Get a new instance of the "best" service provider for a given descriptor
-	 * @param serviceDescriptor the service descriptor to use
-	 * @return a AsyncQueryService implementation to send out queries to this service.
-	 */
-	public AsyncQueryService getAsyncQueryService(HelioServiceName serviceName, AccessInterface ... accessInterfaces) {
-	    AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
-	    ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
-	    if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
-	        accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
-	    }
-	    AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
+	public AsyncQueryService getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
+        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
+        ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
+        if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
+            accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
+        }
+        AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
 
-	    _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
-	    
-	    Class<? extends AsyncQueryService> serviceImpl = implClassMap.get(serviceName);
-	    if (serviceImpl == null) {
-	        serviceImpl = implClassMap.get(null);
-	    }
-	    
-	    AsyncQueryService queryService;
+        _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
+        
+        Class<? extends AsyncQueryService> serviceImpl = implClassMap.get(serviceName);
+        if (serviceImpl == null) {
+            serviceImpl = implClassMap.get(null);
+        }
+        
+        AsyncQueryService queryService;
         try {
             Constructor<? extends AsyncQueryService> constructor = serviceImpl.getConstructor(new Class<?>[] {HelioServiceName.class, String.class, AccessInterface[].class});
             queryService = constructor.newInstance(new Object[] {serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces});
         } catch (Exception e) {
             throw new RuntimeException("Unable to instanciate " + serviceImpl.getName() + ": " + e.getMessage(), e);
         }
-	    return queryService;
+        return queryService;
+	}
+	
+	/**
+	 * Get a new instance of the "best" service provider for a given descriptor
+	 * @param serviceName the service descriptor to use
+	 * @param accessInterfaces 
+	 * @return a AsyncQueryService implementation to send out queries to this service.
+	 * @deprecated This method will be removed. Rather use the generic {@link #getHelioService(HelioServiceName, String, AccessInterface...)}
+	 */
+	@Deprecated
+	public AsyncQueryService getAsyncQueryService(HelioServiceName serviceName, AccessInterface ... accessInterfaces) {
+	    return getHelioService(serviceName, null, accessInterfaces);
 	}
 }

@@ -72,10 +72,10 @@ public class HelioClient {
 	 * Get a proxy to a particular service instance
 	 * @param helioServiceName the name of the service to be loaded.
 	 * @param serviceCapability the desired capability of the service.
-	 * @param serviceType optional argument for processing services that need to identify the specific process to be called.
+	 * @param serviceVariant optional argument for services that offer different variants.
 	 * @return a HELIO service instance or null if nothing has been found.
 	 */
-	public HelioService getServiceInstance(HelioServiceName helioServiceName, ServiceCapability serviceCapability, String serviceType) {
+	public HelioService getServiceInstance(HelioServiceName helioServiceName, ServiceCapability serviceCapability, String serviceVariant) {
 	    AssertUtil.assertArgumentNotNull(serviceCapability, "serviceCapability");
 	    ServiceDescriptor descriptor = getServiceDescriptorByName(helioServiceName);
 	    if (descriptor == null) {
@@ -88,11 +88,11 @@ public class HelioClient {
 	        // get the factory, if registered.
 	        if (factoryMap.containsKey(serviceCapability)) {
 	            ServiceFactory factory = factoryMap.get(serviceCapability);
-	            HelioService service = factory.getHelioService(helioServiceName, serviceType, (AccessInterface[]) null);
+	            HelioService service = factory.getHelioService(helioServiceName, serviceVariant, (AccessInterface[]) null);
 	            if (service != null) {
 	                return service;
 	            } else {
-	                _LOGGER.warn("Unable to load service with name " + helioServiceName + " and sub service name " + serviceType + " from factory " + factory);
+	                _LOGGER.warn("Unable to load service with name " + helioServiceName + " and service variant name " + serviceVariant + " from factory " + factory);
 	            }
 	        } else {
 	            _LOGGER.warn("Unable to load service service factory for capability " + serviceCapability + ". This is most likely due to a limitation of the clientapi.");

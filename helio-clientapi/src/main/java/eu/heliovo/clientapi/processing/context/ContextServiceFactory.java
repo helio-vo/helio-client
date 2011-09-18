@@ -56,14 +56,14 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	}
 
     @Override
-    public ContextService getHelioService(HelioServiceName serviceName, String subType, AccessInterface... accessInterfaces) {
-        return getContextService(serviceName, subType, accessInterfaces);
+    public ContextService getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
+        return getContextService(serviceName, serviceVariant, accessInterfaces);
     }
 
 	
 	/**
 	 * Convenience method to get access to a goes plotter client stub.
-	 * @param accessInterfaces the interfaces that implement the flare plotter.
+	 * @param accessInterfaces the interfaces that implement the service. Will be retrieved from the registry if null.
 	 * @return the client stub to access the plotter.
 	 */
 	public GoesPlotterService getGoesPlotterService(AccessInterface ... accessInterfaces) {
@@ -72,7 +72,7 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 
 	/**
 	 * Convenience method to get access to a flare plotter client stub
-	 * @param accessInterfaces the interfaces that implement the service.
+	 * @param accessInterfaces the interfaces that implement the service. Will be retrieved from the registry if null.
 	 * @return the client stub to access the plotter.
 	 */
 	public FlarePlotterService getFlarePlotterService(AccessInterface ... accessInterfaces) {
@@ -80,24 +80,24 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	}
 
 	/**
-	 * Convenience method to get access to a flare plotter client stub
-	 * @param accessInterfaces the interfaces that implement the service.
+	 * Convenience method to get access to a parker spiral plotter client stub
+	 * @param accessInterfaces the interfaces that implement the service. Will be retrieved from the registry if null.
 	 * @return the client stub to access the plotter.
 	 */
-	public SimpleParkerModelService getSimpleParkerModelServicesImpl(AccessInterface ... accessInterfaces) {
+	public SimpleParkerModelService getSimpleParkerModelService(AccessInterface ... accessInterfaces) {
 	    return (SimpleParkerModelService) getContextService(HelioServiceName.CXS, PARKER_MODEL, accessInterfaces);
 	}
 	
     /**
-     * Get the context service by name
+     * Get the context service by name and variant
      * @param serviceName name of the overall service.
-     * @param subServiceName internal id of the concrete service. Use one of the constants defined by this class.
-     * @param accessInterfaces the interface to use.
+     * @param serviceVariant id of the concrete context service. Use one of the constants defined by this class.
+     * @param accessInterfaces the interface to use. Will be retrieved from the registry if null.
      * @return a proxy to the context service.
      */
-    private ContextService getContextService(HelioServiceName serviceName, String subServiceName, AccessInterface ... accessInterfaces) {
+    private ContextService getContextService(HelioServiceName serviceName, String serviceVariant, AccessInterface ... accessInterfaces) {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
-        AssertUtil.assertArgumentHasText(subServiceName, "subServiceName");
+        AssertUtil.assertArgumentHasText(serviceVariant, "serviceVariant");
         ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
         if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
             accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, AccessInterfaceType.SOAP_SERVICE);
@@ -106,14 +106,14 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 
         _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
         ContextService contextService;
-        if (GOES_PLOTTER.equals(subServiceName)) {
+        if (GOES_PLOTTER.equals(serviceVariant)) {
             contextService = new GoesPlotterServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
-        } else if (FLARE_PLOTTER.equals(subServiceName)) {
+        } else if (FLARE_PLOTTER.equals(serviceVariant)) {
             contextService = new FlarePlotterServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);          
-        } else if (PARKER_MODEL.equals(subServiceName)) {
+        } else if (PARKER_MODEL.equals(serviceVariant)) {
             contextService = new SimpleParkerModelServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);                     
         } else {
-            throw new ServiceResolutionException("Unable to find context service of type " + subServiceName);
+            throw new ServiceResolutionException("Unable to find context service of type " + serviceVariant);
         }
         return contextService;
     }

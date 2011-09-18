@@ -24,7 +24,7 @@ public class SolarMonitorLinkProvider extends AbstractDailyLinkProvider implemen
     /**
      * Identifier of the concrete service instance
      */
-    private static final String SUB_SERVICE_NAME = "ivo://helio-vo.eu/lps/solarmonitor";
+    public static final String SERVICE_VARIANT = "ivo://helio-vo.eu/lps/solarmonitor";
 
     /**
      * Name of the link provider.
@@ -40,7 +40,7 @@ public class SolarMonitorLinkProvider extends AbstractDailyLinkProvider implemen
      * Create the provider
      */
     public SolarMonitorLinkProvider() {
-        super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SUB_SERVICE_NAME, DESC);
+        super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
     }
     
 }

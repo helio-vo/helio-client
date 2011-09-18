@@ -31,13 +31,13 @@ public class LinkProviderFactoryTest {
         LinkProviderFactory factory = LinkProviderFactory.getInstance();
         assertNotNull(factory);
         
-        String[] names = factory.getLinkProviderNames();
+        String[] names = factory.getServiceVariants(HelioServiceName.LPS);
         assertNotNull(names);
         assertTrue(names.length > 0);
         
         for (String name : names) {
             LinkProviderService provider = factory.getLinkProvider(name);
-            assertEquals(name, provider.getSubServiceName());
+            assertEquals(name, provider.getServiceVariant());
         }
         
         LinkProviderService[] linkProviders = factory.getLinkProviders();

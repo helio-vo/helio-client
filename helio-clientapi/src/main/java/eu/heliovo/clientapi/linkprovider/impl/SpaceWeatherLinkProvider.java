@@ -23,7 +23,7 @@ public class SpaceWeatherLinkProvider extends AbstractDailyLinkProvider {
     /**
      * Identifier of the concrete service instance
      */
-    private static final String SUB_SERVICE_NAME = "ivo://helio-vo.eu/lps/spaceweather";
+    private static final String SERVICE_VARIANT = "ivo://helio-vo.eu/lps/spaceweather";
 
     /**
      * Name of the link provider.
@@ -39,7 +39,7 @@ public class SpaceWeatherLinkProvider extends AbstractDailyLinkProvider {
      * Create the provider
      */
     public SpaceWeatherLinkProvider() {
-        super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SUB_SERVICE_NAME, DESC);
+        super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
     }
 
 }

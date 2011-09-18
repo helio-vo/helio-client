@@ -58,7 +58,7 @@ public class ContextClientDemo {
         logs = result.getUserLogs();
         displayImage("Goes Plot", url, logs);
         
-        SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelServicesImpl((AccessInterface[])null);
+        SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService((AccessInterface[])null);
         cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
         startDate =  cal.getTime();
         result = parkerModelService.parkerModel(startDate);
