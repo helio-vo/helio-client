@@ -22,7 +22,7 @@ public class SyncQueryServiceImplTest {
 		MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
 		MockSyncQueryService service = new MockSyncQueryService(port);
 		
-		assertNotNull(service.getName());
+		assertNotNull(service.getServiceName());
 		assertNotNull(service.getDescription());
 		
 		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), "where", 100, 0, null);
@@ -68,7 +68,7 @@ public class SyncQueryServiceImplTest {
 		MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
 		MockSyncQueryService service = new MockSyncQueryService(port);
 		
-		assertNotNull(service.getName());
+		assertNotNull(service.getServiceName());
 		assertNotNull(service.getDescription());
 		
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0);

@@ -66,7 +66,7 @@ public class PersistedFile
    * Note that no underlying file will be created.
    * 
    * @param _expiration The date after which this file can be safely discarded
-   * @return 
+   * @return a new instance of a persisted file.
    */
   public static PersistedFile createNewPersistedFile(Date _expiration)
   {

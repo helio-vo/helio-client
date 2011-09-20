@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
+import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.asyncquery.impl.AbstractQueryServiceImpl;
 import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
@@ -36,7 +36,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author MarcoSoldati
  *
  */
-class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQueryService {
+class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryService {
 
 	/**
 	 * The logger instance
@@ -75,7 +75,7 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	 * @param accessInterfaces the locations of the wsdl files. Must not be null.
 	 */
 	public SyncQueryServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
-	    super(serviceName, description, accessInterfaces);
+	    super(serviceName, null, description, accessInterfaces);
 	    updateCurrentInterface();
 	}
 	
@@ -88,7 +88,7 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	 * @param description a short text to describe the service
 	 */
 	public SyncQueryServiceImpl(HelioServiceName serviceName, String description, HelioQueryService port, AccessInterface accessInterface) {
-	    super(serviceName, description, new AccessInterface[] {accessInterface});
+	    super(serviceName, null, description, new AccessInterface[] {accessInterface});
         
 	    if (!ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
 	        throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.SYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
@@ -251,8 +251,8 @@ class SyncQueryServiceImpl extends AbstractQueryServiceImpl implements SyncQuery
 	}
 	
 	@Override
-	public HelioServiceName getName() {
-		return name;
+	public HelioServiceName getServiceName() {
+		return serviceName;
 	}
 	
 	

@@ -81,7 +81,7 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
     }
 
     @Override
-    public HelioServiceName getName() {
+    public HelioServiceName getServiceName() {
         return HelioServiceName.LPS;
     }
 

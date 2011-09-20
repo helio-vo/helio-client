@@ -2,12 +2,11 @@ package eu.heliovo.clientapi.query.asyncquery.impl;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
+import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -33,15 +32,26 @@ public class AsyncQueryServiceFactory extends AbstractServiceFactory {
 	private static AsyncQueryServiceFactory instance = new AsyncQueryServiceFactory();
 	
 	/**
-	 * Map of potential implementations of a service. The entry with null will be used as default service impl.
+	 * Create a new service variant registry.
 	 */
-	private static final Map<HelioServiceName, Class<? extends AsyncQueryService>> implClassMap = 
-	    new HashMap<HelioServiceName, Class<? extends AsyncQueryService>>();
+	private final ServiceVariantRegistry serviceVariantRegistry = new ServiceVariantRegistry();
 	
-	static {
-	    implClassMap.put(null, AsyncQueryServiceImpl.class);
-	    implClassMap.put(HelioServiceName.DES, DesAsyncQueryServiceImpl.class);
-	}
+	/**
+	 * Create the factory and register the variants. 
+	 */
+	public AsyncQueryServiceFactory() {
+	    registerVariants();
+    }
+
+	/**
+	 * Register specific variants of the async query services.
+	 */
+	private void registerVariants() {
+	    // default impl
+	    serviceVariantRegistry.register(null, null, AsyncQueryServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DES, null, DesAsyncQueryServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.ICS, IcsPatAsyncQueryServiceImpl.SERVICE_VARIANT, IcsPatAsyncQueryServiceImpl.class);
+    }
 	
 	
 	/**
@@ -52,7 +62,8 @@ public class AsyncQueryServiceFactory extends AbstractServiceFactory {
 		return instance;
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public AsyncQueryService getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
         ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
@@ -63,15 +74,15 @@ public class AsyncQueryServiceFactory extends AbstractServiceFactory {
 
         _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
         
-        Class<? extends AsyncQueryService> serviceImpl = implClassMap.get(serviceName);
+        Class<? extends AsyncQueryService> serviceImpl = (Class<? extends AsyncQueryService>) serviceVariantRegistry.getServiceImpl(serviceName, serviceVariant);
         if (serviceImpl == null) {
-            serviceImpl = implClassMap.get(null);
+            serviceImpl = (Class<? extends AsyncQueryService>) serviceVariantRegistry.getServiceImpl(null, null);
         }
         
         AsyncQueryService queryService;
         try {
-            Constructor<? extends AsyncQueryService> constructor = serviceImpl.getConstructor(new Class<?>[] {HelioServiceName.class, String.class, AccessInterface[].class});
-            queryService = constructor.newInstance(new Object[] {serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces});
+            Constructor<? extends AsyncQueryService> constructor = serviceImpl.getConstructor(new Class<?>[] {HelioServiceName.class, String.class, String.class, AccessInterface[].class});
+            queryService = constructor.newInstance(new Object[] {serviceDescriptor.getName(), serviceVariant, serviceDescriptor.getLabel(), accessInterfaces});
         } catch (Exception e) {
             throw new RuntimeException("Unable to instanciate " + serviceImpl.getName() + ": " + e.getMessage(), e);
         }

@@ -146,6 +146,12 @@ class DpasDao implements HelioCatalogDao {
 		}
 	}
 
+	/**
+	 * Extract the text content from the first matching tag with a given name.
+	 * @param fieldElement the parent element to analyze.
+	 * @param tagName the name of the tag.
+	 * @return the extracted text.
+	 */
 	private String getTextContent(Element fieldElement, String tagName) {
 		if (fieldElement == null) {
 			return null;

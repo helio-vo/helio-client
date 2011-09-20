@@ -23,7 +23,7 @@ public class TheSunTodayLinkProviderTest {
      */
     @Test public void testLinkProvider() {
         TheSunTodayLinkProvider provider = new TheSunTodayLinkProvider();
-        assertNotNull(provider.getName());
+        assertNotNull(provider.getServiceName());
         assertNotNull(provider.getDescription());
         
         Calendar cal = Calendar.getInstance();

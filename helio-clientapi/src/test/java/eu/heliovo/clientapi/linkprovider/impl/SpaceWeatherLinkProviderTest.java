@@ -23,7 +23,7 @@ public class SpaceWeatherLinkProviderTest {
      */
     @Test public void testLinkProvider() {
         SpaceWeatherLinkProvider provider = new SpaceWeatherLinkProvider();
-        assertNotNull(provider.getName());
+        assertNotNull(provider.getServiceName());
         assertNotNull(provider.getDescription());
         
         Calendar cal = Calendar.getInstance();

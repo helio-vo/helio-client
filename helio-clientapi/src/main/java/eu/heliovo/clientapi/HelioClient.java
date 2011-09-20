@@ -51,6 +51,8 @@ public class HelioClient {
 	 * @return all services registered with HelioClient or empty array if none are found.
 	 */
 	public HelioServiceName[] getAllServiceNames() {
+	    // init the registry
+	    ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
 	    return HelioServiceName.values().toArray(new HelioServiceName[0]);
 	}
 	

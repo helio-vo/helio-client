@@ -23,7 +23,7 @@ public class SolarMonitorLinkProviderTest {
      */
     @Test public void testLinkProvider() {
         SolarMonitorLinkProvider provider = new SolarMonitorLinkProvider();
-        assertNotNull(provider.getName());
+        assertNotNull(provider.getServiceName());
         assertNotNull(provider.getDescription());
         
         Calendar cal = Calendar.getInstance();

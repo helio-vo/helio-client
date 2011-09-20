@@ -34,8 +34,8 @@ public class ConvertingParamQueryServiceImpl implements ParamQueryService {
 	}
 	
 	@Override
-	public HelioServiceName getName() {
-		return paramQueryService.getName();
+	public HelioServiceName getServiceName() {
+		return paramQueryService.getServiceName();
 	}
 
 	@Override
@@ -69,4 +69,8 @@ public class ConvertingParamQueryServiceImpl implements ParamQueryService {
 		this.conversionService = conversionService;
 	}
 
+	@Override
+	public String getServiceVariant() {
+	    return null;
+	}
 }

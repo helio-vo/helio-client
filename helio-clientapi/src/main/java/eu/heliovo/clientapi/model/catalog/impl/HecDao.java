@@ -46,6 +46,7 @@ import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
 import eu.heliovo.clientapi.utils.VOTableUtils;
+import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
@@ -128,8 +129,8 @@ class HecDao implements HelioCatalogDao {
 				int catInternalId = Integer.parseInt(listElement.getElementsByTagName("ListDBID").item(0).getTextContent());
 				String catName = listElement.getElementsByTagName("ListID").item(0).getTextContent();
 
-				String catLabel = getChildValue(listElement, "ListName");
-				String catDescription = getChildValue(listElement, "ListDesc");
+				String catLabel = getTextContent(listElement, "ListName");
+				String catDescription = getTextContent(listElement, "ListDesc");
 
 				HelioCatalog catalog = new HelioCatalog(catName, catLabel, catDescription);
 				add(catalog);
@@ -145,8 +146,8 @@ class HecDao implements HelioCatalogDao {
 
 					String fieldId = getTextContent(fieldElement, "OldFieldName"); 
 					String fieldName = getTextContent(fieldElement, "FieldName");
-					String fieldDescription = getChildValue(fieldElement, "FieldDesc");
-					String fieldDataType = getChildValue(fieldElement, "FieldDataType");
+					String fieldDescription = getTextContent(fieldElement, "FieldDesc");
+					String fieldDataType = getTextContent(fieldElement, "FieldDataType");
 
 					FieldType ft;
 					if ("integer".equalsIgnoreCase(fieldDataType))
@@ -228,17 +229,6 @@ class HecDao implements HelioCatalogDao {
 		
 	}
 
-	private String getTextContent(Element fieldElement, String tagName) {
-		if (fieldElement == null) {
-			return null;
-		}
-		NodeList tag = fieldElement.getElementsByTagName(tagName);
-		if (tag == null || tag.getLength() == 0) {
-			return null;
-		}
-		return tag.item(0).getTextContent();
-	}
-
 	/**
 	 * Get the hec_catalogs either from remote or from the local cache.
 	 * @return the hec_catalogs.
@@ -255,7 +245,7 @@ class HecDao implements HelioCatalogDao {
 		
 		VOTABLE votable;
 		try {
-			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getSyncQueryService(HelioServiceName.HEC);
+			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getHelioService(HelioServiceName.HEC, null, (AccessInterface[])null);
 			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {
@@ -290,7 +280,7 @@ class HecDao implements HelioCatalogDao {
 		}
 		
 		if (votable != null) {
-		    _LOGGER.info("Successfully loaded list of HEC catalogs: " + votable.getRESOURCE() != null && votable.getRESOURCE().size() >= 1 && votable.getRESOURCE().get(0).getTABLE() != null ? votable.getRESOURCE().get(0).getTABLE().size() : 0);
+		    _LOGGER.info("Successfully loaded list of HEC catalogs: " + (votable.getRESOURCE() != null && votable.getRESOURCE().size() >= 1 && votable.getRESOURCE().get(0).getTABLE() != null ? votable.getRESOURCE().get(0).getTABLE().size() : 0));
 		} else {
 		    _LOGGER.info("Unable to load list of HEC catalogs.");		    
 		}
@@ -314,13 +304,23 @@ class HecDao implements HelioCatalogDao {
 		return source;
 	}
 
-	private String getChildValue(Element _e, String _childTag) {
-		NodeList nl = _e.getElementsByTagName(_childTag);
-		if (nl.getLength() > 0)
-			return nl.item(0).getTextContent();
+    /**
+     * Get the text content of a named child of an element
+     * @param fieldElement the parent field.
+     * @param tagName the tag to look for.
+     * @return the text body.
+     */
+    private String getTextContent(Element fieldElement, String tagName) {
+        if (fieldElement == null) {
+            return null;
+        }
+        NodeList tag = fieldElement.getElementsByTagName(tagName);
+        if (tag == null || tag.getLength() == 0) {
+            return null;
+        }
+        return tag.item(0).getTextContent();
+    }
 
-		return null;
-	}
 
 	/**
 	 * Add a catalog to the map.

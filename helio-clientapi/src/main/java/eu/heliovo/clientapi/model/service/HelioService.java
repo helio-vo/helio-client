@@ -13,7 +13,13 @@ public interface HelioService {
 	 * Get the name of the service. Must not be null.
 	 * @return the name of the service.
 	 */
-	public HelioServiceName getName();
+	public HelioServiceName getServiceName();
+	
+	/**
+	 * Get the variant of a specific service.
+	 * @return the variant id or null for the default variant or if there is no variant.
+	 */
+	public String getServiceVariant();
 	
 	/**
 	 * A free text description for user feedback. May be null.  

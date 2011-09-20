@@ -22,7 +22,7 @@ class DesAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
      * @param accessInterfaces the interfaces to use for this service.
      */
     public DesAsyncQueryServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
-        super(serviceName, description, accessInterfaces);
+        super(serviceName, null, description, accessInterfaces);
         AssertUtil.assertArgumentEquals(HelioServiceName.DES, serviceName,  "serviceName");
     }
     

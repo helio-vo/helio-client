@@ -158,7 +158,7 @@ public class HelioField<T extends Object> {
 	
 	/**
 	 * Get the description of the field. Any string is applicable. May be null.
-	 * @return 
+	 * @return the description 
 	 */
 	public String getDescription() {
 		return description;
@@ -222,8 +222,9 @@ public class HelioField<T extends Object> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("HelioField");
-		sb.append("name=").append(name);
-		sb.append("label=").append(label);
+		sb.append(" id=").append(id);
+		sb.append(" name=").append(name);
+		sb.append(", label=").append(label);
 		sb.append(", type=").append(type);
 		if (valueDomain != null) 
 			sb.append(", domain=").append(Arrays.toString(valueDomain));
@@ -240,6 +241,7 @@ public class HelioField<T extends Object> {
 	
 	/**
 	 * Check if a value is part of the given domain. If either domain or value are null the check will succeed.
+	 * @param <T> Type of the domain value.
 	 * @param value the value to check
 	 * @param domain the domain of values to check.
 	 */

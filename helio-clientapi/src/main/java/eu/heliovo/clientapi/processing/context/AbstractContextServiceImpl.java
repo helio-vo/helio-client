@@ -24,8 +24,8 @@ import org.astrogrid.schema.ceatypes.v1.ExecutionPhase;
 import org.astrogrid.schema.ceatypes.v1.JobIdentifierType;
 import org.astrogrid.schema.ceatypes.v1.MessageType;
 
+import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.processing.ProcessingResult;
-import eu.heliovo.clientapi.query.asyncquery.impl.AbstractQueryServiceImpl;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -34,7 +34,7 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
-public abstract class AbstractContextServiceImpl extends AbstractQueryServiceImpl implements ContextService {
+public abstract class AbstractContextServiceImpl extends AbstractServiceImpl implements ContextService {
     /**
      * The logger instance
      */
@@ -63,7 +63,7 @@ public abstract class AbstractContextServiceImpl extends AbstractQueryServiceImp
      * If multiple interfaces are specified the "best" will be chosen.
      */
     public AbstractContextServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
-        super(serviceName, description, accessInterfaces);
+        super(serviceName, null, description, accessInterfaces);
         updateCurrentInterface();
     }
     
