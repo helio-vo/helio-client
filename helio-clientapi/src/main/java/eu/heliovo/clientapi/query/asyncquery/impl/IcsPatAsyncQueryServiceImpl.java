@@ -11,8 +11,6 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
-import org.apache.commons.io.IOUtils;
-
 import uk.ac.starlink.table.ArrayColumn;
 import uk.ac.starlink.table.ColumnInfo;
 import uk.ac.starlink.table.ColumnStarTable;

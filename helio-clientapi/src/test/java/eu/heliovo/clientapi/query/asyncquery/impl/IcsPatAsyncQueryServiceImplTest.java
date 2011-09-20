@@ -2,6 +2,7 @@ package eu.heliovo.clientapi.query.asyncquery.impl;
 
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
@@ -22,7 +23,7 @@ public class IcsPatAsyncQueryServiceImplTest {
     /**
      * Test the loading of an instruments list.
      */
-    @Test public void testIcsPatCreation() {
+    @Ignore @Test public void testIcsPatCreation() {
         ServiceRegistryClient registryClient = ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
         AccessInterface accessInterface = registryClient.getBestEndpoint(HelioServiceName.ICS, ServiceCapability.ASYNC_QUERY_SERVICE, AccessInterfaceType.SOAP_SERVICE);
         IcsPatAsyncQueryServiceImpl icsService = new IcsPatAsyncQueryServiceImpl(HelioServiceName.ICS, IcsPatAsyncQueryServiceImpl.SERVICE_VARIANT, null, accessInterface);
