@@ -1,5 +1,8 @@
 package eu.heliovo.clientapi.linkprovider.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 
 /**
@@ -36,10 +39,21 @@ public class TheSunTodayLinkProvider extends AbstractDailyLinkProvider {
     private static final String DESC = "Access to the daily SDO images from http://sdowww.lmsal.com/suntoday/";
 
     /**
+     * Start date of the list: 16-April-2010
+     */
+    private static final Date START_DATE = asDate(2010, Calendar.APRIL, 15); 
+    
+    /**
      * Create the provider
      */
     public TheSunTodayLinkProvider() {
         super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
     }
+    
+    @Override
+    protected boolean pageExists(Date startTime, Date endTime) {
+        return startTime.after(START_DATE);
+    }
+
 
 }

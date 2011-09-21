@@ -1,5 +1,8 @@
 package eu.heliovo.clientapi.linkprovider.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
 
@@ -37,10 +40,19 @@ public class SolarMonitorLinkProvider extends AbstractDailyLinkProvider implemen
     private static final String DESC = "Access to the daily solar activity page from www.solarmonitor.org";
     
     /**
+     * Start date of the list: 16-January-1996.
+     */
+    private static final Date START_DATE = asDate(1996, Calendar.JANUARY, 15); 
+    
+    /**
      * Create the provider
      */
     public SolarMonitorLinkProvider() {
         super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
     }
     
+    @Override
+    protected boolean pageExists(Date startTime, Date endTime) {
+        return startTime.after(START_DATE);
+    }
 }

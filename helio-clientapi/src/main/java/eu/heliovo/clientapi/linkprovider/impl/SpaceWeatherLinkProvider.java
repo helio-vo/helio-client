@@ -1,5 +1,8 @@
 package eu.heliovo.clientapi.linkprovider.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 
 /**
@@ -36,10 +39,21 @@ public class SpaceWeatherLinkProvider extends AbstractDailyLinkProvider {
     private static final String DESC = "Access to the daily space weather from www.spaceweather.com";
 
     /**
+     * Start date of the list: 1-November-2000
+     */
+    private static final Date START_DATE = asDate(2000, Calendar.OCTOBER, 31); 
+
+    /**
      * Create the provider
      */
     public SpaceWeatherLinkProvider() {
         super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
     }
+    
+    @Override
+    protected boolean pageExists(Date startTime, Date endTime) {
+        return startTime.after(START_DATE);
+    }
+
 
 }

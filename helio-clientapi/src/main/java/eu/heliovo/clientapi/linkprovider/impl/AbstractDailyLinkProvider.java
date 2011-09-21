@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.linkprovider.impl;
 
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.activation.MimeType;
@@ -39,7 +40,7 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
      * Description
      */
     private final String description;
-
+    
     /**
      * Create the daily provider.
      * @param providerTemplate the template to create the URL, will be passed the start and end time.
@@ -59,7 +60,10 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
     @Override
     public URL getLink(Date startTime, Date endTime) {
         AssertUtil.assertArgumentNotNull(startTime, "startTime");
-        return HelioFileUtil.asURL(String.format(providerTemplate, startTime));
+        if (pageExists(startTime, endTime)) {
+            return HelioFileUtil.asURL(String.format(providerTemplate, startTime));
+        }
+        return null;
     }
     
     @Override
@@ -72,7 +76,10 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
         if (startTime == null) {
             return title;
         }
-        return String.format(titleTemplate, startTime);
+        if (pageExists(startTime, endTime)) {
+            return String.format(titleTemplate, startTime);
+        }
+        return null;
     }
     
     @Override
@@ -93,6 +100,29 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
     @Override
     public MimeType getMimeType() {
         return MimeTypeConstants.TEXT_HTML;
+    }
+
+    /**
+     * Check if the page exists for the given date range.
+     * @param startTime the start time to check for
+     * @param endTime the end time to check for.
+     * @return true if the page exists.
+     */
+    protected abstract boolean pageExists(Date startTime, Date endTime);
+    
+    /**
+     * Create a date based on the default calendar instance.
+     * Time will be set to 0.
+     * @param year the year in four numbers.
+     * @param month the month defined by {@link Calendar#JANUARY}, {@link Calendar#FEBRUARY}, ...
+     * @param day the day
+     * @return a date instance for the current locale.
+     */
+    protected static Date asDate(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.set(year, month, day);
+        return cal.getTime();
     }
 
 

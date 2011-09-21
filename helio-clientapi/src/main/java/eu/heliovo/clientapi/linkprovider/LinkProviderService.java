@@ -18,7 +18,7 @@ public interface LinkProviderService extends HelioService {
      * Get the link for a given date range.
      * @param startTime the start value of the range.
      * @param endTime the end value of the range.
-     * @return URL pointing to the remote page. 
+     * @return URL pointing to the remote page, Null in case the link does not exists for the given date range.
      */
     public URL getLink(Date startTime, Date endTime);
     
@@ -34,7 +34,7 @@ public interface LinkProviderService extends HelioService {
      * it can be used in a web form inside a dropdown box or as a link.  
      * @param startTime the start time of the date range. May be ignored.
      * @param endTime the end time of the date range. May be ignored.
-     * @return the title for the provider. Will not be null.
+     * @return the title for the provider, Null in case the link does not exists for the given date range.
      */
     public String getTitle(Date startTime, Date endTime);
     
