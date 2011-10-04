@@ -1,6 +1,8 @@
 package eu.heliovo.clientapi.processing.context.impl;
 
 import java.util.Date;
+import java.util.List;
+import java.util.logging.LogRecord;
 
 import org.astrogrid.schema.agparameterdefinition.v1.ParameterValue;
 import org.astrogrid.schema.agworkflow.v1.Input;
@@ -35,7 +37,7 @@ public class FlarePlotterServiceImpl extends AbstractContextServiceImpl implemen
     }
 
     @Override
-    protected Tool initTool() {
+    protected Tool initTool(List<LogRecord> logRecords) {
         AssertUtil.assertArgumentNotNull(date, "date");
         
         Tool tool = new Tool();

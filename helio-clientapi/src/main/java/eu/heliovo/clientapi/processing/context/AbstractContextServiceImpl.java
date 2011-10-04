@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -59,7 +60,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
      * Create a client stub for the "best" {@link AccessInterface}. 
      * @param serviceName the name of the service
      * @param description a short text to describe the service
-     * @param accessInterface concrete implementation of an AccessInterface. Must not be null. 
+     * @param accessInterfaces concrete implementation of an AccessInterface. Must not be null. 
      * If multiple interfaces are specified the "best" will be chosen.
      */
     public AbstractContextServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
@@ -103,7 +104,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
 
         List<LogRecord> logRecords = new ArrayList<LogRecord>();
 
-        final Tool tool = initTool();
+        final Tool tool = initTool(logRecords);
         final JobIdentifierType jobstepID = getJobstepID();
         
         String callId = currentAccessInterface.getUrl() + "::execute";
@@ -193,9 +194,10 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
 
     /**
      * Create and populate the tool object to be used by the service. 
+     * @param logRecords the log records to use.
      * @return the tool
      */
-    protected abstract Tool initTool();
+    protected abstract Tool initTool(List<LogRecord> logRecords);
 
     /**
      * Create the job step id (whatever this is used for)
@@ -443,6 +445,10 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
             return resultLocation;
         }
         
+        /**
+         * Add the remote log to the user logs.
+         * @param logLocation url pointing to the log.
+         */
         private void addLog(URL logLocation) {
             try {
                 InputStream logStream = logLocation.openStream();
@@ -464,19 +470,43 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
          * @return the current status.
          */
         public Phase pollStatus(long pollTime, TimeUnit unit) {
+            long pollDelay = pollInterval;
             long startTime = System.currentTimeMillis();            
             long pollTimeInMs = TimeUnit.MILLISECONDS.convert(pollTime, unit);
                         
             // poll the service status until it is not pending anymore.
-            Phase currentPhase = getPhase();
+            Phase currentPhase;
+            try {
+                 currentPhase = getPhase();
+            } catch (JobExecutionException e) {
+                // decrease polling frequency if server is heavily overloaded.
+                if (e.getCause() instanceof TimeoutException) {
+                    pollDelay = pollDelay >= 5000 ? pollDelay : pollDelay + 200;
+                    userLogs.add(new LogRecord(Level.FINE, "getPhase timedout. Increasing delay between two polls to " + pollDelay));
+                    currentPhase = Phase.UNKNOWN;
+                } else {
+                    throw e;
+                }
+            }
             long currentTime = System.currentTimeMillis();
-            while ((currentPhase == Phase.QUEUED || currentPhase == Phase.PENDING || currentPhase == Phase.EXECUTING) && (pollTimeInMs > (currentTime - startTime))) {
+            while ((currentPhase == Phase.QUEUED || currentPhase == Phase.PENDING || currentPhase == Phase.EXECUTING || currentPhase == Phase.UNKNOWN) && (pollTimeInMs > (currentTime - startTime))) {
                 try {
-                    Thread.sleep(pollInterval);
+                    Thread.sleep(pollDelay);
                 } catch (InterruptedException e) {
                     // ignore this exception
                 }
-                currentPhase = getPhase();
+                try {
+                    currentPhase = getPhase();
+                } catch (JobExecutionException e) {
+                    // decrease polling frequency if server is heavily overloaded.
+                    if (e.getCause() instanceof TimeoutException) {
+                        pollDelay = pollDelay >= 5000 ? pollDelay : pollDelay + 200;
+                        userLogs.add(new LogRecord(Level.FINE, "getPhase timedout. Increasing delay between two polls to " + pollDelay));
+                        currentPhase = Phase.UNKNOWN;
+                    } else {
+                        throw e;
+                    }
+                }
                 currentTime = System.currentTimeMillis();               
             }
             
