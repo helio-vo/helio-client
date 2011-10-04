@@ -2,10 +2,17 @@ package eu.heliovo.clientapi.processing.context.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
@@ -18,6 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.FileUtils;
+
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
@@ -25,48 +34,103 @@ import eu.heliovo.clientapi.processing.context.GoesPlotterService;
 import eu.heliovo.clientapi.processing.context.SimpleParkerModelService;
 import eu.heliovo.registryclient.AccessInterface;
 
+/**
+ * Demo for the context client
+ * @author MarcoSoldati
+ *
+ */
 public class ContextClientDemo {
 
-    public static void main(String[] args) {
+    /**
+     * Main method for demo
+     * @param args ignored
+     * @throws Exception in case of a problem.
+     */
+    public static void main(String[] args) throws Exception {
         //DebugUtils.enableDump();
-        ContextServiceFactory factory = ContextServiceFactory.getInstance();
+        final ContextServiceFactory factory = ContextServiceFactory.getInstance();
+        final StringBuffer sb = new StringBuffer();
+        sb.append("<html><head><title>CXS stress test</title></head><body>\n");
         
-        FlarePlotterService flarePlotterService = factory.getFlarePlotterService((AccessInterface[])null);
+        ExecutorService executor = Executors.newCachedThreadPool();
         
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Collection<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+        
+        for (int i = 0; i < 1; i++) {
+            final int j = i;
+            tasks.add(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    StringBuilder body = new StringBuilder();
+                    try {
+                        FlarePlotterService flarePlotterService = factory.getFlarePlotterService((AccessInterface[])null);
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        cal.setTimeInMillis(0);
-        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
-        ProcessingResult result = flarePlotterService.flarePlot(cal.getTime());
+                        cal.setTimeInMillis(0);
+                        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                        cal.add(Calendar.MONTH, j);
+                        body.append("<h1>flare plot for " + SimpleDateFormat.getDateInstance().format(cal.getTime()) + "</h1>\n");
+                        ProcessingResult result = flarePlotterService.flarePlot(cal.getTime());
+
+                        URL url = result.asURL(60, TimeUnit.SECONDS);
+                        body.append("<p>").append(url);
+                        body.append("<img src=\"").append(url).append("\"/></p>\n");
+                        
+                        LogRecord[] logs = result.getUserLogs();
+
+                        displayImage("Flare Plot", url, logs);
+
+
+                        GoesPlotterService goesPlotterService = factory.getGoesPlotterService((AccessInterface[])null);
+                        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                        cal.add(Calendar.MONTH, j);
+                        Date startDate =  cal.getTime();
+                        cal.set(2003, Calendar.JANUARY, 3, 0, 0, 0);
+                        cal.add(Calendar.MONTH, j);
+                        Date endDate =  cal.getTime();
+                        body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "-" + SimpleDateFormat.getDateInstance().format(endDate) + "</h1>\n");
+                        result = goesPlotterService.goesPlot(startDate, endDate);
+
+                        url = result.asURL(60, TimeUnit.SECONDS);
+                        body.append("<p>").append(url);
+                        body.append("<img src=\"").append(url).append("\"/></p>\n");
+
+                        logs = result.getUserLogs();
+                        displayImage("Goes Plot", url, logs);
+
+                        SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService((AccessInterface[])null);
+                        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                        cal.add(Calendar.MONTH, j);
+                        startDate =  cal.getTime();
+                        body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
+                        result = parkerModelService.parkerModel(startDate);
+
+                        url = result.asURL(60, TimeUnit.SECONDS);
+                        body.append("<p>").append(url);
+                        body.append("<img src=\"").append(url).append("\"/></p>\n");
+
+                        logs = result.getUserLogs();
+                        displayImage("Parker Model", url, logs);
+                        return null;
+                    } catch (Exception e) {
+                        body.append("<p>exception: ").append(e.getMessage()).append("</p>");
+                        throw e;
+                    } finally {
+                        sb.append(body.toString());
+                    }
+                }
+            });
+        }
         
-        URL url = result.asURL(60, TimeUnit.SECONDS);
-        
-        LogRecord[] logs = result.getUserLogs();
-        
-        displayImage("Flare Plot", url, logs);
-        
-        
-        GoesPlotterService goesPlotterService = factory.getGoesPlotterService((AccessInterface[])null);
-        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
-        Date startDate =  cal.getTime();
-        cal.set(2003, Calendar.JANUARY, 3, 0, 0, 0);
-        Date endDate =  cal.getTime();
-        result = goesPlotterService.goesPlot(startDate, endDate);
-        
-        url = result.asURL(60, TimeUnit.SECONDS);
-        logs = result.getUserLogs();
-        displayImage("Goes Plot", url, logs);
-        
-        SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService((AccessInterface[])null);
-        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
-        startDate =  cal.getTime();
-        result = parkerModelService.parkerModel(startDate);
-        
-        url = result.asURL(60, TimeUnit.SECONDS);
-        logs = result.getUserLogs();
-        displayImage("Parker Model", url, logs);
-        
+        executor.invokeAll(tasks);
+        Thread.sleep(5000);
+        executor.shutdown();
+        executor.awaitTermination(10, TimeUnit.MINUTES);
+        sb.append("</body></html>");
+        File file = new File("cxs.html");
+        FileUtils.writeStringToFile(file, sb.toString());
+        System.out.println("Result written to: " + file.getAbsolutePath());
     }
     
     /**
@@ -74,7 +138,15 @@ public class ContextClientDemo {
      */
     private static int plotCounter = 0;
     
-    private static void displayImage(final String title, final URL url, final LogRecord[] logs) {
+    /**
+     * Display the image in a window
+     * @param title the window title.
+     * @param url the URL of the image. 
+     * @param logs the logs to display
+     */
+    private synchronized static void displayImage(final String title, final URL url, final LogRecord[] logs) {
+        plotCounter++;
+
         SwingUtilities.invokeLater(new Runnable() {
             
             @Override
@@ -101,7 +173,6 @@ public class ContextClientDemo {
                
                 content.add(new JScrollPane(table), BorderLayout.SOUTH);
                 frame.setVisible(true);
-                plotCounter++;
             }
         });
     }
