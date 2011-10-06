@@ -2,10 +2,11 @@
 <project xmlns="http://maven.apache.org/DECORATION/1.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd"
-  name="helio-clientapi">
+  name="helio-client">
+  
   <bannerLeft>
     <name>Helio</name>
-    <src>../../images/helio_logo4_sm.jpg</src>
+    <src>../images/helio_logo4_sm.jpg</src>
     <href>helio-dev.i4ds.ch/heliovo</href>
   </bannerLeft>
 
@@ -14,7 +15,7 @@
       <link rel="stylesheet" type="text/css" href="../css/site.css" />
     </head>
     <breadcrumbs>
-        <item name="helio-clientapi" href="index.html" />
+        <item name="client" href="index.html" />
     </breadcrumbs>
   
     <menu ref="parent"/>

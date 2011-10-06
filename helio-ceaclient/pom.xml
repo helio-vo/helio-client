@@ -13,7 +13,9 @@
   <artifactId>helio-ceaclient</artifactId>
   <version>5.0-SNAPSHOT</version>
   <name>helio-ceaclient</name>
-  <url>http://maven.apache.org</url>
+  <description>Add description in helio-ceaclient/pom.xml</description>
+  
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
