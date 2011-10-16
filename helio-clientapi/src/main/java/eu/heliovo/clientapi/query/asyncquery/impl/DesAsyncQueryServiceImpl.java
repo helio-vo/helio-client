@@ -18,10 +18,11 @@ class DesAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     /**
      * Create the DES query support.
      * @param serviceName name of the service. Must be equal to {@link HelioServiceName#DES}
+     * @param serviceVariant of the service variant.
      * @param description a description of the servcie from the registry
      * @param accessInterfaces the interfaces to use for this service.
      */
-    public DesAsyncQueryServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
+    public DesAsyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant, String description, AccessInterface ... accessInterfaces) {
         super(serviceName, null, description, accessInterfaces);
         AssertUtil.assertArgumentEquals(HelioServiceName.DES, serviceName,  "serviceName");
     }
