@@ -85,13 +85,13 @@ public class ServiceVariantRegistry {
                 return false;
             }
             ServiceVariant otherVariant = (ServiceVariant)other;
-            return (serviceName == null ? otherVariant.serviceName == null    : serviceName.equals(otherVariant.serviceName)) && 
-                (serviceVariant == null ? otherVariant.serviceVariant == null : serviceVariant.equals(otherVariant.serviceVariant));
+            return (this.serviceName == null ? otherVariant.serviceName == null    : this.serviceName.equals(otherVariant.serviceName)) && 
+                (this.serviceVariant == null ? otherVariant.serviceVariant == null : this.serviceVariant.equals(otherVariant.serviceVariant));
         }
         
         @Override
         public int hashCode() {
-            return (serviceName == null ? 13 : serviceName.hashCode()) + 7 * (serviceVariant == null ? 7 : serviceVariant.hashCode());
+            return (serviceName == null ? 0 : serviceName.hashCode()) + 7 * (serviceVariant == null ? 0 : serviceVariant.hashCode());
         }
     }
 }

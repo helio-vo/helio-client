@@ -75,6 +75,8 @@ public class AsyncQueryServiceFactory extends AbstractServiceFactory {
         _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
         
         Class<? extends AsyncQueryService> serviceImpl = (Class<? extends AsyncQueryService>) serviceVariantRegistry.getServiceImpl(serviceName, serviceVariant);
+        // fail over to the default service impl.
+        _LOGGER.warn("Cannot find service with name '" + serviceName + "' and variant name '" + serviceVariant + "'. Failing over to default service.");
         if (serviceImpl == null) {
             serviceImpl = (Class<? extends AsyncQueryService>) serviceVariantRegistry.getServiceImpl(null, null);
         }
