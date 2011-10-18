@@ -1,13 +1,21 @@
 package eu.heliovo.clientapi.processing.context;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
+import eu.heliovo.clientapi.model.service.HelioService;
+import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
 import eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.GoesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.SimpleParkerModelServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.AcePlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
@@ -28,24 +36,14 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	private static final Logger _LOGGER = Logger.getLogger(ContextServiceFactory.class);
 
 	/**
-	 * ID of the goes plotter
-	 */
-    public static final String GOES_PLOTTER = "ivo://helio-vo.eu/cxs/goesplotter";
-
-    /**
-     * ID of the flare plotter
-     */
-    public static final String FLARE_PLOTTER = "ivo://helio-vo.eu/cxs/flareplotter";
-
-    /**
-     * ID of the parker model
-     */
-    public static final String PARKER_MODEL = "ivo://helio-vo.eu/cxs/parkermodel";
-	
-	/**
 	 * Hold the instance
 	 */
 	private static ContextServiceFactory instance = new ContextServiceFactory();
+	
+	/**
+	 * Registry for the service variant.s
+	 */
+	private final ServiceVariantRegistry serviceVariantRegistry = new ServiceVariantRegistry();
 	
 	/**
 	 * Get the singleton of this factory
@@ -54,6 +52,20 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	public static synchronized ContextServiceFactory getInstance() {
 		return instance;
 	}
+	
+	/**
+	 * Initialize the service variant registry.
+	 */
+	public ContextServiceFactory() {
+	    serviceVariantRegistry.register(HelioServiceName.CXS, GoesPlotterServiceImpl.GOES_PLOTTER, GoesPlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.CXS, FlarePlotterServiceImpl.FLARE_PLOTTER, FlarePlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.CXS, SimpleParkerModelServiceImpl.PARKER_MODEL, SimpleParkerModelServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DES, AcePlotterServiceImpl.SERVICE_VARIANT, AcePlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DES, StaPlotterServiceImpl.SERVICE_VARIANT, StaPlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DES, StbPlotterServiceImpl.SERVICE_VARIANT, StbPlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DES, UlyssesPlotterServiceImpl.SERVICE_VARIANT, UlyssesPlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DES, WindPlotterServiceImpl.SERVICE_VARIANT, WindPlotterServiceImpl.class);
+    }
 
     @Override
     public ContextService getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
@@ -67,7 +79,7 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public GoesPlotterService getGoesPlotterService(AccessInterface ... accessInterfaces) {
-	    return (GoesPlotterService) getContextService(HelioServiceName.CXS, GOES_PLOTTER, accessInterfaces);
+	    return (GoesPlotterService) getContextService(HelioServiceName.CXS, GoesPlotterServiceImpl.GOES_PLOTTER, accessInterfaces);
 	}
 
 	/**
@@ -76,7 +88,7 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public FlarePlotterService getFlarePlotterService(AccessInterface ... accessInterfaces) {
-	    return (FlarePlotterService) getContextService(HelioServiceName.CXS, FLARE_PLOTTER, accessInterfaces);
+	    return (FlarePlotterService) getContextService(HelioServiceName.CXS, FlarePlotterServiceImpl.FLARE_PLOTTER, accessInterfaces);
 	}
 
 	/**
@@ -85,7 +97,7 @@ public class ContextServiceFactory extends AbstractServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public SimpleParkerModelService getSimpleParkerModelService(AccessInterface ... accessInterfaces) {
-	    return (SimpleParkerModelService) getContextService(HelioServiceName.CXS, PARKER_MODEL, accessInterfaces);
+	    return (SimpleParkerModelService) getContextService(HelioServiceName.CXS, SimpleParkerModelServiceImpl.PARKER_MODEL, accessInterfaces);
 	}
 	
     /**
@@ -102,19 +114,22 @@ public class ContextServiceFactory extends AbstractServiceFactory {
         if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
             accessInterfaces = getServiceRegistryClient().getAllEndpoints(serviceDescriptor, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, AccessInterfaceType.SOAP_SERVICE);
         }
-        AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
 
         _LOGGER.info("Found services at: " + Arrays.toString(accessInterfaces));
-        ContextService contextService;
-        if (GOES_PLOTTER.equals(serviceVariant)) {
-            contextService = new GoesPlotterServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);
-        } else if (FLARE_PLOTTER.equals(serviceVariant)) {
-            contextService = new FlarePlotterServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);          
-        } else if (PARKER_MODEL.equals(serviceVariant)) {
-            contextService = new SimpleParkerModelServiceImpl(serviceDescriptor.getName(), serviceDescriptor.getLabel(), accessInterfaces);                     
-        } else {
+        
+        Class<? extends HelioService> contextServiceClass = serviceVariantRegistry.getServiceImpl(serviceName, serviceVariant);
+        if (contextServiceClass == null) {
             throw new ServiceResolutionException("Unable to find context service of type " + serviceVariant);
         }
+        
+        ContextService contextService;
+        try {
+            Constructor<? extends HelioService> constructor = contextServiceClass.getConstructor(AccessInterface[].class);
+            contextService = (ContextService)constructor.newInstance(new Object[] {accessInterfaces});
+        } catch (Exception e) {
+            throw new ServiceResolutionException("Unable to instanciate service " + contextServiceClass + ": " + e.getMessage(), e);
+        }
+        
         return contextService;
     }
 

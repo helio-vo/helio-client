@@ -27,16 +27,17 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
      * The start date
      */
     private Date startDate;
+    /**
+     * ID of the parker model
+     */
+    public static final String PARKER_MODEL = "ivo://helio-vo.eu/cxs/parkermodel";
     
     /**
      * The parker model plotter.
-     * @param serviceName the name of the service. Must be {@link HelioServiceName#CXS}
-     * @param description
      * @param accessInterfaces
      */
-    public SimpleParkerModelServiceImpl(HelioServiceName serviceName, String description, AccessInterface[] accessInterfaces) {
-        super(serviceName, description, accessInterfaces);
-        AssertUtil.assertArgumentEquals(HelioServiceName.CXS, serviceName, "serviceName");
+    public SimpleParkerModelServiceImpl(AccessInterface[] accessInterfaces) {
+        super(HelioServiceName.CXS, null, accessInterfaces);
     }
     
     @Override

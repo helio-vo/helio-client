@@ -17,14 +17,27 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
+/**
+ * Access to the flare plotter.
+ * @author MarcoSoldati
+ *
+ */
 public class FlarePlotterServiceImpl extends AbstractContextServiceImpl implements FlarePlotterService {
     /**
      * The  date
      */
     private Date date;
+    /**
+     * ID of the flare plotter
+     */
+    public static final String FLARE_PLOTTER = "ivo://helio-vo.eu/cxs/flareplotter";
     
-    public FlarePlotterServiceImpl(HelioServiceName serviceName, String description, AccessInterface[] accessInterfaces) {
-        super(serviceName, description, accessInterfaces);
+    /**
+     * A plotter for  flares.
+     * @param accessInterfaces the interfaces to use.
+     */
+    public FlarePlotterServiceImpl(AccessInterface[] accessInterfaces) {
+        super(HelioServiceName.CXS, null, accessInterfaces);
     }
     
     /* (non-Javadoc)

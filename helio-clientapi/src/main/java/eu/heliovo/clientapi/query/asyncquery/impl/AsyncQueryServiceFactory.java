@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
 import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
+import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -50,6 +51,7 @@ public class AsyncQueryServiceFactory extends AbstractServiceFactory {
 	    // default impl
 	    serviceVariantRegistry.register(null, null, AsyncQueryServiceImpl.class);
 	    serviceVariantRegistry.register(HelioServiceName.DES, null, DesAsyncQueryServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, AsyncQueryServiceImpl.class);
 	    serviceVariantRegistry.register(HelioServiceName.ICS, IcsPatAsyncQueryServiceImpl.SERVICE_VARIANT, IcsPatAsyncQueryServiceImpl.class);
     }
 	

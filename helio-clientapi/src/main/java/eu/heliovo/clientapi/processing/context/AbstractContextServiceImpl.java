@@ -35,6 +35,11 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
+/**
+ * Base class for services that implement the context services.
+ * @author MarcoSoldati
+ *
+ */
 public abstract class AbstractContextServiceImpl extends AbstractServiceImpl implements ContextService {
     /**
      * The logger instance
@@ -143,19 +148,19 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
 
     /**
      * name of the log file.
-     * @return
+     * @return name of the log file
      */
     protected abstract String getLogOutFileName();
 
     /**
      * name of the log file.
-     * @return
+     * @return name of the error log file
      */
     protected abstract String getLogErrFileName();
 
     /**
      * name of the result file.
-     * @return
+     * @return name or the result file.
      */
     protected abstract String getResultFileName();
 
@@ -465,7 +470,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
          * Poll for the status until the status is not PENDING anymore or
          * the given pollTime has exceeded.
          * @param pollTime the time to poll. This time my be exceeded by the timeout value 
-         * to wait for a result from the getStatus method on the remote host (see {@link AsyncCallUtils#DEFAULT_TIMEOUT}).
+         * to wait for a result from the getStatus method on the remote host (see {@link AsyncCallUtils AsyncCallUtils#DEFAULT_TIMEOUT}).
          * @param unit the unit of the poll time. Microseconds will be truncated to milliseconds.
          * @return the current status.
          */

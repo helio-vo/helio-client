@@ -14,6 +14,7 @@ import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
+import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
@@ -44,6 +45,21 @@ public class HelioClient {
         factoryMap.put(ServiceCapability.SYNC_QUERY_SERVICE, SyncQueryServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, ContextServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.LINK_PROVIDER_SERVICE, LinkProviderFactory.getInstance());
+    }
+    
+    /**
+     * initialize the system.
+     */
+    public synchronized void init() {
+        // load the stil utils
+        @SuppressWarnings("unused")
+        Class<STILUtils> x = STILUtils.class;
+        // init the registry.
+        ServiceRegistryClientFactory.getInstance();
+        
+        // do some hardcoded init stuff
+        ServiceDescriptor desDescriptor = getServiceDescriptorByName(HelioServiceName.DES);
+        desDescriptor.addCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
     }
     
 	/**

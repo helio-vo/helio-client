@@ -35,13 +35,14 @@ public class AsyncCallUtils {
 	}
 	
 	/**
-	 * Exectue a callable in its own Thread and wait for a give time for the result.
+	 * Execute a callable in its own Thread and wait for a give time for the result.
 	 * The method also handles exceptions and wraps them as JobExecutionExcepttions
-	 * @param callable the callable to asynchronouly call.
+	 * @param callable the callable to asynchronously call.
 	 * @param callId an identifier for  the call for user feedback.
 	 * @param timeoutInMs number of milliseconds to wait for a result.
 	 * @param <T> the return type of the submitted callable.
 	 * @return the object returned by the callable.
+	 * @throws JobExecutionException any exception is wrapped in a JobExecutonException.
 	 */
 	public static <T> T callAndWait(Callable<T> callable, final String callId, long timeoutInMs) throws JobExecutionException {
 		ExecutorService executor = Executors.newCachedThreadPool();
@@ -61,4 +62,20 @@ public class AsyncCallUtils {
 		}
 		return result;
 	}
+		
+	/**
+	 * Execute a callable in its own Thread and return immediately.
+	 * The method also handles exceptions and wraps them as JobExecutionExcepttions
+	 * @param callable the callable to asynchronously call.
+	 * @param callId an identifier for  the call for user feedback.
+	 * @param <T> the return type of the submitted callable.
+	 * @return a future object to access the result of the call.
+	 * @throws JobExecutionException if anything goes wrong.
+	 */
+	public static <T> Future<T> callLater(Callable<T> callable, final String callId) throws JobExecutionException {
+	    ExecutorService executor = Executors.newCachedThreadPool();
+	    Future<T> callFuture = executor.submit(callable);
+	    executor.shutdown(); // do not accept new jobs.
+	    return callFuture;
+	}	
 }

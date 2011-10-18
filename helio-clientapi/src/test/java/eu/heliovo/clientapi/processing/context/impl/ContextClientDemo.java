@@ -29,10 +29,17 @@ import org.apache.commons.io.FileUtils;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
+import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
 import eu.heliovo.clientapi.processing.context.GoesPlotterService;
 import eu.heliovo.clientapi.processing.context.SimpleParkerModelService;
+import eu.heliovo.clientapi.processing.context.impl.des.AcePlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.HelioServiceName;
 
 /**
  * Demo for the context client
@@ -40,6 +47,10 @@ import eu.heliovo.registryclient.AccessInterface;
  *
  */
 public class ContextClientDemo {
+    /**
+     * The context service factory.
+     */
+    final static ContextServiceFactory factory = ContextServiceFactory.getInstance();
 
     /**
      * Main method for demo
@@ -48,7 +59,6 @@ public class ContextClientDemo {
      */
     public static void main(String[] args) throws Exception {
         //DebugUtils.enableDump();
-        final ContextServiceFactory factory = ContextServiceFactory.getInstance();
         final StringBuffer sb = new StringBuffer();
         sb.append("<html><head><title>CXS stress test</title></head><body>\n");
         
@@ -63,58 +73,93 @@ public class ContextClientDemo {
                 public Object call() throws Exception {
                     StringBuilder body = new StringBuilder();
                     try {
-                        FlarePlotterService flarePlotterService = factory.getFlarePlotterService((AccessInterface[])null);
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-                        cal.setTimeInMillis(0);
-                        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
-                        cal.add(Calendar.MONTH, j);
-                        body.append("<h1>flare plot for " + SimpleDateFormat.getDateInstance().format(cal.getTime()) + "</h1>\n");
-                        ProcessingResult result = flarePlotterService.flarePlot(cal.getTime());
-
-                        URL url = result.asURL(60, TimeUnit.SECONDS);
-                        body.append("<p>").append(url);
-                        body.append("<img src=\"").append(url).append("\"/></p>\n");
+                        boolean parker = false;
+                        boolean flare = false;
+                        boolean goes = false;
+                        boolean ace = true;
+                        boolean sta = true;
+                        boolean stb = true;
+                        boolean ulysses = true;
+                        boolean wind = true;
                         
-                        LogRecord[] logs = result.getUserLogs();
+                        if (flare) {
+                            FlarePlotterService flarePlotterService = factory.getFlarePlotterService((AccessInterface[])null);
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-                        displayImage("Flare Plot", url, logs);
+                            cal.setTimeInMillis(0);
+                            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                            cal.add(Calendar.MONTH, j);
+                            body.append("<h1>flare plot for " + SimpleDateFormat.getDateInstance().format(cal.getTime()) + "</h1>\n");
+                            ProcessingResult result = flarePlotterService.flarePlot(cal.getTime());
 
+                            URL url = result.asURL(60, TimeUnit.SECONDS);
+                            body.append("<p>").append(url);
+                            body.append("<img src=\"").append(url).append("\"/></p>\n");
 
-                        GoesPlotterService goesPlotterService = factory.getGoesPlotterService((AccessInterface[])null);
-                        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
-                        cal.add(Calendar.MONTH, j);
-                        Date startDate =  cal.getTime();
-                        cal.set(2003, Calendar.JANUARY, 3, 0, 0, 0);
-                        cal.add(Calendar.MONTH, j);
-                        Date endDate =  cal.getTime();
-                        body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "-" + SimpleDateFormat.getDateInstance().format(endDate) + "</h1>\n");
-                        result = goesPlotterService.goesPlot(startDate, endDate);
+                            LogRecord[] logs = result.getUserLogs();
 
-                        url = result.asURL(60, TimeUnit.SECONDS);
-                        body.append("<p>").append(url);
-                        body.append("<img src=\"").append(url).append("\"/></p>\n");
+                            displayImage("Flare Plot", url, logs);
+                        }
 
-                        logs = result.getUserLogs();
-                        displayImage("Goes Plot", url, logs);
+                        
+                        if (goes){
+                            Calendar cal = Calendar.getInstance();
+                            GoesPlotterService goesPlotterService = factory.getGoesPlotterService((AccessInterface[])null);
+                            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                            cal.add(Calendar.MONTH, j);
+                            Date startDate =  cal.getTime();
+                            cal.set(2003, Calendar.JANUARY, 3, 0, 0, 0);
+                            cal.add(Calendar.MONTH, j);
+                            Date endDate =  cal.getTime();
+                            body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "-" + SimpleDateFormat.getDateInstance().format(endDate) + "</h1>\n");
+                            ProcessingResult result = goesPlotterService.goesPlot(startDate, endDate);
 
-                        SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService((AccessInterface[])null);
-                        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
-                        cal.add(Calendar.MONTH, j);
-                        startDate =  cal.getTime();
-                        body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
-                        result = parkerModelService.parkerModel(startDate);
+                            URL url = result.asURL(60, TimeUnit.SECONDS);
+                            body.append("<p>").append(url);
+                            body.append("<img src=\"").append(url).append("\"/></p>\n");
 
-                        url = result.asURL(60, TimeUnit.SECONDS);
-                        body.append("<p>").append(url);
-                        body.append("<img src=\"").append(url).append("\"/></p>\n");
+                            LogRecord[] logs = result.getUserLogs();
+                            displayImage("Goes Plot", url, logs);
+                        }
+                        
+                        if (parker) {
+                            Calendar cal = Calendar.getInstance();
+                            SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService((AccessInterface[])null);
+                            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                            cal.add(Calendar.MONTH, j);
+                            Date startDate =  cal.getTime();
+                            body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
+                            ProcessingResult result = parkerModelService.parkerModel(startDate);
 
-                        logs = result.getUserLogs();
-                        displayImage("Parker Model", url, logs);
+                            URL url = result.asURL(60, TimeUnit.SECONDS);
+                            body.append("<p>").append(url);
+                            body.append("<img src=\"").append(url).append("\"/></p>\n");
+
+                            LogRecord[] logs = result.getUserLogs();
+                            displayImage("Parker Model", url, logs);
+                        }
+                        
+                        if (ace) {
+                            body.append(desPlot(AcePlotterServiceImpl.MISSION, AcePlotterServiceImpl.SERVICE_VARIANT, j));
+                        }
+                        if (sta) {
+                            body.append(desPlot(StaPlotterServiceImpl.MISSION, StaPlotterServiceImpl.SERVICE_VARIANT, j));
+                        }
+                        if (stb) {
+                            body.append(desPlot(StbPlotterServiceImpl.MISSION, StbPlotterServiceImpl.SERVICE_VARIANT, j));
+                        }
+                        if (ulysses) {
+                            body.append(desPlot(UlyssesPlotterServiceImpl.MISSION, UlyssesPlotterServiceImpl.SERVICE_VARIANT, j));
+                        }
+                        if (wind) {
+                            body.append(desPlot(WindPlotterServiceImpl.MISSION, WindPlotterServiceImpl.SERVICE_VARIANT, j));
+                        }
+                        
                         return null;
                     } catch (Exception e) {
                         body.append("<p>exception: ").append(e.getMessage()).append("</p>");
+                        e.printStackTrace();
                         throw e;
                     } finally {
                         sb.append(body.toString());
@@ -133,6 +178,52 @@ public class ContextClientDemo {
         System.out.println("Result written to: " + file.getAbsolutePath());
     }
     
+    /**
+     * Create a des plot
+     * @param mission the mission
+     * @param serviceVariant the service variant
+     * @param counter the counter value
+     * @return HTML stub created by this call.
+     */
+    protected static String desPlot(String mission, String serviceVariant, int counter) {
+        StringBuilder body = new StringBuilder();
+        ProcessingResult result = null;
+        try {
+            DesPlotterService desPlotter = (DesPlotterService)factory.getHelioService(HelioServiceName.DES, serviceVariant, (AccessInterface[])null);
+            Calendar cal = Calendar.getInstance();
+            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+            cal.add(Calendar.MONTH, counter);
+            Date startDate =  cal.getTime();
+            cal.set(2003, Calendar.JANUARY, 3, 0, 0, 0);
+            cal.add(Calendar.MONTH, counter);
+            Date endDate =  cal.getTime();
+            body.append("<h1>" + mission + " plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
+            result = desPlotter.desPlot(startDate, endDate);
+    
+            URL url = result.asURL(60, TimeUnit.SECONDS);
+            body.append("<p>").append(url);
+            body.append("<img src=\"").append(url).append("\"/></p>\n");
+    
+            LogRecord[] logs = result.getUserLogs();
+            displayImage(mission + " PLOT", url, logs);
+        } catch (Exception e) {
+            body.append("<p>exception: ").append(e.getMessage()).append("</p>");
+            e.printStackTrace();
+        }
+        if (result != null) {
+            StringBuilder sb = new StringBuilder("User log: ");
+            for (LogRecord logRecord : result.getUserLogs()) {
+                if (sb.length() > 0) {
+                    sb.append(",\n");
+                }
+                sb.append(logRecord.getMessage());
+            }
+            System.out.println(sb.toString());
+        }
+
+        return body.toString();
+    }
+
     /**
      * Number of plots
      */

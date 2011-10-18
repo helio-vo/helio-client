@@ -17,6 +17,11 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
+/**
+ * A ploting service for goes plots.
+ * @author MarcoSoldati
+ *
+ */
 public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implements GoesPlotterService {
     /**
      * The start date
@@ -27,9 +32,18 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
      * The end date
      */
     private Date endDate;
+
+    /**
+     * ID of the goes plotter
+     */
+    public static final String GOES_PLOTTER = "ivo://helio-vo.eu/cxs/goesplotter";
     
-    public GoesPlotterServiceImpl(HelioServiceName serviceName, String description, AccessInterface[] accessInterfaces) {
-        super(serviceName, description, accessInterfaces);
+    /**
+     * A plotting service for goes.
+     * @param accessInterfaces the interfaces to access the service.
+     */
+    public GoesPlotterServiceImpl(AccessInterface[] accessInterfaces) {
+        super(HelioServiceName.CXS, null, accessInterfaces);
     }
     
     /* (non-Javadoc)

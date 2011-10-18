@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
+import eu.heliovo.clientapi.HelioClient;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 
 /**
  * Query program for the async query.
@@ -18,25 +20,45 @@ import eu.heliovo.registryclient.HelioServiceName;
  *
  */
 public class AsyncQueryServiceDemo {
+    /**
+     * The main method
+     * @param args will be ignored
+     * @throws Exception
+     */
 	public static void main(String[] args) throws Exception {
-//	    DebugUtils.enableDump();
+	    // init the system
+	    HelioClient client = new HelioClient();
+	    client.getServiceInstance(HelioServiceName.ICS, ServiceCapability.ASYNC_QUERY_SERVICE, null);
+	    
+	    DebugUtils.enableDump();
 //	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, HelioFileUtil.asURL("http://localhost:8080/helio-dpas/HelioLongQueryService?wsdl")));
 //	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null);
-	    DebugUtils.disableDump();
 //		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
-		testLongRunningService(HelioServiceName.HEC, Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("hec_catalogue"), null);
+//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("hec_catalogue"), null);
+		//testLongRunningService(HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("noaa_active_region_summary"), null);
+//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
 //		testLongRunningService(HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
 //		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("instrument"), null);
 //		testLongRunningService(HelioServiceName.UOC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);
 //		testLongRunningService(HelioServiceName.MDES, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("ACE"), "DERIV.DELTAT,100;DERIV.DELTAV,/900;DERIV.AVERAGETIME,600", null);
-//	    testLongRunningService(HelioServiceName.DES, Arrays.asList("2007-07-10T12:00:00"), Arrays.asList("2007-07-11T12:00:00"), Arrays.asList("ACE", "WIND"), "ACE.DERIV,V:1200:100:600;WIND.DERIV,B:1500:200:300", null, null);	//DebugUtils.disableDump();
+	    testLongRunningService(HelioServiceName.DES, Arrays.asList("2007-07-10T12:00:00"), Arrays.asList("2007-07-11T12:00:00"), Arrays.asList("ACE"), "VAR,ACE:N:/16.0:1200.0:60.0", null, null);	//DebugUtils.disableDump();
+	    DebugUtils.disableDump();
 	}
 	
+	/**
+	 * Test the timeQuery method
+	 * @param serviceName
+	 * @param startTime
+	 * @param endTime
+	 * @param from
+	 * @param saveto
+	 * @param accessInterfaces
+	 */
 	private static synchronized void testLongRunningService(HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String saveto, AccessInterface... accessInterfaces) {
 		System.out.println("--------------------" + serviceName.getServiceName() + "--------------------");
 		try {
 			AsyncQueryServiceFactory queryServiceFactory = AsyncQueryServiceFactory.getInstance();
-			AsyncQueryService queryService = queryServiceFactory.getAsyncQueryService(serviceName, accessInterfaces);
+			AsyncQueryService queryService = queryServiceFactory.getHelioService(serviceName, null, accessInterfaces);
 			HelioQueryResult result = queryService.timeQuery(startTime, endTime, from, 100, 0, saveto);
 
 			System.out.println(result);
@@ -50,7 +72,7 @@ public class AsyncQueryServiceDemo {
 				StringBuilder sb = new StringBuilder("User log: ");
 				for (LogRecord logRecord : result.getUserLogs()) {
 					if (sb.length() > 0) {
-						sb.append(", ");
+						sb.append(",\n");
 					}
 					sb.append(logRecord.getMessage());
 				}
@@ -66,24 +88,34 @@ public class AsyncQueryServiceDemo {
 		}
 	}
 
+	/**
+	 * Test the query methods
+	 * @param serviceName
+	 * @param startTime
+	 * @param endTime
+	 * @param from
+	 * @param where
+	 * @param saveto
+	 * @param accessInterfaces
+	 */
 	private static synchronized void testLongRunningService(HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String where, String saveto, AccessInterface... accessInterfaces) {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
 			AsyncQueryServiceFactory queryServiceFactory = AsyncQueryServiceFactory.getInstance();
-			AsyncQueryService queryService = queryServiceFactory.getAsyncQueryService(serviceName, accessInterfaces);
+			AsyncQueryService queryService = queryServiceFactory.getHelioService(serviceName, null, accessInterfaces);
 			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null, saveto);
 			
 			System.out.println(result);
 			if (result != null) {
 			    try {
-				System.out.println("Phase: " + result.getPhase());
-				System.out.println("Result URL: " + result.asURL(30, TimeUnit.SECONDS));
-				System.out.println("Result VOTable: " + result.asVOTable());
-				//System.out.println(result.asString());
+    				System.out.println("Phase: " + result.getPhase());
+    				System.out.println("Result URL: " + result.asURL(30, TimeUnit.SECONDS));
+    				System.out.println("Result VOTable: " + result.asVOTable());
+    				//System.out.println(result.asString());
 			    } catch (JobExecutionException e) {
 			        e.printStackTrace();
-			        // try to display logs
                 }
+			    // try to display logs
 				StringBuilder sb = new StringBuilder("User log: ");
 				for (LogRecord logRecord : result.getUserLogs()) {
 					if (sb.length() > 0) {
