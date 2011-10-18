@@ -133,9 +133,12 @@ public class SimpleInterface {
 	    return resvt;
 	  }
 
-	
-	// TODO: need to check if functionality will hold for propagation model
-	// usecase
+	/**
+	 * 
+	 * @param max
+	 * @param list
+	 * @return
+	 */
 	private static List<String> normalizeList(int max, List<String> list) {
 		List<String> result = new ArrayList<String>();
 
