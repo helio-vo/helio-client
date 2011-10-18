@@ -188,12 +188,14 @@ public class ResultVT {
 				tableVT.setName(table.getName());
 				LinkedList<String> headersVT = new LinkedList<String>();
 				for (Object o : table.getFIELDOrPARAMOrGROUP()) {
+					try{
 					FIELD f = (FIELD) o;
 					headersVT.add(f.getName());
 
 					if (!headers.contains(f.getName())) {
 						headers.add(f.getName());
 					}
+					}catch(Exception e){}
 
 				}
 				tableVT.setHeaders(headersVT);
