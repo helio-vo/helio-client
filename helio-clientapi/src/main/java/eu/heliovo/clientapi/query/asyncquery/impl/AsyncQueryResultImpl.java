@@ -297,25 +297,40 @@ class AsyncQueryResultImpl implements HelioQueryResult {
 		URL url = asURL(timeout, unit);
 
 		String packageName = VOTABLE.class.getPackage().getName();
-		InputStream is;
-		try {
-			is = url.openStream();
-		} catch (IOException e) {
-			throw new RuntimeException("IOException while opening '" + url + "': " + e.getMessage(), e);
-		}
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance( packageName );
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			JAXBElement<VOTABLE> doc = (JAXBElement<VOTABLE>)unmarshaller.unmarshal(new StreamSource(is), VOTABLE.class);
-			return doc.getValue();
-		} catch (JAXBException e) {
-			throw new RuntimeException("JAXBException while reading " + url + ": " + e.getMessage(), e);
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				_LOGGER.warn("Unable to close input stream: " + e.getMessage(), e);
-			}
+		
+		int retry = 0;
+		while (true) {
+    		InputStream is;
+    		try {
+    			is = url.openStream();
+    		} catch (IOException e) {
+    			throw new RuntimeException("IOException while opening '" + url + "': " + e.getMessage(), e);
+    		}
+    		try {
+    			JAXBContext jaxbContext = JAXBContext.newInstance( packageName );
+    			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+    			JAXBElement<VOTABLE> doc = (JAXBElement<VOTABLE>)unmarshaller.unmarshal(new StreamSource(is), VOTABLE.class);
+    			return doc.getValue();
+    		} catch (JAXBException e) {
+    		    if (retry > 3) {
+    		        throw new RuntimeException("JAXBException while reading " + url + ": " + e.getMessage(), e);
+    		    } else {
+    		        // wait a bit and retry to read data.
+    		        _LOGGER.warn("Unable to read from stream. Trying again (" + retry + "). Cause: " + e.getMessage(), e);
+    		        try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e1) {
+                        // ignore
+                    }
+    		        retry++;
+    		    }
+    		} finally {
+    			try {
+    				is.close();
+    			} catch (IOException e) {
+    				_LOGGER.warn("Unable to close input stream: " + e.getMessage(), e);
+    			}
+    		}
 		}
 	}
 	
