@@ -325,11 +325,7 @@ class AsyncQueryResultImpl implements HelioQueryResult {
     		        retry++;
     		    }
     		} finally {
-    			try {
-    				is.close();
-    			} catch (IOException e) {
-    				_LOGGER.warn("Unable to close input stream: " + e.getMessage(), e);
-    			}
+    		    IOUtils.closeQuietly(is);
     		}
 		}
 	}

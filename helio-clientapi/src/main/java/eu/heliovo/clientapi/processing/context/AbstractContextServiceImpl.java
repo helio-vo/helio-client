@@ -87,7 +87,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
      * @param accessInterface the service endpoint
      * @return the port to access the service.
      */
-    static CommonExecutionConnector getPort(AccessInterface accessInterface) {
+    protected CommonExecutionConnector getPort(AccessInterface accessInterface) {
         AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
     
         CommonExecutionConnectorService commonExecutionConnectorService = new CommonExecutionConnectorService(accessInterface.getUrl(), QNAME);

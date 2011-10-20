@@ -8,6 +8,7 @@ import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
 import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
@@ -24,9 +25,22 @@ class MockAsyncQueryService extends AsyncQueryServiceImpl {
 	private static final URL wsdlLocation = HelioFileUtil.asURL("http://localhost/test/LongRunningQuery.wsdl");
 	private static final HelioServiceName name = HelioServiceName.register("test", "ivo://test");
 	private static final String description = "a dummy test service";
-
-	public MockAsyncQueryService(MockPort port) {	
-		super(name, description, port, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlLocation));
+	private static final AccessInterface defaultInterface = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlLocation);
+    private MockPort port;
+	
+	public MockAsyncQueryService(MockPort port) {
+		super(name, null, description, defaultInterface);
+		this.port = port;
+	}
+	
+	@Override
+	protected AccessInterface getBestAccessInterface() {
+	    return defaultInterface;
+	}
+	
+	@Override
+	protected LongHelioQueryService getPort(AccessInterface accessInterface) {
+	    return port;
 	}
 
 	/**
