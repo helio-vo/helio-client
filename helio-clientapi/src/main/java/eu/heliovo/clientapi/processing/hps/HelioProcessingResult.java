@@ -1,36 +1,47 @@
-package eu.heliovo.clientapi.processing;
+package eu.heliovo.clientapi.processing.hps;
 
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
 
+import eu.heliovo.clientapi.processing.hps.HelioProcessingResult.ProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
- * Marker interface for a processing result.
+ * Access interface for processing results. 
  * @author MarcoSoldati
  *
+ * @param <T> the type of the processing result for a particular service implementation.
  */
-public interface ProcessingResult extends HelioWorkerServiceHandler {
+public interface HelioProcessingResult<T extends ProcessingResultObject> extends HelioWorkerServiceHandler {
+    
     /**
-     * Provide access to the URL pointing to the result.
-     * <p>The method will block until either a result is available or a default timeout occurs. 
-     * The default timeout is specified by the implementation as it may vary between different types of services.</p>
-     * @return URL pointing to the data.
-     * @throws JobExecutionException wrapper exception for all exception that may occur during execution of this job.
+     * Marker interface for the result object coming back from a process.
+     * @author MarcoSoldati
+     *
      */
-    public URL asURL() throws JobExecutionException;
+    public interface ProcessingResultObject {
+
+    }
 
     /**
-     * Provide access to the URL pointing to the result.
+     * Provide access to an object holding to the result.
+     * <p>The method will block until either a result is available or a default timeout occurs. 
+     * The default timeout is specified by the implementation as it may vary between different types of services.</p>
+     * @return object holding the result data.
+     * @throws JobExecutionException wrapper exception for all exception that may occur during execution of this job.
+     */
+    public T asResultObject() throws JobExecutionException;
+
+    /**
+     * Provide access to an object holding the result.
      * <p>The method will block until either a result is available or the specified timeout occurs. </p>
      * @param timeout the maximum time to block for a result. 0 waits forever.
      * @param unit the unit of the timeout value.
-     * @return URL pointing to the data.
+     * @return object holding the result data.
      * @throws JobExecutionException wrapper exception for all exception that may occur during execution of this job.
      */
-    public URL asURL(long timeout, TimeUnit unit) throws JobExecutionException;
+    public T asResultObject(long timeout, TimeUnit unit) throws JobExecutionException;
     
     /**
      * Get log messages that are of particular interest for the end user.

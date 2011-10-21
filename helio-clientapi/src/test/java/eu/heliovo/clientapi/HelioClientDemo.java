@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -15,6 +16,10 @@ import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
+import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.HelioProcessingResult;
+import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.registryclient.HelioServiceName;
@@ -55,13 +60,40 @@ public class HelioClientDemo {
         HelioClient helioClient = new HelioClient();
         helioClient.init();
         if (false) getIcsPat(helioClient);
-        if (true ) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
-        if (true ) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
-        if (true ) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
-        if (true ) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
-        if (true ) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
+        if (false) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
+        if (false) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
+        if (false) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
+        if (false) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
+        if (false) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
+        if (true ) runCmePropagationModel(helioClient);
         if (false) dumpServices(helioClient);
     }
+
+    
+    /**
+     * run a propagation model service.
+     * @param helioClient
+     */
+    private void runCmePropagationModel(HelioClient helioClient) {
+        CmePropagationModel processingService = (CmePropagationModel) 
+            helioClient.getServiceInstance(HelioServiceName.HPS, 
+            ServiceCapability.HELIO_PROCESSING_SERVICE, CmePropagationModelImpl.SERVICE_VARIANT);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        cal.setTimeInMillis(0);
+        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+        float longitude = 0;
+        float width = 45;
+        float speed = 100;
+        float speedError = 0;
+        HelioProcessingResult<CmeProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, width, speed, speedError);
+        CmeProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        System.out.println(resultObject.getVOTableUrl());
+        System.out.println(resultObject.getInnerPlotUrl());
+        System.out.println(resultObject.getOuterPlotUrl());
+    }
+
 
     /**
      * Get a plot for a specific mission.

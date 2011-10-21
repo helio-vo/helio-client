@@ -12,15 +12,21 @@ import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
+import eu.heliovo.clientapi.processing.hps.ProcessingServiceFactory;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceRegistryClient;
+import eu.heliovo.registryclient.impl.AbstractHelioServiceRegistryClient;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
+import eu.heliovo.registryclient.impl.GenericServiceDescriptor;
 import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
+import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -45,6 +51,7 @@ public class HelioClient {
         factoryMap.put(ServiceCapability.SYNC_QUERY_SERVICE, SyncQueryServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, ContextServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.LINK_PROVIDER_SERVICE, LinkProviderFactory.getInstance());
+        factoryMap.put(ServiceCapability.HELIO_PROCESSING_SERVICE, ProcessingServiceFactory.getInstance());
     }
     
     /**
@@ -63,8 +70,9 @@ public class HelioClient {
         // load the stil utils
         @SuppressWarnings("unused")
         Class<STILUtils> x = STILUtils.class;
+
         // init the registry.
-        ServiceRegistryClientFactory.getInstance();
+        AbstractHelioServiceRegistryClient registryClient = (AbstractHelioServiceRegistryClient) ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
         
         // do some hardcoded init stuff
         ServiceDescriptor desDescriptor = getServiceDescriptorByName(HelioServiceName.DES);
@@ -72,6 +80,18 @@ public class HelioClient {
             desDescriptor.addCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
         }
         
+        // register the HPS
+        ServiceDescriptor hpsDescriptor = getServiceDescriptorByName(HelioServiceName.HPS);
+        if (hpsDescriptor == null) {
+            hpsDescriptor = new GenericServiceDescriptor(HelioServiceName.HPS, "Locally registered HPS", ServiceCapability.HELIO_PROCESSING_SERVICE);
+            registryClient.registerServiceDescriptor(hpsDescriptor);
+        }
+        
+        registryClient.registerServiceInstance(hpsDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, 
+                ServiceCapability.HELIO_PROCESSING_SERVICE, 
+                HelioFileUtil.asURL("http://cagnode58.cs.tcd.ie:8080/helio-hps-server/hpsService?wsdl")));
+        
+
         init = true;
     }
     
