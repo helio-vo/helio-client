@@ -365,9 +365,9 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
             case ABORTED:
                 throw new JobExecutionException("Execution of the query has been aborted by the remote host. Check the logs for more information (call getUserLogs() on this object).");                
             case UNKNOWN:
-                throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue.");
+                throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + AbstractHelioProcessingServiceImpl.class.getName());
             case PENDING:
-                throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time: " + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)));
+                throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time (" + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)) + "). CallId: " + callId);
             case COMPLETED:
                 // just continue
                 break;
