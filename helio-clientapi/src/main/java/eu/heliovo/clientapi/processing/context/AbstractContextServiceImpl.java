@@ -247,9 +247,9 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
         private final String id;
 
         /**
-         * Default timeout is 10 seconds
+         * Default timeout to wait for a result is 120000 seconds.
          */
-        private final static long DEFAULT_TIMEOUT = AsyncCallUtils.DEFAULT_TIMEOUT;
+        private final static long DEFAULT_TIMEOUT = 120000;
 
         /**
          * Default timeout between two polls in ms.

@@ -125,7 +125,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
         private static final Logger _LOGGER = Logger.getLogger(ProcessingResultImpl.class);
 
         /**
-         * Default timeout is 60 seconds
+         * Default timeout to wait for a result is 60 seconds.
          */
         private final static long DEFAULT_TIMEOUT = 60000;
 

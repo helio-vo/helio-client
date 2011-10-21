@@ -237,9 +237,9 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         private final String resultId;
 
         /**
-         * Default timeout is 10 seconds
+         * Default timeout to wait for a result is 120 seconds.
          */
-        private final static long DEFAULT_TIMEOUT = AsyncCallUtils.DEFAULT_TIMEOUT;
+        private final static long DEFAULT_TIMEOUT = 120000;
 
         /**
          * Default timeout between two polls in ms.

@@ -59,14 +59,14 @@ public class HelioClientDemo {
     @Test public void run() {
         HelioClient helioClient = new HelioClient();
         helioClient.init();
-        if (false) getIcsPat(helioClient);
-        if (false) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
-        if (false) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
-        if (false) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
-        if (false) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
-        if (false) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
-        if (true ) runCmePropagationModel(helioClient);
-        if (false) dumpServices(helioClient);
+        if (true) getIcsPat(helioClient);
+        if (true) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
+        if (true) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
+        if (true) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
+        if (true) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
+        if (true) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
+        if (true) runCmePropagationModel(helioClient);
+        if (true) dumpServices(helioClient);
     }
 
     

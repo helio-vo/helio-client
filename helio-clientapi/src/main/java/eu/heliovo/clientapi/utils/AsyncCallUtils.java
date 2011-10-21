@@ -18,9 +18,9 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
 public class AsyncCallUtils {
 
 	/**
-	 * Default timeout in milliseconds to wait for a result from a call.
+	 * Default timeout in milliseconds to block a call.
 	 */
-	public static final long DEFAULT_TIMEOUT = 30000;
+	public static final long DEFAULT_TIMEOUT = 20000;
 
 	/**
 	 * Execute a callable in its own Thread and wait for a default time ({@value #DEFAULT_TIMEOUT}ms) for the result.
