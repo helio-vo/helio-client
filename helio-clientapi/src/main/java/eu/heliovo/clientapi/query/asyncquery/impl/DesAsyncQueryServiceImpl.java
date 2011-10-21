@@ -48,4 +48,12 @@ class DesAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords, Integer startindex, String saveto) throws JobExecutionException {
         throw new UnsupportedOperationException("The DES does not support time queries. Use query() instead.");
     }
+    
+    /**
+     * Increase call timeout for des.
+     */
+    @Override
+    protected long getCallTimout() {
+        return 60000;
+    }
 }

@@ -51,6 +51,7 @@ public class AsyncQueryServiceFactory extends AbstractServiceFactory {
 	    // default impl
 	    serviceVariantRegistry.register(null, null, AsyncQueryServiceImpl.class);
 	    serviceVariantRegistry.register(HelioServiceName.DES, null, DesAsyncQueryServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.DPAS, null, DpasAsyncQueryServiceImpl.class);
 	    serviceVariantRegistry.register(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, AsyncQueryServiceImpl.class);
 	    serviceVariantRegistry.register(HelioServiceName.ICS, IcsPatAsyncQueryServiceImpl.SERVICE_VARIANT, IcsPatAsyncQueryServiceImpl.class);
     }

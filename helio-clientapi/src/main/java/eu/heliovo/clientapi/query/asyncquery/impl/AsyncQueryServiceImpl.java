@@ -46,6 +46,11 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
 	 */
 	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/LongQueryService/v0.9", "LongHelioQueryService");
 
+	/**
+	 * Call timeout in ms.
+	 */
+    protected static final long CALL_TIMEOUT = 10000;
+
     /**
      * Store the port to access the long running query service. Apparently the port is thread-safe and can be reused.
      */
@@ -169,7 +174,7 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
     		            loadBalancer.updateAccessTime(bestAccessInterface, System.currentTimeMillis() - start);
     		            return resultId;
     		        }
-    		    }, callId);
+    		    }, callId, getCallTimout());
 
     		    if (resultId == null) {
     		        throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
@@ -272,7 +277,7 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
         				loadBalancer.updateAccessTime(bestAccessInterface, System.currentTimeMillis() - start);
         				return result;
         			}
-        		}, callId);
+        		}, callId, getCallTimout());
 
         		if (resultId == null) {
         		    throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
@@ -294,6 +299,14 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
             }
 		}
 		
+	}
+	
+	/**
+	 * Timeout for the initial call.
+	 * @return the initial call timeout
+	 */
+	protected long getCallTimout() {
+	    return CALL_TIMEOUT;
 	}
 	
 	/**
