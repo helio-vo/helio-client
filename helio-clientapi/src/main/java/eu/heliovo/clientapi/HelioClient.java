@@ -48,9 +48,18 @@ public class HelioClient {
     }
     
     /**
-     * initialize the system.
+     * Is the client initialized.
+     */
+    private boolean init = false;
+    
+    /**
+     * initialize the system. 
+     * If this method is not called by the user it will be called by the first call to any methods in this 
      */
     public synchronized void init() {
+        if (init)
+            return;
+        
         // load the stil utils
         @SuppressWarnings("unused")
         Class<STILUtils> x = STILUtils.class;
@@ -59,7 +68,10 @@ public class HelioClient {
         
         // do some hardcoded init stuff
         ServiceDescriptor desDescriptor = getServiceDescriptorByName(HelioServiceName.DES);
+        
         desDescriptor.addCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
+        
+        init = true;
     }
     
 	/**
@@ -67,6 +79,9 @@ public class HelioClient {
 	 * @return all services registered with HelioClient or empty array if none are found.
 	 */
 	public HelioServiceName[] getAllServiceNames() {
+	    if (!init)
+	        init();
+	    
 	    // init the registry
 	    ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
 	    return HelioServiceName.values().toArray(new HelioServiceName[0]);
@@ -78,6 +93,9 @@ public class HelioClient {
 	 * @return a list of service names or empty array if nothing has been found.
 	 */
 	public HelioServiceName[] getServiceNamesByCapability(ServiceCapability serviceCapability) {
+	    if (!init)
+            init();
+	    
 	    List<HelioServiceName> ret = new ArrayList<HelioServiceName>();
 	    ServiceDescriptor[] descriptors = getServiceDescriptorByCapability(serviceCapability);
 	    for (ServiceDescriptor serviceDescriptor : descriptors) {
@@ -94,6 +112,9 @@ public class HelioClient {
 	 * @return a HELIO service instance or null if nothing has been found.
 	 */
 	public HelioService getServiceInstance(HelioServiceName helioServiceName, ServiceCapability serviceCapability, String serviceVariant) {
+	    if (!init)
+            init();
+	    
 	    AssertUtil.assertArgumentNotNull(serviceCapability, "serviceCapability");
 	    ServiceDescriptor descriptor = getServiceDescriptorByName(helioServiceName);
 	    if (descriptor == null) {
