@@ -11,6 +11,7 @@ import javax.xml.ws.BindingProvider;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
+import eu.heliovo.clientapi.HelioClient;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
@@ -23,9 +24,9 @@ import eu.heliovo.shared.util.AssertUtil;
  * Facade for the HELIO frontend.
  * 
  * @author DavidGuevara, SimonFelix, MarcoSoldati
- * 
+ * @deprecated use {@link HelioClient} instead.
  */
-public class SimpleInterface {
+@Deprecated public class SimpleInterface {
 	/**
 	 * which service type shall we use.
 	 */
@@ -38,7 +39,7 @@ public class SimpleInterface {
 	 * @param endTime the range of end times.
 	 * @param from the name of the table to use
 	 * @param where the where clause to use.
-	 * @return
+	 * @return result as VT wrapper.
 	 */
 	public static ResultVT queryService(String serviceName, List<String> startTime, List<String> endTime, List<String> from, String where) {
 	    //System.out.println("queryService called");

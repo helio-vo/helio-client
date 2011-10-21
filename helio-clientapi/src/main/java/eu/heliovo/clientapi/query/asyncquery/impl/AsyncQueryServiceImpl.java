@@ -49,17 +49,7 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
 	/**
 	 * Call timeout in ms.
 	 */
-    protected static final long CALL_TIMEOUT = 10000;
-
-    /**
-     * Store the port to access the long running query service. Apparently the port is thread-safe and can be reused.
-     */
-    //protected LongHelioQueryService currentPort;
-    
-    /**
-     * store the currently active access interface
-     */
-    //protected AccessInterface currentAccessInterface;
+    protected static final long CALL_TIMEOUT = AsyncCallUtils.DEFAULT_TIMEOUT;
 
 	/**
 	 * Create a client stub to a specific {@link AccessInterface}. 
