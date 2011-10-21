@@ -68,8 +68,9 @@ public class HelioClient {
         
         // do some hardcoded init stuff
         ServiceDescriptor desDescriptor = getServiceDescriptorByName(HelioServiceName.DES);
-        
-        desDescriptor.addCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
+        if (desDescriptor != null) {
+            desDescriptor.addCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
+        }
         
         init = true;
     }
