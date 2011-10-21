@@ -65,6 +65,11 @@ class RoundRobinLoadBalancer implements LoadBalancer {
         incAccessPerService(accessInterface, inc);
     }
 
+    /**
+     * Increase the number or accesses per service.
+     * @param accessInterface the access interface
+     * @param inc the increase factor.
+     */
     private void incAccessPerService(AccessInterface accessInterface, int inc) {
         Integer count = accessPerService.get(accessInterface);
         if (count == null) {
