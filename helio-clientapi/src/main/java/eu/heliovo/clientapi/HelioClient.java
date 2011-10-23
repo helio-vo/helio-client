@@ -22,7 +22,6 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceRegistryClient;
-import eu.heliovo.registryclient.impl.AbstractHelioServiceRegistryClient;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.registryclient.impl.GenericServiceDescriptor;
 import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
@@ -72,7 +71,7 @@ public class HelioClient {
         Class<STILUtils> x = STILUtils.class;
 
         // init the registry.
-        AbstractHelioServiceRegistryClient registryClient = (AbstractHelioServiceRegistryClient) ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
+        ServiceRegistryClient registryClient = (ServiceRegistryClient) ServiceRegistryClientFactory.getInstance().getServiceRegistryClient();
         
         // do some hardcoded init stuff
         ServiceDescriptor desDescriptor = getServiceDescriptorByName(HelioServiceName.DES);
