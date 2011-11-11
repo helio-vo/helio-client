@@ -133,17 +133,17 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
         return new CmeProcessingResultObject() {
             @Override
             public URL getVOTableUrl() {
-                return HelioFileUtil.asURL(baseUrl + "table.votable");
+                return HelioFileUtil.asURL(baseUrl + "cme_pm.votable");
             }
             
             @Override
             public URL getOuterPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "cme_outer.png");
+                return HelioFileUtil.asURL(baseUrl + "cme_pm_outer.png");
             }
             
             @Override
             public URL getInnerPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "cme_inner.png");
+                return HelioFileUtil.asURL(baseUrl + "cme_pm_inner.png");
             }
         };
     }
