@@ -44,16 +44,6 @@ import eu.heliovo.shared.util.DateUtil;
 public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl implements DesPlotterService {
     
     /**
-     * The async query interface to use
-     */
-    private static final AccessInterface[] ACCESS_INTERFACES = new AccessInterface[] {
-            new AccessInterfaceImpl(
-                    AccessInterfaceType.SOAP_SERVICE, 
-                    ServiceCapability.ASYNC_QUERY_SERVICE, 
-                    HelioFileUtil.asURL("http://manunja.cesr.fr/Amda-Helio/WebServices/helio-des.wsdl"))
-    };
-    
-    /**
      * Create the DesPlotterServiceImpl
      * @param serviceName the name of the service. Must be {@link HelioServiceName#DES}
      * @param serviceVariant the variant.
@@ -62,7 +52,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
      * @param accessInterfaces the interface to connect to. will be ignored in the current implementation.
      */
     public AbstractDesPlotterServiceImpl(HelioServiceName serviceName, String serviceVariant, String mission, String description, AccessInterface[] accessInterfaces) {
-        super(serviceName, serviceVariant, description, ACCESS_INTERFACES);
+        super(serviceName, serviceVariant, description, accessInterfaces);
         this.mission = mission;
     }
 
@@ -110,7 +100,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
         String callId =  "desplot:" + mission + ":" + startTime + ":" + endTime + "::execute";
         logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
                 
-        ProcessingResult processingResult = new ProcessingResultImpl(startTime, endTime, mission, callId, jobStartTime, logRecords);
+        ProcessingResult processingResult = new ProcessingResultImpl(startTime, endTime, mission, callId, jobStartTime, logRecords, accessInterfaces);
         return processingResult;
     }
 
@@ -184,7 +174,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
          * @param jobStartTime the time when this call has been started.
          * @param logRecords the log records from the parent query. 
          */            
-        public ProcessingResultImpl(final Date startTime, final Date endTime, final String mission, String callId, long jobStartTime, List<LogRecord> logRecords) {
+        public ProcessingResultImpl(final Date startTime, final Date endTime, final String mission, String callId, long jobStartTime, List<LogRecord> logRecords, final AccessInterface ... accessInterfaces) {
             this.callId = callId;
             this.jobStartTime = jobStartTime;
             this.phase = Phase.QUEUED;
@@ -193,7 +183,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
             this.future = AsyncCallUtils.callLater(new Callable<HelioQueryResult>() {
                 @Override
                 public HelioQueryResult call() throws Exception {
-                    AsyncQueryService desService = AsyncQueryServiceFactory.getInstance().getHelioService(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, ACCESS_INTERFACES);
+                    AsyncQueryService desService = AsyncQueryServiceFactory.getInstance().getHelioService(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, accessInterfaces);
                     HelioQueryResult result = desService.timeQuery(DateUtil.toIsoDateString(startTime), DateUtil.toIsoDateString(endTime), mission, 0, 0);
                     return result;
                 }

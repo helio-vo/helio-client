@@ -11,8 +11,11 @@ import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
+import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
  * Query program for the async query.
@@ -31,15 +34,22 @@ public class AsyncQueryServiceDemo {
 	    client.getServiceInstance(HelioServiceName.ICS, ServiceCapability.ASYNC_QUERY_SERVICE, null);
 	    
 //	    DebugUtils.enableDump();
-//	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, HelioFileUtil.asURL("http://localhost:8080/helio-dpas/HelioLongQueryService?wsdl")));
+	    long start = System.currentTimeMillis();
+	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, HelioFileUtil.asURL("http://localhost:8080/helio-queryservice-server/HelioLongQueryService?wsdl")));
+	    long end = System.currentTimeMillis();
+	    System.out.println("query took " + (end - start) + "ms.");
+	    start = System.currentTimeMillis();
+	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("1890-10-20T20:30:56"), Arrays.asList("2009-10-20T20:30:56"), Arrays.asList("HXT"), "helio", (String)null, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, HelioFileUtil.asURL("http://localhost:8080/helio-queryservice-server/HelioLongQueryService?wsdl")));
+	    end = System.currentTimeMillis();
+	    System.out.println("query took " + (end - start) + "ms.");
 //	    testLongRunningService(HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null);
 //		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
 //		testLongRunningService(HelioServiceName.HEC, Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("hec_catalogue"), null);
-		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("noaa_active_region_summary"), null);
-		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
-		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
-		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
-		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
+//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("noaa_active_region_summary"), null);
+//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
+//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
+//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
+//		testLongRunningService(HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
 //		testLongRunningService(HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
 //		testLongRunningService(HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("instrument"), null);
 //		testLongRunningService(HelioServiceName.UOC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"), null);

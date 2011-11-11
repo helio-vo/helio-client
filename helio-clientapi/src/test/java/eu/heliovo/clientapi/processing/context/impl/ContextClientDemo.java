@@ -27,6 +27,7 @@ import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
 
+import eu.heliovo.clientapi.HelioClient;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
@@ -38,6 +39,7 @@ import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
+import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 
@@ -58,7 +60,10 @@ public class ContextClientDemo {
      * @throws Exception in case of a problem.
      */
     public static void main(String[] args) throws Exception {
-        //DebugUtils.enableDump();
+        HelioClient helioClient = new HelioClient();
+        helioClient.init();
+        
+        DebugUtils.enableDump();
         final StringBuffer sb = new StringBuffer();
         sb.append("<html><head><title>CXS stress test</title></head><body>\n");
         
@@ -77,10 +82,10 @@ public class ContextClientDemo {
                         boolean flare = false;
                         boolean goes = false;
                         boolean ace = true;
-                        boolean sta = true;
-                        boolean stb = true;
-                        boolean ulysses = true;
-                        boolean wind = true;
+                        boolean sta = false;
+                        boolean stb = false;
+                        boolean ulysses = false;
+                        boolean wind = false;
                         
                         if (flare) {
                             FlarePlotterService flarePlotterService = factory.getFlarePlotterService((AccessInterface[])null);

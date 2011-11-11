@@ -77,6 +77,12 @@ public class HelioClient {
         ServiceDescriptor desDescriptor = getServiceDescriptorByName(HelioServiceName.DES);
         if (desDescriptor != null) {
             desDescriptor.addCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
+        registryClient.registerServiceInstance(desDescriptor, 
+            new AccessInterfaceImpl(
+                AccessInterfaceType.SOAP_SERVICE, 
+                ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, 
+                HelioFileUtil.asURL("http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService.wsdl"))
+            );
         }
         
         // register the HPS
