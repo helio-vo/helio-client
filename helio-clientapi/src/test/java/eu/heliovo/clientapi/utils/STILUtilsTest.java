@@ -8,9 +8,16 @@ import java.net.URL;
 import java.util.Calendar;
 
 import org.junit.Test;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
+import uk.ac.starlink.table.DescribedValue;
+import uk.ac.starlink.table.RowSequence;
 import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.table.Tables;
+import uk.ac.starlink.votable.TableElement;
+import uk.ac.starlink.votable.VOElement;
+import uk.ac.starlink.votable.VOStarTable;
 
 /**
  * Tests various functions of the STULUtils class
@@ -39,6 +46,63 @@ public class STILUtilsTest
     assertEquals(21,tables[1].getRowCount());
     assertEquals(13,tables[1].getColumnCount());
   }
+  
+  
+  @Test public void testReadVOElement() throws Exception {
+      VOElement top = STILUtils.readVOElement(getTestVOTable());
+      
+      // Find the first RESOURCE element using standard DOM methods. 
+      NodeList resources = top.getElementsByTagName( "RESOURCE" );
+      //check if two tables are returned
+      assertEquals(2, resources.getLength());
+
+      // get first table
+      Element resource = (Element) resources.item(0);
+      
+      // table 1
+      VOElement vResource = (VOElement) resource; 
+      VOElement[] tables = vResource.getChildrenByName( "TABLE" );
+      assertEquals(1, tables.length);
+      
+      TableElement tableEl = (TableElement) tables[0];
+      // Turn it into a StarTable so we can access its data. 
+      StarTable starTable = new VOStarTable( tableEl );
+      // Write out the column name for each of its columns. 
+      int nCol = starTable.getColumnCount();
+      assertEquals(10, nCol);
+      long nRow = starTable.getRowCount();
+      assertEquals(3, nRow);
+
+      // table 2
+      resource = (Element) resources.item(1);
+      vResource = (VOElement) resource; 
+      tables = vResource.getChildrenByName( "TABLE" );
+      assertEquals(1, tables.length);
+      tableEl = (TableElement) tables[0];
+      // Turn it into a StarTable so we can access its data. 
+      starTable = new VOStarTable( tableEl );
+      // Write out the column name for each of its columns. 
+      nCol = starTable.getColumnCount();
+      assertEquals(13, nCol);
+      nRow = starTable.getRowCount();
+      assertEquals(21, nRow);
+      
+      // Iterate through its data rows, printing out each element. 
+      for ( int iCol = 0; iCol < nCol; iCol++ ) {
+          String colName = starTable.getColumnInfo( iCol ).getName(); 
+          System.out.print( colName + "\t" );
+      } 
+      System.out.println();
+      
+      // Iterate through its data rows, printing out each element. 
+      for ( RowSequence rSeq = starTable.getRowSequence(); rSeq.next(); ) {
+          Object[] row = rSeq.getRow(); for ( int iCol = 0; iCol < nCol; iCol++ ) {
+              System.out.print( row[ iCol ] + "\t" ); 
+          }
+          System.out.println();
+      }
+  }
+  
   
   /**
    * Tests whether concatenation/appending of tables works.
@@ -127,6 +191,12 @@ public class STILUtilsTest
     assertEquals(tables.length,readAgain.length);
     for(int i=0;i<tables.length;i++)
     {
+        
+        tables[i].getParameters();
+        DescribedValue val = null;
+        val.getInfo().getUCD();
+        tables[i].getRowSequence();
+        
       assertEquals(tables[i].getRowCount(),readAgain[i].getRowCount());
       assertEquals(tables[i].getColumnCount(),readAgain[i].getColumnCount());
       

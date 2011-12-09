@@ -18,6 +18,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
+import org.xml.sax.SAXException;
 
 import uk.ac.starlink.table.ArrayColumn;
 import uk.ac.starlink.table.ColumnInfo;
@@ -33,6 +34,8 @@ import uk.ac.starlink.util.DataSource;
 import uk.ac.starlink.util.FileDataSource;
 import uk.ac.starlink.util.URLDataSource;
 import uk.ac.starlink.votable.DataFormat;
+import uk.ac.starlink.votable.VOElement;
+import uk.ac.starlink.votable.VOElementFactory;
 import uk.ac.starlink.votable.VOTableBuilder;
 import uk.ac.starlink.votable.VOTableWriter;
 import eu.heliovo.shared.util.FileUtil;
@@ -174,7 +177,7 @@ public class STILUtils {
 
         return res;
     }
-
+    
     /**
      * Reads VOTables from the given data source.
      * 
@@ -185,14 +188,14 @@ public class STILUtils {
      */
     public static StarTable[] read(DataSource _src) throws IOException {
         TableSequence tables = new VOTableBuilder(false).makeStarTables(_src, StoragePolicy.getDefaultPolicy());
-
+        
         ArrayList<StarTable> res = new ArrayList<StarTable>();
         for (StarTable table; (table = tables.nextTable()) != null;)
             res.add(table);
-
+        
         return res.toArray(new StarTable[0]);
     }
-
+    
     /**
      * Reads VOTables from a URL
      * 
@@ -204,7 +207,7 @@ public class STILUtils {
     public static StarTable[] read(URL _src) throws IOException {
         return read(new URLDataSource(_src));
     }
-
+    
     /**
      * Reads VOTables from an input stream.
      * 
@@ -220,12 +223,12 @@ public class STILUtils {
             int read = _src.read(buffer);
             if (read == -1)
                 break;
-
+            
             baos.write(buffer, 0, read);
         }
         return read(new ByteArrayDataSource("", baos.toByteArray()));
     }
-
+    
     /**
      * Reads VOTables from the given file.
      * 
@@ -236,6 +239,62 @@ public class STILUtils {
      */
     public static StarTable[] read(File _src) throws IOException {
         return read(new FileDataSource(_src));
+    }
+    
+    /**
+     * Reads VOTables from the given data source into a VOElement.
+     * 
+     * @param _src
+     *            The datasource to read the VOT from
+     * @return An array containing all tables.
+     * @throws IOException in case of an IO error.
+     * @throws SAXException in case of a SAX error.
+     */
+    public static VOElement readVOElement(DataSource _src) throws IOException, SAXException {
+        VOElement top = new VOElementFactory().makeVOElement(_src);
+        return top;
+    }
+    
+    /**
+     * Reads VOTables from a URL into a VOElement.
+     * 
+     * @param _src
+     *            The URL to read the VOT from
+     * @return An array containing all tables
+     * @throws IOException in case of an IO error.
+     * @throws SAXException in case of a SAX error.
+     */
+    public static VOElement readVOElement(URL _src) throws IOException, SAXException {
+        return readVOElement(new URLDataSource(_src));
+    }
+    
+    /**
+     * Reads VOTables from an input stream into a VOElement.
+     * 
+     * @param _src
+     *            The stream to read the VOT from
+     * @param systemId systemId of the VOTable (e.g. URL location)
+     * @return An array containing all tables
+     * @throws IOException in case of an IO error.
+     * @throws SAXException in case of a SAX error.
+     */
+    public static VOElement readVOElement(InputStream _src, String systemId) throws IOException, SAXException {
+        VOElement top = new VOElementFactory().makeVOElement(_src, systemId);
+        return top;
+    }
+    
+    /**
+     * Reads VOTables from the given file into a VOElement.
+     * 
+     * @param _src
+     *            The file to read the VOT from
+     * @return An array containing all tables
+     * @throws IOException in case of an IO error.
+     * @throws SAXException in case of a SAX error.
+     */
+    public static VOElement readVOElement(File _src) throws IOException, SAXException {
+        VOElement top = new VOElementFactory().makeVOElement(_src);
+        return top;
     }
 
     /**
