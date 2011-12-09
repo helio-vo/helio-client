@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import uk.ac.starlink.table.DescribedValue;
 import uk.ac.starlink.table.RowSequence;
 import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.table.Tables;
@@ -190,13 +189,7 @@ public class STILUtilsTest
     //and check for equality
     assertEquals(tables.length,readAgain.length);
     for(int i=0;i<tables.length;i++)
-    {
-        
-        tables[i].getParameters();
-        DescribedValue val = null;
-        val.getInfo().getUCD();
-        tables[i].getRowSequence();
-        
+    {        
       assertEquals(tables[i].getRowCount(),readAgain[i].getRowCount());
       assertEquals(tables[i].getColumnCount(),readAgain[i].getColumnCount());
       
