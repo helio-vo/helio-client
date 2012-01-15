@@ -11,14 +11,14 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import javax.xml.ws.BindingProvider;
+import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
+import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
-import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -44,6 +44,16 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
      */
     static final Logger _LOGGER = Logger.getLogger(AbstractHelioProcessingServiceImpl.class);
     
+    /**
+     * Name of the context service
+     */
+    private static final QName QNAME = new QName("http://server.hps.heliovo.eu/", "HPSServiceImplService");
+    
+    /**
+     * Name of the port
+     */
+    private final static QName HPS_SERVICE_PORT = new QName("http://server.hps.heliovo.eu/", "HPSServiceImplPort");
+
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
      * @param serviceName the name of the service
@@ -72,11 +82,8 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
     protected HPSService getPort(AccessInterface accessInterface) {
         AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
     
-        HPSServiceService hpsServiceService = new HPSServiceService();
-        HPSService  hpsService  =   hpsServiceService.getHPSServicePort();
-        ((BindingProvider)hpsService).getRequestContext().put(
-                BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                accessInterface.getUrl().toExternalForm());
+        HPSServiceService hpsServiceService = new HPSServiceService(accessInterface.getUrl(), QNAME);
+        HPSService  hpsService  =   hpsServiceService.getPort(HPS_SERVICE_PORT, HPSService.class);
 
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("Created " + hpsService.getClass().getSimpleName() + " for " + accessInterface.getUrl());
