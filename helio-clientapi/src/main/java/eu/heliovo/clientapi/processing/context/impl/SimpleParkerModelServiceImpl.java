@@ -10,6 +10,7 @@ import org.astrogrid.schema.agworkflow.v1.Output;
 import org.astrogrid.schema.agworkflow.v1.Tool;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.SimpleParkerModelService;
 import eu.heliovo.registryclient.AccessInterface;
@@ -41,7 +42,7 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     }
     
     @Override
-    public ProcessingResult parkerModel(Date startDate) {
+    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startDate) {
         this.startDate = startDate;
         return execute();
     }

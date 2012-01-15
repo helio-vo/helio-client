@@ -29,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 
 import eu.heliovo.clientapi.HelioClient;
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
@@ -78,14 +79,14 @@ public class ContextClientDemo {
                 public Object call() throws Exception {
                     StringBuilder body = new StringBuilder();
                     try {
-                        boolean parker = false;
-                        boolean flare = false;
-                        boolean goes = false;
+                        boolean parker = true;
+                        boolean flare = true;
+                        boolean goes = true;
                         boolean ace = true;
-                        boolean sta = false;
-                        boolean stb = false;
-                        boolean ulysses = false;
-                        boolean wind = false;
+                        boolean sta = true;
+                        boolean stb = true;
+                        boolean ulysses = true;
+                        boolean wind = true;
                         
                         if (flare) {
                             FlarePlotterService flarePlotterService = factory.getFlarePlotterService((AccessInterface[])null);
@@ -93,12 +94,12 @@ public class ContextClientDemo {
                             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                             cal.setTimeInMillis(0);
-                            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                            cal.set(2005, Calendar.JANUARY, 1, 0, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             body.append("<h1>flare plot for " + SimpleDateFormat.getDateInstance().format(cal.getTime()) + "</h1>\n");
-                            ProcessingResult result = flarePlotterService.flarePlot(cal.getTime());
-
-                            URL url = result.asURL(60, TimeUnit.SECONDS);
+                            ProcessingResult<UrlProcessingResultObject> result = flarePlotterService.flarePlot(cal.getTime());
+                            UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+                            URL url = resultObject.getUrl();
                             body.append("<p>").append(url);
                             body.append("<img src=\"").append(url).append("\"/></p>\n");
 
@@ -111,16 +112,16 @@ public class ContextClientDemo {
                         if (goes){
                             Calendar cal = Calendar.getInstance();
                             GoesPlotterService goesPlotterService = factory.getGoesPlotterService((AccessInterface[])null);
-                            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                            cal.set(2007, Calendar.JANUARY, 1, 0, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date startDate =  cal.getTime();
-                            cal.set(2003, Calendar.JANUARY, 3, 0, 0, 0);
+                            cal.set(2007, Calendar.JANUARY, 3, 0, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date endDate =  cal.getTime();
                             body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "-" + SimpleDateFormat.getDateInstance().format(endDate) + "</h1>\n");
-                            ProcessingResult result = goesPlotterService.goesPlot(startDate, endDate);
-
-                            URL url = result.asURL(60, TimeUnit.SECONDS);
+                            ProcessingResult<UrlProcessingResultObject> result = goesPlotterService.goesPlot(startDate, endDate);
+                            UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+                            URL url = resultObject.getUrl();
                             body.append("<p>").append(url);
                             body.append("<img src=\"").append(url).append("\"/></p>\n");
 
@@ -131,13 +132,13 @@ public class ContextClientDemo {
                         if (parker) {
                             Calendar cal = Calendar.getInstance();
                             SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService((AccessInterface[])null);
-                            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+                            cal.set(2007, Calendar.JANUARY, 1, 0, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date startDate =  cal.getTime();
                             body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
-                            ProcessingResult result = parkerModelService.parkerModel(startDate);
-
-                            URL url = result.asURL(60, TimeUnit.SECONDS);
+                            ProcessingResult<UrlProcessingResultObject> result = parkerModelService.parkerModel(startDate);
+                            UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+                            URL url = resultObject.getUrl();
                             body.append("<p>").append(url);
                             body.append("<img src=\"").append(url).append("\"/></p>\n");
 
@@ -192,20 +193,20 @@ public class ContextClientDemo {
      */
     protected static String desPlot(String mission, String serviceVariant, int counter) {
         StringBuilder body = new StringBuilder();
-        ProcessingResult result = null;
+        ProcessingResult<UrlProcessingResultObject> result = null;
         try {
             DesPlotterService desPlotter = (DesPlotterService)factory.getHelioService(HelioServiceName.DES, serviceVariant, (AccessInterface[])null);
             Calendar cal = Calendar.getInstance();
-            cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+            cal.set(2007, Calendar.JANUARY, 1, 0, 0, 0);
             cal.add(Calendar.MONTH, counter);
             Date startDate =  cal.getTime();
-            cal.set(2003, Calendar.JANUARY, 3, 0, 0, 0);
+            cal.set(2007, Calendar.JANUARY, 3, 0, 0, 0);
             cal.add(Calendar.MONTH, counter);
             Date endDate =  cal.getTime();
             body.append("<h1>" + mission + " plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
             result = desPlotter.desPlot(startDate, endDate);
-    
-            URL url = result.asURL(60, TimeUnit.SECONDS);
+            UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+            URL url = resultObject.getUrl();
             body.append("<p>").append(url);
             body.append("<img src=\"").append(url).append("\"/></p>\n");
     

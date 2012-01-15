@@ -3,13 +3,15 @@ package eu.heliovo.clientapi.processing.context;
 import java.util.Date;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingService;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 
 /**
  * Context service to access the parker model.
  * @author MarcoSoldati
  *
  */
-public interface SimpleParkerModelService extends ContextService {
+public interface SimpleParkerModelService extends ProcessingService<UrlProcessingResultObject> {
 
     /**
      * Get the start date to use
@@ -28,6 +30,6 @@ public interface SimpleParkerModelService extends ContextService {
      * @param date the date of the flare.
      * @return an object to access the result.
      */
-    public ProcessingResult parkerModel(Date startDate);
+    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startDate);
 
 }

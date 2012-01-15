@@ -3,13 +3,15 @@ package eu.heliovo.clientapi.processing.context;
 import java.util.Date;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingService;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 
 /**
  * Context service to access Date evaluation service plots.
  * @author MarcoSoldati
  *
  */
-public interface DesPlotterService extends ContextService {
+public interface DesPlotterService extends ProcessingService<UrlProcessingResultObject> {
     
     /**
      * Name of the service variant for plotting. 
@@ -46,6 +48,6 @@ public interface DesPlotterService extends ContextService {
      * @param endDate the end date.
      * @return an object to access the result.
      */
-    public ProcessingResult desPlot(Date startDate, Date endDate);
+    public ProcessingResult<UrlProcessingResultObject> desPlot(Date startDate, Date endDate);
 
 }

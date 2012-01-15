@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.impl.des.AcePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
@@ -18,7 +19,6 @@ import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImp
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
-import eu.heliovo.clientapi.processing.hps.HelioProcessingResult;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
@@ -55,10 +55,10 @@ public class HelioClientDemo {
     /**
      * Run the demos.
      */
-    @SuppressWarnings("unused")
     @Test public void run() {
         HelioClient helioClient = new HelioClient();
         helioClient.init();
+        if (true) getIls(helioClient);
         if (true) getIcsPat(helioClient);
         if (true) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
         if (true) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
@@ -87,7 +87,7 @@ public class HelioClientDemo {
         float width = 45;
         float speed = 100;
         float speedError = 0;
-        HelioProcessingResult<CmeProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, width, speed, speedError);
+        ProcessingResult<CmeProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, width, speed, speedError);
         CmeProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         System.out.println(resultObject.getVOTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());
@@ -108,8 +108,9 @@ public class HelioClientDemo {
         cal.set(2010, Calendar.JANUARY, 3, 0, 0, 0);
         Date endDate =  cal.getTime();
 
-        ProcessingResult result = desPlotter.desPlot(startDate, endDate);
-        URL url = result.asURL(1, TimeUnit.MINUTES);
+        ProcessingResult<UrlProcessingResultObject> result = desPlotter.desPlot(startDate, endDate);
+        UrlProcessingResultObject resultObject = result.asResultObject(1, TimeUnit.MINUTES);
+        URL url = resultObject.getUrl();
         System.out.println(url);
     }
 
@@ -126,6 +127,18 @@ public class HelioClientDemo {
             System.out.println(helioServiceName);
         }
         System.out.println("-----------------------");
+    }
+    
+    /**
+     * Get the ILS table.
+     * @param helioClient the client
+     */
+    private void getIls(HelioClient helioClient) {
+        AsyncQueryService service = (AsyncQueryService)helioClient.getServiceInstance(HelioServiceName.ILS, ServiceCapability.ASYNC_QUERY_SERVICE, null);
+        //System.out.println(service.getClass());
+        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2009-01-02T00:00:00"), Arrays.asList("trajectories"), null, 0, 0, null);
+        System.out.println(result.asURL());
+        System.out.println(trunc(result.asString(), 5000));        
     }
     
     /**

@@ -10,6 +10,7 @@ import org.astrogrid.schema.agworkflow.v1.Output;
 import org.astrogrid.schema.agworkflow.v1.Tool;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.GoesPlotterService;
 import eu.heliovo.registryclient.AccessInterface;
@@ -50,7 +51,7 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
      * @see eu.heliovo.clientapi.processing.context.impl.GoesPlotClient#goesPlot(java.lang.String, java.lang.String)
      */
     @Override
-    public ProcessingResult goesPlot(Date startDate, Date endDate) {
+    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startDate, Date endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
         return execute();
@@ -72,6 +73,8 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
         tool.setInput(input);
         
         Output output = new Output();
+        ParameterValue outParam = createParameterValue("goes_plot.png", "internalstorage:/", true);
+        output.getParameter().add(outParam);
         tool.setOutput(output);
         return tool;
     }

@@ -27,7 +27,7 @@ public class SolarMonitorLinkProvider extends AbstractDailyLinkProvider implemen
     /**
      * Identifier of the concrete service instance
      */
-    public static final String SERVICE_VARIANT = "ivo://helio-vo.eu/lps/solarmonitor";
+    public static final String SERVICE_VARIANT = "helio://helio-vo.eu/lps/solarmonitor";
 
     /**
      * Name of the link provider.

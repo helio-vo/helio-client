@@ -20,6 +20,10 @@ import net.ivoa.xml.votable.v1.TD;
 import net.ivoa.xml.votable.v1.TR;
 import net.ivoa.xml.votable.v1.VOTABLE;
 
+/**
+ * 
+ * TODO: Get rid of this
+ */
 public class ResultVT {
 
 	/**

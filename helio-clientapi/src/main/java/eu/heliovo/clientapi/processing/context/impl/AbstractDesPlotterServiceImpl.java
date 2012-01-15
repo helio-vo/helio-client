@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
@@ -29,11 +30,7 @@ import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
-import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.registryclient.ServiceCapability;
-import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
@@ -92,23 +89,31 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
     }
     
     @Override
-    public ProcessingResult desPlot(Date startTime, Date endTime) {
+    public ProcessingResult<UrlProcessingResultObject> execute() throws JobExecutionException {
         final long jobStartTime = System.currentTimeMillis();
 
         List<LogRecord> logRecords = new ArrayList<LogRecord>();
         
-        String callId =  "desplot:" + mission + ":" + startTime + ":" + endTime + "::execute";
+        String callId =  "desplot:" + mission + ":" + this.startDate + ":" + this.endDate + "::execute";
         logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
                 
-        ProcessingResult processingResult = new ProcessingResultImpl(startTime, endTime, mission, callId, jobStartTime, logRecords, accessInterfaces);
+        ProcessingResult<UrlProcessingResultObject> processingResult = new ProcessingResultImpl(this.startDate, this.endDate, mission, callId, jobStartTime, logRecords, accessInterfaces);
         return processingResult;
+    }
+    
+    @Override
+    public ProcessingResult<UrlProcessingResultObject> desPlot(Date startTime, Date endTime) {
+        setStartDate(startTime);
+        setEndDate(endTime);
+        return execute();
     }
 
     /**
      * ProcessingResult object that handles results from the DES plotting service.
      * @author marco soldati at fhnw ch
      */
-    static class ProcessingResultImpl implements ProcessingResult {
+    static class ProcessingResultImpl implements ProcessingResult<UrlProcessingResultObject> {
+        
         /**
          * The logger instance
          */
@@ -173,6 +178,8 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
          * @param callId identifier of the called function. For user feedback.
          * @param jobStartTime the time when this call has been started.
          * @param logRecords the log records from the parent query. 
+         * @param accessInterfaces the interfaces to use for getting the plot.
+         * 
          */            
         public ProcessingResultImpl(final Date startTime, final Date endTime, final String mission, String callId, long jobStartTime, List<LogRecord> logRecords, final AccessInterface ... accessInterfaces) {
             this.callId = callId;
@@ -220,8 +227,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
          * Get access to the URL of the remote data.
          * @return the URL of this object.
          */
-        @Override
-        public URL asURL() {
+        protected URL asURL() {
             return asURL(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         }
         
@@ -230,9 +236,9 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
          * @param timeout time to wait until the call fails 
          * @param unit time unit
          * @return the URL pointing to the remote service.
+         * @throws JobExecutionException if anything goes wrong during execution of the job.
          */
-        @Override
-        public URL asURL(long timeout, TimeUnit unit) throws JobExecutionException {
+        protected URL asURL(long timeout, TimeUnit unit) throws JobExecutionException {
             if (resultURL != null) {
                 return resultURL;
             }
@@ -293,7 +299,17 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
 
             return resultURL;
         }
-
+        
+        @Override
+        public UrlProcessingResultObject asResultObject() throws JobExecutionException {
+            return asResultObject(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        }
+        
+        @Override
+        public UrlProcessingResultObject asResultObject(long timeout, TimeUnit unit) throws JobExecutionException {
+            return new UrlProcessingResultObject(asURL(timeout, unit));
+        }
+                
         /**
          * Poll for the status until the status is not PENDING anymore or
          * the given pollTime has exceeded.

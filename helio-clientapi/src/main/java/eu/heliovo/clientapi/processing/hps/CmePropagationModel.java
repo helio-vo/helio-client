@@ -3,15 +3,17 @@ package eu.heliovo.clientapi.processing.hps;
 import java.net.URL;
 import java.util.Date;
 
+import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingResultObject;
+import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
-import eu.heliovo.clientapi.processing.hps.HelioProcessingResult.ProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
  * Marker interface for a propagation model processing service.
  * @author MarcoSoldati
  */
-public interface CmePropagationModel extends HelioProcessingService<CmeProcessingResultObject> {
+public interface CmePropagationModel extends ProcessingService<CmeProcessingResultObject> {
 
     /**
      * Set the start time of the propagation
@@ -83,7 +85,7 @@ public interface CmePropagationModel extends HelioProcessingService<CmeProcessin
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract HelioProcessingResult<CmeProcessingResultObject> execute(Date startTime, float longitude, float width, float speed, float speedError) throws JobExecutionException;
+    public abstract ProcessingResult<CmeProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException;
 
     /**
      * The result object retruned by this model

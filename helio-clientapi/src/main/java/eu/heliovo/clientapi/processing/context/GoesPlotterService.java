@@ -3,13 +3,15 @@ package eu.heliovo.clientapi.processing.context;
 import java.util.Date;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingService;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 
 /**
  * Context service to access goes plots
  * @author MarcoSoldati
  *
  */
-public interface GoesPlotterService extends ContextService {
+public interface GoesPlotterService extends ProcessingService<UrlProcessingResultObject> {
 
     /**
      * Get the start date to use
@@ -41,6 +43,6 @@ public interface GoesPlotterService extends ContextService {
      * @param endDate the end date.
      * @return an object to access the result.
      */
-    public ProcessingResult goesPlot(Date startDate, Date endDate);
+    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startDate, Date endDate);
 
 }

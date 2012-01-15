@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
+import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -55,7 +56,7 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
     }
 
     @Override
-    public HelioProcessingService<?> getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
+    public ProcessingService<?> getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
         return getProcessingService(serviceName, serviceVariant, accessInterfaces);
     }
 
@@ -66,7 +67,7 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
      * @param accessInterfaces the interface to use. Will be retrieved from the registry if null.
      * @return a proxy to the context service.
      */
-    private HelioProcessingService<?> getProcessingService(HelioServiceName serviceName, String serviceVariant, AccessInterface ... accessInterfaces) {
+    private ProcessingService<?> getProcessingService(HelioServiceName serviceName, String serviceVariant, AccessInterface ... accessInterfaces) {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
         AssertUtil.assertArgumentHasText(serviceVariant, "serviceVariant");
         ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
@@ -81,10 +82,10 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
             throw new ServiceResolutionException("Unable to find context service of type " + serviceVariant);
         }
         
-        HelioProcessingService<?> processingService;
+        ProcessingService<?> processingService;
         try {
             Constructor<? extends HelioService> constructor = contextServiceClass.getConstructor(AccessInterface[].class);
-            processingService = (HelioProcessingService<?>)constructor.newInstance(new Object[] {accessInterfaces});
+            processingService = (ProcessingService<?>)constructor.newInstance(new Object[] {accessInterfaces});
         } catch (Exception e) {
             throw new ServiceResolutionException("Unable to instanciate service " + contextServiceClass + ": " + e.getMessage(), e);
         }

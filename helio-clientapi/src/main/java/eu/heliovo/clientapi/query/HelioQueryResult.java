@@ -19,7 +19,6 @@ public interface HelioQueryResult extends HelioWorkerServiceHandler {
 	 * @return the id. 
 	 */
 	//public ResultId getResultId();
-
 	
 	/**
 	 * Provide access to the URL pointing to the result.
@@ -89,6 +88,4 @@ public interface HelioQueryResult extends HelioWorkerServiceHandler {
 	 * @return the user log messages.
 	 */
 	public LogRecord[] getUserLogs();
-
-
 }

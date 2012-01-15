@@ -25,7 +25,7 @@ public class CdawStereoLinkProvider extends AbstractDailyLinkProvider {
     /**
      * Identifier of the concrete service instance
      */
-    private static final String SERVICE_VARIANT = "ivo://helio-vo.eu/lps/cdaw_stereo_e171";
+    private static final String SERVICE_VARIANT = "helio://helio-vo.eu/lps/cdaw_stereo_e171";
 
     /**
      * Name of the link provider.

@@ -3,13 +3,15 @@ package eu.heliovo.clientapi.processing.context;
 import java.util.Date;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingService;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 
 /**
  * Context service to access flare plots
  * @author MarcoSoldati
  *
  */
-public interface FlarePlotterService extends ContextService {
+public interface FlarePlotterService extends ProcessingService<UrlProcessingResultObject> {
 
     /**
      * Get the  date to use
@@ -28,6 +30,6 @@ public interface FlarePlotterService extends ContextService {
      * @param date the date of the flare.
      * @return an object to access the result.
      */
-    public ProcessingResult flarePlot(Date date);
+    public ProcessingResult<UrlProcessingResultObject> flarePlot(Date date);
 
 }

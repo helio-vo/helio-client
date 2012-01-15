@@ -10,6 +10,7 @@ import org.astrogrid.schema.agworkflow.v1.Output;
 import org.astrogrid.schema.agworkflow.v1.Tool;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
 import eu.heliovo.registryclient.AccessInterface;
@@ -44,7 +45,7 @@ public class FlarePlotterServiceImpl extends AbstractContextServiceImpl implemen
      * @see eu.heliovo.clientapi.processing.context.impl.GoesPlotClient#goesPlot(java.lang.String, java.lang.String)
      */
     @Override
-    public ProcessingResult flarePlot(Date date) {
+    public ProcessingResult<UrlProcessingResultObject> flarePlot(Date date) {
         this.date = date;
         return execute();
     }

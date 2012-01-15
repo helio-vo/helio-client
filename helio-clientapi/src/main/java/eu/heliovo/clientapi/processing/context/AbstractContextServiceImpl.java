@@ -27,6 +27,8 @@ import org.astrogrid.schema.ceatypes.v1.MessageType;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingService;
+import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -40,7 +42,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author MarcoSoldati
  *
  */
-public abstract class AbstractContextServiceImpl extends AbstractServiceImpl implements ContextService {
+public abstract class AbstractContextServiceImpl extends AbstractServiceImpl implements ProcessingService<UrlProcessingResultObject> {
     /**
      * The logger instance
      */
@@ -104,7 +106,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
      * @return This object can be used to access the ProcessingResult.
      * @throws JobExecutionException if anything fails while executing the remote job.
      */
-    public ProcessingResult execute() throws JobExecutionException {
+    public ProcessingResult<UrlProcessingResultObject> execute() throws JobExecutionException {
         final long jobStartTime = System.currentTimeMillis();
 
         List<LogRecord> logRecords = new ArrayList<LogRecord>();
@@ -141,7 +143,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
         URL logOutLocation = computeFileLocation(currentAccessInterface, resultId, getLogOutFileName());
         URL logErrLocation = computeFileLocation(currentAccessInterface, resultId, getLogErrFileName());
 
-        ProcessingResult processingResult = new ProcessingResultImpl(resultId, currentPort, resultLocation, logOutLocation, logErrLocation, callId, jobStartTime, logRecords);
+        ProcessingResult<UrlProcessingResultObject> processingResult = new ProcessingResultImpl(resultId, currentPort, resultLocation, logOutLocation, logErrLocation, callId, jobStartTime, logRecords);
         
         return processingResult; 
     }
@@ -235,7 +237,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
      * @author marco soldati at fhnw ch
      * 
      */
-    static class ProcessingResultImpl implements ProcessingResult {
+    static class ProcessingResultImpl implements ProcessingResult<UrlProcessingResultObject> {
         /**
          * The logger instance
          */
@@ -247,7 +249,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
         private final String id;
 
         /**
-         * Default timeout to wait for a result is 120000 seconds.
+         * Default timeout to wait for a result is 120000 milliseconds.
          */
         private final static long DEFAULT_TIMEOUT = 120000;
 
@@ -406,8 +408,8 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
          * Get access to the URL of the remote data.
          * @return the URL of this object.
          */
-        @Override
-        public URL asURL() {
+        
+        protected URL asURL() {
             return asURL(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         }
         
@@ -416,9 +418,10 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
          * @param timeout time to wait until the call fails 
          * @param unit time unit
          * @return the URL pointing to the remote service.
+         * @throws JobExecutionException in case of an error.
          */
-        @Override
-        public URL asURL(long timeout, TimeUnit unit) throws JobExecutionException {
+        
+        protected URL asURL(long timeout, TimeUnit unit) throws JobExecutionException {
             if (resultURL != null) {
                 return resultURL;
             }
@@ -450,6 +453,16 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
             return resultLocation;
         }
         
+        @Override
+        public UrlProcessingResultObject asResultObject() throws JobExecutionException {
+            return asResultObject(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        }
+        
+        @Override
+        public UrlProcessingResultObject asResultObject(long timeout, TimeUnit unit) throws JobExecutionException {
+            return new UrlProcessingResultObject(asURL(timeout, unit));
+        }
+                
         /**
          * Add the remote log to the user logs.
          * @param logLocation url pointing to the log.
@@ -542,8 +555,5 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
             sb.append("wsdl:").append(callId).append("}");
             return sb.toString();
         }
-
     }
-
-    
 }

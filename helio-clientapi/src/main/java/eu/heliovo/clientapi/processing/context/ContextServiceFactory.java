@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import eu.heliovo.clientapi.model.service.AbstractServiceFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
+import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.GoesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.SimpleParkerModelServiceImpl;
@@ -68,7 +69,7 @@ public class ContextServiceFactory extends AbstractServiceFactory {
     }
 
     @Override
-    public ContextService getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
+    public ProcessingService<?> getHelioService(HelioServiceName serviceName, String serviceVariant, AccessInterface... accessInterfaces) {
         return getContextService(serviceName, serviceVariant, accessInterfaces);
     }
 
@@ -107,7 +108,7 @@ public class ContextServiceFactory extends AbstractServiceFactory {
      * @param accessInterfaces the interface to use. Will be retrieved from the registry if null.
      * @return a proxy to the context service.
      */
-    private ContextService getContextService(HelioServiceName serviceName, String serviceVariant, AccessInterface ... accessInterfaces) {
+    private ProcessingService<?> getContextService(HelioServiceName serviceName, String serviceVariant, AccessInterface ... accessInterfaces) {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
         AssertUtil.assertArgumentHasText(serviceVariant, "serviceVariant");
         ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
@@ -122,15 +123,14 @@ public class ContextServiceFactory extends AbstractServiceFactory {
             throw new ServiceResolutionException("Unable to find context service of type " + serviceVariant);
         }
         
-        ContextService contextService;
+        ProcessingService<?> contextService;
         try {
             Constructor<? extends HelioService> constructor = contextServiceClass.getConstructor(AccessInterface[].class);
-            contextService = (ContextService)constructor.newInstance(new Object[] {accessInterfaces});
+            contextService = (ProcessingService<?>)constructor.newInstance(new Object[] {accessInterfaces});
         } catch (Exception e) {
             throw new ServiceResolutionException("Unable to instanciate service " + contextServiceClass + ": " + e.getMessage(), e);
         }
         
         return contextService;
     }
-
 }

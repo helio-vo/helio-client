@@ -1,6 +1,6 @@
-package eu.heliovo.clientapi.processing.hps;
+package eu.heliovo.clientapi.processing.taverna;
 
-import java.net.URL;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -11,26 +11,28 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import javax.xml.ws.BindingProvider;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
+import uk.org.taverna.ns._2010.xml.server.Status;
+import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
-import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingResultObject;
+import eu.heliovo.clientapi.processing.ResultObjectFactory;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
-import eu.heliovo.hps.server.AbstractApplicationDescription;
-import eu.heliovo.hps.server.ApplicationParameter;
-import eu.heliovo.hps.server.HPSService;
-import eu.heliovo.hps.server.HPSServiceService;
+import eu.heliovo.myexperiment.Group;
+import eu.heliovo.myexperiment.Repository;
+import eu.heliovo.myexperiment.Workflow;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.shared.hps.ApplicationExecutionStatus;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
+import eu.heliovo.tavernaserver.Run;
+import eu.heliovo.tavernaserver.Server;
 
 /**
  * Base class for services that access the HPS
@@ -38,23 +40,32 @@ import eu.heliovo.shared.util.AssertUtil;
  * @param <T> Type of the result object returned by a call to this class.
  *
  */
-public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingResultObject> extends AbstractServiceImpl implements ProcessingService<T> {
+public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObject> extends AbstractServiceImpl implements TavernaService<T>, ResultObjectFactory<T, Run> {
     /**
      * The logger instance
      */
-    static final Logger _LOGGER = Logger.getLogger(AbstractHelioProcessingServiceImpl.class);
+    static final Logger _LOGGER = Logger.getLogger(AbstractTavernaServiceImpl.class);
+    
+    /**
+     * The workflow implemented by this service.
+     */
+    private final Workflow workflow;
     
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
      * @param serviceName the name of the service
      * @param description a short text to describe the service
-     * @param accessInterfaces concrete implementation of an AccessInterface. Must not be null. 
+     * @param myExperimentInterface end point of the my experiment repository. Must not be null.
+     * @param tavernaInterfaces concrete implementation of an AccessInterface. Must not be null. 
      * If multiple interfaces are specified the "best" will be chosen.
      */
-    public AbstractHelioProcessingServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
-        super(serviceName, null, description, accessInterfaces);
+    public AbstractTavernaServiceImpl(HelioServiceName serviceName, String description, AccessInterface myExperimentInterface, AccessInterface... tavernaInterfaces) {
+        super(serviceName, null, description, tavernaInterfaces);
+        
+        workflow = getHelioWorkflow(myExperimentInterface, getWorkflowId());        
+        AssertUtil.assertArgumentNotNull(workflow, "workflow");
     }
-
+    
     /**
      * Get the best access interface
      * @return the "best" access interface
@@ -65,27 +76,56 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
     }
     
     /**
-     * Use JAXWS to create a new service port for a given set of WSDL locations.
+     * Get the best Taverna Server instance.
      * @param accessInterface the service endpoint
      * @return the port to access the service.
      */
-    protected HPSService getPort(AccessInterface accessInterface) {
+    protected Server getPort(AccessInterface accessInterface) {
         AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
-    
-        HPSServiceService hpsServiceService = new HPSServiceService();
-        HPSService  hpsService  =   hpsServiceService.getHPSServicePort();
-        ((BindingProvider)hpsService).getRequestContext().put(
-                BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                accessInterface.getUrl().toExternalForm());
-
-        if (_LOGGER.isDebugEnabled()) {
-            _LOGGER.debug("Created " + hpsService.getClass().getSimpleName() + " for " + accessInterface.getUrl());
-        }
-        return hpsService;
+        Server server = new Server(accessInterface.getUrl().toExternalForm());
+        return server;
     }
     
     /**
-     * Submit the request to the remote service
+     * Get the id of a known HELIO workflow (e.g. "2283")
+     * @return the workflow ID.
+     */
+    protected abstract String getWorkflowId();
+
+    /**
+     * Get a specific workflow by id.
+     * @param myExperimentInterface the myExperiment registry to use.
+     * @param workflowId the id to lookup
+     * @return the workflow by id or null if not found.
+     */
+    protected Workflow getHelioWorkflow(AccessInterface myExperimentInterface, String workflowId) {
+        Repository repository;
+        try {
+            repository = new Repository(myExperimentInterface.getUrl().toExternalForm());
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("Unable to connect to my Experiment: " + e.getMessage(), e);
+        }
+        Group group;
+        try {
+            group = repository.getGroup("helio");
+            // lookup workflow
+            Workflow workflow = null;
+            for (Workflow wf : group.getWorkflows()) {
+                if (wf.getId().equals(workflowId)) {
+                    workflow = wf;
+                    break;
+                }
+            }
+            return workflow;
+        } catch (IOException e) {
+            throw new RuntimeException("Internal Error: Unable to read workflow description: " + e.getMessage(), e);
+        } catch (SAXException e) {
+            throw new RuntimeException("Internal Error: Unable to parse workflow description: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Submit the request to Taverna.
      * @return This object can be used to access the ProcessingResult.
      * @throws JobExecutionException if anything fails while executing the remote job.
      */
@@ -95,134 +135,37 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         List<LogRecord> logRecords = new ArrayList<LogRecord>();
         
         final AccessInterface currentAccessInterface = getBestAccessInterface();
-        final HPSService currentPort = getPort(currentAccessInterface);
+        final Server tavernaServer = getPort(currentAccessInterface);
         String callId = currentAccessInterface.getUrl() + "::execute";
         logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
         
-        final Boolean fastExecution = true;
-        final AbstractApplicationDescription applicationDescription = findApplicationDescriptionById(currentPort, getApplicationId()); 
-        initApplicationDescription(applicationDescription, logRecords);
-        
-        final Integer numOfParallelJobs = 1;
-        
         // start job
-        String executionId = AsyncCallUtils.callAndWait(new Callable<String>() {
+        Run run = AsyncCallUtils.callAndWait(new Callable<Run>() {
             @Override
-            public String call() throws Exception {
-                String executionId = currentPort.executeApplication(applicationDescription, fastExecution , numOfParallelJobs);
-                return executionId;
+            public Run call() throws Exception {
+                Run run = workflow.submit(tavernaServer);
+                return run;
             }
         }, callId);
         
-        if (executionId == null) {
+        if (run == null) {
             throw new JobExecutionException("Remote job did return 'null' as execution ID for  call: " + callId);
         }
         
-
-        T resultObject = createResultObject(currentAccessInterface, executionId);
-        ProcessingResult<T> processingResult = new ProcessingResultImpl<T>(executionId, currentPort, resultObject, callId, jobStartTime, logRecords);
+        ProcessingResult<T> processingResult = new ProcessingResultImpl<T>(run, this, callId, jobStartTime, logRecords);
         
         return processingResult; 
     }
 
-    /**
-     * Create the result object
-     * @param currentAccessInterface the currently used access interface
-     * @param executionId the current execution id.
-     * @return a new instance of the result object
+    /* (non-Javadoc)
+     * @see eu.heliovo.clientapi.processing.taverna.ResultObjectFactory#createResultObject(eu.heliovo.registryclient.AccessInterface, eu.heliovo.tavernaserver.Run)
      */
-    protected abstract T createResultObject(AccessInterface currentAccessInterface, String executionId);
+    @Override
+    public abstract T createResultObject(Run run);
 
-    /**
-     * Get the application id (currently pm_cme, pm_sw, pm_sw)
-     * @return the application id
-     */
-    protected abstract String getApplicationId();
-
-    /**
-     * Find application description by id
-     * @param port the HPSService port
-     * @param applicationId the application id
-     * @return the found application description or null if not applicable.
-     */
-    protected AbstractApplicationDescription findApplicationDescriptionById(HPSService port, String applicationId) {
-        List<AbstractApplicationDescription> applications = port.getPresentApplications();
-        for (AbstractApplicationDescription abstractApplicationDescription : applications) {
-            if (applicationId.equals(abstractApplicationDescription.getId())) {
-                return abstractApplicationDescription;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Initialize the application description.
-     * @param applicationDescription the description to initialize
-     * @param logRecords the log records for logging
-     */
-    protected void initApplicationDescription(AbstractApplicationDescription applicationDescription, List<LogRecord> logRecords) {
-        List<ApplicationParameter> params = applicationDescription.getParameters();
-        for (int index = 0; index < params.size(); index++) {
-            ApplicationParameter param = params.get(index);
-            setParameter(param);
-        }
-    }
     
     /**
-     * Set the value for a particular parameter.
-     * @param param the parameter to set.
-     */
-    protected abstract void setParameter(ApplicationParameter param);
-
-    /**
-     * Check the type of the parameter.
-     * @param paramName the name of the parameter
-     * @param expectedType the expected type
-     * @param actualType the actual type.
-     * @throws JobExecutionException if expected type and actual type do not match.
-     */
-    protected void checkType(String paramName, String expectedType, String actualType) throws JobExecutionException {
-        if (!expectedType.equals(actualType)) {
-            throw new JobExecutionException("Expected type for parameter " + paramName + ": " + expectedType + ", but got " + actualType);
-        } 
-    }
-
-    /**
-     * Compute the location of the result file. This is kind of a hack to fix a problem identified with the 
-     * current astrogrid cea implementation that cannot work without a explicit storage provider.
-     * The workaround was to store the results in the local file system and to access them through a predefined URL.
-     * This does not match the SOAP interface, (but it does what it should).
-     * @param accessInterface the current interface.
-     * @param executionId the id of the current request.
-     * @param fileName the name of the file to load.
-     * @return an URL object pointing to the result. This URL will not be valid before successful execution of the job.
-     */
-    protected URL computeFileLocation(AccessInterface accessInterface, String executionId, String fileName) {
-        URL accessUrl = accessInterface.getUrl();
-        StringBuilder sb = new StringBuilder();
-        sb.append(accessUrl.getProtocol())
-          .append("://")
-          .append(accessUrl.getHost());
-        if (accessUrl.getPort() > 0 && accessUrl.getPort() != 80) {
-            sb.append(":").append(accessUrl.getPort());
-        }
-        sb.append("/");
-        int slash = accessUrl.getPath().indexOf('/', 1);
-        if (slash >= 0) {
-            sb.append(accessUrl.getPath().substring(0, slash));
-        }
-        sb.append("/jobs/")
-          .append(executionId)
-          .append('/')
-          .append(fileName);
-
-        URL url = HelioFileUtil.asURL(sb.toString());
-        return url;
-    }
-    
-    /**
-     * ProcessingResult object that handles results from the HPS.
-     * 
+     * ProcessingResult object that handles results from Taverna Server.
      * @author marco soldati at fhnw ch
      * @param <T> Type of the result object returned by this ProcessingResult.
      * 
@@ -234,9 +177,9 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         private static final Logger _LOGGER = Logger.getLogger(ProcessingResultImpl.class);
         
         /**
-         * The id of the call
+         * Current run.
          */
-        private final String resultId;
+        private final Run run;
 
         /**
          * Default timeout to wait for a result is 120 seconds.
@@ -252,11 +195,11 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
          * the current execution phase.
          */
         private Phase phase;
-
+        
         /**
-         * The port to use for the call.
+         * Cache the result object.
          */
-        private final HPSService port;
+        private T resultObject;
 
         /**
          * List that holds the user logs.
@@ -286,21 +229,19 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         /**
          * The result object to use for accessing the results.
          */
-        private final T resultObject;
+        private final ResultObjectFactory<T, Run> resultObjectFactory;
         
         /**
-         * Create a Helio query result
-         * @param resultId the assigned id
-         * @param port the port to be used to retrieve the results of this call.
-         * @param resultObject the result object to use to access the results.
+         * Create a HELIO workflow result.
+         * @param run the run assigned with this workflow.
+         * @param resultObjectFactory the factory to create a result object.
          * @param callId identifier of the called function. For user feedback.
          * @param jobStartTime the time when this call has been started.
          * @param logRecords the log records from the parent query. 
          */
-        ProcessingResultImpl(String resultId, HPSService port, T resultObject, String callId, long jobStartTime, List<LogRecord> logRecords) {
-            this.resultId = resultId;
-            this.port = port;
-            this.resultObject = resultObject;
+        ProcessingResultImpl(Run run, ResultObjectFactory<T, Run> resultObjectFactory, String callId, long jobStartTime, List<LogRecord> logRecords) {
+            this.run = run;
+            this.resultObjectFactory = resultObjectFactory;
             this.callId = callId;
             this.jobStartTime = jobStartTime;
             this.phase = Phase.QUEUED;
@@ -314,30 +255,35 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
                 return phase;
             }
             
-            String exeStatus = AsyncCallUtils.callAndWait(new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    String exeStatus = port.getStatusOfExecution(resultId);
-                    return exeStatus;
-                }
-            }, callId + "::getPhase");
-            
-            if (ApplicationExecutionStatus.Completed.equals(exeStatus)) {
-                phase = Phase.COMPLETED;
-                jobEndTime = System.currentTimeMillis();
-            } else if (ApplicationExecutionStatus.Running.equals(exeStatus)) {
-                phase = Phase.EXECUTING;
-            } else if (ApplicationExecutionStatus.Failed.equals(exeStatus)) {
-                phase = Phase.ERROR;
-                jobEndTime = System.currentTimeMillis();
-            } else if (ApplicationExecutionStatus.Undefined.equals(exeStatus)) {
-                phase = Phase.UNKNOWN;
-            } else {
-                throw new JobExecutionException("Unexpected status returned from Helio Processing Service: '" + exeStatus + "'");
+            Status exeStatus;
+            try {
+                exeStatus = run.getStatus();
+            } catch (UnknownRunException e) {
+                throw new RuntimeException("Internal Error: Unknown Run: " + e.getMessage(), e);
             }
-
+            
+            // map the execution status to a phase.
+            switch (exeStatus) {
+            case INITIALIZED:
+                phase = Phase.PENDING;
+                break;
+            case OPERATING:
+                phase = Phase.EXECUTING;
+                break;
+            case FINISHED:
+                jobEndTime = System.currentTimeMillis();
+                phase = Phase.COMPLETED;
+                break;
+            case STOPPED:
+                jobEndTime = System.currentTimeMillis();
+                phase = Phase.ABORTED;
+                break;
+            default:
+                break;
+            }
+            
             if (jobEndTime != 0) {
-                userLogs.add(new LogRecord(Level.INFO, "Processing terminated in " + MessageUtils.formatSeconds(getExecutionDuration()) + " with status '" + phase + "'"));
+                userLogs.add(new LogRecord(Level.INFO, "Taverna workflow terminated in " + MessageUtils.formatSeconds(getExecutionDuration()) + " with status '" + phase + "'"));
             }
             
             if (_LOGGER.isTraceEnabled()) {
@@ -355,6 +301,9 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         
         @Override
         public T asResultObject(long timeout, TimeUnit unit) throws JobExecutionException {
+            if (resultObject != null) {
+                return resultObject;
+            }
             Phase currentPhase = pollStatus(timeout, unit);
             
             if (_LOGGER.isDebugEnabled()) {
@@ -367,7 +316,7 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
             case ABORTED:
                 throw new JobExecutionException("Execution of the query has been aborted by the remote host. Check the logs for more information (call getUserLogs() on this object).");                
             case UNKNOWN:
-                throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + AbstractHelioProcessingServiceImpl.class.getName());
+                throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + AbstractTavernaServiceImpl.class.getName());
             case PENDING:
                 throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time (" + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)) + "). CallId: " + callId);
             case COMPLETED:
@@ -376,6 +325,8 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
             default:
                 throw new RuntimeException("Internal error: unexpected status occurred: " + currentPhase);
             }
+            
+            resultObject = resultObjectFactory.createResultObject(run);
 
             return resultObject;
         }
@@ -451,7 +402,7 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append(getClass().getName()).append(": {");
-            sb.append("id:").append(resultId).append(", ");
+            sb.append("id:").append(run.getId()).append(", ");
             sb.append("phase:").append(phase).append(", ");
             sb.append("wsdl:").append(callId).append("}");
             return sb.toString();

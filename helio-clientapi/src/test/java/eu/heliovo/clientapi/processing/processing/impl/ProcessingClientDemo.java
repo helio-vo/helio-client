@@ -27,9 +27,9 @@ import javax.swing.WindowConstants;
 import org.apache.commons.io.FileUtils;
 
 import eu.heliovo.clientapi.HelioClient;
+import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
-import eu.heliovo.clientapi.processing.hps.HelioProcessingResult;
 import eu.heliovo.clientapi.processing.hps.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
 import eu.heliovo.registryclient.AccessInterface;
@@ -84,7 +84,7 @@ public class ProcessingClientDemo {
                             float width = 45;
                             float speed = 100;
                             float speedError = 0;
-                            HelioProcessingResult<CmeProcessingResultObject> result = cmePMService.execute(cal.getTime(), longitude, width, speed, speedError);
+                            ProcessingResult<CmeProcessingResultObject> result = cmePMService.execute(cal.getTime(), longitude, width, speed, speedError);
                             CmeProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
                             
                             body.append("<p>VOTable: ").append(resultObject.getVOTableUrl());

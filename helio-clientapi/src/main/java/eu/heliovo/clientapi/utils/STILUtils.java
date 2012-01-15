@@ -407,7 +407,7 @@ public class STILUtils {
         Session s = sessionFactory.openSession();
 
         Transaction tx = s.beginTransaction();
-        for (Object o : s.createQuery("FROM PersistedFile WHERE expires<current_timestamp").list()) {
+        for (Object o : s.createQuery("FROM PersistedFile WHERE expires<NOW").list()) {
             PersistedFile pf = (PersistedFile) o;
 
             if (LOGGER.isDebugEnabled()) {

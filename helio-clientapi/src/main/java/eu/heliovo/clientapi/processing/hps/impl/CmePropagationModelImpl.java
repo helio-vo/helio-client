@@ -1,11 +1,13 @@
 package eu.heliovo.clientapi.processing.hps.impl;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.hps.AbstractHelioProcessingServiceImpl;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
-import eu.heliovo.clientapi.processing.hps.HelioProcessingResult;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.hps.server.ApplicationParameter;
@@ -116,7 +118,7 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     }
     
     @Override
-    public HelioProcessingResult<CmeProcessingResultObject> execute(Date startTime, float longitude, float width, float speed, float speedError) throws JobExecutionException {
+    public ProcessingResult<CmeProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException {
         this.setStartTime(startTime);
         this.setLongitude(longitude);
         this.setWidth(width);
@@ -125,12 +127,18 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
         return execute();
     }
 
+    /**
+     * Output names 
+     */
+    private static final List<String> OUTPUT_NAMES = Arrays.asList("votable_url", "outerplot_url", "innerplot_url");
+
     @Override
     protected CmeProcessingResultObject createResultObject(final AccessInterface accessInterface, final String executionId) {
         // FIXME: hardcoded
         final String baseUrl = "http://cagnode58.cs.tcd.ie/output_dir/" + executionId + "/";
         
         return new CmeProcessingResultObject() {
+            
             @Override
             public URL getVOTableUrl() {
                 return HelioFileUtil.asURL(baseUrl + "cme_pm.votable");
@@ -144,6 +152,26 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
             @Override
             public URL getInnerPlotUrl() {
                 return HelioFileUtil.asURL(baseUrl + "cme_pm_inner.png");
+            }
+
+            @Override
+            public List<String> getOutputNames() throws JobExecutionException {
+                return OUTPUT_NAMES;
+            }
+
+            @Override
+            public Object getOutput(String outputName) throws JobExecutionException {
+                int output = OUTPUT_NAMES.indexOf(outputName);
+                switch (output) {
+                case 0:
+                    return getVOTableUrl();
+                case 1:
+                    return getOuterPlotUrl();
+                case 2:
+                    return getInnerPlotUrl();
+                default:
+                    throw new IllegalArgumentException("Unknown output name: " + outputName);
+                }
             }
         };
     }
