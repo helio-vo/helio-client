@@ -109,6 +109,6 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
          * URL to the VOTable
          * @return the voTable.
          */
-        public URL getVOTableUrl();
+        public URL getVoTableUrl();
     }
 }

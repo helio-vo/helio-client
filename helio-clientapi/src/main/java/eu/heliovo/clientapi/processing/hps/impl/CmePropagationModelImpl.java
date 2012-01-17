@@ -140,7 +140,7 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
         return new CmeProcessingResultObject() {
             
             @Override
-            public URL getVOTableUrl() {
+            public URL getVoTableUrl() {
                 return HelioFileUtil.asURL(baseUrl + "cme_pm.votable");
             }
             
@@ -164,7 +164,7 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
                 int output = OUTPUT_NAMES.indexOf(outputName);
                 switch (output) {
                 case 0:
-                    return getVOTableUrl();
+                    return getVoTableUrl();
                 case 1:
                     return getOuterPlotUrl();
                 case 2:
