@@ -87,9 +87,9 @@ public class ProcessingClientDemo {
                             ProcessingResult<CmeProcessingResultObject> result = cmePMService.execute(cal.getTime(), longitude, width, speed, speedError);
                             CmeProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
                             
-                            body.append("<p>VOTable: ").append(resultObject.getVOTableUrl());
-                            body.append("<a href=\"").append(resultObject.getVOTableUrl()).append("\">")
-                                .append(resultObject.getVOTableUrl()).append("</a></p>\n");
+                            body.append("<p>VOTable: ").append(resultObject.getVoTableUrl());
+                            body.append("<a href=\"").append(resultObject.getVoTableUrl()).append("\">")
+                                .append(resultObject.getVoTableUrl()).append("</a></p>\n");
                             
                             body.append("<p>Inner plot: ").append(resultObject.getInnerPlotUrl());
                             body.append("<img src=\"").append(resultObject.getInnerPlotUrl()).append("\"/></p>\n");

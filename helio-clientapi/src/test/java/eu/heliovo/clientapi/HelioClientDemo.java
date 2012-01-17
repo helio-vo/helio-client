@@ -89,7 +89,7 @@ public class HelioClientDemo {
         float speedError = 0;
         ProcessingResult<CmeProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, width, speed, speedError);
         CmeProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
-        System.out.println(resultObject.getVOTableUrl());
+        System.out.println(resultObject.getVoTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());
         System.out.println(resultObject.getOuterPlotUrl());
     }
