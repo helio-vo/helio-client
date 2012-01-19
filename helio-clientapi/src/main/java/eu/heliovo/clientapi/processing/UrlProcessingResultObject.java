@@ -16,6 +16,7 @@ public class UrlProcessingResultObject implements ProcessingResultObject {
      * List holding the allowed output names
      */
     private static List<String> OUTPUT_NAMES = Collections.singletonList("url");
+    
     /**
      * The stored url
      */
