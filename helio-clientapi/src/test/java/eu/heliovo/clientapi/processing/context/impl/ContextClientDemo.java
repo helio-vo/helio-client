@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -28,9 +29,9 @@ import javax.swing.WindowConstants;
 import org.apache.commons.io.FileUtils;
 
 import eu.heliovo.clientapi.HelioClient;
+import eu.heliovo.clientapi.processing.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
-import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
 import eu.heliovo.clientapi.processing.context.GoesPlotterService;
@@ -42,7 +43,11 @@ import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImp
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
+import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
  * Demo for the context client
@@ -53,7 +58,7 @@ public class ContextClientDemo {
     /**
      * The context service factory.
      */
-    final static ContextServiceFactory factory = ContextServiceFactory.getInstance();
+    final static ProcessingServiceFactory factory = ProcessingServiceFactory.getInstance();
 
     /**
      * Main method for demo
@@ -63,6 +68,19 @@ public class ContextClientDemo {
     public static void main(String[] args) throws Exception {
         HelioClient helioClient = new HelioClient();
         helioClient.init();
+        
+        final List<String> config = new ArrayList<String>();
+        config.add("parker");
+//        config.add("flare");
+//        config.add("goes");
+//        config.add("ace");
+//        config.add("sta");
+//        config.add("stb");
+//        config.add("ulysses");
+//        config.add("wind");
+        
+        final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
+
         
         DebugUtils.enableDump();
         final StringBuffer sb = new StringBuffer();
@@ -79,17 +97,9 @@ public class ContextClientDemo {
                 public Object call() throws Exception {
                     StringBuilder body = new StringBuilder();
                     try {
-                        boolean parker = true;
-                        boolean flare = true;
-                        boolean goes = true;
-                        boolean ace = true;
-                        boolean sta = true;
-                        boolean stb = true;
-                        boolean ulysses = true;
-                        boolean wind = true;
                         
-                        if (flare) {
-                            FlarePlotterService flarePlotterService = factory.getFlarePlotterService((AccessInterface[])null);
+                        if (config.contains("flare")) {
+                            FlarePlotterService flarePlotterService = factory.getFlarePlotterService(ai);
                             Calendar cal = Calendar.getInstance();
                             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -107,15 +117,14 @@ public class ContextClientDemo {
 
                             displayImage("Flare Plot", url, logs);
                         }
-
                         
-                        if (goes){
+                        if (config.contains("goes")){
                             Calendar cal = Calendar.getInstance();
-                            GoesPlotterService goesPlotterService = factory.getGoesPlotterService((AccessInterface[])null);
-                            cal.set(2007, Calendar.JANUARY, 1, 0, 0, 0);
+                            GoesPlotterService goesPlotterService = factory.getGoesPlotterService(ai);
+                            cal.set(2003, Calendar.OCTOBER, 1, 0, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date startDate =  cal.getTime();
-                            cal.set(2007, Calendar.JANUARY, 3, 0, 0, 0);
+                            cal.set(2003, Calendar.NOVEMBER, 2, 03, 59, 59);
                             cal.add(Calendar.MONTH, j);
                             Date endDate =  cal.getTime();
                             body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "-" + SimpleDateFormat.getDateInstance().format(endDate) + "</h1>\n");
@@ -129,15 +138,24 @@ public class ContextClientDemo {
                             displayImage("Goes Plot", url, logs);
                         }
                         
-                        if (parker) {
+                        if (config.contains("parker")) {
                             Calendar cal = Calendar.getInstance();
-                            SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService((AccessInterface[])null);
-                            cal.set(2007, Calendar.JANUARY, 1, 0, 0, 0);
+                            SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService(ai);
+                            cal.set(2000, Calendar.FEBRUARY, 1, 9, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date startDate =  cal.getTime();
                             body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
                             ProcessingResult<UrlProcessingResultObject> result = parkerModelService.parkerModel(startDate);
-                            UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+                            UrlProcessingResultObject resultObject;
+                            try {
+                                 resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+                            } catch (Exception e) {
+                                for (LogRecord record : result.getUserLogs()) {
+                                    System.err.println(record.getMessage());                                    
+                                }
+                                throw e;
+                            }
+                            
                             URL url = resultObject.getUrl();
                             body.append("<p>").append(url);
                             body.append("<img src=\"").append(url).append("\"/></p>\n");
@@ -146,19 +164,19 @@ public class ContextClientDemo {
                             displayImage("Parker Model", url, logs);
                         }
                         
-                        if (ace) {
+                        if (config.contains("ace")) {
                             body.append(desPlot(AcePlotterServiceImpl.MISSION, AcePlotterServiceImpl.SERVICE_VARIANT, j));
                         }
-                        if (sta) {
+                        if (config.contains("sta")) {
                             body.append(desPlot(StaPlotterServiceImpl.MISSION, StaPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
-                        if (stb) {
+                        if (config.contains("stb")) {
                             body.append(desPlot(StbPlotterServiceImpl.MISSION, StbPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
-                        if (ulysses) {
+                        if (config.contains("ulysses")) {
                             body.append(desPlot(UlyssesPlotterServiceImpl.MISSION, UlyssesPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
-                        if (wind) {
+                        if (config.contains("wind")) {
                             body.append(desPlot(WindPlotterServiceImpl.MISSION, WindPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
                         

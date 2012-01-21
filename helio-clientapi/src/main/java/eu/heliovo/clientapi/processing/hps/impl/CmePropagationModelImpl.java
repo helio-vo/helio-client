@@ -130,7 +130,7 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     /**
      * Output names 
      */
-    private static final List<String> OUTPUT_NAMES = Arrays.asList("votable_url", "outerplot_url", "innerplot_url");
+    private static final List<String> OUTPUT_NAMES = Arrays.asList("votable_url", "outerplot_url", "innerplot_url", "voyagerplot_url");
 
     @Override
     protected CmeProcessingResultObject createResultObject(final AccessInterface accessInterface, final String executionId) {
@@ -153,6 +153,11 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
             public URL getInnerPlotUrl() {
                 return HelioFileUtil.asURL(baseUrl + "cme_pm_inner.png");
             }
+            
+            @Override
+            public URL getVoyagerPlot() {
+                return HelioFileUtil.asURL(baseUrl + "cme_pm_voyag.png");
+            }
 
             @Override
             public List<String> getOutputNames() throws JobExecutionException {
@@ -169,6 +174,8 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
                     return getOuterPlotUrl();
                 case 2:
                     return getInnerPlotUrl();
+                case 3:
+                    return getVoyagerPlot();
                 default:
                     throw new IllegalArgumentException("Unknown output name: " + outputName);
                 }

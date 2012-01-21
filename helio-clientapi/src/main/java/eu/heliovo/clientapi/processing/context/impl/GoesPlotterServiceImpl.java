@@ -66,9 +66,9 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
         tool.setInterface("simple");
         tool.setName("ivo://helio-vo.eu/cxs/goesplotter");
         Input input = new Input();
-        ParameterValue startTime = createParameterValue("START_DATE", DateUtil.toIsoDateString(startDate), false);
+        ParameterValue startTime = createParameterValue("StartDate", DateUtil.toIsoDateString(startDate), false);
         input.getParameter().add(startTime);
-        ParameterValue endTime = createParameterValue("END_DATE", DateUtil.toIsoDateString(endDate), false);
+        ParameterValue endTime = createParameterValue("EndDate", DateUtil.toIsoDateString(endDate), false);
         input.getParameter().add(endTime);
         tool.setInput(input);
         

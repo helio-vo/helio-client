@@ -82,7 +82,7 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
      */
     protected Server getPort(AccessInterface accessInterface) {
         AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
-        Server server = new Server(accessInterface.getUrl().toExternalForm());
+        Server server = new Server(accessInterface.getUrl().toExternalForm(), "taverna", "taverna");
         return server;
     }
     
@@ -107,7 +107,7 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
         }
         Group group;
         try {
-            group = repository.getGroup("helio");
+            group = repository.getGroup("HELIO");
             // lookup workflow
             Workflow workflow = null;
             for (Workflow wf : group.getWorkflows()) {

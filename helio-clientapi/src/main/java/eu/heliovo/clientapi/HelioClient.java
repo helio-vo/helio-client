@@ -11,8 +11,7 @@ import org.apache.log4j.Logger;
 import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.ServiceFactory;
-import eu.heliovo.clientapi.processing.context.ContextServiceFactory;
-import eu.heliovo.clientapi.processing.hps.ProcessingServiceFactory;
+import eu.heliovo.clientapi.processing.ProcessingServiceFactory;
 import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
 import eu.heliovo.clientapi.utils.STILUtils;
@@ -48,9 +47,10 @@ public class HelioClient {
     static {
         factoryMap.put(ServiceCapability.ASYNC_QUERY_SERVICE, AsyncQueryServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.SYNC_QUERY_SERVICE, SyncQueryServiceFactory.getInstance());
-        factoryMap.put(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, ContextServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.LINK_PROVIDER_SERVICE, LinkProviderFactory.getInstance());
+        factoryMap.put(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, ProcessingServiceFactory.getInstance());
         factoryMap.put(ServiceCapability.HELIO_PROCESSING_SERVICE, ProcessingServiceFactory.getInstance());
+        factoryMap.put(ServiceCapability.TAVERNA_SERVER, ProcessingServiceFactory.getInstance());
     }
     
     /**
@@ -96,7 +96,6 @@ public class HelioClient {
                 ServiceCapability.HELIO_PROCESSING_SERVICE, 
                 HelioFileUtil.asURL("http://cagnode58.cs.tcd.ie:8080/helio-hps-server/hpsService?wsdl")));
         
-
         init = true;
     }
     

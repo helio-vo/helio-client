@@ -114,7 +114,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
         final Tool tool = initTool(logRecords);
         final JobIdentifierType jobstepID = getJobstepID();
         
-        String callId = currentAccessInterface.getUrl() + "::execute";
+        String callId = currentAccessInterface.getUrl() + "::init";
         logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
         // setup job
@@ -126,6 +126,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
             }
         }, callId);
 
+        callId = currentAccessInterface.getUrl() + "::execute";
         // start job
         boolean success = AsyncCallUtils.callAndWait(new Callable<Boolean>() {
             @Override

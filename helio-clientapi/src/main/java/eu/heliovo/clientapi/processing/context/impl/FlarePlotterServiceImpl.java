@@ -58,7 +58,7 @@ public class FlarePlotterServiceImpl extends AbstractContextServiceImpl implemen
         tool.setInterface("simple");
         tool.setName("ivo://helio-vo.eu/cxs/flareplotter");
         Input input = new Input();
-        ParameterValue dateParam = createParameterValue("date", DateUtil.toIsoDateString(date), false);
+        ParameterValue dateParam = createParameterValue("Date", DateUtil.toIsoDateString(date), false);
         input.getParameter().add(dateParam);
         tool.setInput(input);
         

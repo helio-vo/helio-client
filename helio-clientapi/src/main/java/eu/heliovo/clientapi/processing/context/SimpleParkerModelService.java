@@ -32,4 +32,16 @@ public interface SimpleParkerModelService extends ProcessingService<UrlProcessin
      */
     public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startDate);
 
+    public abstract void setInner(int inner);
+
+    public abstract int getInner();
+
+    public abstract void setOuter(int outer);
+
+    public abstract int getOuter();
+
+    public abstract void setVelocity(int velocity);
+
+    public abstract int getVelocity();
+
 }

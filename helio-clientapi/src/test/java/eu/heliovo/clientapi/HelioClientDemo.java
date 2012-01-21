@@ -1,9 +1,11 @@
 package eu.heliovo.clientapi;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +22,11 @@ import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
+import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283;
+import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 
@@ -51,24 +56,43 @@ public class HelioClientDemo {
         System.exit(0);
     }
 
+    /**
+     * List of available tasks
+     */
+    private static List<String> config = new ArrayList<String>();
+    
+    static {
+//        config.add("ils");
+//        config.add("icsPat");
+//        config.add("desPlot_Ace");
+//        config.add("desPlot_Sta");
+//        config.add("desPlot_Stb");
+//        config.add("desPlot_Ulysses");
+//        config.add("desPlot_Wind");
+//        config.add("cmePM");
+//        config.add("dumpServices");
+        config.add("taverna2283");
+    }
+    
 
     /**
      * Run the demos.
      */
-    @Test public void run() {
+    public void run() {
         HelioClient helioClient = new HelioClient();
         helioClient.init();
-        if (true) getIls(helioClient);
-        if (true) getIcsPat(helioClient);
-        if (true) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
-        if (true) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
-        if (true) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
-        if (true) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
-        if (true) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
-        if (true) runCmePropagationModel(helioClient);
-        if (true) dumpServices(helioClient);
+        DebugUtils.enableDump();
+        if (config.contains("ils")) getIls(helioClient);
+        if (config.contains("icsPat")) getIcsPat(helioClient);
+        if (config.contains("desPlot_Ace")) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
+        if (config.contains("desPlot_Sta")) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
+        if (config.contains("desPlot_Stb")) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
+        if (config.contains("desPlot_Ulysses")) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
+        if (config.contains("desPlot_Wind")) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
+        if (config.contains("cmePM")) runCmePropagationModel(helioClient);
+        if (config.contains("dumpServices")) dumpServices(helioClient);
+        if (config.contains("taverna2283")) doTaverna2283(helioClient);
     }
-
     
     /**
      * run a propagation model service.
@@ -93,6 +117,31 @@ public class HelioClientDemo {
         System.out.println(resultObject.getInnerPlotUrl());
         System.out.println(resultObject.getOuterPlotUrl());
     }
+    
+    private void doTaverna2283(HelioClient helioClient) {
+        TavernaWorkflow2283 processingService = (TavernaWorkflow2283) 
+                helioClient.getServiceInstance(HelioServiceName.TAVERNA_SERVER, 
+                ServiceCapability.TAVERNA_SERVER, TavernaWorkflow2283.SERVICE_VARIANT);
+            
+            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            cal.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
+            Date startDate =  cal.getTime();
+            cal.set(2010, Calendar.JANUARY, 3, 0, 0, 0);
+            Date endDate =  cal.getTime();
+
+            processingService.setCatalogue1("goes_sxr_flare");
+            processingService.setCatalogue2("yohkoh_hxr_flare");
+            processingService.setStartDate(startDate);
+            processingService.setEndDate(endDate);
+            processingService.setLocationDelta(0.5);
+            processingService.setTimeDelta(10);
+            
+            ProcessingResult<TavernaWorkflow2283ResultObject> result = processingService.execute();
+            TavernaWorkflow2283ResultObject resultObject = result.asResultObject(300, TimeUnit.SECONDS);
+            System.out.println(resultObject.getVOTable());
+        
+    }
+
 
 
     /**

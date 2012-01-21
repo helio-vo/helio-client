@@ -28,6 +28,22 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
      * The start date
      */
     private Date startDate;
+
+    /**
+     * Velocity of the parker spiral
+     */
+    private int velocity = 400;
+
+    /**
+     * ?
+     */
+    private int outer = 0;
+    
+    /**
+     * ?
+     */
+    private int inner = 4;
+    
     /**
      * ID of the parker model
      */
@@ -55,8 +71,14 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
         tool.setInterface("simple");
         tool.setName("ivo://helio-vo.eu/cxs/parkermodel");
         Input input = new Input();
-        ParameterValue startTime = createParameterValue("startDate", DateUtil.toIsoDateString(startDate), false);
-        input.getParameter().add(startTime);
+        ParameterValue startDateVal = createParameterValue("StartDate", DateUtil.toIsoDateString(startDate), false);
+        input.getParameter().add(startDateVal);
+        ParameterValue velocityVal = createParameterValue("Velocity", "" + this.velocity, false);
+        input.getParameter().add(velocityVal);
+        ParameterValue innerVal = createParameterValue("Inner", "" + this.inner, false);
+        input.getParameter().add(innerVal);
+        ParameterValue outerVal = createParameterValue("Outer", "" + this.outer, false);        
+        input.getParameter().add(outerVal);
         tool.setInput(input);
         
         Output output = new Output();
@@ -88,4 +110,36 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
+
+    @Override
+    public int getVelocity() {
+        return velocity;
+    }
+
+    @Override
+    public void setVelocity(int velocity) {
+        this.velocity = velocity;
+    }
+
+    @Override
+    public int getOuter() {
+        return outer;
+    }
+
+    @Override
+    public void setOuter(int outer) {
+        this.outer = outer;
+    }
+
+    @Override
+    public int getInner() {
+        return inner;
+    }
+
+    @Override
+    public void setInner(int inner) {
+        this.inner = inner;
+    }
+    
+    
 }

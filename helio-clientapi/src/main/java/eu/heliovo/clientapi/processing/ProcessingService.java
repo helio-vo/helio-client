@@ -1,7 +1,6 @@
 package eu.heliovo.clientapi.processing;
 
 import eu.heliovo.clientapi.model.service.HelioService;
-import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**

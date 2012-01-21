@@ -27,10 +27,10 @@ import javax.swing.WindowConstants;
 import org.apache.commons.io.FileUtils;
 
 import eu.heliovo.clientapi.HelioClient;
+import eu.heliovo.clientapi.processing.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
-import eu.heliovo.clientapi.processing.hps.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
@@ -101,6 +101,7 @@ public class ProcessingClientDemo {
 
                             displayImage("Inner Plot", resultObject.getInnerPlotUrl(), logs);
                             displayImage("Outer Plot", resultObject.getOuterPlotUrl(), logs);
+                            displayImage("Voyager Plot", resultObject.getVoyagerPlot(), logs);
                         }
                         return null;
                     } catch (Exception e) {

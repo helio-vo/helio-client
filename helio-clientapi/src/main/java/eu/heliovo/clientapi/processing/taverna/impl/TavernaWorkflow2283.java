@@ -5,21 +5,28 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import uk.ac.starlink.table.StarTable;
+import uk.ac.starlink.votable.DataFormat;
 import uk.org.taverna.ns._2010.xml.server.soap.NoDirectoryEntryException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.taverna.AbstractTavernaServiceImpl;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
+import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.tavernaserver.Run;
 
@@ -42,24 +49,56 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
     public static final String SERVICE_VARIANT = HelioServiceName.TAVERNA_SERVER.getServiceId() + "/" + WORKFLOW_ID;
 
     /**
+     * The first catalog
+     */
+    private String catalogue1;
+    
+    /**
+     * The second catalog
+     */
+    private String catalogue2;    
+
+    /**
+     * time_start;  //time period - start Format: yyyy-mm-ddThh:MM:ss
+     */
+    private Date startDate;
+    
+    /**
+     *  time_end;    //time period - end Format: yyyy-mm-ddThh:MM:ss
+     */
+    private Date endDate;
+    
+    /**
+     * time_delta //time delta by which the time interval gets enlarged delta in minutes (integer)
+     */
+    private int timeDelta;  
+    
+    /**
+     * location_delta //Search radius around which an event is thought to come from the same location (float)
+     */
+    private double locationDelta;   
+
+    /**
      * Create the Taverna workflow instance
      * @param myExperimentInterface the myExperiment interface.
      * @param tavernaInterfaces the Taverna Server instances to use.
      */
-    public TavernaWorkflow2283(AccessInterface myExperimentInterface, AccessInterface[] tavernaInterfaces) {
-        super(HelioServiceName.TAVERNA_SERVER, null, myExperimentInterface, tavernaInterfaces);
+    public TavernaWorkflow2283(AccessInterface[] tavernaInterfaces) {
+        super(HelioServiceName.TAVERNA_SERVER, null, getMyExperimentInterface(), tavernaInterfaces);
     }
 
+    /**
+     * Get the my experiment interface. This is hard-coded as the Workflow exists only there.
+     * @return the myExperimentInterface
+     */
+    private static AccessInterface getMyExperimentInterface() {
+        return new AccessInterfaceImpl(AccessInterfaceType.REST_SERVICE, ServiceCapability.MYEXPERIMENT_REGISTRY, HelioFileUtil.asURL("http://www.myexperiment.org/search.xml"));
+    }
 
     @Override
     protected String getWorkflowId() {
         return WORKFLOW_ID;
     }
-
-    @Override
-    public void setInputs(Map<String, Object> inputs) {
-    }
-    
     
     @Override
     public TavernaWorkflow2283ResultObject createResultObject(Run run) {
@@ -67,7 +106,54 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
         return resultObject;
     }
     
-    
+    public String getCatalogue1() {
+        return catalogue1;
+    }
+
+    public void setCatalogue1(String catalogue1) {
+        this.catalogue1 = catalogue1;
+    }
+
+    public String getCatalogue2() {
+        return catalogue2;
+    }
+
+    public void setCatalogue2(String catalogue2) {
+        this.catalogue2 = catalogue2;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public int getTimeDelta() {
+        return timeDelta;
+    }
+
+    public void setTimeDelta(int timeDelta) {
+        this.timeDelta = timeDelta;
+    }
+
+    public double getLocationDelta() {
+        return locationDelta;
+    }
+
+    public void setLocationDelta(double locationDelta) {
+        this.locationDelta = locationDelta;
+    }
+
     /**
      * Provide access to the results.
      * @author MarcoSoldati
@@ -142,6 +228,10 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
             }
             ZipEntry votable = zip.getEntry("VOTable");
             try {
+                StarTable[] starTables = STILUtils.read(zip.getInputStream(votable));
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.MONTH, 1);
+                STILUtils.persist(cal.getTime(), DataFormat.TABLEDATA, starTables);
                 return zip.getInputStream(votable);
             } catch (IOException e) {
                 throw new RuntimeException("Internal Error: unable to read entry from previously stored ZIP-file: " + e.getMessage(), e);

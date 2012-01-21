@@ -1,7 +1,5 @@
 package eu.heliovo.clientapi.processing.taverna;
 
-import java.util.Map;
-
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
 
@@ -22,7 +20,7 @@ public interface TavernaService <T extends ProcessingResultObject>  extends Proc
      * Set a map of inputs, the first input denotes the 
      * @param inputs
      */
-    public void setInputs(Map<String, Object> inputs);
+    //public void setInputs(Map<String, Object> inputs);
         
     /**
      * Get the service result
