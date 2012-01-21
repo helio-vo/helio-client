@@ -155,7 +155,7 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
             }
             
             @Override
-            public URL getVoyagerPlot() {
+            public URL getVoyagerPlotUrl() {
                 return HelioFileUtil.asURL(baseUrl + "cme_pm_voyag.png");
             }
 
@@ -175,7 +175,7 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
                 case 2:
                     return getInnerPlotUrl();
                 case 3:
-                    return getVoyagerPlot();
+                    return getVoyagerPlotUrl();
                 default:
                     throw new IllegalArgumentException("Unknown output name: " + outputName);
                 }

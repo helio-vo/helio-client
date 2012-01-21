@@ -109,7 +109,7 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
          * Get the plot for voyager
          * @return the voyager plot
          */
-        public URL getVoyagerPlot();  
+        public URL getVoyagerPlotUrl();  
 
         /**
          * URL to the VOTable

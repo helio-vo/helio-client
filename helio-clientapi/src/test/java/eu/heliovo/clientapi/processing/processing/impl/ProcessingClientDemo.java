@@ -101,7 +101,7 @@ public class ProcessingClientDemo {
 
                             displayImage("Inner Plot", resultObject.getInnerPlotUrl(), logs);
                             displayImage("Outer Plot", resultObject.getOuterPlotUrl(), logs);
-                            displayImage("Voyager Plot", resultObject.getVoyagerPlot(), logs);
+                            displayImage("Voyager Plot", resultObject.getVoyagerPlotUrl(), logs);
                         }
                         return null;
                     } catch (Exception e) {
