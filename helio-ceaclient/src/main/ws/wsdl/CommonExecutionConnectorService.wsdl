@@ -663,7 +663,7 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
       <wsdl:port binding="impl:CommonExecutionConnectorServiceSoapBinding" name="CommonExecutionConnectorService">
 
-         <wsdlsoap:address location="http://msslkz.mssl.ucl.ac.uk/helio-cea/services/CommonExecutionConnectorService"/>
+         <wsdlsoap:address location="http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"/>
 
       </wsdl:port>
 
