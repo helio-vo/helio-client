@@ -37,7 +37,7 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     /**
      * ID of the goes plotter
      */
-    public static final String GOES_PLOTTER = "ivo://helio-vo.eu/cxs/goesplotter";
+    public static final String SERVICE_VARIANT = "ivo://helio-vo.eu/cxs/goesplotter";
     
     /**
      * A plotting service for goes.

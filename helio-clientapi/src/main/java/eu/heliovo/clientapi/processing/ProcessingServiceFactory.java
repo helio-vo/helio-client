@@ -66,9 +66,9 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
 	 */
 	public ProcessingServiceFactory() {
 	    // register context plots
-	    serviceVariantRegistry.register(HelioServiceName.CXS, GoesPlotterServiceImpl.GOES_PLOTTER, GoesPlotterServiceImpl.class);
-	    serviceVariantRegistry.register(HelioServiceName.CXS, FlarePlotterServiceImpl.FLARE_PLOTTER, FlarePlotterServiceImpl.class);
-	    serviceVariantRegistry.register(HelioServiceName.CXS, SimpleParkerModelServiceImpl.PARKER_MODEL, SimpleParkerModelServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.CXS, GoesPlotterServiceImpl.SERVICE_VARIANT, GoesPlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.CXS, FlarePlotterServiceImpl.SERVICE_VARIANT, FlarePlotterServiceImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.CXS, SimpleParkerModelServiceImpl.SERVICE_VARIANT, SimpleParkerModelServiceImpl.class);
 	    
 	    // register des plots
 	    serviceVariantRegistry.register(HelioServiceName.DES, AcePlotterServiceImpl.SERVICE_VARIANT, AcePlotterServiceImpl.class);
@@ -97,7 +97,7 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public GoesPlotterService getGoesPlotterService(AccessInterface ... accessInterfaces) {
-	    return (GoesPlotterService) getProcessingService(HelioServiceName.CXS, GoesPlotterServiceImpl.GOES_PLOTTER, accessInterfaces);
+	    return (GoesPlotterService) getProcessingService(HelioServiceName.CXS, GoesPlotterServiceImpl.SERVICE_VARIANT, accessInterfaces);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public FlarePlotterService getFlarePlotterService(AccessInterface ... accessInterfaces) {
-	    return (FlarePlotterService) getProcessingService(HelioServiceName.CXS, FlarePlotterServiceImpl.FLARE_PLOTTER, accessInterfaces);
+	    return (FlarePlotterService) getProcessingService(HelioServiceName.CXS, FlarePlotterServiceImpl.SERVICE_VARIANT, accessInterfaces);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
 	 * @return the client stub to access the plotter.
 	 */
 	public SimpleParkerModelService getSimpleParkerModelService(AccessInterface ... accessInterfaces) {
-	    return (SimpleParkerModelService) getProcessingService(HelioServiceName.CXS, SimpleParkerModelServiceImpl.PARKER_MODEL, accessInterfaces);
+	    return (SimpleParkerModelService) getProcessingService(HelioServiceName.CXS, SimpleParkerModelServiceImpl.SERVICE_VARIANT, accessInterfaces);
 	}
 	
     /**

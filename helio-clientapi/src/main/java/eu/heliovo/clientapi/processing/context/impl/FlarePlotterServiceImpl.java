@@ -31,7 +31,7 @@ public class FlarePlotterServiceImpl extends AbstractContextServiceImpl implemen
     /**
      * ID of the flare plotter
      */
-    public static final String FLARE_PLOTTER = "ivo://helio-vo.eu/cxs/flareplotter";
+    public static final String SERVICE_VARIANT = "ivo://helio-vo.eu/cxs/flareplotter";
     
     /**
      * A plotter for  flares.

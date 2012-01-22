@@ -24,6 +24,12 @@ import eu.heliovo.shared.util.DateUtil;
  *
  */
 public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl implements SimpleParkerModelService {
+    
+    /**
+     * ID of the parker model
+     */
+    public static final String SERVICE_VARIANT = "ivo://helio-vo.eu/cxs/parkermodel";
+    
     /**
      * The start date
      */
@@ -43,12 +49,6 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
      * ?
      */
     private int inner = 4;
-    
-    /**
-     * ID of the parker model
-     */
-    public static final String PARKER_MODEL = "ivo://helio-vo.eu/cxs/parkermodel";
-    
     /**
      * The parker model plotter.
      * @param accessInterfaces
