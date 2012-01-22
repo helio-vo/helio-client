@@ -33,7 +33,7 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     /**
      * The start date
      */
-    private Date startDate;
+    private Date startTime;
 
     /**
      * Velocity of the parker spiral
@@ -58,20 +58,20 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     }
     
     @Override
-    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startDate) {
-        this.startDate = startDate;
+    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startTime) {
+        this.startTime = startTime;
         return execute();
     }
 
     @Override
     protected Tool initTool(List<LogRecord> logRecords) {
-        AssertUtil.assertArgumentNotNull(startDate, "startDate");
+        AssertUtil.assertArgumentNotNull(startTime, "startTime");
         
         Tool tool = new Tool();
         tool.setInterface("simple");
         tool.setName("ivo://helio-vo.eu/cxs/parkermodel");
         Input input = new Input();
-        ParameterValue startDateVal = createParameterValue("StartDate", DateUtil.toIsoDateString(startDate), false);
+        ParameterValue startDateVal = createParameterValue("StartDate", DateUtil.toIsoDateString(startTime), false);
         input.getParameter().add(startDateVal);
         ParameterValue velocityVal = createParameterValue("Velocity", "" + this.velocity, false);
         input.getParameter().add(velocityVal);
@@ -102,13 +102,13 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     }
     
     @Override
-    public Date getStartDate() {
-        return startDate;
+    public Date getStartTime() {
+        return startTime;
     }
 
     @Override
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     @Override

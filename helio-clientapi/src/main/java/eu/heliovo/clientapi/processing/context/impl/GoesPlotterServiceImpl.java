@@ -27,12 +27,12 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     /**
      * The start date
      */
-    private Date startDate;
+    private Date startTime;
     
     /**
      * The end date
      */
-    private Date endDate;
+    private Date endTime;
 
     /**
      * ID of the goes plotter
@@ -51,25 +51,25 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
      * @see eu.heliovo.clientapi.processing.context.impl.GoesPlotClient#goesPlot(java.lang.String, java.lang.String)
      */
     @Override
-    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startDate, Date endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
+    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startTime, Date endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
         return execute();
     }
 
     @Override
     protected Tool initTool(List<LogRecord> logRecords) {
-        AssertUtil.assertArgumentNotNull(startDate, "startDate");
-        AssertUtil.assertArgumentNotNull(endDate, "endDate");
+        AssertUtil.assertArgumentNotNull(startTime, "startTime");
+        AssertUtil.assertArgumentNotNull(endTime, "endTime");
         
         Tool tool = new Tool();
         tool.setInterface("simple");
         tool.setName("ivo://helio-vo.eu/cxs/goesplotter");
         Input input = new Input();
-        ParameterValue startTime = createParameterValue("StartDate", DateUtil.toIsoDateString(startDate), false);
-        input.getParameter().add(startTime);
-        ParameterValue endTime = createParameterValue("EndDate", DateUtil.toIsoDateString(endDate), false);
-        input.getParameter().add(endTime);
+        ParameterValue startTimeVal = createParameterValue("StartDate", DateUtil.toIsoDateString(startTime), false);
+        input.getParameter().add(startTimeVal);
+        ParameterValue endTimeVal = createParameterValue("EndDate", DateUtil.toIsoDateString(endTime), false);
+        input.getParameter().add(endTimeVal);
         tool.setInput(input);
         
         Output output = new Output();
@@ -95,22 +95,22 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     }
     
     @Override
-    public Date getStartDate() {
-        return startDate;
+    public Date getStartTime() {
+        return startTime;
     }
 
     @Override
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     @Override
-    public Date getEndDate() {
-        return endDate;
+    public Date getEndTime() {
+        return endTime;
     }
 
     @Override
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }

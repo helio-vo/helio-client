@@ -17,20 +17,20 @@ public interface SimpleParkerModelService extends ProcessingService<UrlProcessin
      * Get the start date to use
      * @return the start date
      */
-    public Date getStartDate(); 
+    public Date getStartTime(); 
 
     /**
      * Set the start date.
-     * @param startDate the date
+     * @param startTime the date
      */
-    public void setStartDate(Date startDate);
+    public void setStartTime(Date startTime);
     
     /**
      * Convenience method to create a flare plot. This method can be used instead of calling setter methods and then execute.
      * @param date the date of the flare.
      * @return an object to access the result.
      */
-    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startDate);
+    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startTime);
 
     public abstract void setInner(int inner);
 

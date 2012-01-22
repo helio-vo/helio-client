@@ -61,12 +61,12 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
     /**
      * time_start;  //time period - start Format: yyyy-mm-ddThh:MM:ss
      */
-    private Date startDate;
+    private Date startTime;
     
     /**
      *  time_end;    //time period - end Format: yyyy-mm-ddThh:MM:ss
      */
-    private Date endDate;
+    private Date endTime;
     
     /**
      * time_delta //time delta by which the time interval gets enlarged delta in minutes (integer)
@@ -122,20 +122,20 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
         this.catalogue2 = catalogue2;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Date getEndTime() {
+        return endTime;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     public int getTimeDelta() {

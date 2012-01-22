@@ -56,12 +56,12 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
     /**
      * The start date of the date range
      */
-    private Date startDate;
+    private Date startTime;
     
     /**
      * The end date of the time range.
      */
-    private Date endDate;
+    private Date endTime;
     
     /**
      * The mission
@@ -69,23 +69,23 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
     private final String mission;
     
     @Override
-    public Date getStartDate() {
-        return startDate;
+    public Date getStartTime() {
+        return startTime;
     }
 
     @Override
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     @Override
-    public Date getEndDate() {
-        return endDate;
+    public Date getEndTime() {
+        return endTime;
     }
 
     @Override
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
     
     @Override
@@ -94,17 +94,17 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
 
         List<LogRecord> logRecords = new ArrayList<LogRecord>();
         
-        String callId =  "desplot:" + mission + ":" + this.startDate + ":" + this.endDate + "::execute";
+        String callId =  "desplot:" + mission + ":" + this.startTime + ":" + this.endTime + "::execute";
         logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
                 
-        ProcessingResult<UrlProcessingResultObject> processingResult = new ProcessingResultImpl(this.startDate, this.endDate, mission, callId, jobStartTime, logRecords, accessInterfaces);
+        ProcessingResult<UrlProcessingResultObject> processingResult = new ProcessingResultImpl(this.startTime, this.endTime, mission, callId, jobStartTime, logRecords, accessInterfaces);
         return processingResult;
     }
     
     @Override
     public ProcessingResult<UrlProcessingResultObject> desPlot(Date startTime, Date endTime) {
-        setStartDate(startTime);
-        setEndDate(endTime);
+        setStartTime(startTime);
+        setEndTime(endTime);
         return execute();
     }
 

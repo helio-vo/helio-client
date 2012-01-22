@@ -123,12 +123,12 @@ public class ContextClientDemo {
                             GoesPlotterService goesPlotterService = factory.getGoesPlotterService(ai);
                             cal.set(2003, Calendar.OCTOBER, 1, 0, 0, 0);
                             cal.add(Calendar.MONTH, j);
-                            Date startDate =  cal.getTime();
+                            Date startTime =  cal.getTime();
                             cal.set(2003, Calendar.NOVEMBER, 2, 03, 59, 59);
                             cal.add(Calendar.MONTH, j);
-                            Date endDate =  cal.getTime();
-                            body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "-" + SimpleDateFormat.getDateInstance().format(endDate) + "</h1>\n");
-                            ProcessingResult<UrlProcessingResultObject> result = goesPlotterService.goesPlot(startDate, endDate);
+                            Date endTime =  cal.getTime();
+                            body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startTime) + "-" + SimpleDateFormat.getDateInstance().format(endTime) + "</h1>\n");
+                            ProcessingResult<UrlProcessingResultObject> result = goesPlotterService.goesPlot(startTime, endTime);
                             UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
                             URL url = resultObject.getUrl();
                             body.append("<p>").append(url);
@@ -143,9 +143,9 @@ public class ContextClientDemo {
                             SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService(ai);
                             cal.set(2000, Calendar.FEBRUARY, 1, 9, 0, 0);
                             cal.add(Calendar.MONTH, j);
-                            Date startDate =  cal.getTime();
-                            body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
-                            ProcessingResult<UrlProcessingResultObject> result = parkerModelService.parkerModel(startDate);
+                            Date startTime =  cal.getTime();
+                            body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startTime) + "</h1>\n");
+                            ProcessingResult<UrlProcessingResultObject> result = parkerModelService.parkerModel(startTime);
                             UrlProcessingResultObject resultObject;
                             try {
                                  resultObject = result.asResultObject(60, TimeUnit.SECONDS);
@@ -217,12 +217,12 @@ public class ContextClientDemo {
             Calendar cal = Calendar.getInstance();
             cal.set(2007, Calendar.JANUARY, 1, 0, 0, 0);
             cal.add(Calendar.MONTH, counter);
-            Date startDate =  cal.getTime();
+            Date startTime =  cal.getTime();
             cal.set(2007, Calendar.JANUARY, 3, 0, 0, 0);
             cal.add(Calendar.MONTH, counter);
-            Date endDate =  cal.getTime();
-            body.append("<h1>" + mission + " plot for " + SimpleDateFormat.getDateInstance().format(startDate) + "</h1>\n");
-            result = desPlotter.desPlot(startDate, endDate);
+            Date endTime =  cal.getTime();
+            body.append("<h1>" + mission + " plot for " + SimpleDateFormat.getDateInstance().format(startTime) + "</h1>\n");
+            result = desPlotter.desPlot(startTime, endTime);
             UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
             URL url = resultObject.getUrl();
             body.append("<p>").append(url);

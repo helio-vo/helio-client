@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
@@ -125,14 +123,14 @@ public class HelioClientDemo {
             
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             cal.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
-            Date startDate =  cal.getTime();
+            Date startTime =  cal.getTime();
             cal.set(2010, Calendar.JANUARY, 3, 0, 0, 0);
-            Date endDate =  cal.getTime();
+            Date endTime =  cal.getTime();
 
             processingService.setCatalogue1("goes_sxr_flare");
             processingService.setCatalogue2("yohkoh_hxr_flare");
-            processingService.setStartDate(startDate);
-            processingService.setEndDate(endDate);
+            processingService.setStartTime(startTime);
+            processingService.setEndTime(endTime);
             processingService.setLocationDelta(0.5);
             processingService.setTimeDelta(10);
             
@@ -153,11 +151,11 @@ public class HelioClientDemo {
         DesPlotterService desPlotter = (DesPlotterService)helioClient.getServiceInstance(HelioServiceName.DES, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, serviceVariant);
         Calendar cal = Calendar.getInstance();
         cal.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
-        Date startDate =  cal.getTime();
+        Date startTime =  cal.getTime();
         cal.set(2010, Calendar.JANUARY, 3, 0, 0, 0);
-        Date endDate =  cal.getTime();
+        Date endTime =  cal.getTime();
 
-        ProcessingResult<UrlProcessingResultObject> result = desPlotter.desPlot(startDate, endDate);
+        ProcessingResult<UrlProcessingResultObject> result = desPlotter.desPlot(startTime, endTime);
         UrlProcessingResultObject resultObject = result.asResultObject(1, TimeUnit.MINUTES);
         URL url = resultObject.getUrl();
         System.out.println(url);

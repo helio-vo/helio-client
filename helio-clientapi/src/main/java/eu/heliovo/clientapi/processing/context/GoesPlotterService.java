@@ -17,32 +17,32 @@ public interface GoesPlotterService extends ProcessingService<UrlProcessingResul
      * Get the start date to use
      * @return the start date
      */
-    public Date getStartDate(); 
+    public Date getStartTime(); 
 
     /**
      * Set the start date.
-     * @param startDate the start date
+     * @param startTime the start date
      */
-    public void setStartDate(Date startDate);
+    public void setStartTime(Date startTime);
 
     /**
      * Get the end date
      * @return the end date
      */
-    public Date getEndDate();
+    public Date getEndTime();
 
     /**
      * Set the end date
-     * @param endDate the end date.
+     * @param endTime the end date.
      */
-    public void setEndDate(Date endDate);
+    public void setEndTime(Date endTime);
     
     /**
      * Convenience method to create a goes plot. This method can be used instead of calling setter methods and then execute.
-     * @param startDate the start date.
-     * @param endDate the end date.
+     * @param startTime the start date.
+     * @param endTime the end date.
      * @return an object to access the result.
      */
-    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startDate, Date endDate);
+    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startTime, Date endTime);
 
 }
