@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
 
 import org.apache.log4j.Logger;
 
@@ -174,6 +175,12 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
     		    HelioQueryResult helioQueryResult = createQueryResult(resultId, port, callId, jobStartTime, logRecords);
 
     		    return helioQueryResult;
+    		} catch (WebServiceException e) {
+    		    // get port fails
+    		    String msg = "Timeout occurred. Trying to failover.";
+                logRecords.add(new LogRecord(Level.INFO, msg));
+                _LOGGER.info(msg);
+                loadBalancer.updateAccessTime(bestAccessInterface, -1);
     		} catch (JobExecutionException e) { // handle timeout
     		    if (e.getCause() instanceof TimeoutException) {
     		        String msg = "Timeout occurred. Trying to failover.";
