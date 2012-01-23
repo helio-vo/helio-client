@@ -130,7 +130,6 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
 		while (true) {
     		// get the end point
     		final AccessInterface bestAccessInterface = getBestAccessInterface();
-    		final LongHelioQueryService port = getPort(bestAccessInterface);
     		if (!triedInterfaces.add(bestAccessInterface)) {
     		    throw new JobExecutionException("All registered remote services are unavailable. Tried to access: " + triedInterfaces.toString());
     		};
@@ -155,6 +154,7 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
 
     		// do the call
     		try {
+    		    final LongHelioQueryService port = getPort(bestAccessInterface);
     		    // wait for result
     		    String resultId = AsyncCallUtils.callAndWait(new Callable<String>() {
     		        @Override
