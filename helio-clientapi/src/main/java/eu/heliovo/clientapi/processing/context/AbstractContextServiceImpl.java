@@ -394,9 +394,9 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
                 }
                 message.append(status.getContent());
             }
-            if (message.length() > 0) {
-                userLogs.add(new LogRecord(Level.INFO, "Status message returned by service: " + message));
-            }
+//            if (message.length() > 0) {
+//                userLogs.add(new LogRecord(Level.INFO, "Status message returned by service: " + message));
+//            }
             
             if (_LOGGER.isTraceEnabled()) {
                 _LOGGER.trace("Current phase is " + phase);
