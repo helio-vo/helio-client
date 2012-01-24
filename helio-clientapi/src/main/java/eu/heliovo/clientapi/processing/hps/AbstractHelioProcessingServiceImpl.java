@@ -205,39 +205,6 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
             throw new JobExecutionException("Selected value for parameter " + paramName + " is not part of value domain: " + valueDomain);
         }
     }
-
-    /**
-     * Compute the location of the result file. This is kind of a hack to fix a problem identified with the 
-     * current astrogrid cea implementation that cannot work without a explicit storage provider.
-     * The workaround was to store the results in the local file system and to access them through a predefined URL.
-     * This does not match the SOAP interface, (but it does what it should).
-     * @param accessInterface the current interface.
-     * @param executionId the id of the current request.
-     * @param fileName the name of the file to load.
-     * @return an URL object pointing to the result. This URL will not be valid before successful execution of the job.
-     */
-    protected URL computeFileLocation(AccessInterface accessInterface, String executionId, String fileName) {
-        URL accessUrl = accessInterface.getUrl();
-        StringBuilder sb = new StringBuilder();
-        sb.append(accessUrl.getProtocol())
-          .append("://")
-          .append(accessUrl.getHost());
-        if (accessUrl.getPort() > 0 && accessUrl.getPort() != 80) {
-            sb.append(":").append(accessUrl.getPort());
-        }
-        sb.append("/");
-        int slash = accessUrl.getPath().indexOf('/', 1);
-        if (slash >= 0) {
-            sb.append(accessUrl.getPath().substring(0, slash));
-        }
-        sb.append("/jobs/")
-          .append(executionId)
-          .append('/')
-          .append(fileName);
-
-        URL url = HelioFileUtil.asURL(sb.toString());
-        return url;
-    }
     
     /**
      * ProcessingResult object that handles results from the HPS.

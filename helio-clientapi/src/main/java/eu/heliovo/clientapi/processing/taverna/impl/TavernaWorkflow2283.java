@@ -1,26 +1,20 @@
 package eu.heliovo.clientapi.processing.taverna.impl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
-import uk.ac.starlink.table.StarTable;
-import uk.ac.starlink.votable.DataFormat;
-import uk.org.taverna.ns._2010.xml.server.soap.NoDirectoryEntryException;
+import uk.org.taverna.ns._2010.xml.server.soap.BadStateChangeException;
+import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.taverna.AbstractTavernaServiceImpl;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
-import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -28,6 +22,7 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.DateUtil;
 import eu.heliovo.tavernaserver.Run;
 
 /**
@@ -153,6 +148,38 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
     public void setLocationDelta(double locationDelta) {
         this.locationDelta = locationDelta;
     }
+    
+    @Override
+    protected void initParameters(Run run, List<LogRecord> logRecords) throws JobExecutionException {
+        List<String> logs = new ArrayList<String>(6);
+        logs.add(initParameter(run, "catalogue1", getCatalogue1()));
+        logs.add(initParameter(run, "catalogue2", getCatalogue2()));
+        logs.add(initParameter(run, "time_start", DateUtil.toIsoDateString(getStartTime())));
+        logs.add(initParameter(run, "time_end", DateUtil.toIsoDateString(getEndTime())));
+        logs.add(initParameter(run, "time_delta", ""+getTimeDelta()));
+        logs.add(initParameter(run, "location_delta", ""+getLocationDelta()));
+        logRecords.add(new LogRecord(Level.FINE, "Parameter map: " + logs.toString()));
+    }
+    
+    /**
+     * Init a single parameter.
+     * @param run the current run.
+     * @param key the key.
+     * @param value the value.
+     * @return the string as returned to the caller.
+     */
+    private String initParameter(Run run, String key, String value) {
+        try {
+            run.setInput(key, value, Charset.defaultCharset());
+            return key + "=" + value;
+        } catch (NoUpdateException e) {
+            throw new JobExecutionException("NoUpdateException while setting parameter '" + key + "': " + e.getMessage(), e);
+        } catch (UnknownRunException e) {
+            throw new JobExecutionException("UnknownRunException while setting parameter '" + key + "': " + e.getMessage(), e);
+        } catch (BadStateChangeException e) {
+            throw new JobExecutionException("BadStateChangeException while setting parameter '" + key + "': " + e.getMessage(), e);
+        }        
+    }
 
     /**
      * Provide access to the results.
@@ -163,41 +190,23 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
         /**
          * The list of outputs for this workflow
          */
-        private static final List<String> OUTPUT_NAMES = Collections.singletonList("VOTable");
+        private static final List<String> OUTPUT_NAMES = Collections.singletonList("votable_url");
 
         /**
-         * The ZIP file that contains the result of this workflow run.
+         * Result URL
          */
-        private final File zipFile;
+        private final URL voTableUrl;
+        
         
         /**
          * Create the result object with a pointer to the run
          * @param run the run.
          */
         public TavernaWorkflow2283ResultObject(Run run) {
-            // get the result of the run
-            byte[] zip;
-            try {
-                zip = run.getOutputZip();
-            } catch (NoDirectoryEntryException e) {
-                throw new RuntimeException("Internal Error: unable to retrieve results: " + e.getMessage(), e);
-            } catch (UnknownRunException e) {
-                throw new RuntimeException("Internal Error: unable to retrieve results: " + e.getMessage(), e);
-            }
+            // compute result URL
             
-            File tavernaTmp = HelioFileUtil.getHelioTempDir("taverna");
-            zipFile = new File(tavernaTmp, run.getId());
-            
-            FileOutputStream fos;
-            try {
-                fos = new FileOutputStream(zipFile);
-                fos.write(zip);
-                fos.close();
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException("Internal Error: unable to create target ZIP " + zipFile.getAbsolutePath() + ". Cause: " + e.getMessage(), e);
-            } catch (IOException e) {
-                throw new RuntimeException("Internal Error: unable to create target ZIP: " + e.getMessage(), e);
-            }
+            // FIXME: hardcoded!
+            voTableUrl = HelioFileUtil.asURL("https://eric.rcs.manchester.ac.uk:8443/taverna-server-2/rest/runs/" + run.getId() + "/wd/out/VOTable");
         }
 
         @Override
@@ -208,7 +217,7 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
         @Override
         public Object getOutput(String outputName) throws JobExecutionException {
             if (OUTPUT_NAMES.get(0).equals(outputName)) {
-                return getVOTable();
+                return getVoTableUrl();
             }
             return null;
         }
@@ -217,25 +226,8 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
          * Get the URL pointing to the rmeote VOTable.
          * @return the VOTable as string.
          */
-        public InputStream getVOTable() {
-            ZipFile zip;
-            try {
-                zip = new ZipFile(zipFile);
-            } catch (ZipException e) {
-                throw new RuntimeException("Internal Error: unable to read previously stored ZIP-file: " + e.getMessage(), e);
-            } catch (IOException e) {
-                throw new RuntimeException("Internal Error: unable to read previously stored ZIP-file: " + e.getMessage(), e);
-            }
-            ZipEntry votable = zip.getEntry("VOTable");
-            try {
-                StarTable[] starTables = STILUtils.read(zip.getInputStream(votable));
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.MONTH, 1);
-                STILUtils.persist(cal.getTime(), DataFormat.TABLEDATA, starTables);
-                return zip.getInputStream(votable);
-            } catch (IOException e) {
-                throw new RuntimeException("Internal Error: unable to read entry from previously stored ZIP-file: " + e.getMessage(), e);
-            }
+        public URL getVoTableUrl() {
+            return voTableUrl;
         }
     }
 }

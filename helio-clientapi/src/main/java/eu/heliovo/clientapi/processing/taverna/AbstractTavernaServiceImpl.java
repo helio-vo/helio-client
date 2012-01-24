@@ -2,6 +2,7 @@ package eu.heliovo.clientapi.processing.taverna;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import uk.org.taverna.ns._2010.xml.server.Status;
+import uk.org.taverna.ns._2010.xml.server.soap.BadStateChangeException;
+import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.processing.ProcessingResult;
@@ -152,10 +155,21 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
             throw new JobExecutionException("Remote job did return 'null' as execution ID for  call: " + callId);
         }
         
+        // add params
+        initParameters(run, logRecords);
+        
+        logRecords.add(new LogRecord(Level.INFO, "Starting workflow with id " + run.getId()));
         ProcessingResult<T> processingResult = new ProcessingResultImpl<T>(run, this, callId, jobStartTime, logRecords);
         
         return processingResult; 
     }
+
+    /**
+     * Initialize the run with the parameters of this run.
+     * @param run the run
+     * @param logRecords user logs for feedback.
+     */
+    protected abstract void initParameters(Run run, List<LogRecord> logRecords) throws JobExecutionException;
 
     /* (non-Javadoc)
      * @see eu.heliovo.clientapi.processing.taverna.ResultObjectFactory#createResultObject(eu.heliovo.registryclient.AccessInterface, eu.heliovo.tavernaserver.Run)
@@ -170,7 +184,7 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
      * @param <T> Type of the result object returned by this ProcessingResult.
      * 
      */
-    static class ProcessingResultImpl<T extends ProcessingResultObject> implements ProcessingResult<T> {
+    public static class ProcessingResultImpl<T extends ProcessingResultObject> implements ProcessingResult<T> {
         /**
          * The logger instance
          */
@@ -246,6 +260,17 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
             this.jobStartTime = jobStartTime;
             this.phase = Phase.QUEUED;
             this.userLogs.addAll(logRecords);
+            
+            // start process
+            try {
+                run.start();
+            } catch (UnknownRunException e) {
+                throw new JobExecutionException("Internal Error: UnknownRunException: " + e.getMessage(), e);
+            } catch (NoUpdateException e) {
+                throw new JobExecutionException("Internal Error: NoUpdateException: " + e.getMessage(), e);
+            } catch (BadStateChangeException e) {
+                throw new JobExecutionException("Internal Error: BadStateChangeException: " + e.getMessage(), e);
+            }
         }
             
         @Override
@@ -284,8 +309,13 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
             
             if (jobEndTime != 0) {
                 userLogs.add(new LogRecord(Level.INFO, "Taverna workflow terminated in " + MessageUtils.formatSeconds(getExecutionDuration()) + " with status '" + phase + "'"));
+                addLog(run, "Standard out", "stdout");
+                addLog(run, "Standard Error", "stderr");
+                addLog(run, "Exit code", "exitcode");
+                addLog(run, "Usage Record", "usageRecord");
+                addDirectoryLog(run, "Directory");
             }
-            
+        
             if (_LOGGER.isTraceEnabled()) {
                 _LOGGER.trace("Current phase is " + phase);
             }
@@ -293,7 +323,30 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
             return phase;
         }
         
-        
+        private void addDirectoryLog(Run run2, String string) {
+            try {
+                Collection<String> dir = run.listDirectory("out");
+                userLogs.add(new LogRecord(Level.FINE, "Output directory: " + dir.toString()));
+            } catch (Exception e) {
+                _LOGGER.info("Unable to list result directory: " + e.getMessage(), e);
+            }
+        }
+
+        /**
+         * Add a record to the user logs for all return types.
+         * @param run the run.
+         * @param title the title to add.
+         * @param property the property to use.
+         */
+        private void addLog(Run run, String title, String property) {
+            try {
+                String log = run.getListener("io").getProperty(property);
+                userLogs.add(new LogRecord(Level.FINE, title + ":\n" + log.trim()));
+            } catch (Exception e) {
+                _LOGGER.info("Unable to read run.listener('io').property('" + property + "'): " + e.getMessage(), e);
+            }
+        }
+
         @Override
         public T asResultObject() throws JobExecutionException {
             return asResultObject(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -325,7 +378,7 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
             default:
                 throw new RuntimeException("Internal error: unexpected status occurred: " + currentPhase);
             }
-            
+                        
             resultObject = resultObjectFactory.createResultObject(run);
 
             return resultObject;

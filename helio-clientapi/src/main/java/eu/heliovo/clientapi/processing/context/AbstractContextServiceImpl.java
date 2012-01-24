@@ -427,30 +427,32 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
                 return resultURL;
             }
             
-            Phase currentPhase = pollStatus(timeout, unit);
-            
-            if (_LOGGER.isDebugEnabled()) {
-                _LOGGER.debug("Current phase is " + currentPhase);
+            try {
+                Phase currentPhase = pollStatus(timeout, unit);
+                
+                if (_LOGGER.isDebugEnabled()) {
+                    _LOGGER.debug("Current phase is " + currentPhase);
+                }
+                
+                switch (currentPhase) {
+                case ERROR:
+                    throw new JobExecutionException("An error occurred while executing the query. Check the logs for more information (call getUserLogs() on this object).");
+                case ABORTED:
+                    throw new JobExecutionException("Execution of the query has been aborted by the remote host. Check the logs for more information (call getUserLogs() on this object).");                
+                case UNKNOWN:
+                    throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + AbstractContextServiceImpl.class.getName());
+                case PENDING:
+                    throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time (" + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)) + "). CallId: " + callId);
+                case COMPLETED:
+                    // just continue
+                    break;
+                default:
+                    throw new RuntimeException("Internal error: unexpected status occurred: " + currentPhase);
+                }
+            } finally {
+                addLog(logOutLocation);
+                addLog(logErrLocation);
             }
-            
-            switch (currentPhase) {
-            case ERROR:
-                throw new JobExecutionException("An error occurred while executing the query. Check the logs for more information (call getUserLogs() on this object).");
-            case ABORTED:
-                throw new JobExecutionException("Execution of the query has been aborted by the remote host. Check the logs for more information (call getUserLogs() on this object).");                
-            case UNKNOWN:
-                throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + AbstractContextServiceImpl.class.getName());
-            case PENDING:
-                throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time (" + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)) + "). CallId: " + callId);
-            case COMPLETED:
-                // just continue
-                break;
-            default:
-                throw new RuntimeException("Internal error: unexpected status occurred: " + currentPhase);
-            }
-
-            addLog(logOutLocation);
-            addLog(logErrLocation);
             return resultLocation;
         }
         

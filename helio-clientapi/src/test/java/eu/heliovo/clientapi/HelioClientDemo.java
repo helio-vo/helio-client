@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.LogRecord;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
@@ -75,10 +76,10 @@ public class HelioClientDemo {
 //        config.add("desPlot_Stb");
 //        config.add("desPlot_Ulysses");
 //        config.add("desPlot_Wind");
-        config.add("cmePM");
-        config.add("cmeBwPM");
-        config.add("swPM");
-        config.add("sepPM");
+//        config.add("cmePM");
+//        config.add("cmeBwPM");
+//        config.add("swPM");
+//        config.add("sepPM");
 //        config.add("dumpServices");
 //        config.add("taverna2283");
     }
@@ -104,6 +105,7 @@ public class HelioClientDemo {
         if (config.contains("sepPM")) runSepPropagationModel(helioClient);
         if (config.contains("dumpServices")) dumpServices(helioClient);
         if (config.contains("taverna2283")) doTaverna2283(helioClient);
+        DebugUtils.disableDump();
     }
     
     /**
@@ -207,26 +209,33 @@ public class HelioClientDemo {
                 helioClient.getServiceInstance(HelioServiceName.TAVERNA_SERVER, 
                 ServiceCapability.TAVERNA_SERVER, TavernaWorkflow2283.SERVICE_VARIANT);
             
-            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            cal.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
-            Date startTime =  cal.getTime();
-            cal.set(2010, Calendar.JANUARY, 3, 0, 0, 0);
-            Date endTime =  cal.getTime();
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
+        Date startTime =  cal.getTime();
+        cal.set(2010, Calendar.JANUARY, 3, 0, 0, 0);
+        Date endTime =  cal.getTime();
 
-            processingService.setCatalogue1("goes_sxr_flare");
-            processingService.setCatalogue2("yohkoh_hxr_flare");
-            processingService.setStartTime(startTime);
-            processingService.setEndTime(endTime);
-            processingService.setLocationDelta(0.5);
-            processingService.setTimeDelta(10);
-            
-            ProcessingResult<TavernaWorkflow2283ResultObject> result = processingService.execute();
-            TavernaWorkflow2283ResultObject resultObject = result.asResultObject(300, TimeUnit.SECONDS);
-            System.out.println(resultObject.getVOTable());
+        processingService.setCatalogue1("goes_sxr_flare");
+        processingService.setCatalogue2("yohkoh_hxr_flare");
+        processingService.setStartTime(startTime);
+        processingService.setEndTime(endTime);
+        processingService.setLocationDelta(0.5);
+        processingService.setTimeDelta(10);
         
+        ProcessingResult<TavernaWorkflow2283ResultObject> result = processingService.execute();
+        try {
+            TavernaWorkflow2283ResultObject resultObject;
+            resultObject = result.asResultObject(20, TimeUnit.SECONDS);
+            System.out.println("our votable" + resultObject.getVoTableUrl());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            LogRecord[] logs = result.getUserLogs();
+            for (LogRecord logRecord : logs) {
+                System.out.println(logRecord.getMessage());
+            }
+        }
     }
-
-
 
     /**
      * Get a plot for a specific mission.
