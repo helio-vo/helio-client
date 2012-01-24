@@ -6,14 +6,14 @@ import java.util.Date;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
-import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.SepPropagationModel.SepProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
  * Marker interface for a propagation model processing service.
  * @author MarcoSoldati
  */
-public interface CmePropagationModel extends ProcessingService<CmeProcessingResultObject> {
+public interface SepPropagationModel extends ProcessingService<SepProcessingResultObject> {
 
     /**
      * Set the start time of the propagation
@@ -28,42 +28,31 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
     public Date getStartTime();
     
     /**
-     * Set the longitude of the CME.
+     * Set the longitude of the Sep.
      * @param longitude the longitude on the sun.
      */
     public void setLongitude(float longitude);
     
     /**
-     * Get the longitude of the CME.
+     * Get the longitude of the Sep.
      * @return the longitude
      */
     public float getLongitude();
-    
-    /**
-     * Set the width 
-     * @param width the width
-     */
-    public void setWidth(float width);
-    /**
-     * Get the width
-     * @return the width
-     */
-    public float getWidth();
 
     /**
-     * Set the CME speed
+     * Set the Sep speed
      * @param speed the speed
      */
     public void setSpeed(float speed);
     
     /**
-     * Get the CME speed.
+     * Get the Sep speed.
      * @return the speed.
      */
     public float getSpeed();
 
     /**
-     * Set the CME speed error
+     * Set the Sep speed error
      * @param speedError the speedError
      */
     public void setSpeedError(float speedError);
@@ -73,29 +62,40 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
      * @return the speed error.
      */
     public float getSpeedError();
-
+    
+    /**
+     * Set the SEP beta param.
+     * @param beta the beta param.
+     */
+    public void setBeta(float beta);
+    
+    /**
+     * Get the beta param.
+     * @return the beta param.
+     */
+    public float getBeta();
+    
     /**
      * Convenience method to call the propagation model in one single method. 
      * Alternatively you can call the setter-methods and then the generic {@link #execute()} method.
      * @param startTime the start time
-     * @param longitude the longitude of the CME on the Sun.
-     * @param width the size of the event
+     * @param longitude the longitude of the Sep on the Sun.
      * @param speed the speed
      * @param speedError the possible error of the speed.
+     * @param beta the beta param
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract ProcessingResult<CmeProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException;
+    public abstract ProcessingResult<SepProcessingResultObject> execute(Date startTime, Float longitude, Float speed, Float speedError, Float beta) throws JobExecutionException;
 
     /**
-     * The result object retruned by this model
+     * The result object returned by this model
      * @author MarcoSoldati
      *
      */
-    public interface CmeProcessingResultObject extends ProcessingResultObject {
+    public interface SepProcessingResultObject extends ProcessingResultObject {
         /**
          * URL to the inner plot URL.
-         * @return the inner plot
          */
         public URL getInnerPlotUrl();
         
@@ -104,12 +104,6 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
          * @return the outer plot URL
          */
         public URL getOuterPlotUrl();
-
-        /**
-         * Get the plot for voyager
-         * @return the voyager plot
-         */
-        public URL getVoyagerPlotUrl();  
 
         /**
          * URL to the VOTable

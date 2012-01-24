@@ -22,7 +22,10 @@ import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.hps.impl.CmeBackwardPropagationModelImpl;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
+import eu.heliovo.clientapi.processing.hps.impl.SepPropagationModelImpl;
+import eu.heliovo.clientapi.processing.hps.impl.SolarWindPropagationModelImpl;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -79,6 +82,9 @@ public class ProcessingServiceFactory extends AbstractServiceFactory {
 	    
 	    // register HPS plots
 	    serviceVariantRegistry.register(HelioServiceName.HPS, CmePropagationModelImpl.SERVICE_VARIANT, CmePropagationModelImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.HPS, CmeBackwardPropagationModelImpl.SERVICE_VARIANT, CmeBackwardPropagationModelImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.HPS, SolarWindPropagationModelImpl.SERVICE_VARIANT, SolarWindPropagationModelImpl.class);
+	    serviceVariantRegistry.register(HelioServiceName.HPS, SepPropagationModelImpl.SERVICE_VARIANT, SepPropagationModelImpl.class);
 
 	    
 	    serviceVariantRegistry.register(HelioServiceName.TAVERNA_SERVER, TavernaWorkflow2283.SERVICE_VARIANT, TavernaWorkflow2283.class);

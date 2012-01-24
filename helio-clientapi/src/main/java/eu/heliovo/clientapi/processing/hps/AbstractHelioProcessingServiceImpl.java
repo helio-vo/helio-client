@@ -193,6 +193,18 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
             throw new JobExecutionException("Expected type for parameter " + paramName + ": " + expectedType + ", but got " + actualType);
         } 
     }
+    
+    /**
+     * Check if a given value is part of the valuedomain
+     * @param paramName the name of the param
+     * @param value the value 
+     * @param valueDomain the domain.
+     */
+    protected void checkValueDomain(String paramName, Object value, List<Object> valueDomain) {
+        if (!valueDomain.contains(value)) {
+            throw new JobExecutionException("Selected value for parameter " + paramName + " is not part of value domain: " + valueDomain);
+        }
+    }
 
     /**
      * Compute the location of the result file. This is kind of a hack to fix a problem identified with the 

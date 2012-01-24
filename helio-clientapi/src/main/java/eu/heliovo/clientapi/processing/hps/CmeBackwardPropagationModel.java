@@ -1,10 +1,8 @@
 package eu.heliovo.clientapi.processing.hps;
 
-import java.net.URL;
 import java.util.Date;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -13,7 +11,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * Marker interface for a propagation model processing service.
  * @author MarcoSoldati
  */
-public interface CmePropagationModel extends ProcessingService<CmeProcessingResultObject> {
+public interface CmeBackwardPropagationModel extends ProcessingService<CmeProcessingResultObject> {
 
     /**
      * Set the start time of the propagation
@@ -28,16 +26,15 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
     public Date getStartTime();
     
     /**
-     * Set the longitude of the CME.
-     * @param longitude the longitude on the sun.
+     * Get the name of the object that has been hit.
+     * @return the object that has been hit.
      */
-    public void setLongitude(float longitude);
+    public String getHitObject();
     
     /**
-     * Get the longitude of the CME.
-     * @return the longitude
+     * Set the object that has been hit by an event.
      */
-    public float getLongitude();
+    public void setHitObject(String hitObject);
     
     /**
      * Set the width 
@@ -78,43 +75,12 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
      * Convenience method to call the propagation model in one single method. 
      * Alternatively you can call the setter-methods and then the generic {@link #execute()} method.
      * @param startTime the start time
-     * @param longitude the longitude of the CME on the Sun.
+     * @param hitObject the object hit by the CME.
      * @param width the size of the event
      * @param speed the speed
      * @param speedError the possible error of the speed.
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract ProcessingResult<CmeProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException;
-
-    /**
-     * The result object retruned by this model
-     * @author MarcoSoldati
-     *
-     */
-    public interface CmeProcessingResultObject extends ProcessingResultObject {
-        /**
-         * URL to the inner plot URL.
-         * @return the inner plot
-         */
-        public URL getInnerPlotUrl();
-        
-        /**
-         * URL to the outer plot URL
-         * @return the outer plot URL
-         */
-        public URL getOuterPlotUrl();
-
-        /**
-         * Get the plot for voyager
-         * @return the voyager plot
-         */
-        public URL getVoyagerPlotUrl();  
-
-        /**
-         * URL to the VOTable
-         * @return the voTable.
-         */
-        public URL getVoTableUrl();
-    }
+    public abstract ProcessingResult<CmeProcessingResultObject> execute(Date startTime, String hitObject, Float width, Float speed, Float speedError) throws JobExecutionException;
 }

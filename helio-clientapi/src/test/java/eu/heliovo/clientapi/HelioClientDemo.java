@@ -17,9 +17,17 @@ import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.hps.CmeBackwardPropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.SepPropagationModel;
+import eu.heliovo.clientapi.processing.hps.SepPropagationModel.SepProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel;
+import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel.SolarWindProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.impl.CmeBackwardPropagationModelImpl;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
+import eu.heliovo.clientapi.processing.hps.impl.SepPropagationModelImpl;
+import eu.heliovo.clientapi.processing.hps.impl.SolarWindPropagationModelImpl;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.query.HelioQueryResult;
@@ -67,9 +75,12 @@ public class HelioClientDemo {
 //        config.add("desPlot_Stb");
 //        config.add("desPlot_Ulysses");
 //        config.add("desPlot_Wind");
-//        config.add("cmePM");
+        config.add("cmePM");
+        config.add("cmeBwPM");
+        config.add("swPM");
+        config.add("sepPM");
 //        config.add("dumpServices");
-        config.add("taverna2283");
+//        config.add("taverna2283");
     }
     
 
@@ -88,6 +99,9 @@ public class HelioClientDemo {
         if (config.contains("desPlot_Ulysses")) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Wind")) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("cmePM")) runCmePropagationModel(helioClient);
+        if (config.contains("cmeBwPM")) runCmeBackwardPropagationModel(helioClient);
+        if (config.contains("swPM")) runSolarWindPropagationModel(helioClient);
+        if (config.contains("sepPM")) runSepPropagationModel(helioClient);
         if (config.contains("dumpServices")) dumpServices(helioClient);
         if (config.contains("taverna2283")) doTaverna2283(helioClient);
     }
@@ -111,6 +125,78 @@ public class HelioClientDemo {
         float speedError = 0;
         ProcessingResult<CmeProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, width, speed, speedError);
         CmeProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        System.out.println(resultObject.getVoTableUrl());
+        System.out.println(resultObject.getInnerPlotUrl());
+        System.out.println(resultObject.getOuterPlotUrl());
+    }
+
+    /**
+     * run a propagation model service.
+     * @param helioClient
+     */
+    private void runCmeBackwardPropagationModel(HelioClient helioClient) {
+        CmeBackwardPropagationModel processingService = (CmeBackwardPropagationModel) 
+                helioClient.getServiceInstance(HelioServiceName.HPS, 
+                        ServiceCapability.HELIO_PROCESSING_SERVICE, CmeBackwardPropagationModelImpl.SERVICE_VARIANT);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        
+        cal.setTimeInMillis(0);
+        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+        String object = "Earth";
+        float width = 45;
+        float speed = 100;
+        float speedError = 0;
+        ProcessingResult<CmeProcessingResultObject> result = processingService.execute(cal.getTime(), object, width, speed, speedError);
+        CmeProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        System.out.println(resultObject.getVoTableUrl());
+        System.out.println(resultObject.getInnerPlotUrl());
+        System.out.println(resultObject.getOuterPlotUrl());
+    }
+
+    /**
+     * run a propagation model service.
+     * @param helioClient
+     */
+    private void runSolarWindPropagationModel(HelioClient helioClient) {
+        SolarWindPropagationModel processingService = (SolarWindPropagationModel) 
+                helioClient.getServiceInstance(HelioServiceName.HPS, 
+                        ServiceCapability.HELIO_PROCESSING_SERVICE, SolarWindPropagationModelImpl.SERVICE_VARIANT);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        
+        cal.setTimeInMillis(0);
+        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+        float longitude = 0; 
+        float width = 45;
+        float speed = 600;
+        float speedError = 0;
+        ProcessingResult<SolarWindProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, width, speed, speedError);
+        SolarWindProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        System.out.println(resultObject.getVoTableUrl());
+        System.out.println(resultObject.getInnerPlotUrl());
+        System.out.println(resultObject.getOuterPlotUrl());
+    }
+    
+    /**
+     * run a propagation model service.
+     * @param helioClient
+     */
+    private void runSepPropagationModel(HelioClient helioClient) {
+        SepPropagationModel processingService = (SepPropagationModel) 
+            helioClient.getServiceInstance(HelioServiceName.HPS, 
+            ServiceCapability.HELIO_PROCESSING_SERVICE, SepPropagationModelImpl.SERVICE_VARIANT);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        cal.setTimeInMillis(0);
+        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+        float longitude = 0;
+        float speed = 100;
+        float speedError = 0;
+        float beta = 0.9f;
+        ProcessingResult<SepProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, speed, speedError, beta);
+        SepProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         System.out.println(resultObject.getVoTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());
         System.out.println(resultObject.getOuterPlotUrl());

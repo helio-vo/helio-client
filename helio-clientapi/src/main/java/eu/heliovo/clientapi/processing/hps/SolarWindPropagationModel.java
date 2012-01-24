@@ -6,15 +6,14 @@ import java.util.Date;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
-import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel.SolarWindProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
  * Marker interface for a propagation model processing service.
  * @author MarcoSoldati
  */
-public interface CmePropagationModel extends ProcessingService<CmeProcessingResultObject> {
-
+public interface SolarWindPropagationModel extends ProcessingService<SolarWindProcessingResultObject> {
     /**
      * Set the start time of the propagation
      * @param startTime the start time
@@ -85,14 +84,14 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract ProcessingResult<CmeProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException;
+    public abstract ProcessingResult<SolarWindProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException;
 
     /**
      * The result object retruned by this model
      * @author MarcoSoldati
      *
      */
-    public interface CmeProcessingResultObject extends ProcessingResultObject {
+    public interface SolarWindProcessingResultObject extends ProcessingResultObject {
         /**
          * URL to the inner plot URL.
          * @return the inner plot
@@ -104,12 +103,6 @@ public interface CmePropagationModel extends ProcessingService<CmeProcessingResu
          * @return the outer plot URL
          */
         public URL getOuterPlotUrl();
-
-        /**
-         * Get the plot for voyager
-         * @return the voyager plot
-         */
-        public URL getVoyagerPlotUrl();  
 
         /**
          * URL to the VOTable
