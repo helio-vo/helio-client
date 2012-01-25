@@ -1,10 +1,15 @@
 package eu.heliovo.clientapi.query.syncquery.impl;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -14,6 +19,7 @@ import javax.xml.namespace.QName;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
@@ -29,6 +35,7 @@ import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
+import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -245,6 +252,7 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 		if (votable == null) {
 			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
 		}
+		
 		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
 		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
 		return result;
@@ -321,14 +329,35 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 
 		@Override
 		public URL asURL() throws JobExecutionException {
-			
-			throw new JobExecutionException("Method asUrl not supported by the synchronous query");
+		    return asURL(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
 		}
 
 		@Override
 		public URL asURL(long timeout, TimeUnit unit)
 				throws JobExecutionException {
-			throw new JobExecutionException("Method asUrl not supported by the synchronous query");
+            File tavernaTmp = HelioFileUtil.getHelioTempDir("taverna");
+            
+            File outDir = new File(tavernaTmp, UUID.randomUUID().toString());
+            try {
+                FileUtils.forceMkdir(outDir);
+            } catch (IOException e) {
+                throw new JobExecutionException("Unable to create output directory: " + outDir + ". Cause: " + e.getMessage(), e);
+            }
+            File outFile = new File(outDir, "hec.votable.xml");
+
+		    
+		    FileWriter writer;
+            try {
+                writer = new FileWriter(outFile);
+            } catch (IOException e) {
+                throw new JobExecutionException("Error downloading votable: " + e.getMessage(), e);
+            }
+		    VOTableUtils.getInstance().voTable2Writer(voTable, writer, false);
+		    try {
+                return outFile.toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new JobExecutionException("Error creating URL from File: " + e.getMessage(), e);
+            }
 		}
 
 		@Override

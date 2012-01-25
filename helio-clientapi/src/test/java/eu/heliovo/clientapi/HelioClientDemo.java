@@ -33,6 +33,7 @@ import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
@@ -70,6 +71,8 @@ public class HelioClientDemo {
     
     static {
 //        config.add("ils");
+//        config.add("hec");
+        config.add("hec_sync");
 //        config.add("icsPat");
 //        config.add("desPlot_Ace");
 //        config.add("desPlot_Sta");
@@ -80,7 +83,7 @@ public class HelioClientDemo {
 //        config.add("cmeBwPM");
 //        config.add("swPM");
 //        config.add("sepPM");
-        config.add("taverna2283");
+//        config.add("taverna2283");
 //        config.add("dumpServices");
     }
     
@@ -91,8 +94,10 @@ public class HelioClientDemo {
     public void run() {
         HelioClient helioClient = new HelioClient();
         helioClient.init();
-        DebugUtils.enableDump();
+//        DebugUtils.enableDump();
         if (config.contains("ils")) getIls(helioClient);
+        if (config.contains("hec")) getHec(helioClient);
+        if (config.contains("hec_sync")) getHecSync(helioClient);
         if (config.contains("icsPat")) getIcsPat(helioClient);
         if (config.contains("desPlot_Ace")) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Sta")) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
@@ -281,6 +286,30 @@ public class HelioClientDemo {
         HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2009-01-02T00:00:00"), Arrays.asList("trajectories"), null, 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));        
+    }
+    
+    /**
+     * Get the HEC table.
+     * @param helioClient the client
+     */
+    private void getHec(HelioClient helioClient) {
+        AsyncQueryService service = (AsyncQueryService)helioClient.getServiceInstance(HelioServiceName.HEC, ServiceCapability.ASYNC_QUERY_SERVICE, null);
+        //System.out.println(service.getClass());
+        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2009-01-02T00:00:00"), Arrays.asList("goes_sxr_flare"), null, 0, 0, null);
+        System.out.println(result.asURL());
+        System.out.println(trunc(result.asString(), 5000));        
+    }
+
+    /**
+     * Get the HEC table.
+     * @param helioClient the client
+     */
+    private void getHecSync(HelioClient helioClient) {
+        SyncQueryService service = (SyncQueryService)helioClient.getServiceInstance(HelioServiceName.HEC, ServiceCapability.SYNC_QUERY_SERVICE, null);
+        //System.out.println(service.getClass());
+        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2010-01-30T00:00:00"), Arrays.asList("goes_sxr_flare"), null, 0, 0, null);
+        System.out.println(result.asURL());
+        System.out.println(trunc(result.asString(), 5000));
     }
     
     /**
