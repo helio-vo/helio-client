@@ -206,10 +206,10 @@ public class CmeBackwardPropagationModelImpl extends AbstractHelioProcessingServ
         } else if (name.contains("width")) {
             checkType("width", "Float", "Float");
             param.setValue(""+getWidth());
-        } else if (name.contains("speed")) {
+        } else if (name.contains("starting speed")) {
             checkType("speed", "Float", "Float");
             param.setValue(""+getSpeed());
-        } else if (name.contains("float")) {
+        } else if (name.contains("error speed")) {
             checkType("speedError", "Float", "Float");
             param.setValue(""+getSpeedError());
         } else {
