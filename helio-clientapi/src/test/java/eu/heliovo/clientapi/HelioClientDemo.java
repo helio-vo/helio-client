@@ -80,8 +80,8 @@ public class HelioClientDemo {
 //        config.add("cmeBwPM");
 //        config.add("swPM");
 //        config.add("sepPM");
+        config.add("taverna2283");
 //        config.add("dumpServices");
-//        config.add("taverna2283");
     }
     
 

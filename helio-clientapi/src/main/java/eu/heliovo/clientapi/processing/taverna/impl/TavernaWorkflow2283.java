@@ -1,5 +1,11 @@
 package eu.heliovo.clientapi.processing.taverna.impl;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -8,8 +14,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+
+import org.apache.commons.io.FileUtils;
 
 import uk.org.taverna.ns._2010.xml.server.soap.BadStateChangeException;
+import uk.org.taverna.ns._2010.xml.server.soap.NoDirectoryEntryException;
 import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
@@ -199,14 +211,87 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
         
         
         /**
-         * Create the result object with a pointer to the run
+         * Create the result object with a pointer to the run after it successfully terminated.
          * @param run the run.
          */
         public TavernaWorkflow2283ResultObject(Run run) {
+            File tavernaTmp = HelioFileUtil.getHelioTempDir("taverna");
+            File zipFile = new File(tavernaTmp, run.getId() + ".zip");
+
+            // get the result of the run and store it
+            zipFile = persistOutputZip(run, zipFile);
+            
+            File outDir = new File(tavernaTmp, run.getId());
+            try {
+                FileUtils.forceMkdir(outDir);
+            } catch (IOException e) {
+                throw new JobExecutionException("Unable to create output directory: " + outDir + ". Cause: " + e.getMessage(), e);
+            }
+            File outFile = new File(outDir, "VOTable.votable.xml");
+            outFile = persistZipEntry(zipFile, "VOTable", outFile);
+            
             // compute result URL
             
-            // FIXME: hardcoded!
-            voTableUrl = HelioFileUtil.asURL("https://eric.rcs.manchester.ac.uk:8443/taverna-server-2/rest/runs/" + run.getId() + "/wd/out/VOTable");
+            try {
+                voTableUrl = outFile.toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new JobExecutionException("Unable to create File URL: " + outFile + ". Cause: " + e.getMessage(), e);
+            }
+//                    HelioFileUtil.asURL("https://eric.rcs.manchester.ac.uk:8443/taverna-server-2/rest/runs/" + run.getId() + "/wd/out/VOTable");
+        }
+
+        /**
+         * Persist the output of the run into a local file.
+         * @param run the current run
+         * @param zipFile the target file.
+         */
+        private File persistOutputZip(Run run, File zipFile) {
+            byte[] zipArray;
+            try {
+                zipArray = run.getOutputZip();
+            } catch (NoDirectoryEntryException e) {
+                throw new RuntimeException("Internal Error: unable to retrieve results: " + e.getMessage(), e);
+            } catch (UnknownRunException e) {
+                throw new RuntimeException("Internal Error: unable to retrieve results: " + e.getMessage(), e);
+            }
+            
+            FileOutputStream fos;
+            try {
+                fos = new FileOutputStream(zipFile);
+                fos.write(zipArray);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException("Internal Error: unable to create target ZIP " + zipFile.getAbsolutePath() + ". Cause: " + e.getMessage(), e);
+            } catch (IOException e) {
+                throw new RuntimeException("Internal Error: unable to create target ZIP: " + e.getMessage(), e);
+            }
+            return zipFile;
+        }
+
+        /**
+         * Extract an entry from a ZIP file and persist to disk 
+         * @param zipFile the zipfile to extract
+         * @param entryName the entry name
+         * @param outFile the out file
+         * @return the outFile
+         */
+        private File persistZipEntry(File zipFile, String entryName, File outFile) {
+            ZipFile zip;
+            try {
+                zip = new ZipFile(zipFile);
+            } catch (ZipException e) {
+                throw new RuntimeException("Internal Error: unable to read previously stored ZIP-file: " + e.getMessage(), e);
+            } catch (IOException e) {
+                throw new RuntimeException("Internal Error: unable to read previously stored ZIP-file: " + e.getMessage(), e);
+            }
+            ZipEntry votable = zip.getEntry(entryName);
+            try {
+                InputStream inputStream = zip.getInputStream(votable);
+                FileUtils.copyInputStreamToFile(inputStream, outFile);
+            } catch (IOException e) {
+                throw new RuntimeException("Internal Error: unable to read entry from previously stored ZIP-file: " + e.getMessage(), e);
+            }
+            return outFile;
         }
 
         @Override
