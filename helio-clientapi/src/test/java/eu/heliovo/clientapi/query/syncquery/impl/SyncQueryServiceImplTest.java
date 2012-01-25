@@ -29,11 +29,7 @@ public class SyncQueryServiceImplTest {
 		
 		assertEquals(Phase.COMPLETED, result.getPhase());
 		
-		try {
-			assertNotNull(result.asURL());
-			fail(JobExecutionException.class.getName() + " expected.");
-		} catch (JobExecutionException e) {
-		}
+		assertNotNull(result.asURL());
 		
 		assertNotNull(result.asVOTable());
 		assertNotNull(result.toString());
@@ -75,11 +71,7 @@ public class SyncQueryServiceImplTest {
 		
 		assertEquals(Phase.COMPLETED, result.getPhase());
 		
-		try {
-			assertNotNull(result.asURL());
-			fail(JobExecutionException.class.getName() + " expected.");
-		} catch (JobExecutionException e) {
-		}
+		assertNotNull(result.asURL());
 		
 		assertNotNull(result.asVOTable());
 		assertNotNull(result.toString());
