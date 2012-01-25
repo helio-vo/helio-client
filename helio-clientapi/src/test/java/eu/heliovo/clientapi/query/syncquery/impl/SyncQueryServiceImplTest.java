@@ -13,7 +13,6 @@ import org.junit.Test;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.syncquery.impl.MockSyncQueryService.MockQueryServicePort;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
-import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 public class SyncQueryServiceImplTest {
 	

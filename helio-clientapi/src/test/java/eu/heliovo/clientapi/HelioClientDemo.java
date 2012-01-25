@@ -72,7 +72,7 @@ public class HelioClientDemo {
     static {
 //        config.add("ils");
 //        config.add("hec");
-        config.add("hec_sync");
+//        config.add("hec_sync");
 //        config.add("icsPat");
 //        config.add("desPlot_Ace");
 //        config.add("desPlot_Sta");
@@ -83,7 +83,7 @@ public class HelioClientDemo {
 //        config.add("cmeBwPM");
 //        config.add("swPM");
 //        config.add("sepPM");
-//        config.add("taverna2283");
+        config.add("taverna2283");
 //        config.add("dumpServices");
     }
     
@@ -231,7 +231,7 @@ public class HelioClientDemo {
         try {
             TavernaWorkflow2283ResultObject resultObject;
             resultObject = result.asResultObject(20, TimeUnit.SECONDS);
-            System.out.println("our votable" + resultObject.getVoTableUrl());
+            System.out.println("our votable: " + resultObject.getVoTableUrl());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

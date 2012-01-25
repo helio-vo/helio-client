@@ -297,7 +297,17 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
                 break;
             case FINISHED:
                 jobEndTime = System.currentTimeMillis();
-                phase = Phase.COMPLETED;
+                String exitcode;
+                try {
+                    exitcode = run.getListener("io").getProperty("exitcode");
+                } catch (UnknownRunException e) {
+                    throw new RuntimeException("Internal Error: Unknown Run: " + e.getMessage(), e);
+                }
+                if (Integer.parseInt(exitcode) != 0) {
+                    phase = Phase.ERROR;                    
+                } else {
+                    phase = Phase.COMPLETED;
+                }
                 break;
             case STOPPED:
                 jobEndTime = System.currentTimeMillis();
