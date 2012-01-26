@@ -26,6 +26,7 @@ import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.taverna.AbstractTavernaServiceImpl;
+import eu.heliovo.clientapi.processing.taverna.TavernaWorkflowException;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
@@ -284,12 +285,33 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
             } catch (IOException e) {
                 throw new RuntimeException("Internal Error: unable to read previously stored ZIP-file: " + e.getMessage(), e);
             }
-            ZipEntry votable = zip.getEntry(entryName);
+            ZipEntry votableEntry = zip.getEntry(entryName);
+            boolean error = false;
+            if (votableEntry == null) {
+                votableEntry = zip.getEntry(entryName + ".error");
+                outFile = new File(outFile.getAbsolutePath() + ".error");
+                error = true;
+                
+                if (votableEntry == null) {
+                    throw new JobExecutionException("Failed to read result from ZIP file " + zipFile, null);
+                }
+            }
             try {
-                InputStream inputStream = zip.getInputStream(votable);
+                InputStream inputStream = zip.getInputStream(votableEntry);
                 FileUtils.copyInputStreamToFile(inputStream, outFile);
             } catch (IOException e) {
                 throw new RuntimeException("Internal Error: unable to read entry from previously stored ZIP-file: " + e.getMessage(), e);
+            }
+            
+            if (error) {
+                List<String> context;
+                try {
+                    context = Collections.singletonList("Content of " + votableEntry.getName() + ": " +FileUtils.readFileToString(outFile));
+                } catch (IOException e) {
+                    // unable to read context.
+                    context = Collections.singletonList("Unable to read content of " + votableEntry.getName() + ": " + e.getMessage());
+                }
+                throw new TavernaWorkflowException("Failed to load data from file " + entryName , context);
             }
             return outFile;
         }

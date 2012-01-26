@@ -389,7 +389,16 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
                 throw new RuntimeException("Internal error: unexpected status occurred: " + currentPhase);
             }
                         
-            resultObject = resultObjectFactory.createResultObject(run);
+            try {
+                resultObject = resultObjectFactory.createResultObject(run);
+            } catch (TavernaWorkflowException e) {
+                if (e.getContext() != null) {
+                    for (String msg : e.getContext()) {
+                        userLogs.add(new LogRecord(Level.WARNING, msg));
+                    }
+                }
+                throw e;
+            }
 
             return resultObject;
         }
