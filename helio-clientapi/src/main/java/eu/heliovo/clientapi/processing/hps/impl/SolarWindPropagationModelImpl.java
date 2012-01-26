@@ -52,19 +52,9 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
     private float longitude;
     
     /**
-     * Size of CME.
-     */
-    private float width;
-    
-    /**
      * Speed
      */
     private float speed;
-    
-    /**
-     * Error
-     */
-    private float speedError;
     
     @Override
     public void setStartTime(Date startTime) {
@@ -87,17 +77,6 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
     }
 
     @Override
-    public void setWidth(float width) {
-        this.width = width;
-        
-    }
-
-    @Override
-    public float getWidth() {
-        return width;
-    }
-
-    @Override
     public void setSpeed(float speed) {
         this.speed = speed;
     }
@@ -106,24 +85,12 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
     public float getSpeed() {
         return speed;
     }
-
-    @Override
-    public void setSpeedError(float speedError) {
-        this.speedError = speedError;
-    }
-
-    @Override
-    public float getSpeedError() {
-        return speedError;
-    }
     
     @Override
-    public ProcessingResult<SolarWindProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException {
+    public ProcessingResult<SolarWindProcessingResultObject> execute(Date startTime, Float longitude, Float speed) throws JobExecutionException {
         this.setStartTime(startTime);
         this.setLongitude(longitude);
-        this.setWidth(width);
         this.setSpeed(speed);
-        this.setSpeedError(speedError);
         return execute();
     }
 
@@ -190,15 +157,9 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
         } else if (name.contains("point")) {
             checkType("longitude", "Float", "Float");
             param.setValue(""+getLongitude());
-        } else if (name.contains("width")) {
-            checkType("width", "Float", "Float");
-            param.setValue(""+getWidth());
         } else if (name.contains("starting speed")) {
             checkType("speed", "Float", "Float");
             param.setValue(""+getSpeed());
-        } else if (name.contains("error speed")) {
-            checkType("speedError", "Float", "Float");
-            param.setValue(""+getSpeedError());
         } else {
             throw new JobExecutionException("Internal Error: Unknown parameter found: " + param.getName());
         }

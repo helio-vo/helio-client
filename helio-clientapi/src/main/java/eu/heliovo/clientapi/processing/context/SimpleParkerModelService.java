@@ -32,16 +32,55 @@ public interface SimpleParkerModelService extends ProcessingService<UrlProcessin
      */
     public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startTime);
 
-    public abstract void setInner(int inner);
+    /**
+     * Set the plot type
+     * @param plotType the plot type.
+     */
+    public void setPlotType(PlotType plotType);
+    
+    /**
+     * Get the plot type.
+     * @return the plot type.
+     */
+    public PlotType getPlotType();
+    
+    /**
+     * Set the velocity to use
+     * @param velocity the velocity
+     */
+    public void setVelocity(int velocity);
 
-    public abstract int getInner();
+    /**
+     * Get the velocity to use
+     * @return the velocity
+     */
+    public int getVelocity();
+    
+    /**
+     * Type of the plot
+     * @author MarcoSoldati
+     *
+     */
+    public static enum PlotType {
+        INNER ("Inner planets"),
+        OUTER ("Outer planets");
+        
+        /**
+         * The label of the plot type
+         */
+        private final String label;
 
-    public abstract void setOuter(int outer);
-
-    public abstract int getOuter();
-
-    public abstract void setVelocity(int velocity);
-
-    public abstract int getVelocity();
+        private PlotType(String label) {
+            this.label = label;
+        }
+        
+        /**
+         * Get the label of this type.
+         * @return the plot type label.
+         */
+        public String getLabel() {
+            return label;
+        }
+    }
 
 }

@@ -81,9 +81,9 @@ public class HelioClientDemo {
 //        config.add("desPlot_Wind");
 //        config.add("cmePM");
 //        config.add("cmeBwPM");
-//        config.add("swPM");
+        config.add("swPM");
 //        config.add("sepPM");
-        config.add("taverna2283");
+//        config.add("taverna2283");
 //        config.add("dumpServices");
     }
     
@@ -175,10 +175,8 @@ public class HelioClientDemo {
         cal.setTimeInMillis(0);
         cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
         float longitude = 0; 
-        float width = 45;
         float speed = 600;
-        float speedError = 0;
-        ProcessingResult<SolarWindProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, width, speed, speedError);
+        ProcessingResult<SolarWindProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, speed);
         SolarWindProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         System.out.println(resultObject.getVoTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());

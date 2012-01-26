@@ -41,14 +41,9 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     private int velocity = 400;
 
     /**
-     * ?
+     * Plot type
      */
-    private int outer = 0;
-    
-    /**
-     * ?
-     */
-    private int inner = 4;
+    private PlotType plotType;
     /**
      * The parker model plotter.
      * @param accessInterfaces
@@ -75,9 +70,9 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
         input.getParameter().add(startDateVal);
         ParameterValue velocityVal = createParameterValue("Velocity", "" + this.velocity, false);
         input.getParameter().add(velocityVal);
-        ParameterValue innerVal = createParameterValue("Inner", "" + this.inner, false);
+        ParameterValue innerVal = createParameterValue("Inner", this.plotType == PlotType.INNER ? "1" : "0", false);
         input.getParameter().add(innerVal);
-        ParameterValue outerVal = createParameterValue("Outer", "" + this.outer, false);        
+        ParameterValue outerVal = createParameterValue("Outer", this.plotType == PlotType.OUTER ? "1" : "0", false);
         input.getParameter().add(outerVal);
         tool.setInput(input);
         
@@ -122,24 +117,12 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     }
 
     @Override
-    public int getOuter() {
-        return outer;
+    public void setPlotType(PlotType plotType) {
+        this.plotType = plotType;
     }
 
     @Override
-    public void setOuter(int outer) {
-        this.outer = outer;
+    public PlotType getPlotType() {
+        return plotType;
     }
-
-    @Override
-    public int getInner() {
-        return inner;
-    }
-
-    @Override
-    public void setInner(int inner) {
-        this.inner = inner;
-    }
-    
-    
 }

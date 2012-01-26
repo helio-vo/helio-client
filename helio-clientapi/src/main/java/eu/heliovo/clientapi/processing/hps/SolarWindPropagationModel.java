@@ -39,17 +39,6 @@ public interface SolarWindPropagationModel extends ProcessingService<SolarWindPr
     public float getLongitude();
     
     /**
-     * Set the width 
-     * @param width the width
-     */
-    public void setWidth(float width);
-    /**
-     * Get the width
-     * @return the width
-     */
-    public float getWidth();
-
-    /**
      * Set the CME speed
      * @param speed the speed
      */
@@ -62,32 +51,18 @@ public interface SolarWindPropagationModel extends ProcessingService<SolarWindPr
     public float getSpeed();
 
     /**
-     * Set the CME speed error
-     * @param speedError the speedError
-     */
-    public void setSpeedError(float speedError);
-    
-    /**
-     * Get the speed error
-     * @return the speed error.
-     */
-    public float getSpeedError();
-
-    /**
      * Convenience method to call the propagation model in one single method. 
      * Alternatively you can call the setter-methods and then the generic {@link #execute()} method.
      * @param startTime the start time
      * @param longitude the longitude of the CME on the Sun.
-     * @param width the size of the event
      * @param speed the speed
-     * @param speedError the possible error of the speed.
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract ProcessingResult<SolarWindProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException;
+    public abstract ProcessingResult<SolarWindProcessingResultObject> execute(Date startTime, Float longitude, Float speed) throws JobExecutionException;
 
     /**
-     * The result object retruned by this model
+     * The result object returned by this model
      * @author MarcoSoldati
      *
      */
