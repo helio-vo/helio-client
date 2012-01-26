@@ -62,8 +62,8 @@ public interface SimpleParkerModelService extends ProcessingService<UrlProcessin
      *
      */
     public static enum PlotType {
-        INNER ("Inner planets"),
-        OUTER ("Outer planets");
+        INNER ("Inner"),
+        OUTER ("Outer");
         
         /**
          * The label of the plot type
