@@ -36,6 +36,7 @@ import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
 import eu.heliovo.clientapi.processing.context.GoesPlotterService;
 import eu.heliovo.clientapi.processing.context.SimpleParkerModelService;
+import eu.heliovo.clientapi.processing.context.SimpleParkerModelService.PlotType;
 import eu.heliovo.clientapi.processing.context.impl.des.AcePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
@@ -70,14 +71,14 @@ public class ContextClientDemo {
         helioClient.init();
         
         final List<String> config = new ArrayList<String>();
-        config.add("parker");
+//        config.add("parker");
 //        config.add("flare");
 //        config.add("goes");
-//        config.add("ace");
-//        config.add("sta");
-//        config.add("stb");
-//        config.add("ulysses");
-//        config.add("wind");
+        config.add("ace");
+        config.add("sta");
+        config.add("stb");
+        config.add("ulysses");
+        config.add("wind");
         
         final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
 
@@ -144,8 +145,12 @@ public class ContextClientDemo {
                             cal.set(2000, Calendar.FEBRUARY, 1, 9, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date startTime =  cal.getTime();
+                            int velocity = 800;
+                            PlotType plotType = PlotType.OUTER;
+                            
                             body.append("<h1>parker plot for " + SimpleDateFormat.getDateInstance().format(startTime) + "</h1>\n");
-                            ProcessingResult<UrlProcessingResultObject> result = parkerModelService.parkerModel(startTime);
+                            
+                            ProcessingResult<UrlProcessingResultObject> result = parkerModelService.parkerModel(startTime, velocity, plotType);
                             UrlProcessingResultObject resultObject;
                             try {
                                  resultObject = result.asResultObject(60, TimeUnit.SECONDS);

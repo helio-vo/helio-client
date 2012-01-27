@@ -74,14 +74,14 @@ public class HelioClientDemo {
 //        config.add("hec");
 //        config.add("hec_sync");
 //        config.add("icsPat");
-//        config.add("desPlot_Ace");
-//        config.add("desPlot_Sta");
-//        config.add("desPlot_Stb");
-//        config.add("desPlot_Ulysses");
-//        config.add("desPlot_Wind");
+        config.add("desPlot_Ace");
+        config.add("desPlot_Sta");
+        config.add("desPlot_Stb");
+        config.add("desPlot_Ulysses");
+        config.add("desPlot_Wind");
 //        config.add("cmePM");
 //        config.add("cmeBwPM");
-        config.add("swPM");
+//        config.add("swPM");
 //        config.add("sepPM");
 //        config.add("taverna2283");
 //        config.add("dumpServices");
@@ -334,7 +334,4 @@ public class HelioClientDemo {
         }
         return string.substring(0, len) + "...";
     }
-    
-    
-    
 }

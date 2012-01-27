@@ -1,8 +1,6 @@
 package eu.heliovo.clientapi.processing.context.impl;
 
 import java.util.Date;
-import java.util.List;
-import java.util.logging.LogRecord;
 
 import org.astrogrid.schema.agparameterdefinition.v1.ParameterValue;
 import org.astrogrid.schema.agworkflow.v1.Input;
@@ -58,7 +56,7 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     }
 
     @Override
-    protected Tool initTool(List<LogRecord> logRecords) {
+    protected Tool initTool() {
         AssertUtil.assertArgumentNotNull(startTime, "startTime");
         AssertUtil.assertArgumentNotNull(endTime, "endTime");
         

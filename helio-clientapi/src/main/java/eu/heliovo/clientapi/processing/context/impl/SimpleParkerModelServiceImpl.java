@@ -1,8 +1,6 @@
 package eu.heliovo.clientapi.processing.context.impl;
 
 import java.util.Date;
-import java.util.List;
-import java.util.logging.LogRecord;
 
 import org.astrogrid.schema.agparameterdefinition.v1.ParameterValue;
 import org.astrogrid.schema.agworkflow.v1.Input;
@@ -53,13 +51,19 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     }
     
     @Override
-    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startTime) {
+    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startTime, Integer velocity, PlotType plotType) {
         this.startTime = startTime;
+        if (velocity != null) {
+            this.velocity = velocity;
+        }
+        if (plotType != null) {
+            this.plotType = plotType;
+        }
         return execute();
     }
 
     @Override
-    protected Tool initTool(List<LogRecord> logRecords) {
+    protected Tool initTool() {
         AssertUtil.assertArgumentNotNull(startTime, "startTime");
         
         Tool tool = new Tool();
@@ -80,7 +84,7 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
         tool.setOutput(output);
         return tool;
     }
-    
+
     @Override
     protected String getLogOutFileName() {
         return "cea-output.log";

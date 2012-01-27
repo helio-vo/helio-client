@@ -28,9 +28,11 @@ public interface SimpleParkerModelService extends ProcessingService<UrlProcessin
     /**
      * Convenience method to create a flare plot. This method can be used instead of calling setter methods and then execute.
      * @param date the date of the flare.
+     * @param velocity the velocity to use. Optional.
+     * @param plotType the plotType to use. Optional.
      * @return an object to access the result.
      */
-    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startTime);
+    public ProcessingResult<UrlProcessingResultObject> parkerModel(Date startTime, Integer velocity, PlotType plotType);
 
     /**
      * Set the plot type

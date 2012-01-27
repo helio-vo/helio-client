@@ -1,6 +1,5 @@
 package eu.heliovo.clientapi.processing.hps;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,7 +28,6 @@ import eu.heliovo.hps.server.HPSServiceService;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.hps.ApplicationExecutionStatus;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -107,7 +105,10 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
         
         final Boolean fastExecution = true;
-        final AbstractApplicationDescription applicationDescription = findApplicationDescriptionById(currentPort, getApplicationId()); 
+        final AbstractApplicationDescription applicationDescription = findApplicationDescriptionById(currentPort, getApplicationId());
+        if (applicationDescription == null) {
+            throw new JobExecutionException("Unable to find configuration with id: '" + getApplicationId() + ". Probably the configuration on the remote host changed.");
+        }
         initApplicationDescription(applicationDescription, logRecords);
         
         final Integer numOfParallelJobs = 1;

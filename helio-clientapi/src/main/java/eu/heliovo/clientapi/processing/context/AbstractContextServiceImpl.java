@@ -111,7 +111,9 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
 
         List<LogRecord> logRecords = new ArrayList<LogRecord>();
 
-        final Tool tool = initTool(logRecords);
+        final Tool tool = initTool();
+        logRecords.add(new LogRecord(Level.INFO, "Parameters: " + toString(tool)));
+
         final JobIdentifierType jobstepID = getJobstepID();
         
         String callId = currentAccessInterface.getUrl() + "::init";
@@ -148,6 +150,30 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
         
         return processingResult; 
     }
+    
+    private String toString(Tool tool) {
+        StringBuilder sb = new StringBuilder("input: [");
+        boolean first = true;
+        for(ParameterValue paramValue : tool.getInput().getParameter()) {
+            if (first) 
+                first = false;
+            else 
+                sb.append(", ");
+            sb.append(paramValue.getName()).append(": ").append(paramValue.getValue());
+        }
+        sb.append("], output: [");
+        first = true;
+        for(ParameterValue paramValue : tool.getOutput().getParameter()) {
+            if (first) 
+                first = false;
+            else 
+                sb.append(", ");
+            sb.append(paramValue.getName()).append(": ").append(paramValue.getValue());
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
 
     /**
      * name of the log file.
@@ -202,10 +228,9 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
 
     /**
      * Create and populate the tool object to be used by the service. 
-     * @param logRecords the log records to use.
      * @return the tool
      */
-    protected abstract Tool initTool(List<LogRecord> logRecords);
+    protected abstract Tool initTool();
 
     /**
      * Create the job step id (whatever this is used for)
