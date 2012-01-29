@@ -37,12 +37,55 @@ public interface GoesPlotterService extends ProcessingService<UrlProcessingResul
      */
     public void setEndTime(Date endTime);
     
+
+    /**
+     * Set the plot type
+     * @param plotType the plot type.
+     */
+    public void setPlotType(PlotType plotType);
+    
+    /**
+     * Get the plot type.
+     * @return the plot type.
+     */
+    public PlotType getPlotType();
+
+    
     /**
      * Convenience method to create a goes plot. This method can be used instead of calling setter methods and then execute.
      * @param startTime the start date.
      * @param endTime the end date.
+     * @Param plotType the plot type.
      * @return an object to access the result.
      */
-    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startTime, Date endTime);
+    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startTime, Date endTime, PlotType plotType);
+    
+    /**
+     * Type of the plot
+     * @author MarcoSoldati
+     *
+     */
+    public static enum PlotType {
+        PROTON ("Proton"),
+        XRAY ("Xray"),
+        BOTH ("Both");
+        
+        /**
+         * The label of the plot type
+         */
+        private final String label;
+
+        private PlotType(String label) {
+            this.label = label;
+        }
+        
+        /**
+         * Get the label of this type.
+         * @return the plot type label.
+         */
+        public String getLabel() {
+            return label;
+        }
+    }
 
 }

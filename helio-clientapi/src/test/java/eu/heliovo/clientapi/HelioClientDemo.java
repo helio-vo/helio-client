@@ -13,6 +13,8 @@ import java.util.logging.LogRecord;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
+import eu.heliovo.clientapi.processing.context.FlarePlotterService;
+import eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.AcePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
@@ -74,11 +76,12 @@ public class HelioClientDemo {
 //        config.add("hec");
 //        config.add("hec_sync");
 //        config.add("icsPat");
-        config.add("desPlot_Ace");
-        config.add("desPlot_Sta");
-        config.add("desPlot_Stb");
-        config.add("desPlot_Ulysses");
-        config.add("desPlot_Wind");
+//        config.add("desPlot_Ace");
+//        config.add("desPlot_Sta");
+//        config.add("desPlot_Stb");
+//        config.add("desPlot_Ulysses");
+//        config.add("desPlot_Wind");
+        config.add("flarePlot");
 //        config.add("cmePM");
 //        config.add("cmeBwPM");
 //        config.add("swPM");
@@ -104,6 +107,7 @@ public class HelioClientDemo {
         if (config.contains("desPlot_Stb")) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Ulysses")) getDesPlot(helioClient, UlyssesPlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Wind")) getDesPlot(helioClient, WindPlotterServiceImpl.SERVICE_VARIANT);
+        if (config.contains("flarePlot")) doFlarePlot(helioClient);
         if (config.contains("cmePM")) runCmePropagationModel(helioClient);
         if (config.contains("cmeBwPM")) runCmeBackwardPropagationModel(helioClient);
         if (config.contains("swPM")) runSolarWindPropagationModel(helioClient);
@@ -320,6 +324,20 @@ public class HelioClientDemo {
         HelioQueryResult result = service.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));        
+    }
+    
+    
+    private void doFlarePlot(HelioClient helioClient) {
+        FlarePlotterService flarePlotterService = (FlarePlotterService) helioClient.getServiceInstance(HelioServiceName.CXS, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, FlarePlotterServiceImpl.SERVICE_VARIANT);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        cal.setTimeInMillis(0);
+        cal.set(2005, Calendar.JANUARY, 1, 0, 0, 0);
+        ProcessingResult<UrlProcessingResultObject> result = flarePlotterService.flarePlot(cal.getTime());
+        UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        URL url = resultObject.getUrl();
+        System.out.println(url);
     }
 
     /**

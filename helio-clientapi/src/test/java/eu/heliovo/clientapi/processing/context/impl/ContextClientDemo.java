@@ -73,12 +73,12 @@ public class ContextClientDemo {
         final List<String> config = new ArrayList<String>();
 //        config.add("parker");
 //        config.add("flare");
-//        config.add("goes");
-        config.add("ace");
-        config.add("sta");
-        config.add("stb");
-        config.add("ulysses");
-        config.add("wind");
+        config.add("goes");
+//        config.add("ace");
+//        config.add("sta");
+//        config.add("stb");
+//        config.add("ulysses");
+//        config.add("wind");
         
         final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
 
@@ -129,7 +129,7 @@ public class ContextClientDemo {
                             cal.add(Calendar.MONTH, j);
                             Date endTime =  cal.getTime();
                             body.append("<h1>goes plot for " + SimpleDateFormat.getDateInstance().format(startTime) + "-" + SimpleDateFormat.getDateInstance().format(endTime) + "</h1>\n");
-                            ProcessingResult<UrlProcessingResultObject> result = goesPlotterService.goesPlot(startTime, endTime);
+                            ProcessingResult<UrlProcessingResultObject> result = goesPlotterService.goesPlot(startTime, endTime, eu.heliovo.clientapi.processing.context.GoesPlotterService.PlotType.BOTH);
                             UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
                             URL url = resultObject.getUrl();
                             body.append("<p>").append(url);

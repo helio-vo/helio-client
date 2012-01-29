@@ -31,6 +31,11 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
      * The end date
      */
     private Date endTime;
+    
+    /**
+     * The plot type to use
+     */
+    private PlotType plotType;
 
     /**
      * ID of the goes plotter
@@ -49,9 +54,10 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
      * @see eu.heliovo.clientapi.processing.context.impl.GoesPlotClient#goesPlot(java.lang.String, java.lang.String)
      */
     @Override
-    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startTime, Date endTime) {
+    public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startTime, Date endTime, PlotType plotType) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.plotType = plotType;
         return execute();
     }
 
@@ -68,6 +74,9 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
         input.getParameter().add(startTimeVal);
         ParameterValue endTimeVal = createParameterValue("EndDate", DateUtil.toIsoDateString(endTime), false);
         input.getParameter().add(endTimeVal);
+        ParameterValue plottypeVal = createParameterValue("Type", getPlotType().getLabel(), false);
+        input.getParameter().add(plottypeVal);
+        
         tool.setInput(input);
         
         Output output = new Output();
@@ -110,5 +119,15 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     @Override
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+    
+    @Override
+    public void setPlotType(PlotType plotType) {
+        this.plotType = plotType;
+    }
+    
+    @Override
+    public PlotType getPlotType() {
+        return plotType;
     }
 }
