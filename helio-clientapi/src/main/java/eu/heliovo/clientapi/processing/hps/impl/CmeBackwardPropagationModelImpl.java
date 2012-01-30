@@ -188,11 +188,6 @@ public class CmeBackwardPropagationModelImpl extends AbstractHelioProcessingServ
         return APPLICATION_ID;
     }
     
-    public String[] HIT_OBJECT_DOMAIN = new String[] {
-            "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", 
-            "Cassini", "Dawn", "Galileo", "Messenger", "NewHorizons", "Rosetta", "StereoA", "StereoB", 
-            "Ulysses", "Voyager1", "Voyager2"}; 
-
     @Override
     protected void setParameter(ApplicationParameter param) {
         String name = param.getName();
@@ -201,7 +196,7 @@ public class CmeBackwardPropagationModelImpl extends AbstractHelioProcessingServ
             param.setValue(DateUtil.toIsoDateString(getStartTime()));
         } else if (name.contains("hit object")) {
             checkType("hitObject", "String", "String");
-            checkType("hitObject", "String", "String");
+            checkValueDomain("hitObject", getHitObject(), Arrays.asList(AbstractHelioProcessingServiceImpl.HIT_OBJECT_DOMAIN));
             param.setValue(""+getHitObject());
         } else if (name.contains("width")) {
             checkType("width", "Float", "Float");

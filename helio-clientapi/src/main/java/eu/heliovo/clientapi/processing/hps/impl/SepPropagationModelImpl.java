@@ -26,7 +26,7 @@ public class SepPropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     /**
      * the application id.
      */
-    private static final String APPLICATION_ID = "pm_sep";
+    private static final String APPLICATION_ID = "pm_sep_fw";
 
     /**
      * Name of the variant

@@ -20,17 +20,21 @@ import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
+import eu.heliovo.clientapi.processing.hps.CirBackwardPropagationModel;
+import eu.heliovo.clientapi.processing.hps.CirPropagationModel;
+import eu.heliovo.clientapi.processing.hps.CirPropagationModel.CirProcessingResultObject;
 import eu.heliovo.clientapi.processing.hps.CmeBackwardPropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.SepBackwardPropagationModel;
 import eu.heliovo.clientapi.processing.hps.SepPropagationModel;
 import eu.heliovo.clientapi.processing.hps.SepPropagationModel.SepProcessingResultObject;
-import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel;
-import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel.SolarWindProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.impl.CirBackwardPropagationModelImpl;
+import eu.heliovo.clientapi.processing.hps.impl.CirPropagationModelImpl;
 import eu.heliovo.clientapi.processing.hps.impl.CmeBackwardPropagationModelImpl;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
+import eu.heliovo.clientapi.processing.hps.impl.SepBackwardPropagationModelImpl;
 import eu.heliovo.clientapi.processing.hps.impl.SepPropagationModelImpl;
-import eu.heliovo.clientapi.processing.hps.impl.SolarWindPropagationModelImpl;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.query.HelioQueryResult;
@@ -81,11 +85,14 @@ public class HelioClientDemo {
 //        config.add("desPlot_Stb");
 //        config.add("desPlot_Ulysses");
 //        config.add("desPlot_Wind");
-        config.add("flarePlot");
+//        config.add("flarePlot");
 //        config.add("cmePM");
 //        config.add("cmeBwPM");
-//        config.add("swPM");
-//        config.add("sepPM");
+//        config.add("cirPM");
+//        config.add("cirBwPM");
+        config.add("sepPM");
+        config.add("sepBwPM");
+//        config.add("dpas");
 //        config.add("taverna2283");
 //        config.add("dumpServices");
     }
@@ -97,11 +104,12 @@ public class HelioClientDemo {
     public void run() {
         HelioClient helioClient = new HelioClient();
         helioClient.init();
-//        DebugUtils.enableDump();
+        DebugUtils.enableDump();
         if (config.contains("ils")) getIls(helioClient);
         if (config.contains("hec")) getHec(helioClient);
         if (config.contains("hec_sync")) getHecSync(helioClient);
         if (config.contains("icsPat")) getIcsPat(helioClient);
+        if (config.contains("dpas")) runDPAS(helioClient);
         if (config.contains("desPlot_Ace")) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Sta")) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Stb")) getDesPlot(helioClient, StbPlotterServiceImpl.SERVICE_VARIANT);
@@ -110,8 +118,10 @@ public class HelioClientDemo {
         if (config.contains("flarePlot")) doFlarePlot(helioClient);
         if (config.contains("cmePM")) runCmePropagationModel(helioClient);
         if (config.contains("cmeBwPM")) runCmeBackwardPropagationModel(helioClient);
-        if (config.contains("swPM")) runSolarWindPropagationModel(helioClient);
+        if (config.contains("cirPM")) runCirPropagationModel(helioClient);
+        if (config.contains("cirBwPM")) runCirBackwardPropagationModel(helioClient);
         if (config.contains("sepPM")) runSepPropagationModel(helioClient);
+        if (config.contains("sepBwPM")) runSepBackwardPropagationModel(helioClient);
         if (config.contains("dumpServices")) dumpServices(helioClient);
         if (config.contains("taverna2283")) doTaverna2283(helioClient);
         DebugUtils.disableDump();
@@ -169,10 +179,10 @@ public class HelioClientDemo {
      * run a propagation model service.
      * @param helioClient
      */
-    private void runSolarWindPropagationModel(HelioClient helioClient) {
-        SolarWindPropagationModel processingService = (SolarWindPropagationModel) 
+    private void runCirPropagationModel(HelioClient helioClient) {
+        CirPropagationModel processingService = (CirPropagationModel) 
                 helioClient.getServiceInstance(HelioServiceName.HPS, 
-                        ServiceCapability.HELIO_PROCESSING_SERVICE, SolarWindPropagationModelImpl.SERVICE_VARIANT);
+                        ServiceCapability.HELIO_PROCESSING_SERVICE, CirPropagationModelImpl.SERVICE_VARIANT);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         
@@ -180,8 +190,29 @@ public class HelioClientDemo {
         cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
         float longitude = 0; 
         float speed = 600;
-        ProcessingResult<SolarWindProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, speed);
-        SolarWindProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        ProcessingResult<CirProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, speed);
+        CirProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        System.out.println(resultObject.getVoTableUrl());
+        System.out.println(resultObject.getInnerPlotUrl());
+        System.out.println(resultObject.getOuterPlotUrl());
+    }
+
+    /**
+     * run a propagation model service.
+     * @param helioClient
+     */
+    private void runCirBackwardPropagationModel(HelioClient helioClient) {
+        CirBackwardPropagationModel processingService = (CirBackwardPropagationModel) 
+                helioClient.getServiceInstance(HelioServiceName.HPS, 
+                        ServiceCapability.HELIO_PROCESSING_SERVICE, CirBackwardPropagationModelImpl.SERVICE_VARIANT);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String object = "Earth";
+        cal.setTimeInMillis(0);
+        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+        float speed = 600;
+        ProcessingResult<CirProcessingResultObject> result = processingService.execute(cal.getTime(), object, speed);
+        CirProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         System.out.println(resultObject.getVoTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());
         System.out.println(resultObject.getOuterPlotUrl());
@@ -205,6 +236,30 @@ public class HelioClientDemo {
         float speedError = 0;
         float beta = 0.9f;
         ProcessingResult<SepProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, speed, speedError, beta);
+        SepProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
+        System.out.println(resultObject.getVoTableUrl());
+        System.out.println(resultObject.getInnerPlotUrl());
+        System.out.println(resultObject.getOuterPlotUrl());
+    }
+
+    /**
+     * run a propagation model service.
+     * @param helioClient
+     */
+    private void runSepBackwardPropagationModel(HelioClient helioClient) {
+        SepBackwardPropagationModel processingService = (SepBackwardPropagationModel) 
+                helioClient.getServiceInstance(HelioServiceName.HPS, 
+                        ServiceCapability.HELIO_PROCESSING_SERVICE, SepBackwardPropagationModelImpl.SERVICE_VARIANT);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        
+        cal.setTimeInMillis(0);
+        cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
+        String object = "Earth";
+        float speed = 100;
+        float speedError = 0;
+        float beta = 0.9f;
+        ProcessingResult<SepProcessingResultObject> result = processingService.execute(cal.getTime(), object, speed, speedError, beta);
         SepProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         System.out.println(resultObject.getVoTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());
@@ -322,6 +377,18 @@ public class HelioClientDemo {
         AsyncQueryService service = (AsyncQueryService)helioClient.getServiceInstance(HelioServiceName.ICS, ServiceCapability.ASYNC_QUERY_SERVICE, "ivo://helio-vo.eu/ics/ics_pat");
         //System.out.println(service.getClass());
         HelioQueryResult result = service.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
+        System.out.println(result.asURL());
+        System.out.println(trunc(result.asString(), 5000));        
+    }
+    
+    /**
+     * Exec a DPAS query
+     * @param helioClient the client
+     */
+    private void runDPAS(HelioClient helioClient) {
+        SyncQueryService service = (SyncQueryService)helioClient.getServiceInstance(HelioServiceName.DPAS, ServiceCapability.SYNC_QUERY_SERVICE, null);
+        //System.out.println(service.getClass());
+        HelioQueryResult result = service.query(Arrays.asList("2004-03-25T08:00:00"), Arrays.asList("2004-03-27T22:00:00"), Arrays.asList("WIND__SWE"), null, 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));        
     }

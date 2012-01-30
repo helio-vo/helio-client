@@ -7,8 +7,8 @@ import java.util.List;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.hps.AbstractHelioProcessingServiceImpl;
-import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel;
-import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel.SolarWindProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.SepBackwardPropagationModel;
+import eu.heliovo.clientapi.processing.hps.SepPropagationModel.SepProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.hps.server.ApplicationParameter;
 import eu.heliovo.registryclient.AccessInterface;
@@ -21,12 +21,12 @@ import eu.heliovo.shared.util.DateUtil;
  * @author MarcoSoldati
  *
  */
-public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServiceImpl<SolarWindProcessingResultObject> implements SolarWindPropagationModel {
+public class SepBackwardPropagationModelImpl extends AbstractHelioProcessingServiceImpl<SepProcessingResultObject> implements SepBackwardPropagationModel {
 
     /**
      * the application id.
      */
-    private static final String APPLICATION_ID = "pm_sw";
+    private static final String APPLICATION_ID = "pm_sep_back";
 
     /**
      * Name of the variant
@@ -37,7 +37,7 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
      * Default constructor.
      * @param accessInterfaces the access interfaces to use.
      */
-    public SolarWindPropagationModelImpl(AccessInterface[] accessInterfaces) {
+    public SepBackwardPropagationModelImpl(AccessInterface[] accessInterfaces) {
         super(HelioServiceName.HPS, null, accessInterfaces);
     }
 
@@ -47,14 +47,24 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
     private Date startTime;
     
     /**
-     * Position of cme on sun
+     * The hit object
      */
-    private float longitude;
+    private String hitObject;
     
     /**
      * Speed
      */
     private float speed;
+    
+    /**
+     * Error
+     */
+    private float speedError;
+    
+    /**
+     * Fraction of light speed.
+     */
+    private float beta;
     
     @Override
     public void setStartTime(Date startTime) {
@@ -67,13 +77,24 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
     }
 
     @Override
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public String getHitObject() {
+        return hitObject;
     }
 
     @Override
-    public float getLongitude() {
-        return longitude;
+    public void setHitObject(String hitObject) {
+        this.hitObject = hitObject;
+    }
+    
+    @Override
+    public void setBeta(float beta) {
+        this.beta = beta;
+        
+    }
+
+    @Override
+    public float getBeta() {
+        return beta;
     }
 
     @Override
@@ -85,12 +106,24 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
     public float getSpeed() {
         return speed;
     }
+
+    @Override
+    public void setSpeedError(float speedError) {
+        this.speedError = speedError;
+    }
+
+    @Override
+    public float getSpeedError() {
+        return speedError;
+    }
     
     @Override
-    public ProcessingResult<SolarWindProcessingResultObject> execute(Date startTime, Float longitude, Float speed) throws JobExecutionException {
+    public ProcessingResult<SepProcessingResultObject> execute(Date startTime, String hitObject, Float speed, Float speedError, Float beta) throws JobExecutionException {
         this.setStartTime(startTime);
-        this.setLongitude(longitude);
+        this.setHitObject(hitObject);
+        this.setBeta(beta);
         this.setSpeed(speed);
+        this.setSpeedError(speedError);
         return execute();
     }
 
@@ -100,25 +133,25 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
     private static final List<String> OUTPUT_NAMES = Arrays.asList("votable_url", "outerplot_url", "innerplot_url");
 
     @Override
-    protected SolarWindProcessingResultObject createResultObject(final AccessInterface accessInterface, final String executionId) {
+    protected SepProcessingResultObject createResultObject(final AccessInterface accessInterface, final String executionId) {
         // FIXME: hardcoded
         final String baseUrl = "http://cagnode58.cs.tcd.ie/output_dir/" + executionId + "/";
         
-        return new SolarWindProcessingResultObject() {
+        return new SepProcessingResultObject() {
             
             @Override
             public URL getVoTableUrl() {
-                return HelioFileUtil.asURL(baseUrl + "sw_pm.votable");
+                return HelioFileUtil.asURL(baseUrl + "sep_pm.votable");
             }
             
             @Override
             public URL getOuterPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "sw_pm_outer.png");
+                return HelioFileUtil.asURL(baseUrl + "sep_pm_outer.png");
             }
             
             @Override
             public URL getInnerPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "sw_pm_inner.png");
+                return HelioFileUtil.asURL(baseUrl + "sep_pm_inner.png");
             }
             
             @Override
@@ -154,12 +187,19 @@ public class SolarWindPropagationModelImpl extends AbstractHelioProcessingServic
         if (name.contains("time")) {
             checkType("startTime", "String", "String");
             param.setValue(DateUtil.toIsoDateString(getStartTime()));
-        } else if (name.contains("point")) {
-            checkType("longitude", "Float", "Float");
-            param.setValue(""+getLongitude());
+        } else if (name.contains("hit object")) {
+            checkType("hitObject", "String", "String");
+            checkValueDomain("hitObject", getHitObject(), Arrays.asList(HIT_OBJECT_DOMAIN));
+            param.setValue(""+getHitObject());
         } else if (name.contains("starting speed")) {
             checkType("speed", "Float", "Float");
             param.setValue(""+getSpeed());
+        } else if (name.contains("error speed")) {
+            checkType("speedError", "Float", "Float");
+            param.setValue(""+getSpeedError());
+        } else if (name.contains("Beta")) {
+            checkType("beta", "Float", "Float");
+            param.setValue(""+getBeta());
         } else {
             throw new JobExecutionException("Internal Error: Unknown parameter found: " + param.getName());
         }

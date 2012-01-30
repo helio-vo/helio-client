@@ -7,8 +7,8 @@ import java.util.List;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.hps.AbstractHelioProcessingServiceImpl;
-import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
-import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.CirBackwardPropagationModel;
+import eu.heliovo.clientapi.processing.hps.CirPropagationModel.CirProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.hps.server.ApplicationParameter;
 import eu.heliovo.registryclient.AccessInterface;
@@ -21,12 +21,12 @@ import eu.heliovo.shared.util.DateUtil;
  * @author MarcoSoldati
  *
  */
-public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<CmeProcessingResultObject> implements CmePropagationModel {
+public class CirBackwardPropagationModelImpl extends AbstractHelioProcessingServiceImpl<CirProcessingResultObject> implements CirBackwardPropagationModel {
 
     /**
      * the application id.
      */
-    private static final String APPLICATION_ID = "pm_cme_fw";
+    private static final String APPLICATION_ID = "pm_cir_back";
 
     /**
      * Name of the variant
@@ -37,7 +37,7 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
      * Default constructor.
      * @param accessInterfaces the access interfaces to use.
      */
-    public CmePropagationModelImpl(AccessInterface[] accessInterfaces) {
+    public CirBackwardPropagationModelImpl(AccessInterface[] accessInterfaces) {
         super(HelioServiceName.HPS, null, accessInterfaces);
     }
 
@@ -47,24 +47,14 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     private Date startTime;
     
     /**
-     * Position of cme on sun
+     * The object hit by the event.
      */
-    private float longitude;
-    
-    /**
-     * Size of CME.
-     */
-    private float width;
-    
+    private String hitObject;
+        
     /**
      * Speed
      */
     private float speed;
-    
-    /**
-     * Error
-     */
-    private float speedError;
     
     @Override
     public void setStartTime(Date startTime) {
@@ -77,24 +67,13 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     }
 
     @Override
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public String getHitObject() {
+        return hitObject;
     }
 
     @Override
-    public float getLongitude() {
-        return longitude;
-    }
-
-    @Override
-    public void setWidth(float width) {
-        this.width = width;
-        
-    }
-
-    @Override
-    public float getWidth() {
-        return width;
+    public void setHitObject(String hitObject) {
+        this.hitObject = hitObject;
     }
 
     @Override
@@ -106,59 +85,42 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     public float getSpeed() {
         return speed;
     }
-
-    @Override
-    public void setSpeedError(float speedError) {
-        this.speedError = speedError;
-    }
-
-    @Override
-    public float getSpeedError() {
-        return speedError;
-    }
     
     @Override
-    public ProcessingResult<CmeProcessingResultObject> execute(Date startTime, Float longitude, Float width, Float speed, Float speedError) throws JobExecutionException {
+    public ProcessingResult<CirProcessingResultObject> execute(Date startTime, String hitObject, Float speed) throws JobExecutionException {
         this.setStartTime(startTime);
-        this.setLongitude(longitude);
-        this.setWidth(width);
+        this.setHitObject(hitObject);
         this.setSpeed(speed);
-        this.setSpeedError(speedError);
         return execute();
     }
 
     /**
      * Output names 
      */
-    private static final List<String> OUTPUT_NAMES = Arrays.asList("votable_url", "outerplot_url", "innerplot_url", "voyagerplot_url");
+    private static final List<String> OUTPUT_NAMES = Arrays.asList("votable_url", "outerplot_url", "innerplot_url");
 
     @Override
-    protected CmeProcessingResultObject createResultObject(final AccessInterface accessInterface, final String executionId) {
+    protected CirProcessingResultObject createResultObject(final AccessInterface accessInterface, final String executionId) {
         // FIXME: hardcoded
         final String baseUrl = "http://cagnode58.cs.tcd.ie/output_dir/" + executionId + "/";
         
-        return new CmeProcessingResultObject() {
+        return new CirProcessingResultObject() {
             
             @Override
             public URL getVoTableUrl() {
-                return HelioFileUtil.asURL(baseUrl + "cme_pm.votable");
+                return HelioFileUtil.asURL(baseUrl + "cir_pm.votable");
             }
             
             @Override
             public URL getOuterPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "cme_pm_outer.png");
+                return HelioFileUtil.asURL(baseUrl + "cir_pm_outer.png");
             }
             
             @Override
             public URL getInnerPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "cme_pm_inner.png");
+                return HelioFileUtil.asURL(baseUrl + "cir_pm_inner.png");
             }
             
-            @Override
-            public URL getVoyagerPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "cme_pm_voyag.png");
-            }
-
             @Override
             public List<String> getOutputNames() throws JobExecutionException {
                 return OUTPUT_NAMES;
@@ -174,8 +136,6 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
                     return getOuterPlotUrl();
                 case 2:
                     return getInnerPlotUrl();
-                case 3:
-                    return getVoyagerPlotUrl();
                 default:
                     throw new IllegalArgumentException("Unknown output name: " + outputName);
                 }
@@ -194,18 +154,13 @@ public class CmePropagationModelImpl extends AbstractHelioProcessingServiceImpl<
         if (name.contains("time")) {
             checkType("startTime", "String", "String");
             param.setValue(DateUtil.toIsoDateString(getStartTime()));
-        } else if (name.contains("point")) {
-            checkType("longitude", "Float", "Float");
-            param.setValue(""+getLongitude());
-        } else if (name.contains("width")) {
-            checkType("width", "Float", "Float");
-            param.setValue(""+getWidth());
+        } else if (name.contains("hit object")) {
+            checkType("hitObject", "String", "String");
+            checkValueDomain("hitObject", getHitObject(), Arrays.asList(HIT_OBJECT_DOMAIN));
+            param.setValue(""+getHitObject());
         } else if (name.contains("starting speed")) {
             checkType("speed", "Float", "Float");
             param.setValue(""+getSpeed());
-        } else if (name.contains("error speed")) {
-            checkType("speedError", "Float", "Float");
-            param.setValue(""+getSpeedError());
         } else {
             throw new JobExecutionException("Internal Error: Unknown parameter found: " + param.getName());
         }

@@ -1,19 +1,17 @@
 package eu.heliovo.clientapi.processing.hps;
 
-import java.net.URL;
 import java.util.Date;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
-import eu.heliovo.clientapi.processing.hps.SolarWindPropagationModel.SolarWindProcessingResultObject;
+import eu.heliovo.clientapi.processing.hps.CirPropagationModel.CirProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
  * Marker interface for a propagation model processing service.
  * @author MarcoSoldati
  */
-public interface SolarWindPropagationModel extends ProcessingService<SolarWindProcessingResultObject> {
+public interface CirBackwardPropagationModel extends ProcessingService<CirProcessingResultObject> {
     /**
      * Set the start time of the propagation
      * @param startTime the start time
@@ -27,16 +25,15 @@ public interface SolarWindPropagationModel extends ProcessingService<SolarWindPr
     public Date getStartTime();
     
     /**
-     * Set the longitude of the CME.
-     * @param longitude the longitude on the sun.
+     * Get the name of the object that has been hit.
+     * @return the object that has been hit.
      */
-    public void setLongitude(float longitude);
+    public String getHitObject();
     
     /**
-     * Get the longitude of the CME.
-     * @return the longitude
+     * Set the object that has been hit by an event.
      */
-    public float getLongitude();
+    public void setHitObject(String hitObject);
     
     /**
      * Set the CME speed
@@ -54,35 +51,10 @@ public interface SolarWindPropagationModel extends ProcessingService<SolarWindPr
      * Convenience method to call the propagation model in one single method. 
      * Alternatively you can call the setter-methods and then the generic {@link #execute()} method.
      * @param startTime the start time
-     * @param longitude the longitude of the CME on the Sun.
+     * @param the object hit by the solar wind.
      * @param speed the speed
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract ProcessingResult<SolarWindProcessingResultObject> execute(Date startTime, Float longitude, Float speed) throws JobExecutionException;
-
-    /**
-     * The result object returned by this model
-     * @author MarcoSoldati
-     *
-     */
-    public interface SolarWindProcessingResultObject extends ProcessingResultObject {
-        /**
-         * URL to the inner plot URL.
-         * @return the inner plot
-         */
-        public URL getInnerPlotUrl();
-        
-        /**
-         * URL to the outer plot URL
-         * @return the outer plot URL
-         */
-        public URL getOuterPlotUrl();
-
-        /**
-         * URL to the VOTable
-         * @return the voTable.
-         */
-        public URL getVoTableUrl();
-    }
+    public abstract ProcessingResult<CirProcessingResultObject> execute(Date startTime, String hitObject, Float speed) throws JobExecutionException;
 }

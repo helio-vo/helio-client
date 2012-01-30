@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.processing.hps;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,11 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
      * Name of the port
      */
     private final static QName HPS_SERVICE_PORT = new QName("http://server.hps.heliovo.eu/", "HPSServiceImplPort");
+
+    public static final String[] HIT_OBJECT_DOMAIN = new String[] {
+    "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", 
+    "Cassini", "Dawn", "Galileo", "Messenger", "NewHorizons", "Rosetta", "StereoA", "StereoB", 
+    "Ulysses", "Voyager1", "Voyager2"};
 
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
@@ -201,7 +207,7 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
      * @param value the value 
      * @param valueDomain the domain.
      */
-    protected void checkValueDomain(String paramName, Object value, List<Object> valueDomain) {
+    protected <U extends Object> void checkValueDomain(String paramName, U value, Collection<U> valueDomain) {
         if (!valueDomain.contains(value)) {
             throw new JobExecutionException("Selected value for parameter " + paramName + " is not part of value domain: " + valueDomain);
         }
