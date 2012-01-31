@@ -204,6 +204,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
                 Phase currentPhase;
                 try {
                     currentPhase = future.get().getPhase();
+                    Collections.addAll(this.userLogs, future.get().getUserLogs());
                 } catch (InterruptedException e) {
                     throw new JobExecutionException("Got interrupted while calling '" + callId + "': " + e.getMessage(), e);
                 } catch (ExecutionException e) {

@@ -16,7 +16,7 @@ public class CdawStereoLinkProvider extends AbstractDailyLinkProvider {
     /**
      * Template for the link. Date format is: 20110912_2359.
      */
-    private static final String PROVIDER_TEMPLATE = "http://cdaw.gsfc.nasa.gov/movie/make_javamovie.php?img1=stb_e171&img2=sta_e171&stime=%1$tY%1$tm%1$td_&1$tH%1$tm&etime=%2$tY%2$tm%2$td_&2$tH%2$tm";
+    private static final String PROVIDER_TEMPLATE = "http://cdaw.gsfc.nasa.gov/movie/make_javamovie.php?img1=stb_e171&img2=sta_e171&stime=%1$tY%1$tm%1$td_%1$tH%1$tm&etime=%2$tY%2$tm%2$td_%2$tH%2$tm";
     /**
      * Template for the title.  
      */

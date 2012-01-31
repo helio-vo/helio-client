@@ -61,7 +61,7 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
     public URL getLink(Date startTime, Date endTime) {
         AssertUtil.assertArgumentNotNull(startTime, "startTime");
         if (pageExists(startTime, endTime)) {
-            return HelioFileUtil.asURL(String.format(providerTemplate, startTime));
+            return HelioFileUtil.asURL(String.format(providerTemplate, startTime, endTime));
         }
         return null;
     }
@@ -77,7 +77,7 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
             return title;
         }
         if (pageExists(startTime, endTime)) {
-            return String.format(titleTemplate, startTime);
+            return String.format(titleTemplate, startTime, endTime);
         }
         return null;
     }
