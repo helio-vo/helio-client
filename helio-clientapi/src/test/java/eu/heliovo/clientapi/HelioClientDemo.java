@@ -78,7 +78,7 @@ public class HelioClientDemo {
     static {
 //        config.add("ils");
 //        config.add("hec");
-//        config.add("hec_sync");
+        config.add("hec_sync");
 //        config.add("icsPat");
 //        config.add("desPlot_Ace");
 //        config.add("desPlot_Sta");
@@ -88,8 +88,8 @@ public class HelioClientDemo {
 //        config.add("flarePlot");
 //        config.add("cmePM");
 //        config.add("cmeBwPM");
-        config.add("cirPM");
-        config.add("cirBwPM");
+//        config.add("cirPM");
+//        config.add("cirBwPM");
 //        config.add("sepPM");
 //        config.add("sepBwPM");
 //        config.add("dpas");

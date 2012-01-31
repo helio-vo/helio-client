@@ -70,4 +70,13 @@ public abstract class AbstractServiceImpl implements HelioService {
     	return description;
     }
 
+    /**
+     * Get the best access interface.
+     * @return the best known access interface
+     */
+    protected AccessInterface getBestAccessInterface() {
+        AccessInterface bestAccessInterface = loadBalancer.getBestEndPoint(accessInterfaces);
+        return bestAccessInterface;
+    }
+
 }

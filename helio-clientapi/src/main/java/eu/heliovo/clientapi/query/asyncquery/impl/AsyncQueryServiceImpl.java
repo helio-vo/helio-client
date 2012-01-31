@@ -64,15 +64,6 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
 	}
 
 	/**
-	 * Get the best access interface.
-	 * @return the best known access interface
-	 */
-	protected AccessInterface getBestAccessInterface() {
-        AccessInterface bestAccessInterface = loadBalancer.getBestEndPoint(accessInterfaces);
-        return bestAccessInterface;
-    }
-
-	/**
 	 * Use JAXWS to create a new service port for a given set of WSDL locations.
 	 * @param accessInterface the service endpoint
 	 * @return the port to access the service.

@@ -8,14 +8,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 
@@ -83,7 +87,6 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	 */
 	public SyncQueryServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
 	    super(serviceName, null, description, accessInterfaces);
-	    updateCurrentInterface();
 	}
 	
 	/**
@@ -106,23 +109,15 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	    this.currentPort = port;
 	    this.currentAccessInterface = accessInterface;
 	}
-
-	/**
-	 * Retrieve the next interface to use from the load balancer. 
-	 */
-    protected void updateCurrentInterface() {
-        this.currentAccessInterface=loadBalancer.getBestEndPoint(accessInterfaces);
-        this.currentPort = getPort(currentAccessInterface);
-        _LOGGER.info("Using service at: " + currentAccessInterface);
-    }
 	
 	/**
 	 * Use JAXWS to create a new service port for a given WSDL location.
 	 * @param accessInterface the service endpoint
 	 * @return the port to access the service.
 	 */
-	private static HelioQueryService getPort(AccessInterface accessInterface) {
-		AssertUtil.assertArgumentNotNull(accessInterface, "wsdlLocation");
+	protected HelioQueryService getPort(AccessInterface accessInterface) {
+		AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
+		
 		HelioQueryServiceService queryService = new HelioQueryServiceService(accessInterface.getUrl(), SERVICE_NAME);		
 		HelioQueryService port = queryService.getHelioQueryServicePort();
 		if (_LOGGER.isDebugEnabled()) {
@@ -158,42 +153,72 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 
-		String callId = currentAccessInterface.getUrl() + "::syncQuery";
-		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
+        Set<AccessInterface> triedInterfaces = new HashSet<AccessInterface>();
+        
+        while (true) {
+            // get the end point
+            final AccessInterface bestAccessInterface = getBestAccessInterface();
+            if (!triedInterfaces.add(bestAccessInterface)) {
+                throw new JobExecutionException("All registered remote services are unavailable. Tried to access: " + triedInterfaces.toString());
+            };
 
-		StringBuilder message = new StringBuilder();
-		message.append("Executing 'result=query(");
-		message.append("startTime=").append(startTime);
-		message.append(", ").append("endTime=").append(endTime);
-		message.append(", ").append("from=").append(from);
-		message.append(", ").append("where=").append(where);
-		message.append(", ").append("maxrecords=").append(maxrecords);
-		message.append(", ").append("startIndex=").append(startindex);
-		message.append(", ").append("join=").append(join);
-		message.append(")'");
-		
-		if (_LOGGER.isTraceEnabled()) {
-			_LOGGER.trace(message.toString());
-		}
-		
-		logRecords.add(new LogRecord(Level.INFO, message.toString()));
+    		String callId = bestAccessInterface.getUrl() + "::syncQuery";
+    		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
-		// wait for result
-		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
-			@Override
-			public VOTABLE call() throws Exception {
-				VOTABLE result = currentPort.query(startTime, endTime, from, where, null, maxrecords, startindex, join);
-				return result;
-			}
-		}, callId, timeout);
-		
-		if (votable == null) {
-			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
-		}
-		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
-		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
+    		StringBuilder message = new StringBuilder();
+    		message.append("Executing 'result=query(");
+    		message.append("startTime=").append(startTime);
+    		message.append(", ").append("endTime=").append(endTime);
+    		message.append(", ").append("from=").append(from);
+    		message.append(", ").append("where=").append(where);
+    		message.append(", ").append("maxrecords=").append(maxrecords);
+    		message.append(", ").append("startIndex=").append(startindex);
+    		message.append(", ").append("join=").append(join);
+    		message.append(")'");
+    		
+			_LOGGER.info(message.toString());
+			logRecords.add(new LogRecord(Level.INFO, message.toString()));
 
-		return result;
+    		// wait for result
+			try {
+	            final HelioQueryService port = getPort(bestAccessInterface);
+	            
+	            // wait for the result
+	            // FIXME: change to prevent marshalling the result
+        		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
+        			@Override
+        			public VOTABLE call() throws Exception {
+                        long start = System.currentTimeMillis(); 
+        				VOTABLE result = port.query(startTime, endTime, from, where, null, maxrecords, startindex, join);
+                        loadBalancer.updateAccessTime(bestAccessInterface, System.currentTimeMillis() - start);
+        				return result;
+        			}
+        		}, callId, timeout);
+    		
+        		if (votable == null) {
+        			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
+        		}
+        		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
+        		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
+        
+        		return result;
+			} catch (WebServiceException e) {
+                // get port fails
+                String msg = "Timeout occurred. Trying to failover.";
+                logRecords.add(new LogRecord(Level.INFO, msg));
+                _LOGGER.info(msg);
+                loadBalancer.updateAccessTime(bestAccessInterface, -1);
+            } catch (JobExecutionException e) { // handle timeout
+                if (e.getCause() instanceof TimeoutException) {
+                    String msg = "Timeout occurred. Trying to failover.";
+                    logRecords.add(new LogRecord(Level.INFO, msg));
+                    _LOGGER.info(msg);
+                    loadBalancer.updateAccessTime(bestAccessInterface, -1);                 
+                } else {
+                    throw e;
+                }
+            }
+        }
 	}
 
 	@Override
