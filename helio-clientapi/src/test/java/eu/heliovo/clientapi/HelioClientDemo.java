@@ -88,10 +88,10 @@ public class HelioClientDemo {
 //        config.add("flarePlot");
 //        config.add("cmePM");
 //        config.add("cmeBwPM");
-//        config.add("cirPM");
-//        config.add("cirBwPM");
-        config.add("sepPM");
-        config.add("sepBwPM");
+        config.add("cirPM");
+        config.add("cirBwPM");
+//        config.add("sepPM");
+//        config.add("sepBwPM");
 //        config.add("dpas");
 //        config.add("taverna2283");
 //        config.add("dumpServices");
@@ -190,7 +190,8 @@ public class HelioClientDemo {
         cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
         float longitude = 0; 
         float speed = 600;
-        ProcessingResult<CirProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, speed);
+        float speedError = 10;
+        ProcessingResult<CirProcessingResultObject> result = processingService.execute(cal.getTime(), longitude, speed, speedError);
         CirProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         System.out.println(resultObject.getVoTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());
@@ -211,7 +212,8 @@ public class HelioClientDemo {
         cal.setTimeInMillis(0);
         cal.set(2003, Calendar.JANUARY, 1, 0, 0, 0);
         float speed = 600;
-        ProcessingResult<CirProcessingResultObject> result = processingService.execute(cal.getTime(), object, speed);
+        float speedError = 10;
+        ProcessingResult<CirProcessingResultObject> result = processingService.execute(cal.getTime(), object, speed, speedError);
         CirProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         System.out.println(resultObject.getVoTableUrl());
         System.out.println(resultObject.getInnerPlotUrl());

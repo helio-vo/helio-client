@@ -51,15 +51,28 @@ public interface CirPropagationModel extends ProcessingService<CirProcessingResu
     public float getSpeed();
 
     /**
+     * Set the CME speed error
+     * @param speedError the speedError
+     */
+    public void setSpeedError(float speedError);
+    
+    /**
+     * Get the speed error
+     * @return the speed error.
+     */
+    public float getSpeedError();
+    
+    /**
      * Convenience method to call the propagation model in one single method. 
      * Alternatively you can call the setter-methods and then the generic {@link #execute()} method.
      * @param startTime the start time
      * @param longitude the longitude of the CME on the Sun.
      * @param speed the speed
+     * @param speedError the speed error
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract ProcessingResult<CirProcessingResultObject> execute(Date startTime, Float longitude, Float speed) throws JobExecutionException;
+    public abstract ProcessingResult<CirProcessingResultObject> execute(Date startTime, Float longitude, Float speed, Float speedError) throws JobExecutionException;
 
     /**
      * The result object returned by this model

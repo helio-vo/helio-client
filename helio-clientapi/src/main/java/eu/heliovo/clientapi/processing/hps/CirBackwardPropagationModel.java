@@ -48,13 +48,26 @@ public interface CirBackwardPropagationModel extends ProcessingService<CirProces
     public float getSpeed();
 
     /**
+     * Set the CME speed error
+     * @param speedError the speedError
+     */
+    public void setSpeedError(float speedError);
+    
+    /**
+     * Get the speed error
+     * @return the speed error.
+     */
+    public float getSpeedError();
+
+    /**
      * Convenience method to call the propagation model in one single method. 
      * Alternatively you can call the setter-methods and then the generic {@link #execute()} method.
      * @param startTime the start time
      * @param the object hit by the solar wind.
      * @param speed the speed
+     * @param speedError the speedError
      * @return an object to access the result of the call asynchronously.
      * @throws JobExecutionException if anything goes wrong the exception will be wrapped in a JobExecutionException.
      */
-    public abstract ProcessingResult<CirProcessingResultObject> execute(Date startTime, String hitObject, Float speed) throws JobExecutionException;
+    public abstract ProcessingResult<CirProcessingResultObject> execute(Date startTime, String hitObject, Float speed, Float speedError) throws JobExecutionException;
 }

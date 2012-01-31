@@ -56,6 +56,11 @@ public class CirPropagationModelImpl extends AbstractHelioProcessingServiceImpl<
      */
     private float speed;
     
+    /**
+     * The speed error
+     */
+    private float speedError;
+    
     @Override
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
@@ -87,10 +92,21 @@ public class CirPropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     }
     
     @Override
-    public ProcessingResult<CirProcessingResultObject> execute(Date startTime, Float longitude, Float speed) throws JobExecutionException {
+    public void setSpeedError(float speedError) {
+        this.speedError = speedError;
+    }
+
+    @Override
+    public float getSpeedError() {
+        return speedError;
+    }
+    
+    @Override
+    public ProcessingResult<CirProcessingResultObject> execute(Date startTime, Float longitude, Float speed, Float speedError) throws JobExecutionException {
         this.setStartTime(startTime);
         this.setLongitude(longitude);
         this.setSpeed(speed);
+        this.setSpeedError(speedError);
         return execute();
     }
 
@@ -160,6 +176,9 @@ public class CirPropagationModelImpl extends AbstractHelioProcessingServiceImpl<
         } else if (name.contains("starting speed")) {
             checkType("speed", "Float", "Float");
             param.setValue(""+getSpeed());
+        } else if (name.contains("error speed")) {
+            checkType("speedError", "Float", "Float");
+            param.setValue(""+getSpeedError());
         } else {
             throw new JobExecutionException("Internal Error: Unknown parameter found: " + param.getName());
         }
