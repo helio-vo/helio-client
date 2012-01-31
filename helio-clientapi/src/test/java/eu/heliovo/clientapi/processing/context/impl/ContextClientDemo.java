@@ -29,8 +29,8 @@ import javax.swing.WindowConstants;
 import org.apache.commons.io.FileUtils;
 
 import eu.heliovo.clientapi.HelioClient;
-import eu.heliovo.clientapi.processing.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.ProcessingResult;
+import eu.heliovo.clientapi.processing.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
@@ -44,11 +44,7 @@ import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImp
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.AccessInterface;
-import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.registryclient.ServiceCapability;
-import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
-import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
  * Demo for the context client
@@ -80,8 +76,8 @@ public class ContextClientDemo {
 //        config.add("ulysses");
 //        config.add("wind");
         
-        final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
-
+        //final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
+        final AccessInterface ai = null;
         
         DebugUtils.enableDump();
         final StringBuffer sb = new StringBuffer();
