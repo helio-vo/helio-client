@@ -65,16 +65,6 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	private static final long DEFAULT_TIMEOUT = 600000;
 
 	/**
-	 * Store the port to access the query service. Apparently the port is thread-safe and can be reused.
-	 */
-	private HelioQueryService currentPort;
-	
-	/**
-     * store the currently active access interface
-     */
-    protected AccessInterface currentAccessInterface;
-	
-	/**
 	 * The timeout to wait for a result.
 	 */
 	private long timeout = DEFAULT_TIMEOUT;
@@ -106,8 +96,6 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	    if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
 	        throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
 	    }
-	    this.currentPort = port;
-	    this.currentAccessInterface = accessInterface;
 	}
 	
 	/**
@@ -247,40 +235,73 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 
 		List<LogRecord> logRecords = new ArrayList<LogRecord>();
 		
-		String callId = currentAccessInterface.getUrl() + "::syncTimeQuery";
-		logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
 
-		StringBuilder message = new StringBuilder();
-		message.append("Executing 'result=timeQuery(");
-		message.append("startTime=").append(startTime);
-		message.append(", ").append("endTime=").append(endTime);
-		message.append(", ").append("from=").append(from);
-		message.append(", ").append("maxrecords=").append(maxrecords);
-		message.append(", ").append("startIndex=").append(startindex);
-		message.append(")'");
-		
-		if (_LOGGER.isTraceEnabled()) {
-			_LOGGER.trace(message.toString());
-		}
-		
-		logRecords.add(new LogRecord(Level.INFO, message.toString()));
+        Set<AccessInterface> triedInterfaces = new HashSet<AccessInterface>();
+        
+        while (true) {
+            // get the end point
+            final AccessInterface bestAccessInterface = getBestAccessInterface();
+            if (!triedInterfaces.add(bestAccessInterface)) {
+                throw new JobExecutionException("All registered remote services are unavailable. Tried to access: " + triedInterfaces.toString());
+            };
 
-		// wait for result
-		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
-			@Override
-			public VOTABLE call() throws Exception {
-				VOTABLE result = currentPort.timeQuery(startTime, endTime, from, maxrecords, startindex);
-				return result;
-			}
-		}, callId, timeout);
-		
-		if (votable == null) {
-			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
-		}
-		
-		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
-		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
-		return result;
+            String callId = bestAccessInterface.getUrl() + "::syncQuery";
+            logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
+
+
+    		StringBuilder message = new StringBuilder();
+    		message.append("Executing 'result=timeQuery(");
+    		message.append("startTime=").append(startTime);
+    		message.append(", ").append("endTime=").append(endTime);
+    		message.append(", ").append("from=").append(from);
+    		message.append(", ").append("maxrecords=").append(maxrecords);
+    		message.append(", ").append("startIndex=").append(startindex);
+    		message.append(")'");
+    		
+    		if (_LOGGER.isTraceEnabled()) {
+    			_LOGGER.trace(message.toString());
+    		}
+    		
+    		logRecords.add(new LogRecord(Level.INFO, message.toString()));
+
+    		// get the result
+            try {
+                final HelioQueryService port = getPort(bestAccessInterface);
+                
+                // wait for the result
+                // FIXME: change to prevent marshalling the result
+        		VOTABLE votable = AsyncCallUtils.callAndWait(new Callable<VOTABLE>() {
+        			@Override
+        			public VOTABLE call() throws Exception {
+        				VOTABLE result = port.timeQuery(startTime, endTime, from, maxrecords, startindex);
+        				return result;
+        			}
+        		}, callId, timeout);
+    		
+        		if (votable == null) {
+        			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
+        		}
+    		
+        		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
+        		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
+        		return result;
+            } catch (WebServiceException e) {
+                // get port fails
+                String msg = "Timeout occurred. Trying to failover.";
+                logRecords.add(new LogRecord(Level.INFO, msg));
+                _LOGGER.info(msg);
+                loadBalancer.updateAccessTime(bestAccessInterface, -1);
+            } catch (JobExecutionException e) { // handle timeout
+                if (e.getCause() instanceof TimeoutException) {
+                    String msg = "Timeout occurred. Trying to failover.";
+                    logRecords.add(new LogRecord(Level.INFO, msg));
+                    _LOGGER.info(msg);
+                    loadBalancer.updateAccessTime(bestAccessInterface, -1);                 
+                } else {
+                    throw e;
+                }
+            }
+        }
 	}
 	
 	@Override
