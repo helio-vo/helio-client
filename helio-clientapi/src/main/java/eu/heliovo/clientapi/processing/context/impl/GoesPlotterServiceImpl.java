@@ -35,7 +35,7 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     /**
      * The plot type to use
      */
-    private PlotType plotType;
+    private PlotType plotType = PlotType.BOTH;
 
     /**
      * ID of the goes plotter
@@ -57,7 +57,8 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     public ProcessingResult<UrlProcessingResultObject> goesPlot(Date startTime, Date endTime, PlotType plotType) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.plotType = plotType;
+        if (plotType != null)
+            this.plotType = plotType;
         return execute();
     }
 

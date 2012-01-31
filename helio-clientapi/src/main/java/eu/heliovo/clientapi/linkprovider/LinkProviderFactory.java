@@ -3,6 +3,7 @@ package eu.heliovo.clientapi.linkprovider;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import eu.heliovo.clientapi.linkprovider.impl.CdawStereoLinkProvider;
 import eu.heliovo.clientapi.linkprovider.impl.SolarMonitorLinkProvider;
 import eu.heliovo.clientapi.linkprovider.impl.SpaceWeatherLinkProvider;
 import eu.heliovo.clientapi.linkprovider.impl.TheSunTodayLinkProvider;
@@ -44,6 +45,7 @@ public class LinkProviderFactory extends AbstractServiceFactory {
         register(new SolarMonitorLinkProvider());
         register(new SpaceWeatherLinkProvider());
         register(new TheSunTodayLinkProvider());
+        register(new CdawStereoLinkProvider());
     }
     
     /**

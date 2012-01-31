@@ -41,7 +41,8 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     /**
      * Plot type
      */
-    private PlotType plotType;
+    private PlotType plotType = PlotType.INNER;
+    
     /**
      * The parker model plotter.
      * @param accessInterfaces
