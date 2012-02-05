@@ -53,8 +53,8 @@ class DpasDao implements HelioCatalogDao {
 	/**
 	 * The pat table url
 	 */
-	private URL patTable = HelioFileUtil.asURL("http://helio-vo.eu/services/other/pat_summary.csv");
-	
+	private URL patTable = HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
+	    
 	/**
 	 * The map of catalogs. Use method {@link #add(HelioCatalog)} to add new
 	 * elements.
@@ -77,7 +77,10 @@ class DpasDao implements HelioCatalogDao {
 	public DpasDao() {
 		DocumentBuilder docBuilder;
 		try {
-			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		    dbFactory.setNamespaceAware(true);
+			docBuilder = dbFactory.newDocumentBuilder();
+			
 		} catch (ParserConfigurationException e) {
 			throw new RuntimeException("Unable to create DOM document builder: " + e.getMessage(), e);
 		}
@@ -102,29 +105,26 @@ class DpasDao implements HelioCatalogDao {
 			dInstruments.normalize();
 			
 			//NodeList lists = dInstruments.getChildNodes();
-			NodeList lists = dInstruments.getElementsByTagName("enumeration");
+			NodeList lists = dInstruments.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "enumeration");
 			for (int i = 0; i < lists.getLength(); i++) {
 				Element listElement = (Element) lists.item(i);
 				String instrumentName = listElement.getAttribute("value");
 				//System.out.println(instrumentName);
 				String instrumentLabel = getTextContent(listElement, "documentation");
 				instrumentsMap.put(instrumentName, instrumentLabel);
+				
 			}
 			
 			// now parse the pat table and create the instrument domain descriptor.
 			List<DomainValueDescriptor<String>> instrumentDomain = new ArrayList<DomainValueDescriptor<String>>();
-			File pat = HelioFileUtil.getFileFromRemoteOrCache("dpas_cache", "pat_summary.csv", patTable);
+			File pat = HelioFileUtil.getFileFromRemoteOrCache("dpas_cache", "patTable.csv", patTable);
 			LineIterator it = FileUtils.lineIterator(pat, "UTF-8");
 			try {
-			    // skip first line.
-			    if (it.hasNext()) {
-			        it.nextLine();
-			    }
 				while (it.hasNext()) {
 					String line = it.nextLine();
 					String[] entries = line.split(",");
 					if (entries.length >= 3) {
-						String instrumentName = entries[2].trim();
+						String instrumentName = entries[0].trim();
 						String instrumentLabel = instrumentsMap.get(instrumentName);
 						instrumentLabel = instrumentLabel == null ? instrumentName : instrumentLabel;
 						DomainValueDescriptor<String> instrumentDesc = DomainValueDescriptorUtil.asDomainValue(instrumentName, instrumentLabel, null);
@@ -156,11 +156,11 @@ class DpasDao implements HelioCatalogDao {
 		if (fieldElement == null) {
 			return null;
 		}
-		NodeList tag = fieldElement.getElementsByTagName(tagName);
+		NodeList tag = fieldElement.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", tagName);
 		if (tag == null || tag.getLength() == 0) {
 			return null;
 		}
-		return tag.item(0).getTextContent();
+		return tag.item(0).getTextContent().trim();
 	}
 
 	/**
