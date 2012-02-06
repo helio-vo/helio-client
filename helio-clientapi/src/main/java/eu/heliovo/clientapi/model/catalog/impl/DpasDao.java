@@ -3,12 +3,12 @@ package eu.heliovo.clientapi.model.catalog.impl;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -116,7 +116,7 @@ class DpasDao implements HelioCatalogDao {
 			}
 			
 			// now parse the pat table and create the instrument domain descriptor.
-			List<DomainValueDescriptor<String>> instrumentDomain = new ArrayList<DomainValueDescriptor<String>>();
+			Set<DomainValueDescriptor<String>> instrumentDomain = new LinkedHashSet<DomainValueDescriptor<String>>();
 			File pat = HelioFileUtil.getFileFromRemoteOrCache("dpas_cache", "patTable.csv", patTable);
 			LineIterator it = FileUtils.lineIterator(pat, "UTF-8");
 			try {
