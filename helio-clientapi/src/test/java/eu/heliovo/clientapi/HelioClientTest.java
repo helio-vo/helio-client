@@ -43,7 +43,7 @@ public class HelioClientTest {
      * Setup dummy registry client
      */
     @Before public void setup() {
-        String wsdlPath = "/wsdl/long_runningquery.wsdl";
+        String wsdlPath = "/ws/wsdl/long_runningquery.wsdl";
         URL wsdlUrl = getClass().getResource(wsdlPath);
         assertNotNull(wsdlUrl);
 
@@ -51,7 +51,7 @@ public class HelioClientTest {
         serviceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlUrl));
 
         
-        wsdlPath = "/wsdl/helio_full_query.wsdl";
+        wsdlPath = "/ws/wsdl/helio_full_query.wsdl";
         wsdlUrl = getClass().getResource(wsdlPath);
         assertNotNull(wsdlUrl);
         serviceRegistryClient.registerServiceInstance(testDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlUrl));

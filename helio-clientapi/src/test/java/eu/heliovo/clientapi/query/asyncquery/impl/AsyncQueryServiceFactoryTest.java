@@ -32,7 +32,7 @@ public class AsyncQueryServiceFactoryTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		String wsdlPath = "/wsdl/long_runningquery.wsdl";
+		String wsdlPath = "/ws/wsdl/long_runningquery.wsdl";
 		URL wsdlUrl = getClass().getResource(wsdlPath);
 		assertNotNull(wsdlUrl);
 

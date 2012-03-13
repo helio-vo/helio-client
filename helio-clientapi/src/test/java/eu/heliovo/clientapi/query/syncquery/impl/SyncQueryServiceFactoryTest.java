@@ -49,7 +49,7 @@ public class SyncQueryServiceFactoryTest {
 	public void setUp() {
 	    testDescriptor = new GenericServiceDescriptor(testService, "a test service descriptor", ServiceCapability.SYNC_QUERY_SERVICE);
         
-		String wsdlPath = "/wsdl/helio_full_query.wsdl";
+		String wsdlPath = "/ws/wsdl/helio_full_query.wsdl";
 		URL wsdlUrl = getClass().getResource(wsdlPath);
 		assertNotNull(wsdlUrl);
 		
