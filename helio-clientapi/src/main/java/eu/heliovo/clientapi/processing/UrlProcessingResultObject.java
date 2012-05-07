@@ -11,7 +11,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author MarcoSoldati
  *
  */
-public class UrlProcessingResultObject implements ProcessingResultObject {
+public class UrlProcessingResultObject implements HelioProcessingServiceResultObject {
     /**
      * List holding the allowed output names
      */

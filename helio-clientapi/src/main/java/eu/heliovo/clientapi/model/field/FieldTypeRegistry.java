@@ -4,32 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FieldTypeRegistry {
-	
-	/**
-	 * singleton instance of the registry.
-	 */
-	private static FieldTypeRegistry instance;
-	
-	/**
-	 * Get the singleton instance of this registry.
-	 * @return the singleton instance.
-	 */
-	public static synchronized FieldTypeRegistry getInstance() {
-		if (instance == null) {
-			instance = new FieldTypeRegistry();
-		}
-		return instance;
-	}
-	
 	/**
 	 * The actual registry
 	 */
 	private final Map<String, FieldType> fieldMap = new HashMap<String, FieldType>();
 
 	/**
+	 * default constructor
+	 */
+	public FieldTypeRegistry() { 
+	    
+	}
+	
+	/**
 	 * Init the registry with default types.
 	 */
-	private FieldTypeRegistry() {
+	public void init() {
 		add(new SimpleFieldType("string", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("integer", java.math.BigInteger.class, "xsd:integer" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("int", int.class, "xsd:int" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
@@ -55,9 +45,9 @@ public class FieldTypeRegistry {
 		add(new SimpleFieldType("NOTATION", javax.xml.namespace.QName.class, "xsd:NOTATION" , new Operator[] {Operator.EQUALS}));
     
 		add(new SimpleFieldType("xclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-    add(new SimpleFieldType("oclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-    
-    add(new SimpleFieldType("unknown", java.lang.String.class, "xsd:string" ,new Operator[] {}));
+        add(new SimpleFieldType("oclass", java.lang.String.class, "xsd:string" , new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+        
+        add(new SimpleFieldType("unknown", java.lang.String.class, "xsd:string" ,new Operator[] {}));
 	}
 
 	/**

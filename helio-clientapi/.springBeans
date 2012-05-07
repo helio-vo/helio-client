@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[2.9.1.201203220057-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
+	<configs>
+		<config>src/main/java/eu/heliovo/clientapi/linkprovider/spring-linkprovider.xml</config>
+		<config>src/main/java/eu/heliovo/clientapi/query/spring-query.xml</config>
+		<config>src/main/java/eu/heliovo/clientapi/spring-clientapi.xml</config>
+		<config>src/main/java/eu/heliovo/clientapi/model/catalog/spring-catalogdao.xml</config>
+	</configs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

@@ -1,7 +1,6 @@
 package eu.heliovo.clientapi.query.paramquery.impl;
 
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
-import eu.heliovo.clientapi.model.catalog.impl.HelioCatalogDaoFactory;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.registryclient.HelioServiceName;
 /**
@@ -13,7 +12,7 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	/**
 	 * Keep a reference to the hecDao
 	 */
-	private HelioCatalogDao hecDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.HEC);
+	private HelioCatalogDao hecDao;
 	
 	/**
 	 * Create a mock implementation of the DPAS.
@@ -25,11 +24,6 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	@Override
 	public HelioServiceName getServiceName() {
 		return queryService.getServiceName();
-	}
-	
-	@Override
-	public String getDescription() {
-		return "Helio Event Catalogue";
 	}
 	
 	@Override

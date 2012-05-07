@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 /**
  * 
@@ -15,7 +16,8 @@ import org.junit.Test;
 public class FieldTypeRegistryTest {
 
 	@Test public void testFieldTypeRegistry() {
-		FieldTypeRegistry registry = FieldTypeRegistry.getInstance();
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        FieldTypeRegistry registry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
 		
 		assertNotNull(registry.getType("string"));
 		assertNull(registry.getType("notexisting"));

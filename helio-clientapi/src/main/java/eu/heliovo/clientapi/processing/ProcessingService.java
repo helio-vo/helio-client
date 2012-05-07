@@ -9,7 +9,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @param <T> object to access the return values of a call.
  *
  */
-public interface ProcessingService<T extends ProcessingResultObject> extends HelioService {    
+public interface ProcessingService<T extends HelioProcessingServiceResultObject> extends HelioService {    
     /**
      * Submit the request to the remote service
      * @return This object can be used to access the ProcessingResult.

@@ -2,8 +2,8 @@ package eu.heliovo.clientapi.processing.context.impl.des;
 
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.impl.AbstractDesPlotterServiceImpl;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Create a plotter service for mission "ACE".
@@ -18,7 +18,7 @@ public class AcePlotterServiceImpl extends AbstractDesPlotterServiceImpl {
     public static final String SERVICE_VARIANT =  DesPlotterService.SERVICE_VARIANT + "/ace";
     
     /**
-     * the wind mission
+     * the ACE mission
      */
     public static final String MISSION = "ACE";
 
@@ -26,7 +26,9 @@ public class AcePlotterServiceImpl extends AbstractDesPlotterServiceImpl {
      * Create the ACE plotter service
      * @param accessInterfaces the interfaces to use.
      */
-    public AcePlotterServiceImpl(AccessInterface[] accessInterfaces) {
-        super(HelioServiceName.DES, SERVICE_VARIANT, MISSION, null, accessInterfaces);
+    public AcePlotterServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(HelioServiceName.DES, SERVICE_VARIANT, MISSION);
+        AssertUtil.assertArgumentEquals(HelioServiceName.DES, serviceName, "serviceName");
+        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
     }
 }

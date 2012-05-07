@@ -26,7 +26,6 @@ import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptorUtil;
-import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
@@ -38,11 +37,10 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  * 
  */
-class DpasDao implements HelioCatalogDao {
+public class DpasDao extends AbstractDao implements HelioCatalogDao {
 	/**
 	 * The logger to use.
 	 */
-	@SuppressWarnings("unused")
 	private static final Logger _LOGGER = Logger.getLogger(DpasDao.class);
 	
 	/**
@@ -67,14 +65,15 @@ class DpasDao implements HelioCatalogDao {
 	private String defaultCatalog = null;
 	
 	/**
-	 * The field type registry to use
-	 */
-	private FieldTypeRegistry fieldTypeRegistry = FieldTypeRegistry.getInstance();
-
-	/**
 	 * Populate the registry
 	 */
 	public DpasDao() {
+	}
+
+	/**
+	 * Init the daos content.
+	 */
+	public void init() {
 		DocumentBuilder docBuilder;
 		try {
 		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -92,8 +91,8 @@ class DpasDao implements HelioCatalogDao {
 			InputSource instrumentsSource = getInputSource(instruments.toURI().toURL());
 			
 			HelioCatalog dpas = new HelioCatalog("dpas", "Data Provider Access Service", "Catalog to access data form various sources in an unified way.");
-			dpas.addField(new HelioField<Object>("startTime", "startTime", "start value of the time range to query", fieldTypeRegistry.getType("string")));
-			dpas.addField(new HelioField<Object>("endTime", "endTime", "end value of the time range to query", fieldTypeRegistry.getType("string")));
+			dpas.addField(new HelioField<Object>("startTime", "startTime", "start value of the time range to query", getFieldTypeRegistry().getType("string")));
+			dpas.addField(new HelioField<Object>("endTime", "endTime", "end value of the time range to query", getFieldTypeRegistry().getType("string")));
 			
 			// create the instruments field
 
@@ -118,25 +117,29 @@ class DpasDao implements HelioCatalogDao {
 			// now parse the pat table and create the instrument domain descriptor.
 			Set<DomainValueDescriptor<String>> instrumentDomain = new LinkedHashSet<DomainValueDescriptor<String>>();
 			File pat = HelioFileUtil.getFileFromRemoteOrCache("dpas_cache", "patTable.csv", patTable);
-			LineIterator it = FileUtils.lineIterator(pat, "UTF-8");
-			try {
-				while (it.hasNext()) {
-					String line = it.nextLine();
-					String[] entries = line.split(",");
-					if (entries.length >= 3) {
-						String instrumentName = entries[0].trim();
-						String instrumentLabel = instrumentsMap.get(instrumentName);
-						instrumentLabel = instrumentLabel == null ? instrumentName : instrumentLabel;
-						DomainValueDescriptor<String> instrumentDesc = DomainValueDescriptorUtil.asDomainValue(instrumentName, instrumentLabel, null);
-						instrumentDomain.add(instrumentDesc);
-					}
-				}
-			} finally {
-				LineIterator.closeQuietly(it);
-			}
+			if (pat != null) {
+    			LineIterator it = FileUtils.lineIterator(pat, "UTF-8");
+    			try {
+    				while (it.hasNext()) {
+    					String line = it.nextLine();
+    					String[] entries = line.split(",");
+    					if (entries.length >= 3) {
+    						String instrumentName = entries[0].trim();
+    						String instrumentLabel = instrumentsMap.get(instrumentName);
+    						instrumentLabel = instrumentLabel == null ? instrumentName : instrumentLabel;
+    						DomainValueDescriptor<String> instrumentDesc = DomainValueDescriptorUtil.asDomainValue(instrumentName, instrumentLabel, null);
+    						instrumentDomain.add(instrumentDesc);
+    					}
+    				}
+    			} finally {
+    				LineIterator.closeQuietly(it);
+    			}
+            } else {                
+                _LOGGER.warn("Unable to load PAT table from remote or local: " + patTable);
+            }
 			
 			@SuppressWarnings("unchecked")
-			HelioField<String> instrumentsField  = new HelioField<String>("instrument", "Instrument", "Instruments supported by HELIO", fieldTypeRegistry.getType("string"), instrumentDomain.toArray(new DomainValueDescriptor[instrumentDomain.size()]));
+			HelioField<String> instrumentsField  = new HelioField<String>("instrument", "Instrument", "Instruments supported by HELIO", getFieldTypeRegistry().getType("string"), instrumentDomain.toArray(new DomainValueDescriptor[instrumentDomain.size()]));
 			
 			dpas.addField(instrumentsField);
 			
@@ -208,7 +211,7 @@ class DpasDao implements HelioCatalogDao {
 		@SuppressWarnings("unchecked")
 		DomainValueDescriptor<String>[] catValueDomain = (DomainValueDescriptor<String>[]) cat.toArray(new DomainValueDescriptor<?>[cat.size()]);
 		HelioField<String> catalogField = new HelioField<String>("dpas_catalog", "catalog", "catalog", "Generated field that defines the domain of allowed catalogs",
-				fieldTypeRegistry.getType("string"), catValueDomain, defaultCatalog);
+		        getFieldTypeRegistry().getType("string"), catValueDomain, defaultCatalog);
 		return catalogField;
 	}
 
@@ -238,4 +241,5 @@ class DpasDao implements HelioCatalogDao {
 	public HelioServiceName getServiceName() {
 	    return HelioServiceName.DPAS;
 	}
+
 }

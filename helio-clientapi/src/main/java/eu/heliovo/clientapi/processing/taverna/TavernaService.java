@@ -1,6 +1,6 @@
 package eu.heliovo.clientapi.processing.taverna;
 
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
+import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
 
 /**
@@ -8,7 +8,7 @@ import eu.heliovo.clientapi.processing.ProcessingService;
  * @author MarcoSoldati
  * @param <T> the type of the result being returned by Taverna.
  */
-public interface TavernaService <T extends ProcessingResultObject>  extends ProcessingService<T> {
+public interface TavernaService <T extends HelioProcessingServiceResultObject>  extends ProcessingService<T> {
 
     /**
      * Get the input names for a specific Taverna Service.

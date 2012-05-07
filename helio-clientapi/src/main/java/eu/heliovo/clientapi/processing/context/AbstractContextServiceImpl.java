@@ -66,13 +66,10 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
      * @param serviceName the name of the service
-     * @param description a short text to describe the service
-     * @param accessInterfaces concrete implementation of an AccessInterface. Must not be null. 
-     * If multiple interfaces are specified the "best" will be chosen.
+     * @param serviceVariant the variant of the service.
      */
-    public AbstractContextServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
-        super(serviceName, null, description, accessInterfaces);
-        updateCurrentInterface();
+    public AbstractContextServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(serviceName, serviceVariant);
     }
     
     /**
@@ -81,7 +78,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
     protected void updateCurrentInterface() {
         this.currentAccessInterface=loadBalancer.getBestEndPoint(accessInterfaces);
         this.currentPort = getPort(currentAccessInterface);
-        _LOGGER.info("Using service at: " + currentAccessInterface);
+        //_LOGGER.info("Using service at: " + currentAccessInterface);
     }
     
     /**
@@ -107,6 +104,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
      * @throws JobExecutionException if anything fails while executing the remote job.
      */
     public ProcessingResult<UrlProcessingResultObject> execute() throws JobExecutionException {
+        updateCurrentInterface();
         final long jobStartTime = System.currentTimeMillis();
 
         List<LogRecord> logRecords = new ArrayList<LogRecord>();
@@ -146,7 +144,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
         URL logOutLocation = computeFileLocation(currentAccessInterface, resultId, getLogOutFileName());
         URL logErrLocation = computeFileLocation(currentAccessInterface, resultId, getLogErrFileName());
 
-        ProcessingResult<UrlProcessingResultObject> processingResult = new ProcessingResultImpl(resultId, currentPort, resultLocation, logOutLocation, logErrLocation, callId, jobStartTime, logRecords);
+        ProcessingResult<UrlProcessingResultObject> processingResult = new ContextServiceResult(resultId, currentPort, resultLocation, logOutLocation, logErrLocation, callId, jobStartTime, logRecords);
         
         return processingResult; 
     }
@@ -263,11 +261,11 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
      * @author marco soldati at fhnw ch
      * 
      */
-    static class ProcessingResultImpl implements ProcessingResult<UrlProcessingResultObject> {
+    static class ContextServiceResult implements ProcessingResult<UrlProcessingResultObject> {
         /**
          * The logger instance
          */
-        private static final Logger _LOGGER = Logger.getLogger(ProcessingResultImpl.class);
+        private static final Logger _LOGGER = Logger.getLogger(ContextServiceResult.class);
         
         /**
          * The id of the call
@@ -350,7 +348,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
          * @param jobStartTime the time when this call has been started.
          * @param logRecords the log records from the parent query. 
          */
-        ProcessingResultImpl(String id, CommonExecutionConnector port, URL resultLocation, URL logOutLocation, URL logErrLocation, String callId, long jobStartTime, List<LogRecord> logRecords) {
+        ContextServiceResult(String id, CommonExecutionConnector port, URL resultLocation, URL logOutLocation, URL logErrLocation, String callId, long jobStartTime, List<LogRecord> logRecords) {
             this.id = id;
             this.port = port;
             this.resultLocation = resultLocation;

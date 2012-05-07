@@ -12,7 +12,7 @@ import eu.heliovo.registryclient.AccessInterface;
  * @author MarcoSoldati
  *
  */
-class RoundRobinLoadBalancer implements LoadBalancer {
+public class RoundRobinLoadBalancer implements LoadBalancer {
     /**
      * Number of rounds to skip a service that is down.
      */

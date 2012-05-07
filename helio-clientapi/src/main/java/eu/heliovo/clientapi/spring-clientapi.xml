@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <import resource="./linkprovider/spring-linkprovider.xml"/>
+    <import resource="./processing/spring-processing.xml"/>
+    <import resource="./query/spring-query.xml"/>
+    <import resource="./model/catalog/spring-catalogdao.xml"/>
+
+    <bean id="serviceRegistryClient" class="eu.heliovo.registryclient.impl.HelioRemoteServiceRegistryClient" init-method="init"></bean> 
+
+    <bean id="loadBalancer" class="eu.heliovo.clientapi.loadbalancing.impl.RoundRobinLoadBalancer"></bean>
+    
+    <bean id="abstractService" class="eu.heliovo.clientapi.model.service.AbstractServiceImpl" abstract="true">
+        <property name="loadBalancer" ref="loadBalancer"></property>
+    </bean>
+    
+    <!-- a factory to create concrete helio service instances -->
+    <bean id="helioServiceFactory" class="eu.heliovo.clientapi.model.service.HelioServiceFactory" init-method="init">
+        <property name="configuration">
+            <list>
+                <ref bean="asyncQueryServiceFactoryConfig"/>
+                <ref bean="syncQueryServiceFactoryConfig"/>
+                <ref bean="linkProviderFactoryConfig"/>
+                <ref bean="processingServiceFactoryConfig"/>                
+            </list>
+        </property>
+        <property name="loadBalancer" ref="loadBalancer"/>
+        <property name="serviceRegistryClient" ref="serviceRegistryClient"/>
+    </bean>
+    
+    <bean id="stilUtils" class="eu.heliovo.clientapi.utils.STILUtils"></bean>  
+    
+    <bean id="helioClient" class="eu.heliovo.clientapi.HelioClient" init-method="init">
+        <property name="serviceFactory" ref="helioServiceFactory" />
+        <property name="registryClient" ref="serviceRegistryClient" />
+    </bean>
+</beans>

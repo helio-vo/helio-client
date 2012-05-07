@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 
@@ -18,7 +19,7 @@ import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 
 public class PQLSerializerTest {
 
-	private final FieldTypeRegistry fieldTypeRegistry = FieldTypeRegistry.getInstance();
+	private FieldTypeRegistry fieldTypeRegistry;
 
 	/**
 	 * the PQL Serializer
@@ -26,6 +27,9 @@ public class PQLSerializerTest {
 	private PQLSerializer pqlSerializer;
 	
 	@Before	public void setUp() {
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        fieldTypeRegistry = (FieldTypeRegistry) context.getBean("fieldTypeRegistry");
+
 	    pqlSerializer= new PQLSerializer();
 	    ConversionService service = new GenericConversionService();
 	    pqlSerializer.setConversionService(service);

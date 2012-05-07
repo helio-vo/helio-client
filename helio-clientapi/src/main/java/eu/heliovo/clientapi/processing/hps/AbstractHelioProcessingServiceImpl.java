@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.processing.ProcessingResult;
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
+import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
@@ -37,7 +37,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @param <T> Type of the result object returned by a call to this class.
  *
  */
-public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingResultObject> extends AbstractServiceImpl implements ProcessingService<T> {
+public abstract class AbstractHelioProcessingServiceImpl<T extends HelioProcessingServiceResultObject> extends AbstractServiceImpl implements ProcessingService<T> {
     /**
      * The logger instance
      */
@@ -61,12 +61,10 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
      * @param serviceName the name of the service
-     * @param description a short text to describe the service
-     * @param accessInterfaces concrete implementation of an AccessInterface. Must not be null. 
-     * If multiple interfaces are specified the "best" will be chosen.
+     * @param serviceVariant name of the service variant. may be null.
      */
-    public AbstractHelioProcessingServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
-        super(serviceName, null, description, accessInterfaces);
+    public AbstractHelioProcessingServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(serviceName, serviceVariant);
     }
 
     /**
@@ -134,7 +132,7 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
         
 
         T resultObject = createResultObject(currentAccessInterface, executionId);
-        ProcessingResult<T> processingResult = new ProcessingResultImpl<T>(executionId, currentPort, resultObject, callId, jobStartTime, logRecords);
+        ProcessingResult<T> processingResult = new HelioProcessingServiceResult<T>(executionId, currentPort, resultObject, callId, jobStartTime, logRecords);
         
         return processingResult; 
     }
@@ -220,11 +218,11 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
      * @param <T> Type of the result object returned by this ProcessingResult.
      * 
      */
-    static class ProcessingResultImpl<T extends ProcessingResultObject> implements ProcessingResult<T> {
+    static class HelioProcessingServiceResult<T extends HelioProcessingServiceResultObject> implements ProcessingResult<T> {
         /**
          * The logger instance
          */
-        private static final Logger _LOGGER = Logger.getLogger(ProcessingResultImpl.class);
+        private static final Logger _LOGGER = Logger.getLogger(HelioProcessingServiceResult.class);
         
         /**
          * The id of the call
@@ -290,7 +288,7 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends ProcessingRes
          * @param jobStartTime the time when this call has been started.
          * @param logRecords the log records from the parent query. 
          */
-        ProcessingResultImpl(String resultId, HPSService port, T resultObject, String callId, long jobStartTime, List<LogRecord> logRecords) {
+        HelioProcessingServiceResult(String resultId, HPSService port, T resultObject, String callId, long jobStartTime, List<LogRecord> logRecords) {
             this.resultId = resultId;
             this.port = port;
             this.resultObject = resultObject;

@@ -3,12 +3,14 @@ package eu.heliovo.clientapi.linkprovider.impl;
 import java.util.Calendar;
 import java.util.Date;
 
-import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
+import eu.heliovo.clientapi.model.service.ServiceFactory;
+import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Link provider for solarmonitor.org.
- * Users should get an instance of this call through the {@link LinkProviderFactory}.
+ * Users should get an instance of this call through the {@link ServiceFactory}.
  * @author MarcoSoldati
  *
  */
@@ -49,6 +51,15 @@ public class SolarMonitorLinkProvider extends AbstractDailyLinkProvider implemen
      */
     public SolarMonitorLinkProvider() {
         super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
+    }
+
+    /**
+     * Create the provider
+     */
+    public SolarMonitorLinkProvider(HelioServiceName serviceName, String serviceVariant) {
+        super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
+        AssertUtil.assertArgumentEquals(HelioServiceName.LPS, serviceName, "serviceName");
+        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
     }
     
     @Override

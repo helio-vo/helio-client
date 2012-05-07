@@ -5,7 +5,7 @@ import eu.heliovo.clientapi.loadbalancing.LoadBalancer;
 /**
  * Factory to get the load balancer
  * @author MarcoSoldati
- *
+ * @deprecated replaced by spring config
  */
 public class LoadBalancerFactory {
     private static final LoadBalancerFactory instance = new LoadBalancerFactory();

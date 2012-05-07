@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 /**
  * Unit test class for the helio field
@@ -24,7 +25,9 @@ public class HelioFieldTest {
 		String fieldName = "fieldName";
 		String fieldLabel = "fieldLabel";
 		String description = "description";
-		FieldType type = FieldTypeRegistry.getInstance().getType("string");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
+		FieldType type = fieldTypeRegistry.getType("string");
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2",
 				"string3");
 		String defaultValue = "string1";
@@ -93,7 +96,10 @@ public class HelioFieldTest {
 		String fieldName = "fieldName";
 		String fieldLabel = "fieldLabel";
 		String description = "description";
-		FieldType type = FieldTypeRegistry.getInstance().getType("string");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
+		FieldType type = fieldTypeRegistry.getType("string");
+		
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2",
 				"string3");
 		String defaultValue = "string1";
@@ -133,7 +139,10 @@ public class HelioFieldTest {
 	 */
 	@Test
 	public void testEqualsAndHashcode() {
-		FieldType type = FieldTypeRegistry.getInstance().getType("string");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
+
+		FieldType type = fieldTypeRegistry.getType("string");
 		HelioField<String> helioField1 = new HelioField<String>("id1", "field1", null, type);
 		HelioField<String> helioField2 = new HelioField<String>("id1", "field2", null, type);
 		HelioField<String> helioField3 = new HelioField<String>("id3", "field3", null, type);

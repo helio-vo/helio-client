@@ -1,7 +1,8 @@
 package eu.heliovo.clientapi.model.service;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import eu.heliovo.clientapi.loadbalancing.LoadBalancer;
-import eu.heliovo.clientapi.loadbalancing.impl.LoadBalancerFactory;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
@@ -15,12 +16,12 @@ public abstract class AbstractServiceImpl implements HelioService {
     /**
      * The load balancer component to use.
      */
-    protected LoadBalancer loadBalancer = LoadBalancerFactory.getInstance().getLoadBalancer();
+    protected LoadBalancer loadBalancer;
     
     /**
      * The location of the target WSDL file
      */
-    protected final AccessInterface[] accessInterfaces;
+    protected AccessInterface[] accessInterfaces;
     
     /**
      * Name of the service
@@ -32,27 +33,15 @@ public abstract class AbstractServiceImpl implements HelioService {
      */
     protected final String serviceVariant;
 
-    
-    /**
-     * Description of this service.
-     */
-    protected final String description;
-
-
     /**
      * Constructor
      * @param serviceName the name of the service. Must not be null.
      * @param serviceVariant the service variant. May be null.
-     * @param description a short description. Optional.
-     * @param accessInterfaces interface to use. Must not be null or empty.
      */
-    public AbstractServiceImpl(HelioServiceName serviceName, String serviceVariant, String description, AccessInterface[] accessInterfaces) {
-        this.serviceVariant = serviceVariant;
+    public AbstractServiceImpl(HelioServiceName serviceName, String serviceVariant) {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
-        AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
         this.serviceName = serviceName;
-        this.accessInterfaces = accessInterfaces;
-        this.description = description;
+        this.serviceVariant = serviceVariant;
     }
 
     @Override
@@ -64,10 +53,40 @@ public abstract class AbstractServiceImpl implements HelioService {
     public String getServiceVariant() {
         return serviceVariant;
     }
+    
+    /**
+     * Get access interfaces
+     * @return the access interfaces
+     */
+    public AccessInterface[] getAccessInterfaces() {
+        return accessInterfaces;
+    }
 
-    @Override
-    public String getDescription() {
-    	return description;
+    /**
+     * Set access interfaces 
+     * @param accessInterfaces the access interfaces
+     */
+    @Required
+    public void setAccessInterfaces(AccessInterface... accessInterfaces) {
+        AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
+        this.accessInterfaces = accessInterfaces;
+    }
+
+    /**
+     * Get the load balancer
+     * @return the load balancer
+     */
+    public LoadBalancer getLoadBalancer() {
+        return loadBalancer;
+    }
+
+    /**
+     * Set the load balancer
+     * @param loadBalancer the load balancer
+     */
+    @Required
+    public void setLoadBalancer(LoadBalancer loadBalancer) {
+        this.loadBalancer = loadBalancer;
     }
 
     /**

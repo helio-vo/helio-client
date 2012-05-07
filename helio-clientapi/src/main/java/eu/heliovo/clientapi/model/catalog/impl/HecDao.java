@@ -35,19 +35,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import eu.heliovo.clientapi.frontend.SimpleInterface;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldType;
-import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.HelioQueryService;
-import eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactory;
 import eu.heliovo.clientapi.utils.VOTableUtils;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -59,7 +57,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  * 
  */
-class HecDao implements HelioCatalogDao {
+public class HecDao extends AbstractDao implements HelioCatalogDao {
 	/**
 	 * Name of the default catalog
 	 */
@@ -73,12 +71,12 @@ class HecDao implements HelioCatalogDao {
 	/**
 	 * Location of the HEC lists.
 	 */
-	private URL catalogsLocation = SimpleInterface.class.getResource("/HEC_Lists.xml");
+	private URL catalogsLocation = HecDao.class.getResource("/HEC_Lists.xml");
 	
 	/**
 	 * Location of the HEC fields.
 	 */
-	private URL fieldsLocation = SimpleInterface.class.getResource("/HEC_Fields.xml");
+	private URL fieldsLocation = HecDao.class.getResource("/HEC_Fields.xml");
 	
 	/**
 	 * The map of catalogs. Use method {@link #add(HelioCatalog)} to add new
@@ -92,14 +90,20 @@ class HecDao implements HelioCatalogDao {
 	private String defaultCatalog = null;
 	
 	/**
-	 * The field type registry to use
+	 * Service factory to get hec query service.
 	 */
-	private FieldTypeRegistry fieldTypeRegistry = FieldTypeRegistry.getInstance();
+	private ServiceFactory serviceFactory; 
 
-	/**
+    /**
 	 * Populate the underlying registry
 	 */
 	public HecDao() {
+	}
+	
+	/**
+	 * Init the dao
+	 */
+	public void init() {
 		DocumentBuilder docBuilder;
 		try {
 			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -151,24 +155,24 @@ class HecDao implements HelioCatalogDao {
 
 					FieldType ft;
 					if ("integer".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("int");
+						ft = getFieldTypeRegistry().getType("int");
 					else if ("real".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("double");
+						ft = getFieldTypeRegistry().getType("double");
 					else if ("text".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("string");
+						ft = getFieldTypeRegistry().getType("string");
 					else if ("ISO8601 Time".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("dateTime");
+						ft = getFieldTypeRegistry().getType("dateTime");
 					else if ("Special - Xclass".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("xclass");
+						ft = getFieldTypeRegistry().getType("xclass");
 					else if ("Special - Oclass".equalsIgnoreCase(fieldDataType))
-						ft = fieldTypeRegistry.getType("oclass");
+						ft = getFieldTypeRegistry().getType("oclass");
 					else if (fieldDataType == null)
 						ft = null;
 					else
-						ft = fieldTypeRegistry.getType(fieldDataType);
+						ft = getFieldTypeRegistry().getType(fieldDataType);
 
 					if (ft == null)
-						ft = fieldTypeRegistry.getType("unknown");
+						ft = getFieldTypeRegistry().getType("unknown");
 
 					HelioField<?> field = new HelioField<Object>(fieldId == null ? fieldName: fieldId, fieldName, fieldDescription, ft);
 					catalog.addField(field);
@@ -245,7 +249,7 @@ class HecDao implements HelioCatalogDao {
 		
 		VOTABLE votable;
 		try {
-			HelioQueryService hec = SyncQueryServiceFactory.getInstance().getHelioService(HelioServiceName.HEC, null, (AccessInterface[])null);
+			HelioQueryService hec = (HelioQueryService) serviceFactory.getHelioService(HelioServiceName.HEC, null, ServiceCapability.SYNC_QUERY_SERVICE);
 			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {
@@ -351,7 +355,7 @@ class HecDao implements HelioCatalogDao {
 		@SuppressWarnings("unchecked")
 		DomainValueDescriptor<String>[] catValueDomain = (DomainValueDescriptor<String>[]) cat.toArray(new DomainValueDescriptor<?>[cat.size()]);
 		HelioField<String> catalogField = new HelioField<String>("hec_catalog", "catalog", "catalog", "Generated field that defines the domain of allowed catalogs",
-				fieldTypeRegistry.getType("string"), catValueDomain, defaultCatalog);
+		        getFieldTypeRegistry().getType("string"), catValueDomain, defaultCatalog);
 		return catalogField;
 	}
 
@@ -381,4 +385,21 @@ class HecDao implements HelioCatalogDao {
 	public HelioServiceName getServiceName() {
 	    return HelioServiceName.HEC;
 	}
+
+	/**
+	 * Get the  service factory
+	 * @return the service factory
+	 */
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
+    }
+
+    /**
+     * Set the service factory
+     * @param serviceFactory the service factory.
+     */
+    public void setServiceFactory(
+            ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
+    }
 }

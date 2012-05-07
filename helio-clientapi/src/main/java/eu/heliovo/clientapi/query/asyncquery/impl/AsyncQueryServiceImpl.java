@@ -20,23 +20,26 @@ import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService_Service;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.model.service.HelioService;
+import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
 
 /**
  * Base implementation of the long running query. This wraps the client stub to access all
  * HELIO services that implement the long running query service. 
- * Instances of this class should be retrieved through the {@link AsyncQueryServiceFactory}.
+ * Instances of this class should be retrieved through the {@link ServiceFactory}.
  * @author marco soldati at fhnw ch
  *
  */
-class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQueryService, HelioService {
+public class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQueryService, HelioService {
 	/**
 	 * The logger instance
 	 */
@@ -46,6 +49,7 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
 	 * Name of the long query service
 	 */
 	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/LongQueryService/v0.9", "LongHelioQueryService");
+	//private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/QueryService/v0.1", "HelioQueryServiceService");
 
 	/**
 	 * Call timeout in ms.
@@ -54,15 +58,28 @@ class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQuerySer
 
 	/**
 	 * Create a client stub to a specific {@link AccessInterface}. 
-	 * @param name the name of the service
+	 * @param serviceName the name of the service
 	 * @param serviceVariant TODO
 	 * @param description a short text to describe the service
 	 * @param accessInterfaces concrete implementation of an AccessInterface. Must not be null
 	 */
-	public AsyncQueryServiceImpl(HelioServiceName name, String serviceVariant, String description, AccessInterface ... accessInterfaces) {
-	    super(name, null, description, accessInterfaces);
+	public AsyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+	    super(serviceName, serviceVariant);
 	}
 
+    @Override
+    public void setAccessInterfaces(AccessInterface... accessInterfaces) {
+        for (AccessInterface accessInterface : accessInterfaces) {
+            if (!ServiceCapability.ASYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
+                throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.ASYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
+            }
+            if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
+                throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
+            }
+        }
+        super.setAccessInterfaces(accessInterfaces);
+    }
+	
 	/**
 	 * Use JAXWS to create a new service port for a given set of WSDL locations.
 	 * @param accessInterface the service endpoint

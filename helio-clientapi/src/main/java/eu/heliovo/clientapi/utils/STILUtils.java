@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
 import org.xml.sax.SAXException;
 
 import uk.ac.starlink.table.ArrayColumn;
@@ -38,6 +38,7 @@ import uk.ac.starlink.votable.VOElement;
 import uk.ac.starlink.votable.VOElementFactory;
 import uk.ac.starlink.votable.VOTableBuilder;
 import uk.ac.starlink.votable.VOTableWriter;
+import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.FileUtil;
 
 /**
@@ -56,19 +57,46 @@ public class STILUtils {
     /**
      * The hibernate session factory
      */
-    private static final SessionFactory sessionFactory = new AnnotationConfiguration().configure(STILUtils.class.getResource("/clientapi-hibernate.cfg.xml")).buildSessionFactory();
+    private final SessionFactory sessionFactory;
+    
+    /**
+     * Path where to store the files.
+     */
+    private final File persistedFilePath;
 
-    static {
+    /**
+     * Create a new stil utils object using the default configuration file
+     */
+    public STILUtils() {
+        this(STILUtils.class.getResource("/clientapi-hibernate.cfg.xml"));
+    }
+    
+    /**
+     * Create a STIL utils instance with a custom config file.
+     * @param configFile the config file to use.
+     */
+    public STILUtils(URL configFile) {
+        this(configFile, HelioFileUtil.getHelioTempDir(PersistedFile.PERSISTED_FILES_PATH));
+    }
+    
+    /**
+     * Create a STIL utils instance with a custom config file.
+     * @param configFile the config file to use.
+     */
+    public STILUtils(URL configFile, File persistedFilePath) {
+        sessionFactory = new Configuration().configure(configFile).buildSessionFactory();
+        this.persistedFilePath = persistedFilePath;
+        
         // make sure the path to persist files exists
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Creating persisted file path: " + PersistedFile.PERSISTED_FILES_PATH);
+            LOGGER.debug("Creating persisted file path: " + persistedFilePath);
         }
-        new File(PersistedFile.PERSISTED_FILES_PATH).mkdirs();
-
+        persistedFilePath.mkdirs();
+        
         // clean up files & database
         purgeExpiredPersistedFiles();
         cleanupPersistedFilesDirectory();
-
+        
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Initialization of STILUtils completed");
         }
@@ -84,7 +112,7 @@ public class STILUtils {
      * @return The index of the column or -1 if no column with a matching name
      *         can be found
      */
-    private static int columnIndex(StarTable _table, String _columnName) {
+    private int columnIndex(StarTable _table, String _columnName) {
         for (int i = 0; i < _table.getColumnCount(); i++)
             if (_columnName.equals(_table.getColumnInfo(i).getName()))
                 return i;
@@ -106,7 +134,7 @@ public class STILUtils {
      * @throws IOException
      * @return A single table with all the records of the supplied tables
      */
-    public static StarTable concatenate(boolean _onlyColumnsInAll, StarTable... _tables) throws IOException {
+    public StarTable concatenate(boolean _onlyColumnsInAll, StarTable... _tables) throws IOException {
         if (_tables.length == 0)
             return null;
         if (_tables.length == 1)
@@ -186,7 +214,7 @@ public class STILUtils {
      * @return An array containing all tables
      * @throws IOException
      */
-    public static StarTable[] read(DataSource _src) throws IOException {
+    public StarTable[] read(DataSource _src) throws IOException {
         TableSequence tables = new VOTableBuilder(false).makeStarTables(_src, StoragePolicy.getDefaultPolicy());
         
         ArrayList<StarTable> res = new ArrayList<StarTable>();
@@ -204,7 +232,7 @@ public class STILUtils {
      * @return An array containing all tables
      * @throws IOException
      */
-    public static StarTable[] read(URL _src) throws IOException {
+    public StarTable[] read(URL _src) throws IOException {
         return read(new URLDataSource(_src));
     }
     
@@ -216,7 +244,7 @@ public class STILUtils {
      * @return An array containing all tables
      * @throws IOException
      */
-    public static StarTable[] read(InputStream _src) throws IOException {
+    public StarTable[] read(InputStream _src) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(65536);
         byte[] buffer = new byte[8192];
         for (;;) {
@@ -237,7 +265,7 @@ public class STILUtils {
      * @return An array containing all tables
      * @throws IOException
      */
-    public static StarTable[] read(File _src) throws IOException {
+    public StarTable[] read(File _src) throws IOException {
         return read(new FileDataSource(_src));
     }
     
@@ -250,7 +278,7 @@ public class STILUtils {
      * @throws IOException in case of an IO error.
      * @throws SAXException in case of a SAX error.
      */
-    public static VOElement readVOElement(DataSource _src) throws IOException, SAXException {
+    public VOElement readVOElement(DataSource _src) throws IOException, SAXException {
         VOElement top = new VOElementFactory().makeVOElement(_src);
         return top;
     }
@@ -264,7 +292,7 @@ public class STILUtils {
      * @throws IOException in case of an IO error.
      * @throws SAXException in case of a SAX error.
      */
-    public static VOElement readVOElement(URL _src) throws IOException, SAXException {
+    public VOElement readVOElement(URL _src) throws IOException, SAXException {
         return readVOElement(new URLDataSource(_src));
     }
     
@@ -278,7 +306,7 @@ public class STILUtils {
      * @throws IOException in case of an IO error.
      * @throws SAXException in case of a SAX error.
      */
-    public static VOElement readVOElement(InputStream _src, String systemId) throws IOException, SAXException {
+    public VOElement readVOElement(InputStream _src, String systemId) throws IOException, SAXException {
         VOElement top = new VOElementFactory().makeVOElement(_src, systemId);
         return top;
     }
@@ -292,7 +320,7 @@ public class STILUtils {
      * @throws IOException in case of an IO error.
      * @throws SAXException in case of a SAX error.
      */
-    public static VOElement readVOElement(File _src) throws IOException, SAXException {
+    public VOElement readVOElement(File _src) throws IOException, SAXException {
         VOElement top = new VOElementFactory().makeVOElement(_src);
         return top;
     }
@@ -308,7 +336,7 @@ public class STILUtils {
      *            The columns the view should contain
      * @return The view
      */
-    public static StarTable columnSubset(StarTable _src, int... _columns) {
+    public StarTable columnSubset(StarTable _src, int... _columns) {
         return new ColumnPermutedStarTable(_src, _columns);
     }
 
@@ -323,7 +351,7 @@ public class STILUtils {
      *            The rows the view should contain
      * @return The view
      */
-    public static StarTable rowSubset(StarTable _src, long... _rows) {
+    public StarTable rowSubset(StarTable _src, long... _rows) {
         return new RowPermutedStarTable(_src, _rows);
     }
 
@@ -339,7 +367,7 @@ public class STILUtils {
      * @return Returns a handle to the persisted data.
      * @throws IOException
      */
-    public static String persist(StarTable... _src) throws IOException {
+    public String persist(StarTable... _src) throws IOException {
         Calendar expiration = Calendar.getInstance();
         expiration.add(Calendar.DATE, 180);
 
@@ -349,14 +377,14 @@ public class STILUtils {
     /**
      * Sync persisted files in the files system with those in the database.
      */
-    private static void cleanupPersistedFilesDirectory() {
+    private void cleanupPersistedFilesDirectory() {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Syncing persisted files in filesystem with those in database");
         }
         Session s = sessionFactory.openSession();
 
         List<?> db = s.createQuery("FROM PersistedFile").list();
-        File[] fs = new File(PersistedFile.PERSISTED_FILES_PATH).listFiles();
+        File[] fs = persistedFilePath.listFiles();
 
         // there are more files in the filesystem than in the database --> fix
         // the filesystem
@@ -374,7 +402,7 @@ public class STILUtils {
                     f.delete();
                 }
             }
-            fs = new File(PersistedFile.PERSISTED_FILES_PATH).listFiles();
+            fs = persistedFilePath.listFiles();
         }
 
         // if there are more files in the database than in the filesystem -->
@@ -403,7 +431,7 @@ public class STILUtils {
     /**
      * Forces the deletion of expired persisted files.
      */
-    public static void purgeExpiredPersistedFiles() {
+    public void purgeExpiredPersistedFiles() {
         Session s = sessionFactory.openSession();
 
         Transaction tx = s.beginTransaction();
@@ -439,7 +467,7 @@ public class STILUtils {
      * @return Returns a handle to the persisted data.
      * @throws IOException
      */
-    public static String persist(Date _expiration, StarTable... _src) throws IOException {
+    public String persist(Date _expiration, StarTable... _src) throws IOException {
         return persist(_expiration, DataFormat.BINARY, _src);
     }
 
@@ -458,7 +486,7 @@ public class STILUtils {
      * @return Returns a handle to the persisted data.
      * @throws IOException
      */
-    public static String persist(Date _expiration, DataFormat dataFormat, StarTable... _src) throws IOException {
+    public String persist(Date _expiration, DataFormat dataFormat, StarTable... _src) throws IOException {
         purgeExpiredPersistedFiles();
 
         QueueTableSequence tables = new QueueTableSequence();
@@ -490,7 +518,7 @@ public class STILUtils {
      * @return The VOTables
      * @throws IOException
      */
-    public static StarTable[] read(String _id) throws IOException {
+    public StarTable[] read(String _id) throws IOException {
         return read(new FileDataSource(new PersistedFile(_id).getPersistedFilePath()));
     }
 
@@ -502,7 +530,7 @@ public class STILUtils {
      *            The id of persisted tables
      * @return The file object or null if the file does not exist.
      */
-    public static File getFilePath(String _id) {
+    public File getFilePath(String _id) {
         File file = new File(new PersistedFile(_id).getPersistedFilePath());
         return file.exists() ? file : null;
     }

@@ -11,7 +11,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author MarcoSoldati
  * @param <T> the type of the processing result for a particular service implementation.
  */
-public interface ProcessingResult <T extends ProcessingResultObject> extends HelioWorkerServiceHandler {
+public interface ProcessingResult <T extends HelioProcessingServiceResultObject> extends HelioWorkerServiceHandler {
     /**
      * Provide access to an object holding the result.
      * <p>The method will block until either a result is available or a default timeout occurs. 

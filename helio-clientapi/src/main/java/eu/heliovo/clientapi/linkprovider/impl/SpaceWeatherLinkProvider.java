@@ -3,11 +3,13 @@ package eu.heliovo.clientapi.linkprovider.impl;
 import java.util.Calendar;
 import java.util.Date;
 
-import eu.heliovo.clientapi.linkprovider.LinkProviderFactory;
+import eu.heliovo.clientapi.linkprovider.LinkProviderFactoryConfig;
+import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Link provider for spaceweather.com.
- * Users should get an instance of this call through the {@link LinkProviderFactory}.
+ * Users should get an instance of this call through the {@link LinkProviderFactoryConfig}.
  * @author MarcoSoldati
  *
  */
@@ -26,7 +28,7 @@ public class SpaceWeatherLinkProvider extends AbstractDailyLinkProvider {
     /**
      * Identifier of the concrete service instance
      */
-    private static final String SERVICE_VARIANT = "helio://helio-vo.eu/lps/spaceweather";
+    public static final String SERVICE_VARIANT = "helio://helio-vo.eu/lps/spaceweather";
 
     /**
      * Name of the link provider.
@@ -48,6 +50,15 @@ public class SpaceWeatherLinkProvider extends AbstractDailyLinkProvider {
      */
     public SpaceWeatherLinkProvider() {
         super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
+    }
+    
+    /**
+     * Create the provider
+     */
+    public SpaceWeatherLinkProvider(HelioServiceName serviceName, String serviceVariant) {
+        super(PROVIDER_TEMPLATE, NAME, TITLE_TEMPLATE, SERVICE_VARIANT, DESC);
+        AssertUtil.assertArgumentEquals(HelioServiceName.LPS, serviceName, "serviceName");
+        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
     }
     
     @Override

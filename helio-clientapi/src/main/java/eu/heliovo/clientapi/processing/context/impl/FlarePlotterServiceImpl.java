@@ -11,7 +11,6 @@ import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
@@ -32,11 +31,12 @@ public class FlarePlotterServiceImpl extends AbstractContextServiceImpl implemen
     public static final String SERVICE_VARIANT = "ivo://helio-vo.eu/cxs/flareplotter";
     
     /**
-     * A plotter for  flares.
-     * @param accessInterfaces the interfaces to use.
+     * Create the flare plotter service
      */
-    public FlarePlotterServiceImpl(AccessInterface[] accessInterfaces) {
-        super(HelioServiceName.CXS, null, accessInterfaces);
+    public FlarePlotterServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(HelioServiceName.CXS, SERVICE_VARIANT);
+        AssertUtil.assertArgumentEquals(HelioServiceName.CXS, serviceName, "serviceName");
+        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
     }
     
     /* (non-Javadoc)

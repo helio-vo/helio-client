@@ -24,7 +24,7 @@ import uk.org.taverna.ns._2010.xml.server.soap.BadStateChangeException;
 import uk.org.taverna.ns._2010.xml.server.soap.NoDirectoryEntryException;
 import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
+import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
 import eu.heliovo.clientapi.processing.taverna.AbstractTavernaServiceImpl;
 import eu.heliovo.clientapi.processing.taverna.TavernaWorkflowException;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
@@ -35,6 +35,7 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 import eu.heliovo.tavernaserver.Run;
 
@@ -88,11 +89,10 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
 
     /**
      * Create the Taverna workflow instance
-     * @param myExperimentInterface the myExperiment interface.
-     * @param tavernaInterfaces the Taverna Server instances to use.
      */
-    public TavernaWorkflow2283(AccessInterface[] tavernaInterfaces) {
-        super(HelioServiceName.TAVERNA_SERVER, null, getMyExperimentInterface(), tavernaInterfaces);
+    public TavernaWorkflow2283(HelioServiceName serviceName, String serviceVariant) {
+        super(HelioServiceName.TAVERNA_SERVER, null, getMyExperimentInterface());
+        AssertUtil.assertArgumentEquals(HelioServiceName.TAVERNA_SERVER, serviceName, "serviceName");
     }
 
     /**
@@ -199,7 +199,7 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
      * @author MarcoSoldati
      *
      */
-    public static class TavernaWorkflow2283ResultObject implements ProcessingResultObject {
+    public static class TavernaWorkflow2283ResultObject implements HelioProcessingServiceResultObject {
         /**
          * The list of outputs for this workflow
          */

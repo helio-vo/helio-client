@@ -23,7 +23,7 @@ import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.processing.ProcessingResult;
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
+import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
 import eu.heliovo.clientapi.processing.ResultObjectFactory;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
@@ -43,7 +43,7 @@ import eu.heliovo.tavernaserver.Server;
  * @param <T> Type of the result object returned by a call to this class.
  *
  */
-public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObject> extends AbstractServiceImpl implements TavernaService<T>, ResultObjectFactory<T, Run> {
+public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServiceResultObject> extends AbstractServiceImpl implements TavernaService<T>, ResultObjectFactory<T, Run> {
     /**
      * The logger instance
      */
@@ -57,14 +57,11 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
      * @param serviceName the name of the service
-     * @param description a short text to describe the service
-     * @param myExperimentInterface end point of the my experiment repository. Must not be null.
-     * @param tavernaInterfaces concrete implementation of an AccessInterface. Must not be null. 
+     * @param serviceVariant variant name of a service. man be null.
      * If multiple interfaces are specified the "best" will be chosen.
      */
-    public AbstractTavernaServiceImpl(HelioServiceName serviceName, String description, AccessInterface myExperimentInterface, AccessInterface... tavernaInterfaces) {
-        super(serviceName, null, description, tavernaInterfaces);
-        
+    public AbstractTavernaServiceImpl(HelioServiceName serviceName, String serviceVariant, AccessInterface myExperimentInterface) {
+        super(serviceName, null);
         workflow = getHelioWorkflow(myExperimentInterface, getWorkflowId());        
         AssertUtil.assertArgumentNotNull(workflow, "workflow");
     }
@@ -184,7 +181,7 @@ public abstract class AbstractTavernaServiceImpl<T extends ProcessingResultObjec
      * @param <T> Type of the result object returned by this ProcessingResult.
      * 
      */
-    public static class ProcessingResultImpl<T extends ProcessingResultObject> implements ProcessingResult<T> {
+    public static class ProcessingResultImpl<T extends HelioProcessingServiceResultObject> implements ProcessingResult<T> {
         /**
          * The logger instance
          */

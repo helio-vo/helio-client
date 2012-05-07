@@ -19,13 +19,11 @@ import uk.ac.starlink.votable.DataFormat;
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
-import eu.heliovo.clientapi.model.catalog.impl.HelioCatalogDaoFactory;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -34,21 +32,29 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author MarcoSoldati
  *
  */
-class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
+public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     /**
      * Identifier of the ICS variant
      */
-    static String SERVICE_VARIANT = "ivo://helio-vo.eu/ics/ics_pat"; 
+    static String SERVICE_VARIANT = "ivo://helio-vo.eu/ics/ics_pat";
     
+    /**
+     * Access to the stil utils
+     */
+    private STILUtils stilUtils; 
+    
+    /**
+     * The dpas dao to read the pat from
+     */
+    private HelioCatalogDao dpasDao = null;
+
     /**
      * Create the DES query support. The constructor is public for the factory implementation.
      * @param serviceName name of the service. Must be equal to {@link HelioServiceName#DES}
      * @param serviceVariant the variant. Must equal to  {@value #SERVICE_VARIANT}.
-     * @param description a description of the service from the registry
-     * @param accessInterfaces the interfaces to use for this service.
      */
-    public IcsPatAsyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant, String description, AccessInterface ... accessInterfaces) {
-        super(serviceName, serviceVariant, description, accessInterfaces);
+    public IcsPatAsyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(serviceName, serviceVariant);
         AssertUtil.assertArgumentEquals(HelioServiceName.ICS, serviceName,  "serviceName");
         AssertUtil.assertArgumentEquals(SERVICE_VARIANT, serviceVariant,  "serviceVariant");
     }
@@ -56,9 +62,48 @@ class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     
     @Override
     protected HelioQueryResult createQueryResult(String resultId, LongHelioQueryService currentPort, String callId, long jobStartTime, List<LogRecord> logRecords) {
-        return new IcsPatQueryResult(resultId, currentPort, callId, jobStartTime, logRecords);
+        IcsPatQueryResult result = new IcsPatQueryResult(resultId, currentPort, callId, jobStartTime, logRecords);
+        result.setStilUtils(stilUtils);
+        result.setDpasDao(getDpasDao());
+        result.init();
+        return result;
+    }
+
+    /**
+     * Get the stil utils.
+     * @return the stil utils.
+     */
+    public STILUtils getStilUtils() {
+        return stilUtils;
+    }
+
+    /**
+     * Set stil utils
+     * @param stilUtils the stil utils.
+     */
+    public void setStilUtils(STILUtils stilUtils) {
+        this.stilUtils = stilUtils;
     }
     
+    /**
+     * Get the dpas dao
+     * @return the dpasDao
+     */
+    public HelioCatalogDao getDpasDao() {
+        return dpasDao;
+    }
+
+
+    /**
+     * Set the Dpas DAO
+     * @param dpasDao the dpasDao to set
+     */
+    public void setDpasDao(HelioCatalogDao dpasDao) {
+        this.dpasDao = dpasDao;
+    }
+
+
+
     /**
      * A query result implementation to enhance results from the ICS with information from the PAT.
      * @author MarcoSoldati
@@ -74,7 +119,17 @@ class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
         /**
          * Retrieve the pat.
          */
-        private final HelioCatalog pat;
+        private HelioCatalog pat;
+
+        /**
+         * Reference to the stil utils to use.
+         */
+        private STILUtils stilUtils;
+
+        /**
+         * Dao to access the dpas
+         */
+        private HelioCatalogDao dpasDao;
         
         /**
          * A query result that enhances the ICS result with the pat table.
@@ -86,15 +141,26 @@ class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
          */
         IcsPatQueryResult(String id, LongHelioQueryService port, String callId, long jobStartTime, List<LogRecord> logRecords) {
             super(id, port, callId, jobStartTime, logRecords);
+        }
+        
+        public void init() {
             pat = getPat();
         }
         
+        /**
+         * Set the stil utils bean to use
+         * @param stilUtils the stil utils bean
+         */
+        public void setStilUtils(STILUtils stilUtils) {
+            this.stilUtils = stilUtils;
+        }
+
         /**
          * Get the provider access table.
          * @return the provider access table.
          */
         protected HelioCatalog getPat() {
-            HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.DPAS);
+            
             //System.out.println(Arrays.toString(dpasDao.getCatalogField().getValueDomain()));
             HelioCatalog pat = dpasDao.getCatalogById("dpas");
             if (pat == null) {
@@ -112,7 +178,7 @@ class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             // convert to a star table
             StarTable[] tables;
             try {
-                tables = STILUtils.read(url);
+                tables = stilUtils.read(url);
             } catch (IOException e) {
                 throw new JobExecutionException("Unable to read result from ICS: " + e.getMessage(), e);
             }
@@ -190,11 +256,11 @@ class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             try {
                 Calendar expiration = Calendar.getInstance();
                 expiration.add(Calendar.DATE, 20);
-                id = STILUtils.persist(expiration.getTime(), DataFormat.TABLEDATA, icsPatTable);
+                id = stilUtils.persist(expiration.getTime(), DataFormat.TABLEDATA, icsPatTable);
             } catch (IOException e) {
                 throw new JobExecutionException("Internal Error: Unable to write merged ICS PAT table to disk: " + e.getMessage(), e);
             }
-            File file = STILUtils.getFilePath(id);
+            File file = stilUtils.getFilePath(id);
             if (file == null) {
                 throw new JobExecutionException("Internal Error: Unable to get handle to written file: " + id);
             }
@@ -204,6 +270,23 @@ class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             } catch (MalformedURLException e) {
                 throw new JobExecutionException("Internal Error: Unable to convert file handle to URL: " + file);
             }
+        }
+
+        
+        /**
+         * Get the DPAS dao.
+         * @return the DPAS dao
+         */
+        public HelioCatalogDao getDpasDao() {
+            return dpasDao;
+        }
+
+        /**
+         * Set the DPAS dao.
+         * @param dpasDao the DPAS dao.
+         */
+        public void setDpasDao(HelioCatalogDao dpasDao) {
+            this.dpasDao = dpasDao;
         }
 
         /**

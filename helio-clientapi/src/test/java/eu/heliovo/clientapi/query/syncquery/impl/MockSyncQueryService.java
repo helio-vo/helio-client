@@ -16,6 +16,7 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
+import eu.heliovo.clientapi.loadbalancing.impl.RandomLoadBalancer;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -40,7 +41,9 @@ class MockSyncQueryService extends SyncQueryServiceImpl {
     private MockQueryServicePort port;
 
 	public MockSyncQueryService(MockQueryServicePort port) {	
-		super(name, description, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation));
+		super(name, description);
+		this.setAccessInterfaces(new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation));
+		this.setLoadBalancer(new RandomLoadBalancer());
 		this.port = port;
 	}
 	

@@ -25,14 +25,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.HelioClient;
-import eu.heliovo.clientapi.processing.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel;
 import eu.heliovo.clientapi.processing.hps.CmePropagationModel.CmeProcessingResultObject;
 import eu.heliovo.clientapi.processing.hps.impl.CmePropagationModelImpl;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 
 /**
@@ -41,10 +40,6 @@ import eu.heliovo.registryclient.HelioServiceName;
  *
  */
 public class ProcessingClientDemo {
-    /**
-     * The context service factory.
-     */
-    final static ProcessingServiceFactory factory = ProcessingServiceFactory.getInstance();
 
     /**
      * Main method for demo
@@ -52,7 +47,8 @@ public class ProcessingClientDemo {
      * @throws Exception in case of a problem.
      */
     public static void main(String[] args) throws Exception {
-        new HelioClient().init();
+        final GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        final HelioClient client = (HelioClient) context.getBean("helioClient");
         
         //DebugUtils.enableDump();
         final StringBuffer sb = new StringBuffer();
@@ -72,7 +68,7 @@ public class ProcessingClientDemo {
                         boolean cme = true;
                         
                         if (cme) {
-                            CmePropagationModel cmePMService = (CmePropagationModel)factory.getHelioService(HelioServiceName.HPS, CmePropagationModelImpl.SERVICE_VARIANT, (AccessInterface[])null);
+                            CmePropagationModel cmePMService = (CmePropagationModel)client.getServiceInstance(HelioServiceName.HPS, CmePropagationModelImpl.SERVICE_VARIANT, null);
                             Calendar cal = Calendar.getInstance();
                             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 

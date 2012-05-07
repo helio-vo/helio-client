@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="fieldTypeRegistry" class="eu.heliovo.clientapi.model.field.FieldTypeRegistry" init-method="init">
+    </bean>
+
+    <bean id="hecDao" class="eu.heliovo.clientapi.model.catalog.impl.HecDao" init-method="init" lazy-init="true">
+        <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
+        <property name="serviceFactory" ref="helioServiceFactory"/>
+    </bean>
+
+    <bean id="dpasDao" class="eu.heliovo.clientapi.model.catalog.impl.DpasDao" init-method="init"  lazy-init="true">
+        <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
+    </bean>
+    
+    <bean id="ilsDao" class="eu.heliovo.clientapi.model.catalog.impl.IlsDao" init-method="init"  lazy-init="true">
+        <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
+    </bean>
+
+</beans>

@@ -11,7 +11,6 @@ import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.GoesPlotterService;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
@@ -44,10 +43,11 @@ public class GoesPlotterServiceImpl extends AbstractContextServiceImpl implement
     
     /**
      * A plotting service for goes.
-     * @param accessInterfaces the interfaces to access the service.
      */
-    public GoesPlotterServiceImpl(AccessInterface[] accessInterfaces) {
-        super(HelioServiceName.CXS, null, accessInterfaces);
+    public GoesPlotterServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(HelioServiceName.CXS, SERVICE_VARIANT);
+        AssertUtil.assertArgumentEquals(HelioServiceName.CXS, serviceName, "serviceName");
+        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
     }
     
     /* (non-Javadoc)

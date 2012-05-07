@@ -27,10 +27,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.HelioClient;
 import eu.heliovo.clientapi.processing.ProcessingResult;
-import eu.heliovo.clientapi.processing.ProcessingServiceFactory;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.FlarePlotterService;
@@ -42,9 +42,8 @@ import eu.heliovo.clientapi.processing.context.impl.des.StaPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.StbPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.UlyssesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl;
-import eu.heliovo.clientapi.utils.DebugUtils;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 
 /**
  * Demo for the context client
@@ -52,34 +51,35 @@ import eu.heliovo.registryclient.HelioServiceName;
  *
  */
 public class ContextClientDemo {
-    /**
-     * The context service factory.
-     */
-    final static ProcessingServiceFactory factory = ProcessingServiceFactory.getInstance();
-
+    
     /**
      * Main method for demo
      * @param args ignored
      * @throws Exception in case of a problem.
      */
     public static void main(String[] args) throws Exception {
-        HelioClient helioClient = new HelioClient();
-        helioClient.init();
+        // init the system
+
+        //final HelioClient helioClient = (HelioClient) context.getBean("helioClient");
         
         final List<String> config = new ArrayList<String>();
-//        config.add("parker");
-//        config.add("flare");
+        config.add("parker");
+        config.add("flare");
         config.add("goes");
-//        config.add("ace");
-//        config.add("sta");
-//        config.add("stb");
-//        config.add("ulysses");
-//        config.add("wind");
+        config.add("ace");
+        config.add("sta");
+        config.add("stb");
+        config.add("ulysses");
+        config.add("wind");
         
         //final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
-        final AccessInterface ai = null;
+        //final AccessInterface ai = null;
+
+        final GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        final HelioClient helioClient = context.getBean(HelioClient.class);
+
         
-        DebugUtils.enableDump();
+//        DebugUtils.enableDump();
         final StringBuffer sb = new StringBuffer();
         sb.append("<html><head><title>CXS stress test</title></head><body>\n");
         
@@ -96,7 +96,7 @@ public class ContextClientDemo {
                     try {
                         
                         if (config.contains("flare")) {
-                            FlarePlotterService flarePlotterService = factory.getFlarePlotterService(ai);
+                            FlarePlotterService flarePlotterService = (FlarePlotterService) helioClient.getServiceInstance(HelioServiceName.CXS, FlarePlotterServiceImpl.SERVICE_VARIANT, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
                             Calendar cal = Calendar.getInstance();
                             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -117,7 +117,7 @@ public class ContextClientDemo {
                         
                         if (config.contains("goes")){
                             Calendar cal = Calendar.getInstance();
-                            GoesPlotterService goesPlotterService = factory.getGoesPlotterService(ai);
+                            GoesPlotterService goesPlotterService = (GoesPlotterService) helioClient.getServiceInstance(HelioServiceName.CXS, GoesPlotterServiceImpl.SERVICE_VARIANT, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
                             cal.set(2003, Calendar.OCTOBER, 1, 0, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date startTime =  cal.getTime();
@@ -137,7 +137,7 @@ public class ContextClientDemo {
                         
                         if (config.contains("parker")) {
                             Calendar cal = Calendar.getInstance();
-                            SimpleParkerModelService parkerModelService = factory.getSimpleParkerModelService(ai);
+                            SimpleParkerModelService parkerModelService = (SimpleParkerModelService)helioClient.getServiceInstance(HelioServiceName.CXS, SimpleParkerModelServiceImpl.SERVICE_VARIANT, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
                             cal.set(2000, Calendar.FEBRUARY, 1, 9, 0, 0);
                             cal.add(Calendar.MONTH, j);
                             Date startTime =  cal.getTime();
@@ -166,19 +166,19 @@ public class ContextClientDemo {
                         }
                         
                         if (config.contains("ace")) {
-                            body.append(desPlot(AcePlotterServiceImpl.MISSION, AcePlotterServiceImpl.SERVICE_VARIANT, j));
+                            body.append(desPlot(helioClient, AcePlotterServiceImpl.MISSION, AcePlotterServiceImpl.SERVICE_VARIANT, j));
                         }
                         if (config.contains("sta")) {
-                            body.append(desPlot(StaPlotterServiceImpl.MISSION, StaPlotterServiceImpl.SERVICE_VARIANT, j));
+                            body.append(desPlot(helioClient, StaPlotterServiceImpl.MISSION, StaPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
                         if (config.contains("stb")) {
-                            body.append(desPlot(StbPlotterServiceImpl.MISSION, StbPlotterServiceImpl.SERVICE_VARIANT, j));
+                            body.append(desPlot(helioClient, StbPlotterServiceImpl.MISSION, StbPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
                         if (config.contains("ulysses")) {
-                            body.append(desPlot(UlyssesPlotterServiceImpl.MISSION, UlyssesPlotterServiceImpl.SERVICE_VARIANT, j));
+                            body.append(desPlot(helioClient, UlyssesPlotterServiceImpl.MISSION, UlyssesPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
                         if (config.contains("wind")) {
-                            body.append(desPlot(WindPlotterServiceImpl.MISSION, WindPlotterServiceImpl.SERVICE_VARIANT, j));
+                            body.append(desPlot(helioClient, WindPlotterServiceImpl.MISSION, WindPlotterServiceImpl.SERVICE_VARIANT, j));
                         }
                         
                         return null;
@@ -206,15 +206,15 @@ public class ContextClientDemo {
     /**
      * Create a des plot
      * @param mission the mission
-     * @param serviceVariant the service variant
+     * @param variant the name of the registered bean.
      * @param counter the counter value
      * @return HTML stub created by this call.
      */
-    protected static String desPlot(String mission, String serviceVariant, int counter) {
+    protected static String desPlot(HelioClient helioClient, String mission, String variant, int counter) {
         StringBuilder body = new StringBuilder();
         ProcessingResult<UrlProcessingResultObject> result = null;
         try {
-            DesPlotterService desPlotter = (DesPlotterService)factory.getHelioService(HelioServiceName.DES, serviceVariant, (AccessInterface[])null);
+            DesPlotterService desPlotter = (DesPlotterService)helioClient.getServiceInstance(HelioServiceName.DES, variant, null);
             Calendar cal = Calendar.getInstance();
             cal.set(2007, Calendar.JANUARY, 1, 0, 0, 0);
             cal.add(Calendar.MONTH, counter);

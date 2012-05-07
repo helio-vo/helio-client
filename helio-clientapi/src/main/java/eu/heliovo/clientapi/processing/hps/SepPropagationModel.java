@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.Date;
 
 import eu.heliovo.clientapi.processing.ProcessingResult;
-import eu.heliovo.clientapi.processing.ProcessingResultObject;
+import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
 import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.processing.hps.SepPropagationModel.SepProcessingResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -93,7 +93,7 @@ public interface SepPropagationModel extends ProcessingService<SepProcessingResu
      * @author MarcoSoldati
      *
      */
-    public interface SepProcessingResultObject extends ProcessingResultObject {
+    public interface SepProcessingResultObject extends HelioProcessingServiceResultObject {
         /**
          * URL to the inner plot URL.
          */

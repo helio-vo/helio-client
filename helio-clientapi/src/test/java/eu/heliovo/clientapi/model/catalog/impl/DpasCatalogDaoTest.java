@@ -6,27 +6,36 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
 import eu.heliovo.clientapi.model.field.HelioField;
-import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient;
+import eu.heliovo.registryclient.impl.ServiceRegistryClientFactory;
 
 public class DpasCatalogDaoTest {
 
-	/**
-	 * The field type registry to use
-	 */
-	private FieldTypeRegistry fieldTypeRegistry = FieldTypeRegistry.getInstance();
+    /**
+     * Setup dummy registry client
+     */
+    @Before public void setup() {
+        HelioDummyServiceRegistryClient serviceRegistryClient = new HelioDummyServiceRegistryClient();
+        ServiceRegistryClientFactory.getInstance().setServiceRegistryClient(serviceRegistryClient);
+    }
 
 	/**
 	 * Test the synthetic field that describes the catalogs.
 	 */
 	@Test
 	public void testGetCatalogField() {
-		HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.DPAS);
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        HelioCatalogDao dpasDao =  (HelioCatalogDao) context.getBean("dpasDao");
+        FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
+
 		HelioField<String> catalogField = dpasDao.getCatalogField();
 
 		assertEquals("dpas_catalog", catalogField.getId());
@@ -39,7 +48,8 @@ public class DpasCatalogDaoTest {
 	}
 
 	@Test public void test() {
-	    HelioCatalogDao dpasDao = HelioCatalogDaoFactory.getInstance().getHelioCatalogDao(HelioServiceName.DPAS);
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        HelioCatalogDao dpasDao =  (HelioCatalogDao) context.getBean("dpasDao");
 		for (DomainValueDescriptor<String> c : dpasDao.getCatalogField().getValueDomain()) {
 			for (HelioField<?> hf : dpasDao.getFields(c.getValue())) {
 				assertNotNull(hf);

@@ -14,6 +14,7 @@ import eu.heliovo.hps.server.ApplicationParameter;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
@@ -34,12 +35,14 @@ public class CirPropagationModelImpl extends AbstractHelioProcessingServiceImpl<
     public static final String SERVICE_VARIANT = HelioServiceName.HPS.getServiceId() + "/" + APPLICATION_ID;
 
     /**
-     * Default constructor.
-     * @param accessInterfaces the access interfaces to use.
+     * Create the propagation model.
      */
-    public CirPropagationModelImpl(AccessInterface[] accessInterfaces) {
-        super(HelioServiceName.HPS, null, accessInterfaces);
+    public CirPropagationModelImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(HelioServiceName.HPS, SERVICE_VARIANT);
+        AssertUtil.assertArgumentEquals(HelioServiceName.HPS, serviceName, "serviceName");
+        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
     }
+
 
     /**
      * Start time

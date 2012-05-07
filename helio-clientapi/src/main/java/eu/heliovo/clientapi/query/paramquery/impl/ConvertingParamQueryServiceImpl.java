@@ -39,11 +39,6 @@ public class ConvertingParamQueryServiceImpl implements ParamQueryService {
 	}
 
 	@Override
-	public String getDescription() {
-		return paramQueryService.getDescription();
-	}
-
-	@Override
 	public HelioQueryResult query(List<ParamQueryTerm<?>> terms) throws IllegalArgumentException, JobExecutionException {
 		return paramQueryService.query(terms);
 	}

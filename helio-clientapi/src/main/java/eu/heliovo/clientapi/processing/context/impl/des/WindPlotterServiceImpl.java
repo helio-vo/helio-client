@@ -2,8 +2,8 @@ package eu.heliovo.clientapi.processing.context.impl.des;
 
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.impl.AbstractDesPlotterServiceImpl;
-import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Create a plotter service for mission "WIND".
@@ -26,7 +26,9 @@ public class WindPlotterServiceImpl extends AbstractDesPlotterServiceImpl {
      * Create the WIND plotter service
      * @param accessInterfaces the interfaces to use.
      */
-    public WindPlotterServiceImpl(AccessInterface[] accessInterfaces) {
-        super(HelioServiceName.DES, SERVICE_VARIANT, MISSION, null, accessInterfaces);
+    public WindPlotterServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+        super(HelioServiceName.DES, SERVICE_VARIANT, MISSION);
+        AssertUtil.assertArgumentEquals(HelioServiceName.DES, serviceName, "serviceName");
+        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
     }
 }

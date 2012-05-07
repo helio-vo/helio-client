@@ -16,21 +16,23 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 
 import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
+import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
-import eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactory;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
@@ -45,11 +47,9 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
      * @param serviceName the name of the service. Must be {@link HelioServiceName#DES}
      * @param serviceVariant the variant.
      * @param mission the mission to use by this service impl.
-     * @param description the description
-     * @param accessInterfaces the interface to connect to. will be ignored in the current implementation.
      */
-    public AbstractDesPlotterServiceImpl(HelioServiceName serviceName, String serviceVariant, String mission, String description, AccessInterface[] accessInterfaces) {
-        super(serviceName, serviceVariant, description, accessInterfaces);
+    public AbstractDesPlotterServiceImpl(HelioServiceName serviceName, String serviceVariant, String mission) {
+        super(serviceName, serviceVariant);
         this.mission = mission;
     }
 
@@ -67,7 +67,17 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
      * The mission
      */
     private final String mission;
-    
+
+    /**
+     * The stil utils
+     */
+    private STILUtils stilUtils;
+
+    /**
+     * The service factory.
+     */
+    private ServiceFactory serviceFactory;
+
     @Override
     public Date getStartTime() {
         return startTime;
@@ -88,6 +98,26 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
         this.endTime = endTime;
     }
     
+    public STILUtils getStilUtils() {
+        return stilUtils;
+    }
+
+    @Required
+    public void setStilUtils(STILUtils stilUtils) {
+        this.stilUtils = stilUtils;
+    }
+    
+
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
+    }
+
+    @Required
+    public void setServiceFactory(
+            ServiceFactory serviceFactory) {
+        this.serviceFactory =  serviceFactory;
+    }
+
     @Override
     public ProcessingResult<UrlProcessingResultObject> execute() throws JobExecutionException {
         final long jobStartTime = System.currentTimeMillis();
@@ -97,7 +127,9 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
         String callId =  "desplot:" + mission + ":" + this.startTime + ":" + this.endTime + "::execute";
         logRecords.add(new LogRecord(Level.INFO, "Connecting to " + callId));
                 
-        ProcessingResult<UrlProcessingResultObject> processingResult = new ProcessingResultImpl(this.startTime, this.endTime, mission, callId, jobStartTime, logRecords, accessInterfaces);
+        ProcessingResultImpl processingResult = new ProcessingResultImpl(this.startTime, this.endTime, mission, callId, jobStartTime, logRecords, accessInterfaces);
+        processingResult.setStilUtils(stilUtils);
+        processingResult.setServiceFactory(serviceFactory);
         return processingResult;
     }
     
@@ -169,6 +201,16 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
          * the future that provides access to the result once it is there.
          */
         private final Future<HelioQueryResult> future;
+
+        /**
+         * Reference to the STIL utils. 
+         */
+        private STILUtils stilUtils;
+        
+        /**
+         * The query factory used to lookup the async query service for DES.
+         */
+        private ServiceFactory serviceFactory;
         
         /**
          * Create a HELIO processing result.
@@ -190,13 +232,29 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
             this.future = AsyncCallUtils.callLater(new Callable<HelioQueryResult>() {
                 @Override
                 public HelioQueryResult call() throws Exception {
-                    AsyncQueryService desService = AsyncQueryServiceFactory.getInstance().getHelioService(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, accessInterfaces);
+                    AsyncQueryService desService = (AsyncQueryService)serviceFactory.getHelioService(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, ServiceCapability.ASYNC_QUERY_SERVICE, accessInterfaces);
                     HelioQueryResult result = desService.timeQuery(DateUtil.toIsoDateString(startTime), DateUtil.toIsoDateString(endTime), mission, 0, 0);
                     return result;
                 }
             }, callId);
         }
 
+        /**
+         * Set the stilUtils bean.
+         * @param stilUtils the stil utils bean.
+         */
+        public void setStilUtils(STILUtils stilUtils) {
+            this.stilUtils = stilUtils;
+        }
+        
+        /**
+         * Set the async query factory to be used.
+         * @param asyncQueryServiceFactory
+         */
+        public void setServiceFactory(
+                ServiceFactory serviceFactory) {
+            this.serviceFactory = serviceFactory;
+        }
 
         @Override
         public Phase getPhase() {
@@ -269,7 +327,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
             // now we can read the url of the png fron the vo table.
             StarTable[] tables;
             try {
-                tables = STILUtils.read(future.get().asURL());
+                tables = stilUtils.read(future.get().asURL());
             } catch (IOException e) {
                 throw new JobExecutionException("Unable to read VOTable from DES plotter: " + e.getMessage(), e);
             } catch (InterruptedException e) {

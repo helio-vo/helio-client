@@ -12,7 +12,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author MarcoSoldati
  *
  */
-public interface ProcessingResultObject {
+public interface HelioProcessingServiceResultObject {
     /**
      * Get the names of the output fields.
      * @return the output fields.

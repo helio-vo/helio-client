@@ -72,11 +72,11 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	/**
 	 * Create the connector and open the connection to the WSDL file.
 	 * @param serviceName the name of the service
-	 * @param description a short text to describe the service
+	 * @param serviceVariant the specific variant of a service. may be null.
 	 * @param accessInterfaces the locations of the wsdl files. Must not be null.
 	 */
-	public SyncQueryServiceImpl(HelioServiceName serviceName, String description, AccessInterface ... accessInterfaces) {
-	    super(serviceName, null, description, accessInterfaces);
+	public SyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant) {
+	    super(serviceName, serviceVariant);
 	}
 	
 	/**
@@ -87,15 +87,22 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	 * @param serviceName the name of the service
 	 * @param description a short text to describe the service
 	 */
-	public SyncQueryServiceImpl(HelioServiceName serviceName, String description, HelioQueryService port, AccessInterface accessInterface) {
-	    super(serviceName, null, description, new AccessInterface[] {accessInterface});
+	public SyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant, HelioQueryService port) {
+	    super(serviceName, serviceVariant);
         
-	    if (!ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
-	        throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.SYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
-	    }
-	    if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
-	        throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
-	    }
+	}
+	
+	@Override
+	public void setAccessInterfaces(AccessInterface... accessInterfaces) {
+	    for (AccessInterface accessInterface : accessInterfaces) {
+	        if (!ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())) {
+	            throw new IllegalArgumentException("AccessInterface.Capability must be " + ServiceCapability.SYNC_QUERY_SERVICE + ", but is " + accessInterface.getCapability());
+	        }
+	        if (!AccessInterfaceType.SOAP_SERVICE.equals(accessInterface.getInterfaceType())) {
+	            throw new IllegalArgumentException("AccessInterfaceType must be " + AccessInterfaceType.SOAP_SERVICE + ", but is " + accessInterface.getInterfaceType());
+	        }
+        }
+	    super.setAccessInterfaces(accessInterfaces);
 	}
 	
 	/**
@@ -309,12 +316,6 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 		return serviceName;
 	}
 	
-	
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
 	/**
 	 * Implementation of the HELIO Query result.
 	 * @author MarcoSoldati
