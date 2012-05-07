@@ -442,11 +442,11 @@ public class STILUtils {
                 LOGGER.debug("Purging outdated file " + pf.getPersistedFilePath());
             }
             
-            File fileToDelete = new File(pf.getPersistedFilePath());
+            File fileToDelete = new File(persistedFilePath, pf.getPersistedFilePath());
             if (FileUtil.removeFile(fileToDelete)) {
                 s.delete(pf);
             } else {
-                    LOGGER.warn("Unable to remove expired file: " + pf.getPersistedFilePath() + ". Reason unknown.");
+                    LOGGER.warn("Unable to remove expired file: " + fileToDelete.getAbsolutePath() + ". Reason unknown.");
             }
         }
 
@@ -495,7 +495,9 @@ public class STILUtils {
         tables.endSequence();
 
         PersistedFile pf = PersistedFile.createNewPersistedFile(_expiration);
-        FileOutputStream fos = new FileOutputStream(pf.getPersistedFilePath());
+        File filePath = new File(persistedFilePath, pf.getPersistedFilePath());
+        filePath.getParentFile().mkdirs(); // create directory if not already there.
+        FileOutputStream fos = new FileOutputStream(filePath);
         new VOTableWriter(dataFormat, true).writeStarTables(tables, fos);
 
         IOUtils.closeQuietly(fos);
@@ -519,7 +521,7 @@ public class STILUtils {
      * @throws IOException
      */
     public StarTable[] read(String _id) throws IOException {
-        return read(new FileDataSource(new PersistedFile(_id).getPersistedFilePath()));
+        return read(new FileDataSource(new File(persistedFilePath, new PersistedFile(_id).getPersistedFilePath())));
     }
 
     /**
@@ -531,7 +533,7 @@ public class STILUtils {
      * @return The file object or null if the file does not exist.
      */
     public File getFilePath(String _id) {
-        File file = new File(new PersistedFile(_id).getPersistedFilePath());
+        File file = new File(persistedFilePath, new PersistedFile(_id).getPersistedFilePath());
         return file.exists() ? file : null;
     }
 }
