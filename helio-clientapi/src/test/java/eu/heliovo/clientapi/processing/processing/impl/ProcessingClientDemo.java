@@ -47,7 +47,7 @@ public class ProcessingClientDemo {
      * @throws Exception in case of a problem.
      */
     public static void main(String[] args) throws Exception {
-        final GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        final GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         final HelioClient client = (HelioClient) context.getBean("helioClient");
         
         //DebugUtils.enableDump();

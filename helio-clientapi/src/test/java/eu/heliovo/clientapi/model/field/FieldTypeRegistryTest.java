@@ -16,7 +16,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 public class FieldTypeRegistryTest {
 
 	@Test public void testFieldTypeRegistry() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         FieldTypeRegistry registry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
 		
 		assertNotNull(registry.getType("string"));

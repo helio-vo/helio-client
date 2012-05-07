@@ -38,7 +38,7 @@ public class HelioClientTest {
      */
     @Before public void setup() {
 
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         helioClient = (HelioClient) context.getBean("helioClient");
     }
     

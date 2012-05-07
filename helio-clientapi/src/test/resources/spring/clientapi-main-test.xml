@@ -4,7 +4,7 @@
   xmlns:util="http://www.springframework.org/schema/util"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
-    <import resource="spring-clientapi.xml"/>
+    <import resource="clientapi-main.xml"/>
 
     <bean id="serviceRegistryClient" class="eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient" init-method="init"></bean> 
     

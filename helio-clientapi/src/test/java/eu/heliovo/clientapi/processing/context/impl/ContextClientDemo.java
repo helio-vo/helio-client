@@ -75,7 +75,7 @@ public class ContextClientDemo {
         //final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
         //final AccessInterface ai = null;
 
-        final GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        final GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         final HelioClient helioClient = context.getBean(HelioClient.class);
 
         

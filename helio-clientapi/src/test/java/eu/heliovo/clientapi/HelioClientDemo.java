@@ -104,7 +104,7 @@ public class HelioClientDemo {
      * Run the demos.
      */
     public void run() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         HelioClient helioClient = (HelioClient) context.getBean("helioClient");
         
         //DebugUtils.enableDump();

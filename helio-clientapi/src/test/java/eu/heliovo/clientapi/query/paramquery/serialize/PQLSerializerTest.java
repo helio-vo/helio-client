@@ -27,7 +27,7 @@ public class PQLSerializerTest {
 	private PQLSerializer pqlSerializer;
 	
 	@Before	public void setUp() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         fieldTypeRegistry = (FieldTypeRegistry) context.getBean("fieldTypeRegistry");
 
 	    pqlSerializer= new PQLSerializer();

@@ -29,7 +29,7 @@ public class AsyncQueryServiceDemo {
      */
 	public static void main(String[] args) throws Exception {
 	    // init the system
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         
 	    HelioClient client = (HelioClient) context.getBean("helioClient");
 	    //client.getServiceInstance(client, HelioServiceName.ICS, ServiceCapability.ASYNC_QUERY_SERVICE, null);
@@ -46,13 +46,13 @@ public class AsyncQueryServiceDemo {
 	    testLongRunningService(client, HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "", (String)null);
 		testLongRunningService(client, HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null);
 		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("kso_halpha_flare"), null);
-		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("cactus_soho_flow"), null);
-		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("cactus_soho_flow"), null);
-		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("hec_catalogue"), null);
-		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("noaa_active_region_summary"), null);
-		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
-		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
-		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
+//		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("cactus_soho_flow"), null);
+//		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("cactus_soho_flow"), null);
+//		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("hec_catalogue"), null);
+//		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("noaa_active_region_summary"), null);
+//		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
+//		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
+//		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
 		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2007-03-01T00:00:00"), Arrays.asList("2007-03-31T00:00:00"), Arrays.asList("goes_xray_flare"), null);
 		testLongRunningService(client, HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"), null);
 		testLongRunningService(client, HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("instrument"), null);

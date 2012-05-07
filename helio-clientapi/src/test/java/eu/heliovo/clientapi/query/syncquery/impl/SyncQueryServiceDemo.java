@@ -15,7 +15,7 @@ import eu.heliovo.registryclient.ServiceCapability;
 public class SyncQueryServiceDemo {
 	public static void main(String[] args) throws Exception {
 	       // init the system
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         
         HelioClient client = (HelioClient) context.getBean("helioClient");
 

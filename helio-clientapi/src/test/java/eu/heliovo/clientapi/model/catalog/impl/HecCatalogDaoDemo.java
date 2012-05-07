@@ -9,7 +9,7 @@ import eu.heliovo.clientapi.model.field.HelioField;
 public class HecCatalogDaoDemo {
 
     public static void main(String[] args) {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         HelioCatalogDao hecDao =  (HelioCatalogDao) context.getBean("hecDao");
         
         for (DomainValueDescriptor<String> c : hecDao.getCatalogField().getValueDomain()) {

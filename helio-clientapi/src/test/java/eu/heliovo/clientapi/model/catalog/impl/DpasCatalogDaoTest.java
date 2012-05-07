@@ -32,7 +32,7 @@ public class DpasCatalogDaoTest {
 	 */
 	@Test
 	public void testGetCatalogField() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         HelioCatalogDao dpasDao =  (HelioCatalogDao) context.getBean("dpasDao");
         FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
 
@@ -48,7 +48,7 @@ public class DpasCatalogDaoTest {
 	}
 
 	@Test public void test() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         HelioCatalogDao dpasDao =  (HelioCatalogDao) context.getBean("dpasDao");
 		for (DomainValueDescriptor<String> c : dpasDao.getCatalogField().getValueDomain()) {
 			for (HelioField<?> hf : dpasDao.getFields(c.getValue())) {

@@ -23,7 +23,7 @@ public class IcsPatAsyncQueryServiceImplTest {
      * Test the loading of an instruments list.
      */
     @Test public void testIcsPatCreation() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         HelioClient helioClient = (HelioClient) context.getBean("helioClient");
         
         IcsPatAsyncQueryServiceImpl icsService = (IcsPatAsyncQueryServiceImpl) helioClient.getServiceInstance(HelioServiceName.ICS, IcsPatAsyncQueryServiceImpl.SERVICE_VARIANT, ServiceCapability.ASYNC_QUERY_SERVICE);

@@ -26,7 +26,7 @@ public class HecCatalogDaoTest {
     private FieldTypeRegistry fieldTypeRegistry;
 
     @Before public void setup() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         ServiceRegistryClient serviceRegistry = context.getBean(ServiceRegistryClient.class);
         serviceRegistry.registerServiceInstance(
                 new GenericServiceDescriptor(HelioServiceName.HEC, "HEC", ServiceCapability.SYNC_QUERY_SERVICE),

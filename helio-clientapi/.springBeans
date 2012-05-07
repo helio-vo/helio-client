@@ -7,10 +7,9 @@
 	</configSuffixes>
 	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
-		<config>src/main/java/eu/heliovo/clientapi/linkprovider/spring-linkprovider.xml</config>
-		<config>src/main/java/eu/heliovo/clientapi/query/spring-query.xml</config>
-		<config>src/main/java/eu/heliovo/clientapi/spring-clientapi.xml</config>
-		<config>src/main/java/eu/heliovo/clientapi/model/catalog/spring-catalogdao.xml</config>
+		<config>src/main/resources/spring/clientapi-catalogdao.xml</config>
+		<config>src/main/resources/spring/clientapi-main.xml</config>
+		<config>src/main/resources/spring/clientapi-linkprovider.xml</config>
 	</configs>
 	<configSets>
 	</configSets>

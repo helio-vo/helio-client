@@ -25,7 +25,7 @@ public class HelioFieldTest {
 		String fieldName = "fieldName";
 		String fieldLabel = "fieldLabel";
 		String description = "description";
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
 		FieldType type = fieldTypeRegistry.getType("string");
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2",
@@ -96,7 +96,7 @@ public class HelioFieldTest {
 		String fieldName = "fieldName";
 		String fieldLabel = "fieldLabel";
 		String description = "description";
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
 		FieldType type = fieldTypeRegistry.getType("string");
 		
@@ -139,7 +139,7 @@ public class HelioFieldTest {
 	 */
 	@Test
 	public void testEqualsAndHashcode() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:eu/heliovo/clientapi/spring-test-clientapi.xml");
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
         FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
 
 		FieldType type = fieldTypeRegistry.getType("string");
