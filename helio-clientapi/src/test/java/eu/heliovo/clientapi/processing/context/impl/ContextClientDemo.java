@@ -60,8 +60,6 @@ public class ContextClientDemo {
     public static void main(String[] args) throws Exception {
         // init the system
 
-        //final HelioClient helioClient = (HelioClient) context.getBean("helioClient");
-        
         final List<String> config = new ArrayList<String>();
         config.add("parker");
         config.add("flare");

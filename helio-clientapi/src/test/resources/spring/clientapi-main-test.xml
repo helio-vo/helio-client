@@ -8,4 +8,6 @@
 
     <bean id="serviceRegistryClient" class="eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient" init-method="init"></bean> 
     
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
+    
 </beans>
