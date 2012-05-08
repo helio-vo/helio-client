@@ -24,8 +24,6 @@ import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
-import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Variant of the ICS that merges the ICS result with the PAT table from the HEC.
@@ -49,14 +47,9 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     private HelioCatalogDao dpasDao = null;
 
     /**
-     * Create the DES query support. The constructor is public for the factory implementation.
-     * @param serviceName name of the service. Must be equal to {@link HelioServiceName#DES}
-     * @param serviceVariant the variant. Must equal to  {@value #SERVICE_VARIANT}.
+     * Create the DES query support. 
      */
-    public IcsPatAsyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant) {
-        super(serviceName, serviceVariant);
-        AssertUtil.assertArgumentEquals(HelioServiceName.ICS, serviceName,  "serviceName");
-        AssertUtil.assertArgumentEquals(SERVICE_VARIANT, serviceVariant,  "serviceVariant");
+    public IcsPatAsyncQueryServiceImpl() {
     }
     
     

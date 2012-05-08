@@ -2,8 +2,6 @@ package eu.heliovo.clientapi.processing.context.impl.des;
 
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.processing.context.impl.AbstractDesPlotterServiceImpl;
-import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Create a plotter service for mission "STA".
@@ -26,9 +24,7 @@ public class StaPlotterServiceImpl extends AbstractDesPlotterServiceImpl {
      * Create the STA plotter service
      * @param accessInterfaces the interfaces to use.
      */
-    public StaPlotterServiceImpl(HelioServiceName serviceName, String serviceVariant) {
-        super(HelioServiceName.DES, SERVICE_VARIANT, MISSION);
-        AssertUtil.assertArgumentEquals(HelioServiceName.DES, serviceName, "serviceName");
-        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
+    public StaPlotterServiceImpl() {
+        super(MISSION);
     }
 }

@@ -19,7 +19,6 @@ import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceRegistryClient;
 import eu.heliovo.registryclient.ServiceResolutionException;
-import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Base implementation for a {@link ServiceFactory}.
@@ -87,53 +86,38 @@ public class HelioServiceFactory implements ServiceFactory, ApplicationContextAw
     }
     
     @Override
-    public HelioService getHelioService(HelioServiceName serviceName) {
-        return getHelioService(serviceName, null, null);
+    public HelioService[] getHelioServices(HelioServiceName serviceName) {
+        return getHelioServices(serviceName, null, null);
     }
 
     @Override
-    public HelioService getHelioService(HelioServiceName serviceName,
+    public HelioService[] getHelioServices(HelioServiceName serviceName,
             String serviceVariant) {
-        return getHelioService(serviceName, serviceVariant, null);
+        return getHelioServices(serviceName, serviceVariant, null);
     }
 
     @Override
-    public HelioService getHelioService(HelioServiceName serviceName,
+    public HelioService[] getHelioServices(HelioServiceName serviceName,
             String serviceVariant, ServiceCapability serviceCapability) {
-        return getHelioService(serviceName, serviceVariant, serviceCapability, (AccessInterface[])null);
+        return getHelioServices(serviceName, serviceVariant, serviceCapability, (AccessInterface[])null);
     }
 
     @Override
-    public HelioService getHelioService(HelioServiceName serviceName, String serviceVariant, ServiceCapability serviceCapability, AccessInterface... accessInterfaces) {
-        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
-        ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceName);
-        if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
-            List<AccessInterface> tmpAccessInterfaces = new ArrayList<AccessInterface>();
-            for (ServiceCapability capability : serviceDescriptor.getCapabilities()) {
-                if (serviceCapability == null || serviceCapability.equals(capability)) {
-                    Collections.addAll(tmpAccessInterfaces, 
-                            getServiceRegistryClient().getAllEndpoints(serviceDescriptor, capability, AccessInterfaceType.SOAP_SERVICE)
-                    );
-                }
-            }
-            accessInterfaces = tmpAccessInterfaces.toArray(new AccessInterface[tmpAccessInterfaces.size()]);
-        }
-        AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
-
+    public HelioService[] getHelioServices(HelioServiceName serviceName, String serviceVariant, ServiceCapability serviceCapability, AccessInterface... accessInterfaces) {
         if (_LOGGER.isDebugEnabled()) {
             _LOGGER.debug("Found services at: " + Arrays.toString(accessInterfaces));
         }
         
-        String beanName = serviceVariantRegistry.getServiceImpl(serviceName, serviceVariant, serviceCapability);
-        if (beanName == null) { // fall back to default service
-            beanName = serviceVariantRegistry.getServiceImpl(serviceName, null, null);
+        String[] beanNames = serviceVariantRegistry.getServiceBeans(serviceName, serviceVariant, serviceCapability);
+        if (beanNames == null) { // fall back to default service
+            beanNames = serviceVariantRegistry.getServiceBeans(serviceName, null, null);
         }
-        if (beanName == null) {
+        if (beanNames == null) {
             throw new ServiceResolutionException("Unable to find '" + serviceName + "', variant '" + serviceVariant + "', capability '" + serviceCapability + "'");
         }
         
-        HelioService serviceImpl = createServiceImpl(beanName, serviceName, serviceVariant, accessInterfaces);
-        return serviceImpl;
+        HelioService[] serviceImpls = createServiceImpls(beanNames, serviceName, serviceVariant, accessInterfaces);
+        return serviceImpls;
     }
     
     /**
@@ -144,16 +128,53 @@ public class HelioServiceFactory implements ServiceFactory, ApplicationContextAw
      * @param accessInterfaces the access interfaces will not be null.
      * @return concrete instance of the requested service.
      */
-    protected final HelioService createServiceImpl(String beanName, HelioServiceName serviceName, String serviceVariant, AccessInterface[] accessInterfaces) {
-        HelioService serviceImpl = (HelioService) springApplicationContext.getBean(beanName, serviceName, serviceVariant);
-        if (serviceImpl instanceof AbstractServiceImpl) {
-            AbstractServiceImpl impl = (AbstractServiceImpl)serviceImpl;
-            impl.setAccessInterfaces(accessInterfaces);
-            impl.setLoadBalancer(getLoadBalancer());
+    protected HelioService[] createServiceImpls(String[] beanNames, HelioServiceName serviceName, String serviceVariant, AccessInterface[] accessInterfaces) {
+        HelioService[] serviceImpls = new HelioService[beanNames.length];
+        for (int i = 0; i < beanNames.length; i++) {
+            String beanName = beanNames[i];
+            HelioService serviceImpl = (HelioService) springApplicationContext.getBean(beanName);
+            if (serviceImpl instanceof AbstractServiceImpl) {
+                AbstractServiceImpl impl = (AbstractServiceImpl)serviceImpl;                
+                if (serviceName != null) {
+                    impl.setServiceName(serviceName);
+                }
+                if (serviceVariant != null) {
+                    impl.setServiceVariant(serviceVariant);
+                }
+                
+                if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
+                    impl.setAccessInterfaces(getAccessInterfaces(serviceImpl));
+                } else {
+                    impl.setAccessInterfaces(accessInterfaces);
+                }
+                impl.setLoadBalancer(getLoadBalancer());
+            }
+            serviceImpls[i] = serviceImpl;
         }
-        return serviceImpl;
+        return serviceImpls;
     }
     
+    /**
+     * Read all access interfaces from the registry. 
+     * @param serviceImpl the current service implementation
+     * @return the retrieved interfaces.
+     */
+    private AccessInterface[] getAccessInterfaces(HelioService serviceImpl) {
+        ServiceDescriptor serviceDescriptor = getServiceDescriptor(serviceImpl.getServiceName());
+        List<AccessInterface> tmpAccessInterfaces = new ArrayList<AccessInterface>();
+        for (ServiceCapability capability : serviceDescriptor.getCapabilities()) {
+            if (serviceImpl.supportsCapability(capability)) {
+                Collections.addAll(tmpAccessInterfaces, 
+                    getServiceRegistryClient().getAllEndpoints(serviceDescriptor, capability, AccessInterfaceType.SOAP_SERVICE)
+                );
+            }
+        }
+        if (tmpAccessInterfaces.isEmpty()) {
+            throw new RuntimeException("Unable to find any access interfaces for service " + serviceImpl);
+        }
+        return tmpAccessInterfaces.toArray(new AccessInterface[tmpAccessInterfaces.size()]);
+    }
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {

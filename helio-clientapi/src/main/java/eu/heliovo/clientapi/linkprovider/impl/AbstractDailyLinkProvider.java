@@ -8,6 +8,7 @@ import javax.activation.MimeType;
 
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -56,6 +57,12 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
         this.serviceVariant = serviceVariant;
         this.description = description;
     }
+    
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.LINK_PROVIDER_SERVICE;
+    }
+
     
     @Override
     public URL getLink(Date startTime, Date endTime) {

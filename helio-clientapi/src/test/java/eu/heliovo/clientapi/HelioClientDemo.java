@@ -12,6 +12,8 @@ import java.util.logging.LogRecord;
 
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+import eu.heliovo.clientapi.linkprovider.LinkProviderService;
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
@@ -97,6 +99,7 @@ public class HelioClientDemo {
         config.add("sepBwPM");
         config.add("dumpServices");
         config.add("taverna2283");
+        config.add("links");
     }
     
 
@@ -127,9 +130,11 @@ public class HelioClientDemo {
         if (config.contains("sepBwPM")) runSepBackwardPropagationModel(helioClient);
         if (config.contains("dumpServices")) dumpServices(helioClient);
         if (config.contains("taverna2283")) doTaverna2283(helioClient);
+        if (config.contains("links")) doLinks(helioClient);
         DebugUtils.disableDump();
     }
-    
+ 
+
     /**
      * run a propagation model service.
      * @param helioClient
@@ -137,7 +142,7 @@ public class HelioClientDemo {
     private void runCmePropagationModel(HelioClient helioClient) {
         CmePropagationModel processingService = (CmePropagationModel) 
             helioClient.getServiceInstance(HelioServiceName.HPS, 
-            CmePropagationModelImpl.SERVICE_VARIANT, ServiceCapability.HELIO_PROCESSING_SERVICE);
+            CmePropagationModelImpl.SERVICE_VARIANT, null);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -161,7 +166,7 @@ public class HelioClientDemo {
     private void runCmeBackwardPropagationModel(HelioClient helioClient) {
         CmeBackwardPropagationModel processingService = (CmeBackwardPropagationModel) 
                 helioClient.getServiceInstance(HelioServiceName.HPS, CmeBackwardPropagationModelImpl.SERVICE_VARIANT, 
-                        ServiceCapability.HELIO_PROCESSING_SERVICE);
+                        null);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         
@@ -185,7 +190,7 @@ public class HelioClientDemo {
     private void runCirPropagationModel(HelioClient helioClient) {
         CirPropagationModel processingService = (CirPropagationModel) 
                 helioClient.getServiceInstance(HelioServiceName.HPS, CirPropagationModelImpl.SERVICE_VARIANT, 
-                        ServiceCapability.HELIO_PROCESSING_SERVICE);
+                        null);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         
@@ -208,7 +213,7 @@ public class HelioClientDemo {
     private void runCirBackwardPropagationModel(HelioClient helioClient) {
         CirBackwardPropagationModel processingService = (CirBackwardPropagationModel) 
                 helioClient.getServiceInstance(HelioServiceName.HPS, CirBackwardPropagationModelImpl.SERVICE_VARIANT, 
-                        ServiceCapability.HELIO_PROCESSING_SERVICE);
+                        null);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         String object = "Earth";
@@ -230,7 +235,7 @@ public class HelioClientDemo {
     private void runSepPropagationModel(HelioClient helioClient) {
         SepPropagationModel processingService = (SepPropagationModel) 
             helioClient.getServiceInstance(HelioServiceName.HPS, SepPropagationModelImpl.SERVICE_VARIANT, 
-                    ServiceCapability.HELIO_PROCESSING_SERVICE);
+                    null);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -254,7 +259,7 @@ public class HelioClientDemo {
     private void runSepBackwardPropagationModel(HelioClient helioClient) {
         SepBackwardPropagationModel processingService = (SepBackwardPropagationModel) 
                 helioClient.getServiceInstance(HelioServiceName.HPS, SepBackwardPropagationModelImpl.SERVICE_VARIANT, 
-                        ServiceCapability.HELIO_PROCESSING_SERVICE);
+                        null);
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         
@@ -413,6 +418,30 @@ public class HelioClientDemo {
         UrlProcessingResultObject resultObject = result.asResultObject(60, TimeUnit.SECONDS);
         URL url = resultObject.getUrl();
         System.out.println(url);
+    }
+    
+    /**
+     * Test the link providers
+     * @param helioClient
+     */
+    private void doLinks(HelioClient helioClient) {
+        HelioService[] linkProviders = helioClient.getServiceInstances(ServiceCapability.LINK_PROVIDER_SERVICE);
+        for (HelioService linkProvider : linkProviders) {
+            
+            // create some dummy date
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+            cal.setTimeInMillis(0);
+            cal.set(2005, Calendar.JANUARY, 1, 0, 0, 0);
+            Date startTime = cal.getTime();
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+            Date endTime = cal.getTime();
+            
+            // if link is null there is not page for the given date range.
+            String title = ((LinkProviderService)linkProvider).getTitle(startTime, endTime);
+            URL link = ((LinkProviderService)linkProvider).getLink(startTime, endTime);
+            System.out.println(title + " - " + link);
+        }
     }
 
     /**

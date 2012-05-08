@@ -1,10 +1,12 @@
 package eu.heliovo.clientapi.model.service;
 
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 
 
 /**
- * Description of a HELIO service.
+ * Description of a HELIO service implementation.
+ * This is the main interface that all implementation proxies to a service should implement.
  * @author marco soldati at fhnw ch
  *
  */
@@ -14,6 +16,13 @@ public interface HelioService {
 	 * @return the name of the service.
 	 */
 	public HelioServiceName getServiceName();
+	
+	/**
+	 * True if the service implementation supports a given capability. 
+	 * @param capability the capability.
+	 * @return true if supported.
+	 */
+	public boolean supportsCapability(ServiceCapability capability);
 	
 	/**
 	 * Get the variant of a specific service.
@@ -35,4 +44,5 @@ public interface HelioService {
 	 */
 	@Override
 	public int hashCode();
+
 }

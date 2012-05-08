@@ -14,7 +14,6 @@ import eu.heliovo.hps.server.ApplicationParameter;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
-import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
@@ -37,10 +36,7 @@ public class SepBackwardPropagationModelImpl extends AbstractHelioProcessingServ
     /**
      * Create the propagation model.
      */
-    public SepBackwardPropagationModelImpl(HelioServiceName serviceName, String serviceVariant) {
-        super(HelioServiceName.HPS, SERVICE_VARIANT);
-        AssertUtil.assertArgumentEquals(HelioServiceName.HPS, serviceName, "serviceName");
-        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
+    public SepBackwardPropagationModelImpl() {
     }
 
 

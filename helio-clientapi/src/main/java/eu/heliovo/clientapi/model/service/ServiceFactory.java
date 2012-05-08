@@ -15,7 +15,7 @@ public interface ServiceFactory {
      * @param serviceName the service name to look for. Must not be null.
      * @return a proxy to a service implementation.
      */
-    public HelioService getHelioService(HelioServiceName serviceName);    
+    public HelioService[] getHelioServices(HelioServiceName serviceName);    
 
     /**
      * Get a new instance of the "best" service provider for a desired service.
@@ -23,7 +23,7 @@ public interface ServiceFactory {
      * @param serviceVariant optional identifier for a variant of a service. If null, a default variant of the service will be returned. Not all services define variants. 
      * @return a proxy to a service implementation.
      */
-    public HelioService getHelioService(HelioServiceName serviceName, String serviceVariant);    
+    public HelioService[] getHelioServices(HelioServiceName serviceName, String serviceVariant);    
     
     /**
      * Get a new instance of the "best" service provider for a desired service.
@@ -34,7 +34,7 @@ public interface ServiceFactory {
      * If multiple interfaces are given, the {@link LoadBalancer} will be used to choose the best matching interface.
      * @return a proxy to a service implementation.
      */
-    public HelioService getHelioService(HelioServiceName serviceName, String serviceVariant, ServiceCapability serviceCapability);    
+    public HelioService[] getHelioServices(HelioServiceName serviceName, String serviceVariant, ServiceCapability serviceCapability);    
 
     /**
      * Get a new instance of the "best" service provider for a desired service.
@@ -45,5 +45,5 @@ public interface ServiceFactory {
      * If multiple interfaces are given, the {@link LoadBalancer} will be used to choose the best matching interface.
      * @return a proxy to a service implementation.
      */
-    public HelioService getHelioService(HelioServiceName serviceName, String serviceVariant, ServiceCapability serviceCapability, AccessInterface... accessInterfaces);    
+    public HelioService[] getHelioServices(HelioServiceName serviceName, String serviceVariant, ServiceCapability serviceCapability, AccessInterface... accessInterfaces);    
 }

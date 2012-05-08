@@ -74,5 +74,14 @@ public class HelioClientTest {
         service = helioClient.getServiceInstance(HelioDummyServiceRegistryClient.TEST_SERVICE, null, ServiceCapability.ASYNC_QUERY_SERVICE);
         assertNotNull(service);
         assertTrue("Service should be of type " + AsyncQueryService.class, service instanceof AsyncQueryService);
-    }    
+    }
+    
+    /**
+     * Test method {@link HelioClient#getServiceInstance(HelioServiceName, ServiceCapability, String)}
+     */
+    @Test public void testGetLinkProviders() {
+        HelioService[] services = helioClient.getServiceInstances(ServiceCapability.LINK_PROVIDER_SERVICE);
+        assertNotNull(services);
+        assertEquals(4, services.length);
+    }
 }

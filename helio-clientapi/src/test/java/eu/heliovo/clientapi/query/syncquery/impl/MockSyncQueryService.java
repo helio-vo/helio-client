@@ -36,14 +36,14 @@ class MockSyncQueryService extends SyncQueryServiceImpl {
 
 	private static final URL wsdlLocation = HelioFileUtil.asURL("http://localhost/test/HelioQuery.wsdl");
     private static final HelioServiceName name = HelioServiceName.register("test", "ivo://test");
-	private static final String description = "a dummy test service";
+//	private static final String description = "a dummy test service";
     private static final AccessInterface defaultInterface = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation);
     private MockQueryServicePort port;
 
 	public MockSyncQueryService(MockQueryServicePort port) {	
-		super(name, description);
 		this.setAccessInterfaces(new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation));
 		this.setLoadBalancer(new RandomLoadBalancer());
+		this.setServiceName(name);
 		this.port = port;
 	}
 	

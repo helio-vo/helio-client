@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService_Service;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
-import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
@@ -27,7 +26,6 @@ import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
-import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -39,7 +37,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author marco soldati at fhnw ch
  *
  */
-public class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQueryService, HelioService {
+public class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQueryService {
 	/**
 	 * The logger instance
 	 */
@@ -57,15 +55,16 @@ public class AsyncQueryServiceImpl extends AbstractServiceImpl implements AsyncQ
     protected static final long CALL_TIMEOUT = AsyncCallUtils.DEFAULT_TIMEOUT;
 
 	/**
-	 * Create a client stub to a specific {@link AccessInterface}. 
-	 * @param serviceName the name of the service
-	 * @param serviceVariant TODO
-	 * @param description a short text to describe the service
-	 * @param accessInterfaces concrete implementation of an AccessInterface. Must not be null
+	 * Default constructor.
 	 */
-	public AsyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant) {
-	    super(serviceName, serviceVariant);
+	public AsyncQueryServiceImpl() {
+	    super();
 	}
+	
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.ASYNC_QUERY_SERVICE;
+    }
 
     @Override
     public void setAccessInterfaces(AccessInterface... accessInterfaces) {

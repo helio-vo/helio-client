@@ -37,7 +37,6 @@ import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
-import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
@@ -70,28 +69,16 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	private long timeout = DEFAULT_TIMEOUT;
 	
 	/**
-	 * Create the connector and open the connection to the WSDL file.
-	 * @param serviceName the name of the service
-	 * @param serviceVariant the specific variant of a service. may be null.
-	 * @param accessInterfaces the locations of the wsdl files. Must not be null.
+	 * Default constructor.
 	 */
-	public SyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant) {
-	    super(serviceName, serviceVariant);
+	public SyncQueryServiceImpl() {
 	}
 	
-	/**
-	 * Create the connector and open the connection to the WSDL file. This constructor can be used to submit the port from outside. This
-	 * is of particular interest for testing purposes.
-	 * @param port the port to be used by this query service
-	 * @param accessInterface the location of the wsdl. Must not be null
-	 * @param serviceName the name of the service
-	 * @param description a short text to describe the service
-	 */
-	public SyncQueryServiceImpl(HelioServiceName serviceName, String serviceVariant, HelioQueryService port) {
-	    super(serviceName, serviceVariant);
-        
-	}
-	
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.SYNC_QUERY_SERVICE;
+    }
+
 	@Override
 	public void setAccessInterfaces(AccessInterface... accessInterfaces) {
 	    for (AccessInterface accessInterface : accessInterfaces) {
@@ -310,12 +297,7 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
             }
         }
 	}
-	
-	@Override
-	public HelioServiceName getServiceName() {
-		return serviceName;
-	}
-	
+
 	/**
 	 * Implementation of the HELIO Query result.
 	 * @author MarcoSoldati

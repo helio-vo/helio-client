@@ -29,9 +29,9 @@ class MockAsyncQueryService extends AsyncQueryServiceImpl {
     private MockPort port;
 	
 	public MockAsyncQueryService(MockPort port) {
-		super(name, null);
 		setAccessInterfaces(defaultInterface);
 		setLoadBalancer(new RandomLoadBalancer());
+		setServiceName(name);
 		this.port = port;
 	}
 	

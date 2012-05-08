@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:util="http://www.springframework.org/schema/util"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
-
-    <import resource="clientapi-linkprovider.xml"/>
-    <import resource="clientapi-processing.xml"/>
-    <import resource="clientapi-asyncquery.xml"/>
-    <import resource="clientapi-syncquery.xml"/>
-    <import resource="clientapi-catalogdao.xml"/>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+        
 
     <bean id="serviceRegistryClient" class="eu.heliovo.registryclient.impl.HelioRemoteServiceRegistryClient" init-method="init"></bean> 
 
@@ -38,4 +34,10 @@
         <property name="serviceFactory" ref="helioServiceFactory" />
         <property name="registryClient" ref="serviceRegistryClient" />
     </bean>
+    
+    <import resource="clientapi-linkprovider.xml"/>
+    <import resource="clientapi-processing.xml"/>
+    <import resource="clientapi-asyncquery.xml"/>
+    <import resource="clientapi-syncquery.xml"/>
+    <import resource="clientapi-catalogdao.xml"/>
 </beans>

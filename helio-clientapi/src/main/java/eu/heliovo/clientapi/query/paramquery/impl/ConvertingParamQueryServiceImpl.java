@@ -10,6 +10,7 @@ import eu.heliovo.clientapi.query.paramquery.ParamQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 
 /**
  * Wrapper class around a {@link ParamQueryService} that accepts {@link ParamQueryTerm} and converts them to the required types.
@@ -32,6 +33,12 @@ public class ConvertingParamQueryServiceImpl implements ParamQueryService {
 	public ConvertingParamQueryServiceImpl(ParamQueryService paramQueryService) {
 		this.paramQueryService = paramQueryService;
 	}
+	
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.UNDEFINED;
+    }
+
 	
 	@Override
 	public HelioServiceName getServiceName() {

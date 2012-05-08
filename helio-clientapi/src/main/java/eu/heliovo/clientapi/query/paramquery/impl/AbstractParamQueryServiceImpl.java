@@ -16,6 +16,7 @@ import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 /**
  * Abstract base class for the implementations of the param query service 
@@ -40,6 +41,11 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 	public AbstractParamQueryServiceImpl(AsyncQueryService queryService) {
 		this.queryService = queryService;
 	}
+	
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.UNDEFINED;
+    }
 
 	@Override
 	public HelioQueryResult query(final List<ParamQueryTerm<?>> terms) throws JobExecutionException {

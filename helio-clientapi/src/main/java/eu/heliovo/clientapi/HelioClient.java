@@ -42,31 +42,17 @@ public class HelioClient {
      * If this method is not called by the user it will be called by the first call to any methods in this 
      */
     public synchronized void init() {
-        // do some hardcoded init stuff
-//        ServiceDescriptor desDescriptor = getServiceDescriptorByName(HelioServiceName.DES);
-//        if (desDescriptor != null) {
-//            desDescriptor.addCapability(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
-//        registryClient.registerServiceInstance(desDescriptor, 
-//            new AccessInterfaceImpl(
-//                AccessInterfaceType.SOAP_SERVICE, 
-//                ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, 
-//                HelioFileUtil.asURL("http://manunja.cesr.fr/Amda-Helio/WebServices/HelioLongQueryService.wsdl"))
-//            );
-//        }
-        
+        // do some hardcoded init stuff, if needed   
         // register the HPS
         ServiceDescriptor hpsDescriptor = getServiceDescriptorByName(HelioServiceName.HPS);
         if (hpsDescriptor == null) {
             hpsDescriptor = new GenericServiceDescriptor(HelioServiceName.HPS, "Locally registered HPS", ServiceCapability.HELIO_PROCESSING_SERVICE);
             registryClient.registerServiceDescriptor(hpsDescriptor);
         }
-        
         registryClient.registerServiceInstance(hpsDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, 
                 ServiceCapability.HELIO_PROCESSING_SERVICE, 
                 HelioFileUtil.asURL("http://cagnode58.cs.tcd.ie:8080/helio-hps-server/hpsService?wsdl")));
     }
-    
-    
     
 	/**
 	 * Get all known service names of HELIO.
@@ -83,7 +69,6 @@ public class HelioClient {
 	 * @return a list of service names or empty array if nothing has been found.
 	 */
 	public HelioServiceName[] getServiceNamesByCapability(ServiceCapability serviceCapability) {
-	    
 	    List<HelioServiceName> ret = new ArrayList<HelioServiceName>();
 	    ServiceDescriptor[] descriptors = getServiceDescriptorByCapability(serviceCapability);
 	    for (ServiceDescriptor serviceDescriptor : descriptors) {
@@ -110,11 +95,11 @@ public class HelioClient {
 	    if (serviceCapability == null || capabilites.contains(serviceCapability)) {
 	        // get the service from the factory.
 	        
-	        HelioService service = serviceFactory.getHelioService(helioServiceName, serviceVariant, serviceCapability);
-            if (service != null) {
-                return service;
+	        HelioService[] services = serviceFactory.getHelioServices(helioServiceName, serviceVariant, serviceCapability);
+            if (services != null && services.length == 1) {
+                return services[0];
             } else {
-                _LOGGER.warn("Unable to load service with name " + helioServiceName + " and service variant name " + serviceVariant + " and capabilty " + serviceCapability + " from serviceFactory.");
+                _LOGGER.warn("Unable to load service with name " + helioServiceName + " and service variant name " + serviceVariant + " and capabilty " + serviceCapability + " from serviceFactory: " + services);
             }
 	    } else {
 	        _LOGGER.warn("Service " + helioServiceName + " does not implement the requested capabilty " + serviceCapability);
@@ -122,6 +107,20 @@ public class HelioClient {
 	    
 	    return null;
 	}
+	
+	/**
+     * Get a proxy to all service instances with a given capability.
+     * @param serviceCapability the desired capability of the service. May be null if only one capability is known.
+     * @return a list of HELIO service instances or an empty list if nothing has been found.
+     */
+    public HelioService[] getServiceInstances(ServiceCapability serviceCapability) {
+        HelioService[] services = serviceFactory.getHelioServices(null, null, serviceCapability);
+        if (services.length == 0) {
+            _LOGGER.warn("Unable to load service with capabilty " + serviceCapability + " from serviceFactory.");
+        }
+        return services;
+    }
+
 	
 	/**
 	 * Get all descriptors of a service available in HELIO.
@@ -156,7 +155,6 @@ public class HelioClient {
 	    return registryClient.getServiceDescriptor(serviceName);
 	}
 
-
     /**
      * Get the registry client
      * @return the registry client
@@ -186,6 +184,4 @@ public class HelioClient {
     public void setServiceFactory(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
-
-
 }

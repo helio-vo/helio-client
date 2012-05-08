@@ -26,32 +26,41 @@ public abstract class AbstractServiceImpl implements HelioService {
     /**
      * Name of the service
      */
-    protected final HelioServiceName serviceName;
-    
+    private HelioServiceName serviceName;
+
     /**
      * The optional variant
      */
-    protected final String serviceVariant;
+    private String serviceVariant;
 
     /**
-     * Constructor
-     * @param serviceName the name of the service. Must not be null.
-     * @param serviceVariant the service variant. May be null.
+     * Default constructor
      */
-    public AbstractServiceImpl(HelioServiceName serviceName, String serviceVariant) {
-        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
-        this.serviceName = serviceName;
-        this.serviceVariant = serviceVariant;
+    public AbstractServiceImpl() {
     }
-
+    
     @Override
     public HelioServiceName getServiceName() {
     	return serviceName;
     }
     
+    /**
+     * @param serviceName the serviceName to set
+     */
+    public void setServiceName(HelioServiceName serviceName) {
+        this.serviceName = serviceName;
+    }
+    
     @Override
     public String getServiceVariant() {
         return serviceVariant;
+    }
+
+    /**
+     * @param serviceVariant the serviceVariant to set
+     */
+    public void setServiceVariant(String serviceVariant) {
+        this.serviceVariant = serviceVariant;
     }
     
     /**

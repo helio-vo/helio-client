@@ -249,7 +249,7 @@ public class HecDao extends AbstractDao implements HelioCatalogDao {
 		
 		VOTABLE votable;
 		try {
-			HelioQueryService hec = (HelioQueryService) serviceFactory.getHelioService(HelioServiceName.HEC, null, ServiceCapability.SYNC_QUERY_SERVICE);
+			HelioQueryService hec = (HelioQueryService) serviceFactory.getHelioServices(HelioServiceName.HEC, null, ServiceCapability.SYNC_QUERY_SERVICE)[0];
 			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {

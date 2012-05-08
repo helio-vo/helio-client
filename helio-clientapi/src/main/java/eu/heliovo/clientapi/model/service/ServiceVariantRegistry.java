@@ -2,10 +2,8 @@ package eu.heliovo.clientapi.model.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -25,12 +23,13 @@ public class ServiceVariantRegistry {
     /**
      * the logger
      */
+    @SuppressWarnings("unused")
     private static final Logger _LOGGER = Logger.getLogger(ServiceVariantRegistry.class);
     
     /**
      * The internal registry
      */
-    private final Map<HelioServiceName, Collection<ServiceVariant>> registry = new HashMap<HelioServiceName, Collection<ServiceVariant>>();
+    private final Collection<ServiceVariant> registry = new HashSet<ServiceVariant>();
     
     /**
      * Create an empty registry
@@ -39,7 +38,7 @@ public class ServiceVariantRegistry {
     }
     
     /**
-     * Register an implementation of a service for a given serviceName-serviceVariant-capability tripple. 
+     * Register an implementation of a service for a given serviceName-serviceVariant-capability triple. 
      * @param serviceName the name of the service. May be null as placeholder for all service names.
      * @param serviceVariant the service variant. May be null for the default variant.
      * @param capability the capability of this specific variant. May be null if a service has only one capability.
@@ -52,69 +51,47 @@ public class ServiceVariantRegistry {
             throw new IllegalArgumentException("At least one of the following arguments must not be null: serviceName, serviceVariant, capability");
         }
         ServiceVariant variant = new ServiceVariant(serviceName, serviceVariant, capability, beanName);
-        Collection<ServiceVariant> variants = registry.get(serviceName);
-        if (variants == null) {
-            variants = new HashSet<ServiceVariantRegistry.ServiceVariant>();
-            registry.put(serviceName, variants);
+        if (registry.contains(variant)) {
+            throw new IllegalArgumentException("Internal Error: " + variant + " has been previously registered.");            
         }
-        if (variants.contains(variant)) {
-            throw new IllegalArgumentException("Internal Error: ServiceVariant with service name '" + serviceName + 
-                    "' and service variant '" + variant + "' has been previously registered.");
-        }
-        variants.add(variant);
+        registry.add(variant);
     }
     
     
     /**
-     * Get the implementation of a serviceName-serviceVariant-capability triple.
-     * @param serviceName the name of the service. Must not be null.
+     * Get the best matching implementations of a serviceName-serviceVariant-capability triple.
+     * @param serviceName the name of the service. May be null null.
      * @param serviceVariant the variant of the service. May be null for the default variant.
      * @param capability the capability of this specific variant. May be null if a service has only one capability.
      * @return the service that implements the serviceVariant or null if no matching service has been registered.
      * @throws ServiceResolutionException if service resolution fails.
      */
-    public String getServiceImpl(HelioServiceName serviceName, String serviceVariant, ServiceCapability capability) throws ServiceResolutionException {
-        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
-        Collection<ServiceVariant> variants = new HashSet<ServiceVariantRegistry.ServiceVariant>();
-        Collection<ServiceVariant> tmp = registry.get(serviceName);
-        if (tmp != null) {
-            variants.addAll(tmp);
-        }
-        tmp = registry.get(null);
-        if (tmp != null) {
-            variants.addAll(tmp);
-        }
-        
+    public String[] getServiceBeans(HelioServiceName serviceName, String serviceVariant, ServiceCapability capability) throws ServiceResolutionException {
         // find the match with the highest score
         int bestScore = 0;
-        List<String> bestBean = new ArrayList<String>();
-        
-        for (ServiceVariant variant : variants) {
-            // compute score per variant
-            int score = 0; 
-            score += score(serviceName, variant.serviceName);
-            score += 3 * score(serviceVariant, variant.serviceVariant);
-            score += 3 * score(capability, variant.capability);
-            
-            // and check the highest
-            if (score > bestScore) {
-                bestBean.clear();
-                bestBean.add(variant.beanName);
-                bestScore = score;
-            } else if (score == bestScore) {
-                bestBean.add(variant.beanName);                
-            } 
-        }
-        if (bestBean.isEmpty()) {
-            return null;
-        } else {
-            if (bestBean.size() > 1) {
-                throw new ServiceResolutionException("Multiple implementations found for " +
-                		"serviceName: '" + serviceName + "', serviceVariant: '" + serviceVariant + "', capability:'" + capability + 
-                		":"  + bestBean.toString());
+        List<String> bestBeans = new ArrayList<String>();
+
+        // loop over all variants.
+        for (ServiceVariant variant : registry) {
+            if (serviceName == null || variant.serviceName == null || serviceName.equals(variant.serviceName)) {
+                // compute score per variant
+                int score = 0; 
+                score += score(serviceName, variant.serviceName);
+                score += 3 * score(serviceVariant, variant.serviceVariant);
+                score += 3 * score(capability, variant.capability);
+                
+                // and check the highest
+                if (score > bestScore) {
+                    bestBeans.clear();
+                    bestBeans.add(variant.beanName);
+                    bestScore = score;
+                } else if (score == bestScore) {
+                    bestBeans.add(variant.beanName);                
+                } 
             }
-            return bestBean.get(0);
         }
+        
+        return bestBeans.toArray(new String[bestBeans.size()]);
     }
     
     /**
@@ -208,6 +185,17 @@ public class ServiceVariantRegistry {
             return (serviceName == null ? 0 : serviceName.hashCode()) 
                 + 7 * (serviceVariant == null ? 0 : serviceVariant.hashCode())
                 + 13 * (capability == null ? 0 : capability.hashCode());
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("ServiceVariant [")
+              .append("serviceName=").append(serviceName != null ? serviceName.getServiceName() : "null")
+              .append(", serviceVariant=").append(serviceVariant)
+              .append(", capabilty=").append(capability != null ? capability.getName() : "null")
+              .append("]");
+            return sb.toString();
         }
     }
 }

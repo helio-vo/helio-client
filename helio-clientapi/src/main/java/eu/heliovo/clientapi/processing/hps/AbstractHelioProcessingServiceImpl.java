@@ -16,8 +16,8 @@ import javax.xml.namespace.QName;
 import org.apache.log4j.Logger;
 
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
-import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
+import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
@@ -27,7 +27,7 @@ import eu.heliovo.hps.server.ApplicationParameter;
 import eu.heliovo.hps.server.HPSService;
 import eu.heliovo.hps.server.HPSServiceService;
 import eu.heliovo.registryclient.AccessInterface;
-import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.hps.ApplicationExecutionStatus;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -60,13 +60,15 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends HelioProcessi
 
     /**
      * Create a client stub for the "best" {@link AccessInterface}. 
-     * @param serviceName the name of the service
-     * @param serviceVariant name of the service variant. may be null.
      */
-    public AbstractHelioProcessingServiceImpl(HelioServiceName serviceName, String serviceVariant) {
-        super(serviceName, serviceVariant);
+    public AbstractHelioProcessingServiceImpl() {
     }
 
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.HELIO_PROCESSING_SERVICE;
+    }
+    
     /**
      * Get the best access interface
      * @return the "best" access interface
@@ -360,6 +362,7 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends HelioProcessi
             case UNKNOWN:
                 throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + AbstractHelioProcessingServiceImpl.class.getName());
             case PENDING:
+            case EXECUTING:
                 throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time (" + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)) + "). CallId: " + callId);
             case COMPLETED:
                 // just continue

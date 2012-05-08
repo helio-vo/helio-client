@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.processing.taverna;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,8 +23,8 @@ import uk.org.taverna.ns._2010.xml.server.soap.BadStateChangeException;
 import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
-import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
+import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ResultObjectFactory;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
@@ -32,7 +33,10 @@ import eu.heliovo.myexperiment.Group;
 import eu.heliovo.myexperiment.Repository;
 import eu.heliovo.myexperiment.Workflow;
 import eu.heliovo.registryclient.AccessInterface;
-import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.registryclient.AccessInterfaceType;
+import eu.heliovo.registryclient.ServiceCapability;
+import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
+import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.tavernaserver.Run;
 import eu.heliovo.tavernaserver.Server;
@@ -52,20 +56,40 @@ public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServic
     /**
      * The workflow implemented by this service.
      */
-    private final Workflow workflow;
+    private Workflow workflow;
     
     /**
-     * Create a client stub for the "best" {@link AccessInterface}. 
-     * @param serviceName the name of the service
-     * @param serviceVariant variant name of a service. man be null.
-     * If multiple interfaces are specified the "best" will be chosen.
+     * The URL of the my experiment 
      */
-    public AbstractTavernaServiceImpl(HelioServiceName serviceName, String serviceVariant, AccessInterface myExperimentInterface) {
-        super(serviceName, null);
-        workflow = getHelioWorkflow(myExperimentInterface, getWorkflowId());        
-        AssertUtil.assertArgumentNotNull(workflow, "workflow");
+    private static URL myExperimentUrl = HelioFileUtil.asURL("http://www.myexperiment.org/search.xml");
+    
+    /**
+     * The default constructor.
+     */
+    public AbstractTavernaServiceImpl() {
     }
     
+    /**
+     * Initialize the taverna service.
+     */
+    public void init() {
+        workflow = getHelioWorkflow(getMyExperimentInterface(), getWorkflowId());
+    }
+    
+    /**
+     * Get the my experiment interface. This is hard-coded as the Workflow exists only there.
+     * @return the myExperimentInterface
+     */
+    private AccessInterface getMyExperimentInterface() {
+        return new AccessInterfaceImpl(AccessInterfaceType.REST_SERVICE, ServiceCapability.MYEXPERIMENT_REGISTRY, myExperimentUrl);
+    }
+    
+    
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.TAVERNA_SERVER;
+    }
+
     /**
      * Get the best access interface
      * @return the "best" access interface
@@ -174,6 +198,19 @@ public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServic
     @Override
     public abstract T createResultObject(Run run);
 
+    /**
+     * @return the myExperimentUrl
+     */
+    public static URL getMyExperimentUrl() {
+        return myExperimentUrl;
+    }
+
+    /**
+     * @param myExperimentUrl the myExperimentUrl to set
+     */
+    public static void setMyExperimentUrl(URL myExperimentUrl) {
+        AbstractTavernaServiceImpl.myExperimentUrl = myExperimentUrl;
+    }
     
     /**
      * ProcessingResult object that handles results from Taverna Server.

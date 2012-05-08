@@ -44,13 +44,15 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
     
     /**
      * Create the DesPlotterServiceImpl
-     * @param serviceName the name of the service. Must be {@link HelioServiceName#DES}
-     * @param serviceVariant the variant.
      * @param mission the mission to use by this service impl.
      */
-    public AbstractDesPlotterServiceImpl(HelioServiceName serviceName, String serviceVariant, String mission) {
-        super(serviceName, serviceVariant);
+    public AbstractDesPlotterServiceImpl(String mission) {
         this.mission = mission;
+    }
+    
+    @Override
+    public boolean supportsCapability(ServiceCapability capability) {
+        return capability == ServiceCapability.ASYNC_QUERY_SERVICE;
     }
 
     /**
@@ -232,7 +234,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
             this.future = AsyncCallUtils.callLater(new Callable<HelioQueryResult>() {
                 @Override
                 public HelioQueryResult call() throws Exception {
-                    AsyncQueryService desService = (AsyncQueryService)serviceFactory.getHelioService(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, ServiceCapability.ASYNC_QUERY_SERVICE, accessInterfaces);
+                    AsyncQueryService desService = (AsyncQueryService)serviceFactory.getHelioServices(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, ServiceCapability.ASYNC_QUERY_SERVICE, accessInterfaces)[0];
                     HelioQueryResult result = desService.timeQuery(DateUtil.toIsoDateString(startTime), DateUtil.toIsoDateString(endTime), mission, 0, 0);
                     return result;
                 }

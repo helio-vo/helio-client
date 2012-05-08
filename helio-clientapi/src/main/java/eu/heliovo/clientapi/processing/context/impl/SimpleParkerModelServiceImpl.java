@@ -11,7 +11,6 @@ import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.AbstractContextServiceImpl;
 import eu.heliovo.clientapi.processing.context.SimpleParkerModelService;
-import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 
@@ -45,10 +44,7 @@ public class SimpleParkerModelServiceImpl extends AbstractContextServiceImpl imp
     /**
      * The parker model plotter.
      */
-    public SimpleParkerModelServiceImpl(HelioServiceName serviceName, String serviceVariant) {
-        super(HelioServiceName.CXS, SERVICE_VARIANT);
-        AssertUtil.assertArgumentEquals(HelioServiceName.CXS, serviceName, "serviceName");
-        AssertUtil.assertArgumentEquals(serviceVariant, SERVICE_VARIANT, "serviceVariant");
+    public SimpleParkerModelServiceImpl() {
     }
     
     @Override

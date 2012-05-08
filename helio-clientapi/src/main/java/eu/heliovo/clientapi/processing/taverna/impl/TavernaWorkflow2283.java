@@ -29,13 +29,8 @@ import eu.heliovo.clientapi.processing.taverna.AbstractTavernaServiceImpl;
 import eu.heliovo.clientapi.processing.taverna.TavernaWorkflowException;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
-import eu.heliovo.registryclient.AccessInterface;
-import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.registryclient.ServiceCapability;
-import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.shared.props.HelioFileUtil;
-import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.DateUtil;
 import eu.heliovo.tavernaserver.Run;
 
@@ -90,17 +85,7 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
     /**
      * Create the Taverna workflow instance
      */
-    public TavernaWorkflow2283(HelioServiceName serviceName, String serviceVariant) {
-        super(HelioServiceName.TAVERNA_SERVER, null, getMyExperimentInterface());
-        AssertUtil.assertArgumentEquals(HelioServiceName.TAVERNA_SERVER, serviceName, "serviceName");
-    }
-
-    /**
-     * Get the my experiment interface. This is hard-coded as the Workflow exists only there.
-     * @return the myExperimentInterface
-     */
-    private static AccessInterface getMyExperimentInterface() {
-        return new AccessInterfaceImpl(AccessInterfaceType.REST_SERVICE, ServiceCapability.MYEXPERIMENT_REGISTRY, HelioFileUtil.asURL("http://www.myexperiment.org/search.xml"));
+    public TavernaWorkflow2283() {
     }
 
     @Override
