@@ -75,7 +75,6 @@ public abstract class AbstractServiceImpl implements HelioService {
      * Set access interfaces 
      * @param accessInterfaces the access interfaces
      */
-    @Required
     public void setAccessInterfaces(AccessInterface... accessInterfaces) {
         AssertUtil.assertArgumentNotEmpty(accessInterfaces, "accessInterfaces");
         this.accessInterfaces = accessInterfaces;
