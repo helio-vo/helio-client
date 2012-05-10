@@ -9,8 +9,8 @@ import javax.activation.MimeType;
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Abstract base class for provision of daily links.
@@ -68,7 +68,7 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
     public URL getLink(Date startTime, Date endTime) {
         AssertUtil.assertArgumentNotNull(startTime, "startTime");
         if (pageExists(startTime, endTime)) {
-            return HelioFileUtil.asURL(String.format(providerTemplate, startTime, endTime));
+            return FileUtil.asURL(String.format(providerTemplate, startTime, endTime));
         }
         return null;
     }

@@ -13,8 +13,8 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.hps.server.ApplicationParameter;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.DateUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Implementation of the CME propagation model.
@@ -139,17 +139,17 @@ public class SepPropagationModelImpl extends AbstractHelioProcessingServiceImpl<
             
             @Override
             public URL getVoTableUrl() {
-                return HelioFileUtil.asURL(baseUrl + "sep_pm.votable");
+                return FileUtil.asURL(baseUrl + "sep_pm.votable");
             }
             
             @Override
             public URL getOuterPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "sep_pm_outer.png");
+                return FileUtil.asURL(baseUrl + "sep_pm_outer.png");
             }
             
             @Override
             public URL getInnerPlotUrl() {
-                return HelioFileUtil.asURL(baseUrl + "sep_pm_inner.png");
+                return FileUtil.asURL(baseUrl + "sep_pm_inner.png");
             }
             
             @Override

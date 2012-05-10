@@ -110,7 +110,7 @@ public class HelioClientDemo {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         HelioClient helioClient = (HelioClient) context.getBean("helioClient");
         
-        //DebugUtils.enableDump();
+//        DebugUtils.enableDump();
         if (config.contains("ils")) getIls(helioClient);
         if (config.contains("hec")) getHec(helioClient);
         if (config.contains("hec_sync")) getHecSync(helioClient);

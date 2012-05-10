@@ -30,6 +30,7 @@ import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Registry that holds the configuration of the DPAS fields. 
@@ -46,12 +47,12 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 	/**
 	 * Location of the instruments list.
 	 */
-	private URL instrumentsLocation = HelioFileUtil.asURL("http://www.helio-vo.eu/services/xml/instruments.xsd");
+	private URL instrumentsLocation = FileUtil.asURL("http://www.helio-vo.eu/services/xml/instruments.xsd");
 	
 	/**
 	 * The pat table url
 	 */
-	private URL patTable = HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
+	private URL patTable = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
 	    
 	/**
 	 * The map of catalogs. Use method {@link #add(HelioCatalog)} to add new

@@ -13,7 +13,7 @@ import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
-import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Unit tests for the {@link RoundRobinLoadBalancer}
@@ -28,7 +28,7 @@ public class RoundRobinLoadBalancerTest {
         
         AccessInterface[] accessInterfaces = new AccessInterface[5];
         for (int i = 0; i < accessInterfaces.length; i++) {
-            accessInterfaces[i] = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, HelioFileUtil.asURL("http://helio-vo.eu/service_" + i));
+            accessInterfaces[i] = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, FileUtil.asURL("http://helio-vo.eu/service_" + i));
         }
         
         Boolean[] hit = new Boolean[accessInterfaces.length];

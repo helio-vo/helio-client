@@ -23,7 +23,7 @@ import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
-import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * A local mock implementation of a HELIO query service. For testing purposes only
@@ -34,7 +34,7 @@ class MockSyncQueryService extends SyncQueryServiceImpl {
 	
 	private static final Logger _LOGGER = Logger.getLogger(MockSyncQueryService.class);
 
-	private static final URL wsdlLocation = HelioFileUtil.asURL("http://localhost/test/HelioQuery.wsdl");
+	private static final URL wsdlLocation = FileUtil.asURL("http://localhost/test/HelioQuery.wsdl");
     private static final HelioServiceName name = HelioServiceName.register("test", "ivo://test");
 //	private static final String description = "a dummy test service";
     private static final AccessInterface defaultInterface = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation);

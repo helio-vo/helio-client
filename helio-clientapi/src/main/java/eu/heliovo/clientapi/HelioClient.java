@@ -15,7 +15,7 @@ import eu.heliovo.registryclient.ServiceDescriptor;
 import eu.heliovo.registryclient.ServiceRegistryClient;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.registryclient.impl.GenericServiceDescriptor;
-import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Main object to access the HELIO API. This is implemented as facade to the underlying system.
@@ -51,7 +51,7 @@ public class HelioClient {
         }
         registryClient.registerServiceInstance(hpsDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, 
                 ServiceCapability.HELIO_PROCESSING_SERVICE, 
-                HelioFileUtil.asURL("http://cagnode58.cs.tcd.ie:8080/helio-hps-server/hpsService?wsdl")));
+                FileUtil.asURL("http://cagnode58.cs.tcd.ie:8080/helio-hps-server/hpsService?wsdl")));
     }
     
 	/**

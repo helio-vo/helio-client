@@ -36,8 +36,8 @@ import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
+import eu.heliovo.shared.util.FileUtil;
 import eu.heliovo.tavernaserver.Run;
 import eu.heliovo.tavernaserver.Server;
 
@@ -61,7 +61,7 @@ public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServic
     /**
      * The URL of the my experiment 
      */
-    private static URL myExperimentUrl = HelioFileUtil.asURL("http://www.myexperiment.org/search.xml");
+    private static URL myExperimentUrl = FileUtil.asURL("http://www.myexperiment.org/search.xml");
     
     /**
      * The default constructor.

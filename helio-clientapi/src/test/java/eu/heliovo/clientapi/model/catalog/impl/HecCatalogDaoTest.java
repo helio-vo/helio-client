@@ -18,7 +18,7 @@ import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.ServiceRegistryClient;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
 import eu.heliovo.registryclient.impl.GenericServiceDescriptor;
-import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 public class HecCatalogDaoTest {
     
@@ -31,7 +31,7 @@ public class HecCatalogDaoTest {
         serviceRegistry.registerServiceInstance(
                 new GenericServiceDescriptor(HelioServiceName.HEC, "HEC", ServiceCapability.SYNC_QUERY_SERVICE),
                 new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE,ServiceCapability.SYNC_QUERY_SERVICE, 
-                        HelioFileUtil.asURL("http://festung1.oats.inaf.it:8080/helio-hec/HelioService?wsdl")));
+                        FileUtil.asURL("http://festung1.oats.inaf.it:8080/helio-hec/HelioService?wsdl")));
         hecDao =  (HelioCatalogDao) context.getBean("hecDao");
         fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");        
     }

@@ -34,8 +34,8 @@ import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.ServiceCapability;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.AssertUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Base class for services that implement the context services.
@@ -222,7 +222,7 @@ public abstract class AbstractContextServiceImpl extends AbstractServiceImpl imp
           .append('/')
           .append(fileName);
 
-        URL url = HelioFileUtil.asURL(sb.toString());
+        URL url = FileUtil.asURL(sb.toString());
         return url;
     }
 

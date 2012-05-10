@@ -9,7 +9,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Test the {@link SpaceWeatherLinkProvider}
@@ -34,7 +34,7 @@ public class CdawStereoLinkProviderTest {
         Date endTime = cal.getTime();
         URL link = provider.getLink(startTime, endTime);
         assertNotNull(link);
-        assertEquals(HelioFileUtil.asURL("http://cdaw.gsfc.nasa.gov/movie/make_javamovie.php?img1=stb_e171&img2=sta_e171&stime=20110915_0109&etime=20110918_0109"), link);
+        assertEquals(FileUtil.asURL("http://cdaw.gsfc.nasa.gov/movie/make_javamovie.php?img1=stb_e171&img2=sta_e171&stime=20110915_0109&etime=20110918_0109"), link);
 
         String title = provider.getTitle(startTime, endTime);
         assertNotNull(title);

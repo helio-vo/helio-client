@@ -9,7 +9,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.FileUtil;
 
 /**
  * Test the {@link TheSunTodayLinkProvider}
@@ -34,7 +34,7 @@ public class TheSunTodayLinkProviderTest {
         Date endTime = cal.getTime();
         URL link = provider.getLink(startTime, endTime);
         assertNotNull(link);
-        assertEquals(HelioFileUtil.asURL("http://sdowww.lmsal.com/suntoday/index.html?suntoday_date=2011-09-15"), link);
+        assertEquals(FileUtil.asURL("http://sdowww.lmsal.com/suntoday/index.html?suntoday_date=2011-09-15"), link);
         
         String title = provider.getTitle(startTime, endTime);
         assertNotNull(title);
