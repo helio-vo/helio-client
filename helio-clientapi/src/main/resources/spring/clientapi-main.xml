@@ -35,6 +35,7 @@
         <property name="registryClient" ref="serviceRegistryClient" />
     </bean>
     
+    <import resource="clientapi-config.xml"/>
     <import resource="clientapi-linkprovider.xml"/>
     <import resource="clientapi-processing.xml"/>
     <import resource="clientapi-asyncquery.xml"/>

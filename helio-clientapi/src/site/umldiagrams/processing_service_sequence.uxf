@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="11.4">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.umlet.element.SequenceDiagram</type>
+    <coordinates>
+      <x>60</x>
+      <y>40</y>
+      <w>1230</w>
+      <h>380</h>
+    </coordinates>
+    <panel_attributes>title: Processing Service
+_client~cl_|_ps:ProsessingService~ps_|_pr:ProcessingResult~pr_|_prb:ProcessingResultBean~prb_|_HelioService~hs_
+cl-&gt;&gt;ps:cl,ps:new ProcessingService()
+ps-&gt;&gt;hs:cl,ps: readWSDL()
+ps-&gt;&gt;pr:cl,ps,pr
+pr-&gt;&gt;hs:cl,pr,hs: configureJob()
+pr-/&gt;hs:cl,pr,hs: startJob()
+pr-&gt;&gt;prb:cl,pr,prb: new ResultObject()
+prb-/&gt;hs:cl,pr,prb,hs: pollResult()
+pr-&gt;&gt;cl:pr,prb,cl,hs: return ResultObject
+cl-&gt;&gt;prb:cl,prb,hs: waitForResult()</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
