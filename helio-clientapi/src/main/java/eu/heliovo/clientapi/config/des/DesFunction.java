@@ -3,12 +3,14 @@ package eu.heliovo.clientapi.config.des;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+
 /**
  * A AMDA function that can be called.
  * @author MarcoSoldati
  *
  */
-public class DesFunction {
+public class DesFunction implements DomainValueDescriptor<String> {
     private final String id;
     private final String name;
     private final String description;
@@ -84,6 +86,16 @@ public class DesFunction {
      */
     public List<DesFunctionArgument> getArgs() {
         return args;
+    }
+
+    @Override
+    public String getValue() {
+        return id;
+    }
+
+    @Override
+    public String getLabel() {
+        return name;
     }
     
     

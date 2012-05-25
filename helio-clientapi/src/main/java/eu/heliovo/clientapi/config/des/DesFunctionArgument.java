@@ -1,5 +1,7 @@
 package eu.heliovo.clientapi.config.des;
 
+import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+
 /**
  * Argument to be used in a function
  * @author MarcoSoldati
@@ -11,19 +13,40 @@ public class DesFunctionArgument {
      * @author MarcoSoldati
      *
      */
-    public enum DesFunctionOperator {
+    public enum DesFunctionOperator implements DomainValueDescriptor<String> {
         /**
          * Less than
          */
-        LT,
+        LT("<"),
         /**
          * Equals
          */
-        EQ,
+        EQ("="),
         /**
          * Greater than
          */
-        GT
+        GT(">");
+        
+        private final String symbol;
+
+        private DesFunctionOperator(String symbol) {
+            this.symbol = symbol;
+        }
+
+        @Override
+        public String getValue() {
+            return this.toString();
+        }
+
+        @Override
+        public String getLabel() {
+            return symbol;
+        }
+
+        @Override
+        public String getDescription() {
+            return null;
+        }
     }
     
     private final String name;

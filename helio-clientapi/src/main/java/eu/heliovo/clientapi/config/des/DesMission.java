@@ -3,12 +3,14 @@ package eu.heliovo.clientapi.config.des;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+
 /**
  * The DES mission config
  * @author MarcoSoldati
  *
  */
-public class DesMission {
+public class DesMission implements DomainValueDescriptor<String> {
     private final String id;
     private final String name;
     private final List<DesDataset> datasets = new ArrayList<DesDataset>();
@@ -41,4 +43,25 @@ public class DesMission {
         return name;
     }
     
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    //******************** domain value descriptor ******************************
+     
+    @Override
+    public String getValue() {
+        return id;
+    }
+
+    @Override
+    public String getLabel() {
+        return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
 }
