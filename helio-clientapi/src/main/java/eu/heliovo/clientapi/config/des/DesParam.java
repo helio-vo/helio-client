@@ -41,4 +41,9 @@ public class DesParam {
     public String getUnit() {
         return unit;
     }
+    
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -1,11 +1,18 @@
 package eu.heliovo.clientapi.config.des;
 
+import static eu.heliovo.clientapi.config.des.DesFunctionArgument.DesFunctionOperator.EQ;
+import static eu.heliovo.clientapi.config.des.DesFunctionArgument.DesFunctionOperator.GT;
+import static eu.heliovo.clientapi.config.des.DesFunctionArgument.DesFunctionOperator.LT;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import static eu.heliovo.clientapi.config.des.DesFunctionArgument.DesFunctionOperator.*;
+import java.util.Set;
+
+import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * The configuration of the DES service. Main class of this package.
@@ -68,7 +75,7 @@ public class DesConfiguration {
         
         
         // ULYSSES
-        mission = new DesMission("Ulysses", "ULYSSES");
+        mission = new DesMission("ULYSSES", "ULYSSES");
         missions.add(mission);
         dataset= new DesDataset("ulys:bai:mom", "plasma", "thermal plasma", "SWOOPS", 240, parse("1990-11-18"), parse("2009-06-30"));
         dataset.addParam(v);
@@ -191,5 +198,51 @@ public class DesConfiguration {
         return params;
     }
     
+    public List<DesParam> getParamsByMissionAndFunction(String missionId, String functionId) {
+        DesMission mission = getMissionById(missionId);
+        DesFunction function = getFunctionById(functionId);
+        AssertUtil.assertArgumentNotNull(mission, "missionId");
+        AssertUtil.assertArgumentNotNull(function, "functionId");
+        
+        // create the union of all params in a data set.
+        Set<DesParam> datasetParams = new HashSet<DesParam>();
+        for (DesDataset dataset : mission.getDatasets()) {
+            datasetParams.addAll(dataset.getParams());
+        }
+        
+        // clone the function params (and preserve their sort order)
+        List<DesParam> ret = new ArrayList<DesParam>(function.getParams());
+        // create intersection of datasetParams and function params.
+        ret.retainAll(datasetParams);
+        return ret;
+    }
+
+    /**
+     * Get a mission by id.
+     * @param missionId the id of the mission. Must not be null.
+     * @return the mission or null if not found
+     */
+    public DesMission getMissionById(String missionId) {
+        for (DesMission mission : this.missions) {
+            if (missionId.equals(mission.getId())) {
+                return mission;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Get a function by id
+     * @param functionId the function id. must not be null.
+     * @return the function.
+     */
+    public DesFunction getFunctionById(String functionId) {
+        for (DesFunction function : this.functions) {
+            if (functionId.equals(function.getId())) {
+                return function;
+            }
+        }
+        return null;
+    }
     
 }

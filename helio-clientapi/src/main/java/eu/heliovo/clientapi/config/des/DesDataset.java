@@ -82,4 +82,8 @@ public class DesDataset {
     public Date getEndTime() {
         return endTime;
     }
+    
+    public List<DesParam> getParams() {
+        return params;
+    }
 }

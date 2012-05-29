@@ -47,6 +47,10 @@ public class DesMission implements DomainValueDescriptor<String> {
     public String toString() {
         return name;
     }
+    
+    public List<DesDataset> getDatasets() {
+        return datasets;
+    }
 
     //******************** domain value descriptor ******************************
      
@@ -64,4 +68,5 @@ public class DesMission implements DomainValueDescriptor<String> {
     public String getDescription() {
         return null;
     }
+
 }
