@@ -9,6 +9,8 @@
     </bean>
     <bean id="solarMonitorLinkProvider" class="eu.heliovo.clientapi.linkprovider.impl.SolarMonitorLinkProvider" scope="prototype">
     </bean>
+    <bean id="radioMonitorLinkProvider" class="eu.heliovo.clientapi.linkprovider.impl.RadioMonitorLinkProvider" scope="prototype">
+    </bean>
     <bean id="spaceWeatherLinkProvider" class="eu.heliovo.clientapi.linkprovider.impl.SpaceWeatherLinkProvider" scope="prototype">
     </bean>
     <bean id="theSunTodayLinkProvider" class="eu.heliovo.clientapi.linkprovider.impl.TheSunTodayLinkProvider" scope="prototype">
