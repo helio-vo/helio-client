@@ -82,6 +82,6 @@ public class HelioClientTest {
     @Test public void testGetLinkProviders() {
         HelioService[] services = helioClient.getServiceInstances(ServiceCapability.LINK_PROVIDER_SERVICE);
         assertNotNull(services);
-        assertEquals(4, services.length);
+        assertEquals(5, services.length);
     }
 }
