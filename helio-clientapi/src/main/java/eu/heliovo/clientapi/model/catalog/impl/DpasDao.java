@@ -17,6 +17,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -65,6 +66,11 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 	 */
 	private String defaultCatalog = null;
 	
+    /**
+     * The HELIO file utils
+     */
+    private HelioFileUtil helioFileUtil;
+	
 	/**
 	 * Populate the registry
 	 */
@@ -85,11 +91,11 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 			throw new RuntimeException("Unable to create DOM document builder: " + e.getMessage(), e);
 		}
 		
-		File instruments = HelioFileUtil.getFileFromRemoteOrCache("dpas_cache", "instruments.xsd", instrumentsLocation);
+		URL instruments = helioFileUtil.getFileFromRemoteOrCache("dpas_cache", "instruments.xsd", instrumentsLocation);
 		
 
 		try {
-			InputSource instrumentsSource = getInputSource(instruments.toURI().toURL());
+			InputSource instrumentsSource = getInputSource(instruments);
 			
 			HelioCatalog dpas = new HelioCatalog("dpas", "Data Provider Access Service", "Catalog to access data form various sources in an unified way.");
 			dpas.addField(new HelioField<Object>("startTime", "startTime", "start value of the time range to query", getFieldTypeRegistry().getType("string")));
@@ -117,9 +123,9 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 			
 			// now parse the pat table and create the instrument domain descriptor.
 			Set<DomainValueDescriptor<String>> instrumentDomain = new LinkedHashSet<DomainValueDescriptor<String>>();
-			File pat = HelioFileUtil.getFileFromRemoteOrCache("dpas_cache", "patTable.csv", patTable);
+			URL pat = helioFileUtil.getFileFromRemoteOrCache("dpas_cache", "patTable.csv", patTable);
 			if (pat != null) {
-    			LineIterator it = FileUtils.lineIterator(pat, "UTF-8");
+    			LineIterator it = FileUtils.lineIterator(new File(pat.toURI()), "UTF-8");
     			try {
     				while (it.hasNext()) {
     					String line = it.nextLine();
@@ -243,4 +249,18 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 	    return HelioServiceName.DPAS;
 	}
 
+    /**
+     * @return the helioFileUtil
+     */
+    @Required
+    public HelioFileUtil getHelioFileUtil() {
+        return helioFileUtil;
+    }
+
+    /**
+     * @param helioFileUtil the helioFileUtil to set
+     */
+    public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
+        this.helioFileUtil = helioFileUtil;
+    }
 }

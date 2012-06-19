@@ -71,6 +71,7 @@
 
     <bean id="tavernaWorkflow2283" class="eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283" scope="prototype" parent="abstractTavernaService" init-method="init">
         <property name="serviceVariant"><util:constant static-field="eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.SERVICE_VARIANT"/></property>
+        <property name="helioFileUtil" ref="helioFileUtil"></property>
     </bean>
     
     <!-- the actual factory -->

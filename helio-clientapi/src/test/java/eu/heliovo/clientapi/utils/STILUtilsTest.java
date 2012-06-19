@@ -9,6 +9,7 @@ import java.util.Calendar;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -32,7 +33,8 @@ public class STILUtilsTest {
 
     @Before
     public void setUp() {
-        this.stilUtils = new STILUtils();
+        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
+        this.stilUtils = (STILUtils) context.getBean("stilUtils");
     }
     
     /**

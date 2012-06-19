@@ -30,6 +30,7 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -93,6 +94,11 @@ public class HecDao extends AbstractDao implements HelioCatalogDao {
 	 * Service factory to get hec query service.
 	 */
 	private ServiceFactory serviceFactory; 
+	
+    /**
+     * The HELIO file utils
+     */
+    private HelioFileUtil helioFileUtil;
 
     /**
 	 * Populate the underlying registry
@@ -241,7 +247,7 @@ public class HecDao extends AbstractDao implements HelioCatalogDao {
 		// create the cache dir
 		File cacheDir;
 		try { 
-			cacheDir = HelioFileUtil.getHelioTempDir("hec_cache");
+			cacheDir = helioFileUtil.getHelioTempDir("hec_cache");
 		} catch (RuntimeException e) {
 			cacheDir = null;
 		}
@@ -401,5 +407,20 @@ public class HecDao extends AbstractDao implements HelioCatalogDao {
     public void setServiceFactory(
             ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
+    }
+    
+    /**
+     * @return the helioFileUtil
+     */
+    @Required
+    public HelioFileUtil getHelioFileUtil() {
+        return helioFileUtil;
+    }
+
+    /**
+     * @param helioFileUtil the helioFileUtil to set
+     */
+    public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
+        this.helioFileUtil = helioFileUtil;
     }
 }

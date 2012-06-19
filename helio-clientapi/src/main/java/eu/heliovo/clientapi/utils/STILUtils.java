@@ -18,6 +18,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.springframework.beans.factory.annotation.Required;
 import org.xml.sax.SAXException;
 
 import uk.ac.starlink.table.ArrayColumn;
@@ -57,35 +58,39 @@ public class STILUtils {
     /**
      * The hibernate session factory
      */
-    private final SessionFactory sessionFactory;
+    private SessionFactory sessionFactory;
     
     /**
      * Path where to store the files.
      */
-    private final File persistedFilePath;
+    private File persistedFilePath;
+    
+    /**
+     * Classpath resource pointing to the config file. Defaults to '/clientapi-hibernate.cfg.xml'
+     */
+    private String configFile = "/clientapi-hibernate.cfg.xml";
+    
+    /**
+     * Reference to the HELIO file util.
+     */
+    private HelioFileUtil helioFileUtil;
 
     /**
      * Create a new stil utils object using the default configuration file
      */
     public STILUtils() {
-        this(STILUtils.class.getResource("/clientapi-hibernate.cfg.xml"));
     }
     
     /**
      * Create a STIL utils instance with a custom config file.
      * @param configFile the config file to use.
      */
-    public STILUtils(URL configFile) {
-        this(configFile, HelioFileUtil.getHelioTempDir(PersistedFile.PERSISTED_FILES_PATH));
-    }
-    
-    /**
-     * Create a STIL utils instance with a custom config file.
-     * @param configFile the config file to use.
-     */
-    public STILUtils(URL configFile, File persistedFilePath) {
+    public void init() {
+        if (persistedFilePath == null) {
+            persistedFilePath = helioFileUtil.getHelioTempDir(PersistedFile.PERSISTED_FILES_PATH);
+        }
+
         sessionFactory = new Configuration().configure(configFile).buildSessionFactory();
-        this.persistedFilePath = persistedFilePath;
         
         // make sure the path to persist files exists
         if (LOGGER.isDebugEnabled()) {
@@ -536,4 +541,21 @@ public class STILUtils {
         File file = new File(persistedFilePath, new PersistedFile(_id).getPersistedFilePath());
         return file.exists() ? file : null;
     }
+
+    /**
+     * @return the helioFileUtil
+     */
+    @Required
+    public HelioFileUtil getHelioFileUtil() {
+        return helioFileUtil;
+    }
+
+    /**
+     * @param helioFileUtil the helioFileUtil to set
+     */
+    public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
+        this.helioFileUtil = helioFileUtil;
+    }
+    
+    
 }

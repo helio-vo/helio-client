@@ -11,14 +11,17 @@
     <bean id="hecDao" class="eu.heliovo.clientapi.model.catalog.impl.HecDao" init-method="init" lazy-init="true">
         <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
         <property name="serviceFactory" ref="helioServiceFactory"/>
+        <property name="helioFileUtil" ref="helioFileUtil"></property>
     </bean>
 
     <bean id="dpasDao" class="eu.heliovo.clientapi.model.catalog.impl.DpasDao" init-method="init"  lazy-init="true">
         <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
+        <property name="helioFileUtil" ref="helioFileUtil"></property>
     </bean>
     
     <bean id="ilsDao" class="eu.heliovo.clientapi.model.catalog.impl.IlsDao" init-method="init"  lazy-init="true">
         <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
+        <property name="helioFileUtil" ref="helioFileUtil"></property>
     </bean>
 
 </beans>

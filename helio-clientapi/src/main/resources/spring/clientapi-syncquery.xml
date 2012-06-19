@@ -8,8 +8,10 @@
     <bean id="syncQueryService" class="eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceImpl" scope="prototype" parent="abstractService">
         <property name="serviceName"><null/></property>
         <property name="serviceVariant"><null/></property>
+        <property name="helioFileUtil" ref="helioFileUtil"></property>
     </bean>
     
     <!-- the actual factory -->
-    <bean id="syncQueryServiceFactoryConfig" class="eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactoryConfig"></bean>
+    <bean id="syncQueryServiceFactoryConfig" class="eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactoryConfig">
+    </bean>
 </beans>

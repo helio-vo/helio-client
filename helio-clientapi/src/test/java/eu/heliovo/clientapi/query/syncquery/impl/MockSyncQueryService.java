@@ -23,6 +23,7 @@ import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
+import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.FileUtil;
 
 /**
@@ -44,6 +45,7 @@ class MockSyncQueryService extends SyncQueryServiceImpl {
 		this.setAccessInterfaces(new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.SYNC_QUERY_SERVICE, wsdlLocation));
 		this.setLoadBalancer(new RandomLoadBalancer());
 		this.setServiceName(name);
+		this.setHelioFileUtil(new HelioFileUtil("test"));
 		this.port = port;
 	}
 	

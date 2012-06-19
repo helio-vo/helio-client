@@ -19,6 +19,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Required;
 
 import uk.org.taverna.ns._2010.xml.server.soap.BadStateChangeException;
 import uk.org.taverna.ns._2010.xml.server.soap.NoDirectoryEntryException;
@@ -83,6 +84,11 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
     private double locationDelta;   
 
     /**
+     * Set the helio file util
+     */
+    private transient HelioFileUtil helioFileUtil; 
+    
+    /**
      * Create the Taverna workflow instance
      */
     public TavernaWorkflow2283() {
@@ -95,7 +101,8 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
     
     @Override
     public TavernaWorkflow2283ResultObject createResultObject(Run run) {
-        TavernaWorkflow2283ResultObject resultObject = new TavernaWorkflow2283ResultObject(run);
+        TavernaWorkflow2283ResultObject resultObject = 
+                new TavernaWorkflow2283ResultObject(run, helioFileUtil.getHelioTempDir("taverna"));
         return resultObject;
     }
     
@@ -147,6 +154,22 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
         this.locationDelta = locationDelta;
     }
     
+    
+    /**
+     * @return the helioFileUtil
+     */
+    public HelioFileUtil getHelioFileUtil() {
+        return helioFileUtil;
+    }
+
+    /**
+     * @param helioFileUtil the helioFileUtil to set
+     */
+    @Required
+    public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
+        this.helioFileUtil = helioFileUtil;
+    }
+
     @Override
     protected void initParameters(Run run, List<LogRecord> logRecords) throws JobExecutionException {
         List<String> logs = new ArrayList<String>(6);
@@ -194,14 +217,12 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
          * Result URL
          */
         private final URL voTableUrl;
-        
-        
+
         /**
          * Create the result object with a pointer to the run after it successfully terminated.
          * @param run the run.
          */
-        public TavernaWorkflow2283ResultObject(Run run) {
-            File tavernaTmp = HelioFileUtil.getHelioTempDir("taverna");
+        public TavernaWorkflow2283ResultObject(Run run, File tavernaTmp) {
             File zipFile = new File(tavernaTmp, run.getId() + ".zip");
 
             // get the result of the run and store it
@@ -320,6 +341,6 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
          */
         public URL getVoTableUrl() {
             return voTableUrl;
-        }
+        }        
     }
 }

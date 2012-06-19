@@ -25,6 +25,7 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryServiceService;
@@ -59,6 +60,11 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	private static final QName SERVICE_NAME = new QName("http://helio-vo.eu/xml/QueryService/v0.1", "HelioQueryServiceService");
 
 	/**
+	 * Name of the query port to use
+	 */
+//	private static final QName PORT_NAME = new QName("http://helio-vo.eu/xml/QueryService/v0.1", "HelioQueryServicePort");
+	
+	/**
 	 * The default time in ms to wait for a result.
 	 */
 	private static final long DEFAULT_TIMEOUT = 600000;
@@ -69,6 +75,11 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	private long timeout = DEFAULT_TIMEOUT;
 	
 	/**
+	 * Hold reference to the file util.
+	 */
+	private transient HelioFileUtil helioFileUtil;
+	
+    /**
 	 * Default constructor.
 	 */
 	public SyncQueryServiceImpl() {
@@ -100,7 +111,16 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	protected HelioQueryService getPort(AccessInterface accessInterface) {
 		AssertUtil.assertArgumentNotNull(accessInterface, "accessInterface");
 		
-		HelioQueryServiceService queryService = new HelioQueryServiceService(accessInterface.getUrl(), SERVICE_NAME);		
+		HelioQueryServiceService queryService = new HelioQueryServiceService(accessInterface.getUrl(), SERVICE_NAME);
+//		Dispatch<Source> dispatch =
+//		        queryService.createDispatch(PORT_NAME, Source.class, Service.Mode.PAYLOAD);
+//
+//		TimeQuery timeQuery = new ObjectFactory().createTimeQuery();
+//		timeQuery.getSTARTTIME().addAll(this.startTime);
+//		
+//		Source request = new StreamSource(requestStream);
+//		
+//		Source response = dispatch.invoke(request);
 		HelioQueryService port = queryService.getHelioQueryServicePort();
 		if (_LOGGER.isDebugEnabled()) {
 			_LOGGER.debug("Created " + port.getClass().getSimpleName() + " for " + accessInterface);
@@ -181,8 +201,8 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
         			throw new JobExecutionException("Unspecified error occured on service provider. Got back null.");
         		}
         		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
-        		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
-        
+        		HelioQueryResult result = createHelioSyncQueryResult(votable, executionDuration, logRecords);
+
         		return result;
 			} catch (WebServiceException e) {
                 // get port fails
@@ -203,7 +223,7 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
         }
 	}
 
-	@Override
+    @Override
 	public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords, Integer startindex) throws JobExecutionException, IllegalArgumentException {
 		HelioQueryResult result = timeQuery(Collections.singletonList(startTime), Collections.singletonList(endTime), Collections.singletonList(from), maxrecords, startindex);
 		return result;
@@ -277,7 +297,7 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
         		}
     		
         		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
-        		HelioQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
+        		HelioQueryResult result = createHelioSyncQueryResult(votable, executionDuration, logRecords);
         		return result;
             } catch (WebServiceException e) {
                 // get port fails
@@ -298,6 +318,37 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
         }
 	}
 
+
+	/**
+	 * Create the result object
+	 * @param votable the votable wrapped by the object
+	 * @param executionDuration the time it took to get the data
+	 * @param logRecords the log records.
+	 * @return a new result instance
+	 */
+    protected HelioQueryResult createHelioSyncQueryResult(VOTABLE votable,
+            int executionDuration, List<LogRecord> logRecords) {
+        HelioSyncQueryResult result = new HelioSyncQueryResult(votable, executionDuration, logRecords);
+        File tempDir = helioFileUtil.getHelioTempDir(getServiceName().getServiceName().toLowerCase() + "_sync");
+        result.setTempDir(tempDir);
+        return result;
+    }
+	
+    /**
+     * @return the helioFileUtil
+     */
+    @Required
+    public HelioFileUtil getHelioFileUtil() {
+        return helioFileUtil;
+    }
+
+    /**
+     * @param helioFileUtil the helioFileUtil to set
+     */
+    public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
+        this.helioFileUtil = helioFileUtil;
+    }
+	
 	/**
 	 * Implementation of the HELIO Query result.
 	 * @author MarcoSoldati
@@ -307,7 +358,7 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 	    /**
 	     * How long did it take to execute the process.
 	     */
-		private final int executionDuration;
+		private final transient int executionDuration;
 		
 		/**
 		 * The actual result stored as in memory votable.
@@ -317,12 +368,17 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 		/**
 		 * Time when the method terminated is just when this object gets created
 		 */
-		private final Date destructionTime = new Date();
+		private final transient Date destructionTime = new Date();
 
 		/**
 		 * Hold the log message for the user
 		 */
-		private final List<LogRecord> userLogs = new ArrayList<LogRecord>();
+		private final transient List<LogRecord> userLogs = new ArrayList<LogRecord>();
+		
+		/**
+		 * The temp dir.
+		 */
+		private transient File tempDir;
 		
 		/**
 		 * Create the HELIO query result
@@ -363,17 +419,15 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 
 		@Override
 		public URL asURL(long timeout, TimeUnit unit)
-				throws JobExecutionException {
-            File tavernaTmp = HelioFileUtil.getHelioTempDir("taverna");
-            
-            File outDir = new File(tavernaTmp, UUID.randomUUID().toString());
+				throws JobExecutionException {            
+            File outDir = new File(tempDir, UUID.randomUUID().toString());
             try {
                 FileUtils.forceMkdir(outDir);
             } catch (IOException e) {
                 throw new JobExecutionException("Unable to create output directory: " + outDir + ". Cause: " + e.getMessage(), e);
             }
+            // FIXME: set proper votable name.
             File outFile = new File(outDir, "hec.votable.xml");
-
 		    
 		    FileWriter writer;
             try {
@@ -415,5 +469,13 @@ class SyncQueryServiceImpl extends AbstractServiceImpl implements SyncQueryServi
 			VOTABLE voTable = asVOTable(timeout, unit);
 			return VOTableUtils.getInstance().voTable2String(voTable, true);
 		}
+		
+		/**
+		 * Set the temporary dir to cache results
+		 * @param tempDir the temp dir
+		 */
+		public void setTempDir(File tempDir) {
+            this.tempDir = tempDir;
+        }
 	}
 }
