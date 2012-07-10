@@ -72,7 +72,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>${basedir}/target/jaxws/wsimport/java</source>
+                <source>${basedir}/target/generated-sources/wsimport</source>
               </sources>
             </configuration>
           </execution>
@@ -84,7 +84,7 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>${basedir}/target/jaxws/wsimport/java</directory>
+              <directory>${basedir}/target/generated-sources/wsimport</directory>
               <includes>
                 <include>**/*.java</include>
               </includes>
