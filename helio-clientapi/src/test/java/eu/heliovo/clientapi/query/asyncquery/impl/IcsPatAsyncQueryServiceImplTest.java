@@ -37,7 +37,7 @@ public class IcsPatAsyncQueryServiceImplTest {
         StarTable[] votable = stilUtils.read(result.asURL());
         assertEquals(1, votable.length);
         StarTable resource = votable[0];
-        assertEquals(17, resource.getColumnCount());
+        assertEquals(18, resource.getColumnCount());
         assertEquals("isInPat", resource.getColumnInfo(resource.getColumnCount() -1).getName());
         //System.out.println(result.asURL());
         //System.out.println(result.asString());
