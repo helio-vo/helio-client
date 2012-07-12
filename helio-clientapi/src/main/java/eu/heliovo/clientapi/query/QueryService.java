@@ -11,7 +11,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author MarcoSoldati
  *
  */
-public interface HelioQueryService extends HelioService {
+public interface QueryService extends HelioService {
 	
 	/**
 	 * Execute a query on a HELIO query service.
@@ -97,4 +97,93 @@ public interface HelioQueryService extends HelioService {
 			Integer startindex) 
 				throws JobExecutionException, IllegalArgumentException;
 
+	/**
+	 * Execute the query and get back the result object
+	 * @return the result object used to access the result.
+	 */
+	public HelioQueryResult execute();
+	
+	/**
+	 * The from property.
+	 * @param from the value domain of the from property depends on the called service. Use BeanInfo to read the value domain
+	 */
+	public void setFrom(List<String> from);
+	
+	/**
+	 * Get the from property
+	 * @return the from property.
+	 */
+	public List<String> getFrom();
+	
+	/**
+	 * Set the start time of the query.
+	 * @param startTime the list of start times.
+	 */
+	public void setStartTime(List<String> startTime);
+	
+	/**
+	 * Get the start time of the query.
+	 * @return the start time.
+	 */
+	public List<String> getStartTime();
+
+	/**
+	 * Set the end time of the query.
+	 * @param endTime the list of end times.
+	 */
+	public void setEndTime(List<String> endTime);
+	
+	/**
+	 * Get the end time of the query.
+	 * @return the end time.
+	 */
+	public List<String> getEndTime();
+	
+	/**
+	 * Get the number of max records
+	 * @return max records
+	 */
+	public Integer getMaxRecords();
+	
+	/**
+	 * Set the number of max records to return.
+	 * @param maxRecords the max records
+	 */
+	public void setMaxRecords(Integer maxRecords);
+	
+	/**
+	 * Get the first index to start from
+	 * @return the start index
+	 */
+	public Integer getStartIndex();
+	
+	/**
+	 * Set the start index
+	 * @param startIndex the start index
+	 */
+	public void setStartIndex(Integer startIndex);
+	
+	/**
+	 * Get the where clause
+	 * @return the where clause
+	 */
+	public String getWhere();
+	
+	/**
+	 * Set the where clause
+	 * @param where the where clause
+	 */
+	public void setWhere(String where);
+	
+	/**
+	 * Join two tables (expert feature)
+	 * @return the joined tables
+	 */
+	public String getJoin();
+	
+	/**
+	 * Join two tables (expert) 
+	 * @param join the join list
+	 */ 
+	public void setJoin(String join);
 }

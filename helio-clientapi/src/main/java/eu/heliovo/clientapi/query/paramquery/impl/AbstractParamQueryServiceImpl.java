@@ -55,7 +55,7 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 		
 		String where = getWhere(termList.whereTerms);
 		
-		HelioQueryResult result = queryService.query(termList.starttime, termList.endtime, termList.catalogs, where, termList.maxrecords, termList.startindex, termList.join, termList.saveto);
+		HelioQueryResult result = queryService.query(termList.starttime, termList.endtime, termList.catalogs, where, termList.maxrecords, termList.startindex, termList.join);
 		return result;
 	}
 	
@@ -95,11 +95,6 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 		 * Join table
 		 */
 		public String join;
-
-		/**
-		 * Name of the saved votable
-		 */
-		private String saveto;
 		
 		/**
 		 * List terms to be used for the where clause
@@ -123,8 +118,6 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 					maxrecords = getAs(term, Integer.class);
 				} else if (field.getId().equals(HelioField.FIELD_STARTINDEX)) {
 					startindex = getAs(term, Integer.class);
-				} else if (field.getId().equals(HelioField.FIELD_SAVE_TO)) {					
-					saveto = getAs(term, String.class);
 				} else {
 					whereTerms.add(term);
 				}

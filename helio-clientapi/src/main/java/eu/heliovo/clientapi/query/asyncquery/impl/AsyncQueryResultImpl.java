@@ -1,7 +1,6 @@
 package eu.heliovo.clientapi.query.asyncquery.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,11 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 
@@ -31,6 +25,7 @@ import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
+import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
@@ -39,11 +34,11 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author marco soldati at fhnw ch
  * 
  */
-class AsyncQueryResultImpl implements HelioQueryResult {
+public class AsyncQueryResultImpl implements HelioQueryResult {
 	/**
 	 * The logger instance
 	 */
-	private static final Logger _LOGGER = Logger.getLogger(AsyncQueryResultImpl.class);
+	public static final Logger _LOGGER = Logger.getLogger(AsyncQueryResultImpl.class);
 	
 	/**
 	 * The id of the call
@@ -108,7 +103,7 @@ class AsyncQueryResultImpl implements HelioQueryResult {
 	 * @param jobStartTime the time when this call has been started.
 	 * @param logRecords the log records from the parent query. 
 	 */
-	AsyncQueryResultImpl(String id, LongHelioQueryService port, String callId, long jobStartTime, List<LogRecord> logRecords) {
+	public AsyncQueryResultImpl(String id, LongHelioQueryService port, String callId, long jobStartTime, List<LogRecord> logRecords) {
 		this.id = id;
 		this.port = port;
 		this.callId = callId;
@@ -291,46 +286,11 @@ class AsyncQueryResultImpl implements HelioQueryResult {
 	}
 
 	public VOTABLE asVOTable(long timeout, TimeUnit unit) throws JobExecutionException {
-		if (_LOGGER.isTraceEnabled()) {
-			_LOGGER.trace("Convert URL to VOTABLE");
-		}
 		URL url = asURL(timeout, unit);
-
-		String packageName = VOTABLE.class.getPackage().getName();
-		
-		int retry = 0;
-		while (true) {
-    		InputStream is;
-    		try {
-    			is = url.openStream();
-    		} catch (IOException e) {
-    			throw new RuntimeException("IOException while opening '" + url + "': " + e.getMessage(), e);
-    		}
-    		try {
-    			JAXBContext jaxbContext = JAXBContext.newInstance( packageName );
-    			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-    			JAXBElement<VOTABLE> doc = (JAXBElement<VOTABLE>)unmarshaller.unmarshal(new StreamSource(is), VOTABLE.class);
-    			return doc.getValue();
-    		} catch (JAXBException e) {
-    		    if (retry > 3) {
-    		        throw new RuntimeException("JAXBException while reading " + url + ": " + e.getMessage(), e);
-    		    } else {
-    		        // wait a bit and retry to read data.
-    		        _LOGGER.warn("Unable to read from stream. Trying again (" + retry + "). Cause: " + e.getMessage(), e);
-    		        try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e1) {
-                        // ignore
-                    }
-    		        retry++;
-    		    }
-    		} finally {
-    		    IOUtils.closeQuietly(is);
-    		}
-		}
+		return VOTableUtils.getInstance().url2VoTable(url);
 	}
-	
-	@Override
+
+    @Override
 	public String asString() throws JobExecutionException {
 		return asString(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
 	}

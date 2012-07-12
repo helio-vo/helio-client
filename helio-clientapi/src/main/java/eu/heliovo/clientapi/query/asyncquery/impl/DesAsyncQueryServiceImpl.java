@@ -25,21 +25,10 @@ public class DesAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     }
     
     @Override
-    public HelioQueryResult timeQuery(List<String> startTime, List<String> endTime, List<String> from, Integer maxrecords, Integer startindex, String saveto)
-            throws JobExecutionException {
-        throw new UnsupportedOperationException("The DES does not support time queries. Use query() instead.");
-    }
-    
-    @Override
     public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords, Integer startindex) throws JobExecutionException, IllegalArgumentException {
         throw new UnsupportedOperationException("The DES does not support time queries. Use query() instead.");
     }
-    
-    @Override
-    public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords, Integer startindex, String saveto) throws JobExecutionException {
-        throw new UnsupportedOperationException("The DES does not support time queries. Use query() instead.");
-    }
-    
+        
     /**
      * Increase call timeout for des.
      */

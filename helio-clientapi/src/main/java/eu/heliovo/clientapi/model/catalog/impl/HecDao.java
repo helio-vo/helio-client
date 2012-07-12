@@ -43,7 +43,7 @@ import eu.heliovo.clientapi.model.field.FieldType;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.HelioQueryService;
+import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
@@ -255,7 +255,7 @@ public class HecDao extends AbstractDao implements HelioCatalogDao {
 		
 		VOTABLE votable;
 		try {
-			HelioQueryService hec = (HelioQueryService) serviceFactory.getHelioServices(HelioServiceName.HEC, null, ServiceCapability.SYNC_QUERY_SERVICE)[0];
+			QueryService hec = (QueryService) serviceFactory.getHelioServices(HelioServiceName.HEC, null, ServiceCapability.SYNC_QUERY_SERVICE)[0];
 			HelioQueryResult result = hec.timeQuery("1800-01-10T00:00:00", "2020-12-31T23:59:59", "catalogues", 0, 0);
 			votable = result.asVOTable();
 		} catch (Exception e) {

@@ -8,7 +8,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.HelioClient;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.HelioQueryService;
+import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 
@@ -32,7 +32,7 @@ public class SyncQueryServiceDemo {
 	private static synchronized void testSyncService(HelioClient client, HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String saveto) {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
-		    HelioQueryService queryService = (HelioQueryService) client.getServiceInstance(serviceName, null, ServiceCapability.SYNC_QUERY_SERVICE);
+		    QueryService queryService = (QueryService) client.getServiceInstance(serviceName, null, ServiceCapability.SYNC_QUERY_SERVICE);
 			HelioQueryResult result = queryService.timeQuery(startTime, endTime, from, 100, 0);
 
 			System.out.println(result);
@@ -59,7 +59,7 @@ public class SyncQueryServiceDemo {
     private static synchronized void testSyncService(HelioClient client, HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String where, String saveto) {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
-            HelioQueryService queryService = (HelioQueryService) client.getServiceInstance(serviceName, null, ServiceCapability.SYNC_QUERY_SERVICE);
+            QueryService queryService = (QueryService) client.getServiceInstance(serviceName, null, ServiceCapability.SYNC_QUERY_SERVICE);
 			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null);
 			
 			System.out.println(result);

@@ -8,6 +8,7 @@ import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
 import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.loadbalancing.impl.RandomLoadBalancer;
+import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -40,11 +41,35 @@ class MockAsyncQueryService extends AsyncQueryServiceImpl {
 	    return defaultInterface;
 	}
 	
-	@Override
-	protected LongHelioQueryService getPort(AccessInterface accessInterface) {
-	    return port;
-	}
-
+    @Override
+    public HelioQueryResult query(final List<String> startTime, final List<String> endTime,
+            final List<String> from, final String where, final Integer maxrecords,
+            final Integer startindex, final String join) {       
+        setStartTime(startTime);
+        setEndTime(endTime);
+        setFrom(from);
+        setWhere(where);
+        setMaxRecords(maxrecords);
+        setStartIndex(startindex);
+        setJoin(join);
+        MockAsyncQueryDelegate queryDelegate = new MockAsyncQueryDelegate(this.port, "longquery");
+        setQueryDelegate(queryDelegate);
+        return execute();
+    }
+    
+    @Override
+    public HelioQueryResult timeQuery(final List<String> startTime, final List<String> endTime,
+            final List<String> from, final Integer maxrecords, final Integer startindex) {
+        setStartTime(startTime);
+        setEndTime(endTime);
+        setFrom(from);
+        setMaxRecords(maxrecords);
+        setStartIndex(startindex);
+        MockAsyncQueryDelegate queryDelegate = new MockAsyncQueryDelegate(this.port, "longquery");
+        setQueryDelegate(queryDelegate);
+        return execute();
+    }  
+	
 	/**
 	 * Mock implementation of a long helio query service. For testing purposes.
 	 * @author marco soldati at fhnw ch

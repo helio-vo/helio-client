@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+        
+    <bean id="abstractQueryService" class="eu.heliovo.clientapi.query.AbstractQueryServiceImpl" abstract="true" parent="abstractService">
+        <property name="configurationManager" ref="configurationManager"></property>
+    </bean>
+        
+    <!-- async query services -->
+    <bean id="asyncQueryService" class="eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceImpl" scope="prototype" parent="abstractQueryService">
+        <property name="serviceName"><null/></property>
+        <property name="serviceVariant"><null/></property>
+    </bean>
+    <bean id="desAsyncQueryService" class="eu.heliovo.clientapi.query.asyncquery.impl.DesAsyncQueryServiceImpl" scope="prototype" parent="abstractQueryService">
+        <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.DES"/></property >
+        <property name="serviceVariant"><null/></property>
+    </bean>
+    <bean id="dpasAsyncQueryService" class="eu.heliovo.clientapi.query.asyncquery.impl.DpasAsyncQueryServiceImpl" scope="prototype" parent="abstractQueryService">
+        <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.DPAS"/></property >
+        <property name="serviceVariant"><null/></property>
+    </bean>
+    <bean id="icsPatAsyncQueryService" class="eu.heliovo.clientapi.query.asyncquery.impl.IcsPatAsyncQueryServiceImpl" scope="prototype" parent="abstractQueryService">
+        <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.ICS"/></property >
+        <property name="serviceVariant"><null/></property>
+        <property name="stilUtils" ref="stilUtils"/>
+        <property name="instrumentDescriptorDao" ref="instrumentDescriptorDao"/>
+    </bean>
+    
+    <!-- the async factory configuration -->
+    <bean id="asyncQueryServiceFactoryConfig" class="eu.heliovo.clientapi.query.asyncquery.impl.AsyncQueryServiceFactoryConfig"></bean>
+    
+    <!-- Sync query services -->
+    <bean id="syncQueryService" class="eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceImpl" scope="prototype" parent="abstractQueryService">
+        <property name="serviceName"><null/></property>
+        <property name="serviceVariant"><null/></property>
+        <property name="helioFileUtil" ref="helioFileUtil"></property>
+    </bean>
+    
+    <!-- the sync factory configuration -->
+    <bean id="syncQueryServiceFactoryConfig" class="eu.heliovo.clientapi.query.syncquery.impl.SyncQueryServiceFactoryConfig">
+    </bean>
+    
+</beans>

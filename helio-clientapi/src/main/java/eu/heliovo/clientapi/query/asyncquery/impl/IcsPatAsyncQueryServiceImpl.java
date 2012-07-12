@@ -5,24 +5,27 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.LogRecord;
+
+import net.ivoa.xml.votable.v1.VOTABLE;
+
+import org.apache.commons.io.IOUtils;
 
 import uk.ac.starlink.table.ArrayColumn;
 import uk.ac.starlink.table.ColumnInfo;
 import uk.ac.starlink.table.ColumnStarTable;
 import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.votable.DataFormat;
-import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
-import eu.heliovo.clientapi.model.catalog.HelioCatalog;
-import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
-import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.field.descriptor.InstrumentDescriptor;
+import eu.heliovo.clientapi.model.service.dao.InstrumentDescriptorDao;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.utils.STILUtils;
+import eu.heliovo.clientapi.utils.VOTableUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
@@ -35,66 +38,63 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
      * Identifier of the ICS variant
      */
     static String SERVICE_VARIANT = "ivo://helio-vo.eu/ics/ics_pat";
+  
+    /**
+     * Reference to the instrument descriptor dao
+     */
+    private InstrumentDescriptorDao instrumentDescriptorDao;
     
     /**
-     * Access to the stil utils
+     * Reference to the stil utils to use.
      */
-    private STILUtils stilUtils; 
+    private STILUtils stilUtils;
     
-    /**
-     * The dpas dao to read the pat from
-     */
-    private HelioCatalogDao dpasDao = null;
-
     /**
      * Create the DES query support. 
      */
     public IcsPatAsyncQueryServiceImpl() {
     }
     
-    
+    /**
+     * Decorate the query result with additional information from the pat. 
+     */
     @Override
-    protected HelioQueryResult createQueryResult(String resultId, LongHelioQueryService currentPort, String callId, long jobStartTime, List<LogRecord> logRecords) {
-        IcsPatQueryResult result = new IcsPatQueryResult(resultId, currentPort, callId, jobStartTime, logRecords);
-        result.setStilUtils(stilUtils);
-        result.setDpasDao(getDpasDao());
-        result.init();
-        return result;
+    public HelioQueryResult execute() {
+        HelioQueryResult result = super.execute();
+        IcsPatQueryResultWrapper resultWrapper = new IcsPatQueryResultWrapper(result);
+        resultWrapper.setStilUtils(stilUtils);
+        resultWrapper.setInstrumentDescriptorDao(instrumentDescriptorDao);
+        return resultWrapper;
+    }
+    
+    /**
+     * @return the instrumentDescriptorDao
+     */
+    public InstrumentDescriptorDao getInstrumentDescriptorDao() {
+        return instrumentDescriptorDao;
     }
 
     /**
-     * Get the stil utils.
-     * @return the stil utils.
+     * @param instrumentDescriptorDao the instrumentDescriptorDao to set
+     */
+    public void setInstrumentDescriptorDao(
+            InstrumentDescriptorDao instrumentDescriptorDao) {
+        this.instrumentDescriptorDao = instrumentDescriptorDao;
+    }
+
+    /**
+     * @return the stilUtils
      */
     public STILUtils getStilUtils() {
         return stilUtils;
     }
 
     /**
-     * Set stil utils
-     * @param stilUtils the stil utils.
+     * @param stilUtils the stilUtils to set
      */
     public void setStilUtils(STILUtils stilUtils) {
         this.stilUtils = stilUtils;
     }
-    
-    /**
-     * Get the dpas dao
-     * @return the dpasDao
-     */
-    public HelioCatalogDao getDpasDao() {
-        return dpasDao;
-    }
-
-
-    /**
-     * Set the Dpas DAO
-     * @param dpasDao the dpasDao to set
-     */
-    public void setDpasDao(HelioCatalogDao dpasDao) {
-        this.dpasDao = dpasDao;
-    }
-
 
 
     /**
@@ -102,7 +102,7 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
      * @author MarcoSoldati
      *
      */
-    static class IcsPatQueryResult extends AsyncQueryResultImpl {
+    static class IcsPatQueryResultWrapper implements HelioQueryResult {
 
         /**
          * Instrument column
@@ -110,19 +110,24 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
         private static final String INSTR_COL_NAME = "obsinst_key";
         
         /**
-         * Retrieve the pat.
+         * Default timeout is 120 seconds
          */
-        private HelioCatalog pat;
-
+        private final static long DEFAULT_TIMEOUT = 120000;
+        
+        /**
+         * Reference to the instrument descriptor dao
+         */
+        private InstrumentDescriptorDao instrumentDescriptorDao;
+        
         /**
          * Reference to the stil utils to use.
          */
         private STILUtils stilUtils;
 
         /**
-         * Dao to access the dpas
+         * The wrapped result
          */
-        private HelioCatalogDao dpasDao;
+        private final HelioQueryResult helioQueryResult;
         
         /**
          * A query result that enhances the ICS result with the pat table.
@@ -132,46 +137,25 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
          * @param jobStartTime start time of the job
          * @param logRecords mutable list of log records.
          */
-        IcsPatQueryResult(String id, LongHelioQueryService port, String callId, long jobStartTime, List<LogRecord> logRecords) {
-            super(id, port, callId, jobStartTime, logRecords);
+        IcsPatQueryResultWrapper(HelioQueryResult helioQueryResult) {
+            this.helioQueryResult = helioQueryResult;
         }
         
-        public void init() {
-            pat = getPat();
-        }
-        
-        /**
-         * Set the stil utils bean to use
-         * @param stilUtils the stil utils bean
-         */
-        public void setStilUtils(STILUtils stilUtils) {
-            this.stilUtils = stilUtils;
-        }
-
-        /**
-         * Get the provider access table.
-         * @return the provider access table.
-         */
-        protected HelioCatalog getPat() {
-            
-            //System.out.println(Arrays.toString(dpasDao.getCatalogField().getValueDomain()));
-            HelioCatalog pat = dpasDao.getCatalogById("dpas");
-            if (pat == null) {
-                throw new RuntimeException("Internal Error: unable to find Provider Access Table (PAT).");
-            }
-            return pat;
+        @Override
+        public Phase getPhase() {
+            return helioQueryResult.getPhase();
         }
         
         @Override
         public URL asURL(long timeout, TimeUnit unit) throws JobExecutionException {
             // get the ics table
-            URL url = super.asURL(timeout, unit);
+            URL icsResultUrl = helioQueryResult.asURL(timeout, unit);
             //System.out.println(url);
 
             // convert to a star table
             StarTable[] tables;
             try {
-                tables = stilUtils.read(url);
+                tables = stilUtils.read(icsResultUrl);
             } catch (IOException e) {
                 throw new JobExecutionException("Unable to read result from ICS: " + e.getMessage(), e);
             }
@@ -184,21 +168,10 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             // find obsInstKey
             int obsInstKey = findObsInstKeyColumn(ics);
             
-            // get the instruments in the pat.
-            HelioField<?> patInstr = pat.getFieldById("instrument");
-            if (patInstr == null) {
-                throw new JobExecutionException("Internal error: unable to find instrument field in PAT");
-            }
-            
-            @SuppressWarnings("unchecked")
-            DomainValueDescriptor<String>[] values = (DomainValueDescriptor<String>[]) patInstr.getValueDomain();
-            
             // optimize the list for faster comparison
-            SortedSet<String> patInstruments = new TreeSet<String>(); 
-            for (DomainValueDescriptor<String> instrument : values) {
-                patInstruments.add(instrument.getValue());
-            }
-                        
+            Set<InstrumentDescriptor> instruments = instrumentDescriptorDao.getDomainValues();
+            SortedSet<String> patInstruments = getSetOfPatInstrumentNames(instruments);
+
             // now compare ics and pat and fill in boolean []
             boolean [] isInPat = new boolean[(int)ics.getRowCount()]; // the cast should be safe as ics is rather small
             
@@ -265,21 +238,20 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             }
         }
 
-        
         /**
-         * Get the DPAS dao.
-         * @return the DPAS dao
+         * Get a set of instrument names that are included in the PAT (i.e. that have a provider assigned)
+         * @param instruments the instrument descriptors
+         * @return set of names only.
          */
-        public HelioCatalogDao getDpasDao() {
-            return dpasDao;
-        }
-
-        /**
-         * Set the DPAS dao.
-         * @param dpasDao the DPAS dao.
-         */
-        public void setDpasDao(HelioCatalogDao dpasDao) {
-            this.dpasDao = dpasDao;
+        private SortedSet<String> getSetOfPatInstrumentNames(
+                Set<InstrumentDescriptor> instruments) {
+            SortedSet<String> patInstruments = new TreeSet<String>(); 
+            for (InstrumentDescriptor instrument : instruments) {
+                if (instrument.hasProviders()) {
+                    patInstruments.add(instrument.getValue());
+                }
+            }
+            return patInstruments;
         }
 
         /**
@@ -297,6 +269,65 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             }
             
             throw new JobExecutionException("Internal Error: cannot find instrument column in ics table: '" + INSTR_COL_NAME +"'.");
+        }
+
+        @Override
+        public int getExecutionDuration() {
+            return helioQueryResult.getExecutionDuration();
+        }
+
+        @Override
+        public Date getDestructionTime() {
+            return helioQueryResult.getDestructionTime();
+        }
+
+        @Override
+        public URL asURL() throws JobExecutionException {
+            return asURL(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        }
+
+        public VOTABLE asVOTable() throws JobExecutionException {
+            return asVOTable(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        }
+
+        public VOTABLE asVOTable(long timeout, TimeUnit unit) throws JobExecutionException {
+            URL url = asURL(timeout, unit);
+            return VOTableUtils.getInstance().url2VoTable(url);
+        }
+        
+        @Override
+        public String asString() throws JobExecutionException {
+            return asString(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        }
+
+        public String asString(long timeout, TimeUnit unit) throws JobExecutionException {
+            try {
+                return IOUtils.toString(asURL().openStream());
+            } catch (IOException e) {
+                throw new JobExecutionException("Unable to convert result to String: " + e.getMessage(), e);
+            }
+        }
+        @Override
+        public LogRecord[] getUserLogs() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        
+        /**
+         * Set the dao for the instrument descriptor
+         * @param instrumentDescriptorDao the instrument descriptor dao
+         */
+        public void setInstrumentDescriptorDao(
+                InstrumentDescriptorDao instrumentDescriptorDao) {
+            this.instrumentDescriptorDao = instrumentDescriptorDao;
+        }
+        
+        /**
+         * Set the stil utils bean to use
+         * @param stilUtils the stil utils bean
+         */
+        public void setStilUtils(STILUtils stilUtils) {
+            this.stilUtils = stilUtils;
         }
     }
 }

@@ -39,6 +39,12 @@ public abstract class AbstractServiceImpl implements HelioService {
     public AbstractServiceImpl() {
     }
     
+    /**
+     * Initialize the bean. Called by the HelioServiceFactory.
+     */
+    public void init() {
+    }
+    
     @Override
     public HelioServiceName getServiceName() {
     	return serviceName;

@@ -23,5 +23,14 @@
         <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
         <property name="helioFileUtil" ref="helioFileUtil"></property>
     </bean>
+    
+    <bean id="hecCatalogueDescriptorDao" class="eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao" init-method="init">
+        <property name="helioFileUtil" ref="helioFileUtil"></property>    
+        <property name="stilUtils" ref="stilUtils"></property>    
+    </bean>
+    
+    <bean id="instrumentDescriptorDao" class="eu.heliovo.clientapi.model.service.dao.InstrumentDescriptorDao" init-method="init">
+        <property name="helioFileUtil" ref="helioFileUtil"></property>    
+    </bean>
 
 </beans>

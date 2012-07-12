@@ -125,8 +125,10 @@ public class HelioServiceFactory implements ServiceFactory, ApplicationContextAw
      * @param beanName the name of the bean as stored in the spring config.
      * @param serviceName the name of the service.
      * @param serviceVariant the name of the service variant.
-     * @param accessInterfaces the access interfaces will not be null.
-     * @return concrete instance of the requested service.
+     * @param accessInterfaces the access interfaces to use. If null, the factory will get all interfaces from the registry and
+     * set them on the created service impl.
+     * @return concrete instances of the requested service. Usually this is just one element, but in cases like LinkProviderService there might be multiple elements.
+     * And empty array is returned in case no service has been found.
      */
     protected HelioService[] createServiceImpls(String[] beanNames, HelioServiceName serviceName, String serviceVariant, AccessInterface[] accessInterfaces) {
         HelioService[] serviceImpls = new HelioService[beanNames.length];
@@ -148,6 +150,7 @@ public class HelioServiceFactory implements ServiceFactory, ApplicationContextAw
                     impl.setAccessInterfaces(accessInterfaces);
                 }
                 impl.setLoadBalancer(getLoadBalancer());
+                impl.init();
             }
             serviceImpls[i] = serviceImpl;
         }

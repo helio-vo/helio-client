@@ -1,5 +1,7 @@
 package eu.heliovo.clientapi.config.des;
 
+import java.beans.SimpleBeanInfo;
+
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 
 /**
@@ -7,7 +9,7 @@ import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
  * @author MarcoSoldati
  *
  */
-public class DesFunctionArgument {
+public class DesFunctionArgument extends SimpleBeanInfo {
     /**
      * The supported operators
      * @author MarcoSoldati

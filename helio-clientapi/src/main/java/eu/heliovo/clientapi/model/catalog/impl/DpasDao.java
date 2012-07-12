@@ -2,6 +2,7 @@ package eu.heliovo.clientapi.model.catalog.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,8 +21,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
@@ -81,69 +84,23 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 	 * Init the daos content.
 	 */
 	public void init() {
-		DocumentBuilder docBuilder;
 		try {
-		    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		    dbFactory.setNamespaceAware(true);
-			docBuilder = dbFactory.newDocumentBuilder();
-			
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException("Unable to create DOM document builder: " + e.getMessage(), e);
-		}
-		
-		URL instruments = helioFileUtil.getFileFromRemoteOrCache("dpas_cache", "instruments.xsd", instrumentsLocation);
-		
-
-		try {
-			InputSource instrumentsSource = getInputSource(instruments);
 			
 			HelioCatalog dpas = new HelioCatalog("dpas", "Data Provider Access Service", "Catalog to access data form various sources in an unified way.");
 			dpas.addField(new HelioField<Object>("startTime", "startTime", "start value of the time range to query", getFieldTypeRegistry().getType("string")));
 			dpas.addField(new HelioField<Object>("endTime", "endTime", "end value of the time range to query", getFieldTypeRegistry().getType("string")));
 			
 			// create the instruments field
-
-			// parse the instruments from the instruments.xsd
-			Map<String, String> instrumentsMap = new HashMap<String, String>();
-
-			// loop over the instruments.xsd
-			Document dInstruments = docBuilder.parse(instrumentsSource);
-			dInstruments.normalize();
+			// get the instruments.xsd ...
+			URL instruments = helioFileUtil.getFileFromRemoteOrCache("dpas_cache", "instruments.xsd", instrumentsLocation);
+			InputSource instrumentsSource = getInputSource(instruments);
+			Document dInstruments = parseInputSourceToDom(instrumentsSource);
 			
-			//NodeList lists = dInstruments.getChildNodes();
-			NodeList lists = dInstruments.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "enumeration");
-			for (int i = 0; i < lists.getLength(); i++) {
-				Element listElement = (Element) lists.item(i);
-				String instrumentName = listElement.getAttribute("value");
-				//System.out.println(instrumentName);
-				String instrumentLabel = getTextContent(listElement, "documentation");
-				instrumentsMap.put(instrumentName, instrumentLabel);
-				
-			}
+			// ...  and extract instruments into a map
+			Map<String, String> instrumentsMap = createMapOfInstruments(dInstruments);
 			
 			// now parse the pat table and create the instrument domain descriptor.
-			Set<DomainValueDescriptor<String>> instrumentDomain = new LinkedHashSet<DomainValueDescriptor<String>>();
-			URL pat = helioFileUtil.getFileFromRemoteOrCache("dpas_cache", "patTable.csv", patTable);
-			if (pat != null) {
-    			LineIterator it = FileUtils.lineIterator(new File(pat.toURI()), "UTF-8");
-    			try {
-    				while (it.hasNext()) {
-    					String line = it.nextLine();
-    					String[] entries = line.split(",");
-    					if (entries.length >= 3) {
-    						String instrumentName = entries[0].trim();
-    						String instrumentLabel = instrumentsMap.get(instrumentName);
-    						instrumentLabel = instrumentLabel == null ? instrumentName : instrumentLabel;
-    						DomainValueDescriptor<String> instrumentDesc = DomainValueDescriptorUtil.asDomainValue(instrumentName, instrumentLabel, null);
-    						instrumentDomain.add(instrumentDesc);
-    					}
-    				}
-    			} finally {
-    				LineIterator.closeQuietly(it);
-    			}
-            } else {                
-                _LOGGER.warn("Unable to load PAT table from remote or local: " + patTable);
-            }
+			Set<DomainValueDescriptor<String>> instrumentDomain = createInstrumentDomainValueDescriptors(instrumentsMap);
 			
 			@SuppressWarnings("unchecked")
 			HelioField<String> instrumentsField  = new HelioField<String>("instrument", "Instrument", "Instruments supported by HELIO", getFieldTypeRegistry().getType("string"), instrumentDomain.toArray(new DomainValueDescriptor[instrumentDomain.size()]));
@@ -155,6 +112,50 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 			throw new RuntimeException("Unable to initialize registry: " + e.getMessage(), e);
 		}
 	}
+
+	/**
+	 * Parse the input source into a DOM tree and normalize the DOM tree.
+	 * @param instrumentsSource
+	 * @return a normalized DOM node
+	 * @throws SAXException
+	 * @throws IOException
+	 * @see Node#normalize()
+	 */
+    private Document parseInputSourceToDom(InputSource instrumentsSource) throws SAXException, IOException {
+        DocumentBuilder docBuilder;
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dbFactory.setNamespaceAware(true);
+            docBuilder = dbFactory.newDocumentBuilder();
+            
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("Unable to create DOM document builder: " + e.getMessage(), e);
+        }
+
+        Document dInstruments = docBuilder.parse(instrumentsSource);
+        dInstruments.normalize();
+        return dInstruments;
+    }
+    
+    /**
+     * Extract the instruments from the instruments DOM. 
+     * @param dInstruments the instruments DOM
+     * @return a map with all instruments, key is the instrument id, value the instrument label.
+     */
+    private Map<String, String> createMapOfInstruments(Document dInstruments) {
+        Map<String, String> instrumentsMap = new HashMap<String, String>();
+        //NodeList lists = dInstruments.getChildNodes();
+        NodeList lists = dInstruments.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "enumeration");
+        for (int i = 0; i < lists.getLength(); i++) {
+            Element listElement = (Element) lists.item(i);
+            String instrumentName = listElement.getAttribute("value");
+            //System.out.println(instrumentName);
+            String instrumentLabel = getTextContent(listElement, "documentation");
+            instrumentsMap.put(instrumentName, instrumentLabel);
+        }
+        return instrumentsMap;
+    }
+
 
 	/**
 	 * Extract the text content from the first matching tag with a given name.
@@ -172,6 +173,41 @@ public class DpasDao extends AbstractDao implements HelioCatalogDao {
 		}
 		return tag.item(0).getTextContent().trim();
 	}
+	
+	/**
+	 * Create a set of instrument domain values containing the instrument id and the label.
+	 * @param instrumentsMap the instrument map used to lookup the labels
+	 * @return set of instrument descriptors.
+	 * @throws IOException 
+	 * @throws URISyntaxException
+	 */
+    private Set<DomainValueDescriptor<String>> createInstrumentDomainValueDescriptors(
+            Map<String, String> instrumentsMap) throws IOException,
+            URISyntaxException {
+        Set<DomainValueDescriptor<String>> instrumentDomain = new LinkedHashSet<DomainValueDescriptor<String>>();
+        URL pat = helioFileUtil.getFileFromRemoteOrCache("dpas_cache", "patTable.csv", patTable);
+        if (pat != null) {
+            LineIterator it = FileUtils.lineIterator(new File(pat.toURI()), "UTF-8");
+            try {
+                while (it.hasNext()) {
+                    String line = it.nextLine();
+                    String[] entries = line.split(",");
+                    if (entries.length >= 3) {
+                        String instrumentName = entries[0].trim();
+                        String instrumentLabel = instrumentsMap.get(instrumentName);
+                        instrumentLabel = instrumentLabel == null ? instrumentName : instrumentLabel;
+                        DomainValueDescriptor<String> instrumentDesc = DomainValueDescriptorUtil.asDomainValue(instrumentName, instrumentLabel, null);
+                        instrumentDomain.add(instrumentDesc);
+                    }
+                }
+            } finally {
+                LineIterator.closeQuietly(it);
+            }
+        } else {                
+            _LOGGER.warn("Unable to load PAT table from remote or local: " + patTable);
+        }
+        return instrumentDomain;
+    }
 
 	/**
 	 * Wrap a given URL into an input source. Set the public id to the location.

@@ -37,7 +37,7 @@ public interface ServiceFactory {
     public HelioService[] getHelioServices(HelioServiceName serviceName, String serviceVariant, ServiceCapability serviceCapability);    
 
     /**
-     * Get a new instance of the "best" service provider for a desired service.
+     * Get a new instance of all service provider for a desired service.
      * @param serviceName the service name to look for. Must not be null.
      * @param serviceVariant optional identifier for a variant of a service. If null, a default variant of the service will be returned. Not all services define variants.
      * @param serviceCapability the capability offered by the service. May be null if a service has only one capability.

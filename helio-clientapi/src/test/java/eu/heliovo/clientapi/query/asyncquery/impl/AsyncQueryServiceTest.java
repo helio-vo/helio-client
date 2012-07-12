@@ -40,26 +40,26 @@ public class AsyncQueryServiceTest {
 		
 		// test invalid calls
 		try {
-			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		
 		// test variations of time query
-        result = service.query("2003-02-01T00:00:00", "2003-02-10T00:00:00", "instrument", null, 100, 0, null, null);
+        result = service.query("2003-02-01T00:00:00", "2003-02-10T00:00:00", "instrument", null, 100, 0, null);
         assertEquals(Phase.COMPLETED, result.getPhase());
         
 		assertNotNull(result.toString());
@@ -85,19 +85,19 @@ public class AsyncQueryServiceTest {
 		
 		// test invalid calls
 		try {
-			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
+			service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
@@ -117,7 +117,7 @@ public class AsyncQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
 		MockAsyncQueryService service = new MockAsyncQueryService(port);
-		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ERROR, result.getPhase());
 		
@@ -144,7 +144,7 @@ public class AsyncQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
 		MockAsyncQueryService service = new MockAsyncQueryService(port);
-		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ABORTED, result.getPhase());
 		
@@ -174,7 +174,7 @@ public class AsyncQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 200, 200, 200);
 		MockAsyncQueryService service = new MockAsyncQueryService(port);
-		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0, null);
+		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		// poll one time
 		assertEquals(Phase.PENDING, result.getPhase());
 		

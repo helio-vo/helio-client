@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -131,6 +132,42 @@ public class VOTableUtils {
 			IOUtils.closeQuietly(stream);
 		}
 	}
+	
+	/**
+	 * Convert a URL to a votable.
+	 * @param url the url to convert
+	 * @return the marshalled votable
+	 */
+    public VOTABLE url2VoTable(URL url) {
+        int retry = 0;
+        while (true) {
+            InputStream is;
+            try {
+                is = url.openStream();
+            } catch (IOException e) {
+                throw new RuntimeException("IOException while opening '" + url + "': " + e.getMessage(), e);
+            }
+            try {
+                return stream2VoTable(is);
+            } catch (JAXBException e) {
+                if (retry > 3) {
+                    throw new RuntimeException("JAXBException while reading " + url + ": " + e.getMessage(), e);
+                } else {
+                    // wait a bit and retry to read data.
+                    _LOGGER.warn("Unable to read from stream. Trying again (" + retry + "). Cause: " + e.getMessage(), e);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e1) {
+                        // ignore
+                    }
+                    retry++;
+                }
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+        }
+    }
+
 	
 	/**
 	 * Convert a reader to a votable by using JAXB

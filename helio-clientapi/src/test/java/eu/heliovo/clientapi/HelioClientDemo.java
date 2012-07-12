@@ -61,7 +61,9 @@ public class HelioClientDemo {
      */
     public static void main(String[] args) {
         HelioClientDemo demo = new HelioClientDemo();
+//        DebugUtils.enableDump();
         demo.run();
+        DebugUtils.disableDump();
         try {
             demo.finalize();
         } catch (Throwable e) {
@@ -80,26 +82,27 @@ public class HelioClientDemo {
     private static List<String> config = new ArrayList<String>();
     
     static {
-        config.add("ils");
-        config.add("hec");
-        config.add("hec_sync");
+//        config.add("ils");
+//        config.add("ics");
         config.add("icsPat");
-        config.add("dpas");
-        config.add("desPlot_Ace");
-        config.add("desPlot_Sta");
-        config.add("desPlot_Stb");
-        config.add("desPlot_Ulysses");
-        config.add("desPlot_Wind");
-        config.add("flarePlot");
-        config.add("cmePM");
-        config.add("cmeBwPM");
-        config.add("cirPM");
-        config.add("cirBwPM");
-        config.add("sepPM");
-        config.add("sepBwPM");
-        config.add("dumpServices");
-        config.add("taverna2283");
-        config.add("links");
+//        config.add("hec");
+//        config.add("hec_sync");
+//        config.add("dpas");
+//        config.add("desPlot_Ace");
+//        config.add("desPlot_Sta");
+//        config.add("desPlot_Stb");
+//        config.add("desPlot_Ulysses");
+//        config.add("desPlot_Wind");
+//        config.add("flarePlot");
+//        config.add("cmePM");
+//        config.add("cmeBwPM");
+//        config.add("cirPM");
+//        config.add("cirBwPM");
+//        config.add("sepPM");
+//        config.add("sepBwPM");
+//        config.add("dumpServices");
+//        config.add("taverna2283");
+//        config.add("links");
     }
     
 
@@ -112,9 +115,10 @@ public class HelioClientDemo {
         
 //        DebugUtils.enableDump();
         if (config.contains("ils")) getIls(helioClient);
+        if (config.contains("ics")) getIcs(helioClient);
+        if (config.contains("icsPat")) getIcsPat(helioClient);
         if (config.contains("hec")) getHec(helioClient);
         if (config.contains("hec_sync")) getHecSync(helioClient);
-        if (config.contains("icsPat")) getIcsPat(helioClient);
         if (config.contains("dpas")) runDPAS(helioClient);
         if (config.contains("desPlot_Ace")) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Sta")) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
@@ -356,6 +360,31 @@ public class HelioClientDemo {
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));        
     }
+
+    /**
+     * Get the ICS table.
+     * @param helioClient the client
+     */
+    private void getIcs(HelioClient helioClient) {
+        AsyncQueryService service = (AsyncQueryService)helioClient.getServiceInstance(
+                HelioServiceName.ICS, null, ServiceCapability.ASYNC_QUERY_SERVICE);
+        HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
+        System.out.println(result.asURL());
+        System.out.println(trunc(result.asString(), Integer.MAX_VALUE));        
+    }
+    
+    /**
+     * Get the ics pat table.
+     * @param helioClient the client
+     */
+    private void getIcsPat(HelioClient helioClient) {
+        AsyncQueryService service = (AsyncQueryService)helioClient.getServiceInstance(HelioServiceName.ICS, 
+                "ivo://helio-vo.eu/ics/ics_pat", ServiceCapability.ASYNC_QUERY_SERVICE);
+        //System.out.println(service.getClass());
+        HelioQueryResult result = service.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
+        System.out.println(result.asURL());
+        System.out.println(trunc(result.asString(), 5000));        
+    }
     
     /**
      * Get the HEC table.
@@ -379,19 +408,6 @@ public class HelioClientDemo {
         HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2010-01-30T00:00:00"), Arrays.asList("goes_sxr_flare"), null, 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));
-    }
-    
-    /**
-     * Get the ics pat table.
-     * @param helioClient the client
-     */
-    private void getIcsPat(HelioClient helioClient) {
-        AsyncQueryService service = (AsyncQueryService)helioClient.getServiceInstance(HelioServiceName.ICS, 
-                "ivo://helio-vo.eu/ics/ics_pat", ServiceCapability.ASYNC_QUERY_SERVICE);
-        //System.out.println(service.getClass());
-        HelioQueryResult result = service.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
-        System.out.println(result.asURL());
-        System.out.println(trunc(result.asString(), 5000));        
     }
     
     /**

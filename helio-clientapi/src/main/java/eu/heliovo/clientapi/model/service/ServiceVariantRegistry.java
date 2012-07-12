@@ -64,6 +64,7 @@ public class ServiceVariantRegistry {
      * @param serviceVariant the variant of the service. May be null for the default variant.
      * @param capability the capability of this specific variant. May be null if a service has only one capability.
      * @return the service that implements the serviceVariant or null if no matching service has been registered.
+     * Usually only one service is returned, but in the case of a link provider there might be multiple.
      * @throws ServiceResolutionException if service resolution fails.
      */
     public String[] getServiceBeans(HelioServiceName serviceName, String serviceVariant, ServiceCapability capability) throws ServiceResolutionException {

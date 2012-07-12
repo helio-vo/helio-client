@@ -1,10 +1,12 @@
 package eu.heliovo.clientapi.config.des;
 
+import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+
 /**
  * Description of a DES parameter
  * @author MarcoSoldati
  */
-public class DesParam {
+public class DesParam implements DomainValueDescriptor<String> {
     private final String id;
     private final String name;
     private final String fullName;
@@ -45,5 +47,20 @@ public class DesParam {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public String getValue() {
+        return id;
+    }
+
+    @Override
+    public String getLabel() {
+        return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return fullName;
     }
 }
