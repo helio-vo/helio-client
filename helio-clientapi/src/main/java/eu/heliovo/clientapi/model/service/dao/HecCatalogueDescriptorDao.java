@@ -25,7 +25,7 @@ public class HecCatalogueDescriptorDao {
     /**
      * The logger
      */
-    private static final Logger _LOGGER = Logger.getLogger(HecCatalogueDescriptorDaoTest.class);
+    private static final Logger _LOGGER = Logger.getLogger(HecCatalogueDescriptorDao.class);
       
     /**
      * The URL to get the VOTable from.
