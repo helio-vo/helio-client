@@ -53,7 +53,7 @@ public class HecCatalogueDescriptorDao {
     
     // init the HEC configuration
     public void init() {
-        URL hecCatalogueUrl = helioFileUtil.getFileFromRemoteOrCache(helioFileUtil.getHelioTempDir("hec").getAbsolutePath(), "hec_catalogues.xml", CONFIG_URL);
+        URL hecCatalogueUrl = helioFileUtil.getFileFromRemoteOrCache("hec", "hec_catalogues.xml", CONFIG_URL);
         StarTable[] tables;
         try {
             tables = stilUtils.read(hecCatalogueUrl);

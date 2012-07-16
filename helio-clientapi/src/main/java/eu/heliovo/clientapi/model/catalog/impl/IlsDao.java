@@ -89,7 +89,7 @@ class IlsDao extends AbstractDao implements HelioCatalogDao {
 			throw new RuntimeException("Unable to create DOM document builder: " + e.getMessage(), e);
 		}
 		
-		URL instruments = helioFileUtil.getFileFromRemoteOrCache("dpas_cache", "instruments.xsd", instrumentsLocation);
+		URL instruments = helioFileUtil.getFileFromRemoteOrCache("ils_cache", "instruments.xsd", instrumentsLocation);
 		
 
 		try {

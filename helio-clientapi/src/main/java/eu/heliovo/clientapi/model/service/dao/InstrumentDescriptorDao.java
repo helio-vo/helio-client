@@ -79,7 +79,7 @@ public class InstrumentDescriptorDao {
 		try {
 			// create the instruments field
 			// get the instruments.xsd ...
-			URL instruments = helioFileUtil.getFileFromRemoteOrCache("instrument_cache", "instruments.xsd", instrumentsLocation);
+			URL instruments = helioFileUtil.getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsLocation);
 			InputSource instrumentsSource = getInputSource(instruments);
 			Document dInstruments = parseInputSourceToDom(instrumentsSource);
 			
