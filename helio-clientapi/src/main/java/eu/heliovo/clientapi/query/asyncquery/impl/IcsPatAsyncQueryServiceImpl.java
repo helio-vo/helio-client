@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
@@ -123,6 +127,11 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
          * Reference to the stil utils to use.
          */
         private STILUtils stilUtils;
+        
+        /**
+         * hold the user logs of the wrapped result
+         */
+        private final List<LogRecord> userLogs;
 
         /**
          * The wrapped result
@@ -131,14 +140,11 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
         
         /**
          * A query result that enhances the ICS result with the pat table.
-         * @param id the id of the query
-         * @param port the port to use to retrieve the result
-         * @param callId identifier for the called method (for logging) 
-         * @param jobStartTime start time of the job
-         * @param logRecords mutable list of log records.
+         * @param helioQueryResult the wrapped result.
          */
         IcsPatQueryResultWrapper(HelioQueryResult helioQueryResult) {
             this.helioQueryResult = helioQueryResult;
+            this.userLogs = new ArrayList<LogRecord>(Arrays.asList(helioQueryResult.getUserLogs()));
         }
         
         @Override
@@ -175,10 +181,12 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             // now compare ics and pat and fill in boolean []
             boolean [] isInPat = new boolean[(int)ics.getRowCount()]; // the cast should be safe as ics is rather small
             
+            int isInPatCounter = 0;
             for (int i = 0; i < ics.getRowCount(); i++) {
                 try {
                     if (patInstruments.contains(ics.getCell(i, obsInstKey))) {
                         isInPat[i] = true;
+                        isInPatCounter++;
                     }
                 } catch (IOException e) {
                     throw new JobExecutionException("Internal error: unable to read cell [" + i + ", " + obsInstKey + "]");                    
@@ -216,6 +224,8 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
             ArrayColumn isInPatCol = ArrayColumn.makeColumn(isInPatColumnInfo, isInPat); 
             
             icsPatTable.addColumn(isInPatCol);
+            
+            userLogs.add(new LogRecord(Level.FINE, isInPatCounter + " instruments are registered with the DPAS (provider access table)"));
             
             // write the modified ics_pat table and return a URL pointing to it.
             String id;
@@ -309,8 +319,7 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
         }
         @Override
         public LogRecord[] getUserLogs() {
-            // TODO Auto-generated method stub
-            return null;
+            return userLogs.toArray(new LogRecord[userLogs.size()]);
         }
         
         /**
