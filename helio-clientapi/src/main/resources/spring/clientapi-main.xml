@@ -1,58 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
-    
-    <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
-        <property name="locations">  
-          <list>  
-            <value>classpath:helio.properties</value>  
-          </list>  
-        </property>  
-    </bean>      
 
-    <bean id="serviceRegistryClient" class="eu.heliovo.registryclient.impl.HelioRemoteServiceRegistryClient" init-method="init">
-        <constructor-arg index="0" value="${helio.appId}"></constructor-arg>
-    </bean> 
+  <bean id="propertyPlaceholderConfigurer"
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:helio.properties</value>
+      </list>
+    </property>
+  </bean>
 
-    <bean id="loadBalancer" class="eu.heliovo.clientapi.loadbalancing.impl.RoundRobinLoadBalancer"></bean>
-    
-    <bean id="abstractService" class="eu.heliovo.clientapi.model.service.AbstractServiceImpl" abstract="true">
-        <property name="loadBalancer" ref="loadBalancer"></property>
-    </bean>
-    
-    <!-- a factory to create concrete helio service instances -->
-    <bean id="helioServiceFactory" class="eu.heliovo.clientapi.model.service.HelioServiceFactory" init-method="init">
-        <property name="configuration">
-            <list>
-                <ref bean="asyncQueryServiceFactoryConfig"/>
-                <ref bean="syncQueryServiceFactoryConfig"/>
-                <ref bean="linkProviderFactoryConfig"/>
-                <ref bean="processingServiceFactoryConfig"/>                
-            </list>
-        </property>
-        <property name="loadBalancer" ref="loadBalancer"/>
-        <property name="serviceRegistryClient" ref="serviceRegistryClient"/>
-    </bean>
-    
-    <bean id="helioFileUtil" class="eu.heliovo.shared.props.HelioFileUtil">
-       <constructor-arg index="0" value="${helio.appId}"></constructor-arg>
-    </bean>
-    
-    <bean id="stilUtils" class="eu.heliovo.clientapi.utils.STILUtils" init-method="init">
-      <property name="helioFileUtil" ref="helioFileUtil"></property>    
-    </bean>  
+  <bean id="serviceRegistryClient"
+    class="eu.heliovo.registryclient.impl.HelioRemoteServiceRegistryClient"
+    init-method="init">
+    <constructor-arg index="0" value="${helio.appId}"></constructor-arg>
+  </bean>
 
-    <bean id="helioClient" class="eu.heliovo.clientapi.HelioClient" init-method="init">
-        <property name="serviceFactory" ref="helioServiceFactory" />
-        <property name="registryClient" ref="serviceRegistryClient" />
-    </bean>
-    
-    <import resource="clientapi-config.xml"/>
-    <import resource="clientapi-linkprovider.xml"/>
-    <import resource="clientapi-processing.xml"/>
-    <import resource="clientapi-query.xml"/>
-    <import resource="clientapi-model.xml"/>
+  <bean id="loadBalancer"
+    class="eu.heliovo.clientapi.loadbalancing.impl.RoundRobinLoadBalancer"></bean>
+
+  <bean id="abstractService" class="eu.heliovo.clientapi.model.service.AbstractServiceImpl"
+    abstract="true">
+    <property name="loadBalancer" ref="loadBalancer"></property>
+  </bean>
+
+  <!-- a factory to create concrete helio service instances -->
+  <bean id="helioServiceFactory" class="eu.heliovo.clientapi.model.service.HelioServiceFactory"
+    init-method="init">
+    <property name="configuration">
+      <list>
+        <ref bean="asyncQueryServiceFactoryConfig" />
+        <ref bean="syncQueryServiceFactoryConfig" />
+        <ref bean="linkProviderFactoryConfig" />
+        <ref bean="processingServiceFactoryConfig" />
+      </list>
+    </property>
+    <property name="loadBalancer" ref="loadBalancer" />
+    <property name="serviceRegistryClient" ref="serviceRegistryClient" />
+  </bean>
+
+
+  <bean id="clientapiDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    destroy-method="close">
+    <property name="driverClassName" value="org.h2.Driver" />
+    <property name="url"
+      value="jdbc:h2:~/.helio/${helio.appId}/clientapi;MVCC=TRUE" />
+    <property name="username" value="sa" />
+    <property name="password" value="" />
+  </bean>
+
+  <bean id="clientapiSessionFactory"
+    class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource" ref="clientapiDataSource" />
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+      </props>
+    </property>
+    <property name="annotatedClasses">
+      <list>
+        <value>eu.heliovo.clientapi.utils.PersistedFile</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="helioFileUtil" class="eu.heliovo.shared.props.HelioFileUtil">
+    <constructor-arg index="0" value="${helio.appId}"></constructor-arg>
+  </bean>
+
+  <bean id="stilUtils" class="eu.heliovo.clientapi.utils.STILUtils"
+    init-method="init">
+    <property name="helioFileUtil" ref="helioFileUtil"></property>
+    <property name="sessionFactory" ref="clientapiSessionFactory"></property>
+  </bean>
+
+  <bean id="helioClient" class="eu.heliovo.clientapi.HelioClient"
+    init-method="init">
+    <property name="serviceFactory" ref="helioServiceFactory" />
+    <property name="registryClient" ref="serviceRegistryClient" />
+  </bean>
+
+  <import resource="clientapi-config.xml" />
+  <import resource="clientapi-linkprovider.xml" />
+  <import resource="clientapi-processing.xml" />
+  <import resource="clientapi-query.xml" />
+  <import resource="clientapi-model.xml" />
 </beans>

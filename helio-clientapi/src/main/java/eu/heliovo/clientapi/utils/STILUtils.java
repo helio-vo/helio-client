@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Required;
 import org.xml.sax.SAXException;
 
@@ -66,11 +65,6 @@ public class STILUtils {
     private File persistedFilePath;
     
     /**
-     * Classpath resource pointing to the config file. Defaults to '/clientapi-hibernate.cfg.xml'
-     */
-    private String configFile = "/clientapi-hibernate.cfg.xml";
-    
-    /**
      * Reference to the HELIO file util.
      */
     private HelioFileUtil helioFileUtil;
@@ -89,8 +83,6 @@ public class STILUtils {
         if (persistedFilePath == null) {
             persistedFilePath = helioFileUtil.getHelioTempDir(PersistedFile.PERSISTED_FILES_PATH);
         }
-
-        sessionFactory = new Configuration().configure(configFile).buildSessionFactory();
         
         // make sure the path to persist files exists
         if (LOGGER.isDebugEnabled()) {
@@ -440,7 +432,7 @@ public class STILUtils {
         Session s = sessionFactory.openSession();
 
         Transaction tx = s.beginTransaction();
-        for (Object o : s.createQuery("FROM PersistedFile WHERE expires<NOW").list()) {
+        for (Object o : s.createQuery("FROM PersistedFile WHERE expires<CURRENT_TIMESTAMP").list()) {
             PersistedFile pf = (PersistedFile) o;
 
             if (LOGGER.isDebugEnabled()) {
@@ -556,6 +548,18 @@ public class STILUtils {
     public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
         this.helioFileUtil = helioFileUtil;
     }
-    
-    
+
+    /**
+     * @return the sessionFactory
+     */
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    /**
+     * @param sessionFactory the sessionFactory to set
+     */
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 }
