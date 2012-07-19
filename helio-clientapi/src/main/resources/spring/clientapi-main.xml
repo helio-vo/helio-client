@@ -17,6 +17,11 @@
     class="eu.heliovo.registryclient.impl.HelioRemoteServiceRegistryClient"
     init-method="init">
     <constructor-arg index="0" value="${helio.appId}"></constructor-arg>
+    <property name="registryPersister" ref="registryPersister"></property>
+  </bean>
+  
+  <bean id="registryPersister"  class="eu.heliovo.registryclient.impl.XmlRegistryPersister">
+    <property name="helioFileUtil" ref="helioFileUtil"></property>
   </bean>
 
   <bean id="loadBalancer"
