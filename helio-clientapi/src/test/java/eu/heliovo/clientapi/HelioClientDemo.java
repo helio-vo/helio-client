@@ -61,7 +61,7 @@ public class HelioClientDemo {
      */
     public static void main(String[] args) {
         HelioClientDemo demo = new HelioClientDemo();
-//        DebugUtils.enableDump();
+        DebugUtils.enableDump();
         demo.run();
         DebugUtils.disableDump();
         try {
@@ -84,7 +84,7 @@ public class HelioClientDemo {
     static {
 //        config.add("ils");
 //        config.add("ics");
-        config.add("icsPat");
+//        config.add("icsPat");
 //        config.add("hec");
 //        config.add("hec_sync");
 //        config.add("dpas");
@@ -94,12 +94,12 @@ public class HelioClientDemo {
 //        config.add("desPlot_Ulysses");
 //        config.add("desPlot_Wind");
 //        config.add("flarePlot");
-//        config.add("cmePM");
-//        config.add("cmeBwPM");
-//        config.add("cirPM");
-//        config.add("cirBwPM");
-//        config.add("sepPM");
-//        config.add("sepBwPM");
+        config.add("cmePM");
+        config.add("cmeBwPM");
+        config.add("cirPM");
+        config.add("cirBwPM");
+        config.add("sepPM");
+        config.add("sepBwPM");
 //        config.add("dumpServices");
 //        config.add("taverna2283");
 //        config.add("links");
