@@ -72,6 +72,11 @@
       </list>
     </property>
   </bean>
+  
+  <bean id="clientapiTransactionManager" 
+            class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="clientapiSessionFactory"/>
+  </bean>
 
   <bean id="helioFileUtil" class="eu.heliovo.shared.props.HelioFileUtil">
     <constructor-arg index="0" value="${helio.appId}"></constructor-arg>
