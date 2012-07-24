@@ -1,9 +1,9 @@
 package eu.heliovo.clientapi.model.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -70,7 +70,7 @@ public class ServiceVariantRegistry {
     public String[] getServiceBeans(HelioServiceName serviceName, String serviceVariant, ServiceCapability capability) throws ServiceResolutionException {
         // find the match with the highest score
         int bestScore = 0;
-        List<String> bestBeans = new ArrayList<String>();
+        Set<String> bestBeans = new LinkedHashSet<String>();
 
         // loop over all variants.
         for (ServiceVariant variant : registry) {

@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.query.asyncquery.impl;
+package eu.heliovo.clientapi.query.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +27,7 @@ import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.votable.DataFormat;
 import eu.heliovo.clientapi.model.field.descriptor.InstrumentDescriptor;
 import eu.heliovo.clientapi.model.service.dao.InstrumentDescriptorDao;
+import eu.heliovo.clientapi.query.BaseQueryServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.clientapi.utils.VOTableUtils;
@@ -37,11 +38,11 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author MarcoSoldati
  *
  */
-public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
+public class IcsPatQueryServiceImpl extends BaseQueryServiceImpl {
     /**
      * Identifier of the ICS variant
      */
-    static String SERVICE_VARIANT = "ivo://helio-vo.eu/ics/ics_pat";
+    public static String SERVICE_VARIANT = "ivo://helio-vo.eu/ics/ics_pat";
   
     /**
      * Reference to the instrument descriptor dao
@@ -56,7 +57,7 @@ public class IcsPatAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     /**
      * Create the DES query support. 
      */
-    public IcsPatAsyncQueryServiceImpl() {
+    public IcsPatQueryServiceImpl() {
     }
     
     /**

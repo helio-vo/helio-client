@@ -3,22 +3,13 @@ package eu.heliovo.clientapi.query;
 
 public enum QueryType {
     /**
-     * Synchronous, full feature query
+     * Synchronous query mode.
      */
     SYNC_QUERY,
     
     /**
-     * Synchronous, time-only query
+     * Asynchronous query mode.
      */
-    SYNC_TIME_QUERY,
+    ASYNC_QUERY;
     
-    /**
-     * Asynchronous, full-feature query
-     */
-    ASYNC_QUERY,
-    
-    /**
-     * Asynchronous, time-only query
-     */
-    ASYNC_TIME_QUERY;
 }

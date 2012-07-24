@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.query.asyncquery.impl;
+package eu.heliovo.clientapi.query.delegate;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,7 +11,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 
@@ -34,7 +33,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author marco soldati at fhnw ch
  * 
  */
-public class AsyncQueryResultImpl implements HelioQueryResult {
+class AsyncQueryResultImpl implements HelioQueryResult {
 	/**
 	 * The logger instance
 	 */
@@ -202,7 +201,7 @@ public class AsyncQueryResultImpl implements HelioQueryResult {
 		case ABORTED:
 			throw new JobExecutionException("Execution of the query has been aborted by the remote host. Check the logs for more information (call getUserLogs() on this object).");				
 		case UNKNOWN:
-			throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + AsyncQueryServiceImpl.class.getName());
+			throw new JobExecutionException("Internal Error: an unknown error occurred while executing the query. Please report this issue. Affected class: " + getClass().getName());
 		case PENDING:
 			throw new JobExecutionException("Remote Job did not terminate in a reasonable amount of time (" + MessageUtils.formatSeconds(TimeUnit.MILLISECONDS.convert(timeout, unit)) + "). CallId: " + callId);
 		case COMPLETED:

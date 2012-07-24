@@ -25,7 +25,8 @@ import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.query.QueryService;
+import eu.heliovo.clientapi.query.QueryType;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.utils.MessageUtils;
 import eu.heliovo.clientapi.utils.STILUtils;
@@ -234,7 +235,8 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
             this.future = AsyncCallUtils.callLater(new Callable<HelioQueryResult>() {
                 @Override
                 public HelioQueryResult call() throws Exception {
-                    AsyncQueryService desService = (AsyncQueryService)serviceFactory.getHelioServices(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, ServiceCapability.ASYNC_QUERY_SERVICE, accessInterfaces)[0];
+                    QueryService desService = (QueryService)serviceFactory.getHelioServices(HelioServiceName.DES, DesPlotterService.SERVICE_VARIANT, null, accessInterfaces)[0];
+                    desService.setQueryType(QueryType.ASYNC_QUERY);
                     HelioQueryResult result = desService.timeQuery(DateUtil.toIsoDateString(startTime), DateUtil.toIsoDateString(endTime), mission, 0, 0);
                     return result;
                 }

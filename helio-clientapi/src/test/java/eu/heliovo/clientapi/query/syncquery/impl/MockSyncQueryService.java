@@ -17,14 +17,14 @@ import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
 import eu.heliovo.clientapi.loadbalancing.impl.RandomLoadBalancer;
-import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.BaseQueryServiceImpl;
+import eu.heliovo.clientapi.query.QueryDelegate;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.registryclient.impl.AccessInterfaceImpl;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.FileUtil;
 
 /**
@@ -32,7 +32,7 @@ import eu.heliovo.shared.util.FileUtil;
  * @author marco soldati at fhnw ch
  *
  */
-class MockSyncQueryService extends SyncQueryServiceImpl {
+class MockSyncQueryService extends BaseQueryServiceImpl {
 	
 	private static final Logger _LOGGER = Logger.getLogger(MockSyncQueryService.class);
 
@@ -46,43 +46,14 @@ class MockSyncQueryService extends SyncQueryServiceImpl {
 		this.setLoadBalancer(new RandomLoadBalancer());
 		this.setServiceName(name);
 		this.port = port;
+		setQueryDelegateFactory(new MockQueryDelegateFactory(this.port));
 	}
 	
 	@Override
-    protected AccessInterface getBestAccessInterface() {
+    protected AccessInterface getBestAccessInterface(QueryDelegate queryDelegate) {
         return defaultInterface;
     }
 	
-    @Override
-    public HelioQueryResult query(final List<String> startTime, final List<String> endTime,
-            final List<String> from, final String where, final Integer maxrecords,
-            final Integer startindex, final String join) {       
-        setStartTime(startTime);
-        setEndTime(endTime);
-        setFrom(from);
-        setWhere(where);
-        setMaxRecords(maxrecords);
-        setStartIndex(startindex);
-        setJoin(join);
-        MockSyncQueryDelegate queryDelegate = new MockSyncQueryDelegate(this.port, "query");
-        queryDelegate.setHelioFileUtil(new HelioFileUtil("test"));
-        setQueryDelegate(queryDelegate);
-        return execute();
-    }
-    
-    @Override
-    public HelioQueryResult timeQuery(final List<String> startTime, final List<String> endTime,
-            final List<String> from, final Integer maxrecords, final Integer startindex) {
-        setStartTime(startTime);
-        setEndTime(endTime);
-        setFrom(from);
-        setMaxRecords(maxrecords);
-        setStartIndex(startindex);
-        MockSyncQueryDelegate queryDelegate = new MockSyncQueryDelegate(this.port, "query");
-        queryDelegate.setHelioFileUtil(new HelioFileUtil("test"));
-        setQueryDelegate(queryDelegate);
-        return execute();
-    }   
 	/**
 	 * Mock implementation of a helio query service. For testing purposes.
 	 * @author marco soldati at fhnw ch

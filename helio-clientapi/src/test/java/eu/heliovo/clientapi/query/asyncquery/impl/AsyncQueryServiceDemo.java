@@ -9,7 +9,8 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.HelioClient;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.query.QueryService;
+import eu.heliovo.clientapi.query.QueryType;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
@@ -72,7 +73,8 @@ public class AsyncQueryServiceDemo {
 	private static synchronized void testLongRunningService(HelioClient client, HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, AccessInterface... accessInterfaces) {
 		System.out.println("--------------------" + serviceName.getServiceName() + "--------------------");
 		try {
-		    AsyncQueryService queryService = (AsyncQueryService) client.getServiceInstance(serviceName, null, ServiceCapability.ASYNC_QUERY_SERVICE);
+		    QueryService queryService = (QueryService) client.getServiceInstance(serviceName, null, ServiceCapability.ASYNC_QUERY_SERVICE);
+		    queryService.setQueryType(QueryType.ASYNC_QUERY);
 			HelioQueryResult result = queryService.timeQuery(startTime, endTime, from, 100, 0);
 
 			System.out.println(result);
@@ -114,7 +116,9 @@ public class AsyncQueryServiceDemo {
 	private static synchronized void testLongRunningService(HelioClient client, HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String where, AccessInterface ... accessInterfaces) {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
-	        AsyncQueryService queryService = (AsyncQueryService) client.getServiceInstance(serviceName, null, ServiceCapability.ASYNC_QUERY_SERVICE);
+	        QueryService queryService = (QueryService) client.getServiceInstance(serviceName, null, ServiceCapability.ASYNC_QUERY_SERVICE);
+	        queryService.setQueryType(QueryType.ASYNC_QUERY);
+
 			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null);
 			
 			System.out.println(result);

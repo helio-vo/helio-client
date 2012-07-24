@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.query.syncquery.impl;
+package eu.heliovo.clientapi.query.delegate;
 
 import java.util.concurrent.Callable;
 
@@ -6,7 +6,7 @@ import javax.xml.ws.WebServiceException;
 
 import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
-import eu.heliovo.clientapi.query.AbstractQueryServiceImpl;
+import eu.heliovo.clientapi.query.BaseQueryServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -18,7 +18,7 @@ import eu.heliovo.registryclient.AccessInterface;
  */
 class SyncTimeQueryDelegate extends SyncQueryDelegate {
     
-    public HelioQueryResult callWebService(final AbstractQueryServiceImpl queryService, final AccessInterface accessInterface)
+    public HelioQueryResult callWebService(final BaseQueryServiceImpl queryService, final AccessInterface accessInterface)
             throws WebServiceException, JobExecutionException {
         long jobStartTime = System.currentTimeMillis();
 

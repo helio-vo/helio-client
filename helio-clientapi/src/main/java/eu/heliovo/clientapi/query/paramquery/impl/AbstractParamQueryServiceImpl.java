@@ -12,7 +12,7 @@ import org.springframework.core.convert.ConversionService;
 import eu.heliovo.clientapi.model.catalog.HelioCatalog;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
+import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryService;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -32,13 +32,13 @@ abstract class AbstractParamQueryServiceImpl implements ParamQueryService {
 	/**
 	 * Service to access a remote resource.
 	 */
-	protected final AsyncQueryService queryService;
+	protected final QueryService queryService;
 	
 	/**
 	 * Create the param query impl and assign a query Service.
 	 * @param queryService instance of the query service to use.
 	 */
-	public AbstractParamQueryServiceImpl(AsyncQueryService queryService) {
+	public AbstractParamQueryServiceImpl(QueryService queryService) {
 		this.queryService = queryService;
 	}
 	

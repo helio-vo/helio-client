@@ -186,4 +186,16 @@ public interface QueryService extends HelioService {
 	 * @param join the join list
 	 */ 
 	public void setJoin(String join);
+
+	/**
+	 * Get the type of this query.
+	 * @return the query type
+	 */
+	public QueryType getQueryType();
+	
+	/**
+	 * Set the query type of this service. Must not be null.
+	 * @param queryType the query type.
+	 */
+    public void setQueryType(QueryType queryType);
 }

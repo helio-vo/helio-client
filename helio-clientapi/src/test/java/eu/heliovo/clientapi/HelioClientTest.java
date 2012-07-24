@@ -11,8 +11,7 @@ import org.junit.Test;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.model.service.HelioService;
-import eu.heliovo.clientapi.query.asyncquery.AsyncQueryService;
-import eu.heliovo.clientapi.query.syncquery.SyncQueryService;
+import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
@@ -69,11 +68,11 @@ public class HelioClientTest {
     @Test public void testGetServiceInstance() {
         HelioService service = helioClient.getServiceInstance(HelioDummyServiceRegistryClient.TEST_SERVICE, null, ServiceCapability.SYNC_QUERY_SERVICE);
         assertNotNull(service);
-        assertTrue("Service should be of type " + SyncQueryService.class, service instanceof SyncQueryService);
+        assertTrue("Service should be of type " + QueryService.class, service instanceof QueryService);
         
         service = helioClient.getServiceInstance(HelioDummyServiceRegistryClient.TEST_SERVICE, null, ServiceCapability.ASYNC_QUERY_SERVICE);
         assertNotNull(service);
-        assertTrue("Service should be of type " + AsyncQueryService.class, service instanceof AsyncQueryService);
+        assertTrue("Service should be of type " + QueryService.class, service instanceof QueryService);
     }
     
     /**

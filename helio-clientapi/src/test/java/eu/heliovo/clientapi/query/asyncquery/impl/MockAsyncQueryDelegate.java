@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.query.asyncquery.impl;
 
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
+import eu.heliovo.clientapi.query.delegate.AsyncQueryDelegate;
 import eu.heliovo.registryclient.AccessInterface;
 
 public class MockAsyncQueryDelegate extends AsyncQueryDelegate {

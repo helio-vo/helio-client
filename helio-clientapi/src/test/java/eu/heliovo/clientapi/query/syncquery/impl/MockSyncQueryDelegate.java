@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.query.syncquery.impl;
 
 import eu.helio_vo.xml.queryservice.v0.HelioQueryService;
+import eu.heliovo.clientapi.query.delegate.SyncQueryDelegate;
 import eu.heliovo.registryclient.AccessInterface;
 
 public class MockSyncQueryDelegate extends SyncQueryDelegate {

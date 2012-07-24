@@ -37,8 +37,7 @@
     init-method="init">
     <property name="configuration">
       <list>
-        <ref bean="asyncQueryServiceFactoryConfig" />
-        <ref bean="syncQueryServiceFactoryConfig" />
+        <ref bean="queryServiceFactoryConfig" />
         <ref bean="linkProviderFactoryConfig" />
         <ref bean="processingServiceFactoryConfig" />
       </list>

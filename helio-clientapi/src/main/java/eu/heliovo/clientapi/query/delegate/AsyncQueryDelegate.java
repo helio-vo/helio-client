@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.query.asyncquery.impl;
+package eu.heliovo.clientapi.query.delegate;
 
 
 import java.util.List;
@@ -12,12 +12,13 @@ import org.apache.log4j.Logger;
 
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService_Service;
-import eu.heliovo.clientapi.query.AbstractQueryServiceImpl;
+import eu.heliovo.clientapi.query.BaseQueryServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.QueryDelegate;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
+import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
 
 
@@ -65,7 +66,7 @@ public class AsyncQueryDelegate implements QueryDelegate {
 	}
 
 	@Override
-    public HelioQueryResult callWebService(final AbstractQueryServiceImpl queryService, final AccessInterface accessInterface)
+    public HelioQueryResult callWebService(final BaseQueryServiceImpl queryService, final AccessInterface accessInterface)
             throws WebServiceException, JobExecutionException {
         long jobStartTime = System.currentTimeMillis();
         final LongHelioQueryService port = getPort(accessInterface);
@@ -102,6 +103,11 @@ public class AsyncQueryDelegate implements QueryDelegate {
 	
     public String getCallId(AccessInterface accessInterface) {
         return accessInterface.getUrl() + "::" + getMethodName();
+    }
+    
+    @Override
+    public boolean supportsCapabilty(ServiceCapability capability) {
+        return ServiceCapability.ASYNC_QUERY_SERVICE.equals(capability);
     }
 		
 	/**

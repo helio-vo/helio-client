@@ -1,8 +1,11 @@
-package eu.heliovo.clientapi.query.asyncquery.impl;
+package eu.heliovo.clientapi.query.impl;
 
 import java.util.List;
 
+import eu.heliovo.clientapi.query.BaseQueryServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.QueryMethodType;
+import eu.heliovo.clientapi.query.QueryType;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
@@ -10,12 +13,22 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
  * @author MarcoSoldati
  *
  */
-public class DesAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
+public class DesQueryServiceImpl extends BaseQueryServiceImpl {
     
     /**
      * Create the DES query support.
      */
-    public DesAsyncQueryServiceImpl() {
+    public DesQueryServiceImpl() {
+        // override default of Query type.
+        this.setQueryType(QueryType.ASYNC_QUERY);
+    }
+    
+    @Override
+    public void setQueryMethodType(QueryMethodType queryMethodType) {
+        if (QueryMethodType.TIME_QUERY.equals(queryMethodType)) {
+            throw new UnsupportedOperationException("The DES does not support time queries. Use FULL_QUERY() instead.");            
+        } 
+        super.setQueryMethodType(queryMethodType);
     }
     
     @Override
@@ -27,13 +40,5 @@ public class DesAsyncQueryServiceImpl extends AsyncQueryServiceImpl {
     @Override
     public HelioQueryResult timeQuery(String startTime, String endTime, String from, Integer maxrecords, Integer startindex) throws JobExecutionException, IllegalArgumentException {
         throw new UnsupportedOperationException("The DES does not support time queries. Use query() instead.");
-    }
-        
-    /**
-     * Increase call timeout for des.
-     */
-    @Override
-    protected long getCallTimout() {
-        return 60000;
     }
 }

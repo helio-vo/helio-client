@@ -8,7 +8,10 @@ import eu.helio_vo.xml.longqueryservice.v0.ResultInfo;
 import eu.helio_vo.xml.longqueryservice.v0.Status;
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.loadbalancing.impl.RandomLoadBalancer;
-import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.BaseQueryServiceImpl;
+import eu.heliovo.clientapi.query.QueryDelegate;
+import eu.heliovo.clientapi.query.QueryType;
+import eu.heliovo.clientapi.query.syncquery.impl.MockQueryDelegateFactory;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -22,7 +25,7 @@ import eu.heliovo.shared.util.FileUtil;
  * @author marco soldati at fhnw ch
  *
  */
-class MockAsyncQueryService extends AsyncQueryServiceImpl {
+public class MockAsyncQueryService extends BaseQueryServiceImpl {
 
 	private static final URL wsdlLocation = FileUtil.asURL("http://localhost/test/LongRunningQuery.wsdl");
 	private static final HelioServiceName name = HelioServiceName.register("test", "ivo://test");
@@ -34,41 +37,14 @@ class MockAsyncQueryService extends AsyncQueryServiceImpl {
 		setLoadBalancer(new RandomLoadBalancer());
 		setServiceName(name);
 		this.port = port;
+	    setQueryDelegateFactory(new MockQueryDelegateFactory(this.port));
+	    setQueryType(QueryType.ASYNC_QUERY);
 	}
 	
 	@Override
-	protected AccessInterface getBestAccessInterface() {
+	protected AccessInterface getBestAccessInterface(QueryDelegate queryDelegate) {
 	    return defaultInterface;
 	}
-	
-    @Override
-    public HelioQueryResult query(final List<String> startTime, final List<String> endTime,
-            final List<String> from, final String where, final Integer maxrecords,
-            final Integer startindex, final String join) {       
-        setStartTime(startTime);
-        setEndTime(endTime);
-        setFrom(from);
-        setWhere(where);
-        setMaxRecords(maxrecords);
-        setStartIndex(startindex);
-        setJoin(join);
-        MockAsyncQueryDelegate queryDelegate = new MockAsyncQueryDelegate(this.port, "longquery");
-        setQueryDelegate(queryDelegate);
-        return execute();
-    }
-    
-    @Override
-    public HelioQueryResult timeQuery(final List<String> startTime, final List<String> endTime,
-            final List<String> from, final Integer maxrecords, final Integer startindex) {
-        setStartTime(startTime);
-        setEndTime(endTime);
-        setFrom(from);
-        setMaxRecords(maxrecords);
-        setStartIndex(startindex);
-        MockAsyncQueryDelegate queryDelegate = new MockAsyncQueryDelegate(this.port, "longquery");
-        setQueryDelegate(queryDelegate);
-        return execute();
-    }  
 	
 	/**
 	 * Mock implementation of a long helio query service. For testing purposes.

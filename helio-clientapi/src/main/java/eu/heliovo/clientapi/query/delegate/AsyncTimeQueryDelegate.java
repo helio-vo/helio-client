@@ -1,11 +1,11 @@
-package eu.heliovo.clientapi.query.asyncquery.impl;
+package eu.heliovo.clientapi.query.delegate;
 
 import java.util.concurrent.Callable;
 
 import javax.xml.ws.WebServiceException;
 
 import eu.helio_vo.xml.longqueryservice.v0.LongHelioQueryService;
-import eu.heliovo.clientapi.query.AbstractQueryServiceImpl;
+import eu.heliovo.clientapi.query.BaseQueryServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.utils.AsyncCallUtils;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -26,7 +26,7 @@ class AsyncTimeQueryDelegate extends AsyncQueryDelegate {
      * @param logRecords the log records.
      * @return the created query result
      */
-    public HelioQueryResult callWebService(final AbstractQueryServiceImpl queryService, final AccessInterface accessInterface)
+    public HelioQueryResult callWebService(final BaseQueryServiceImpl queryService, final AccessInterface accessInterface)
             throws WebServiceException, JobExecutionException {
         long jobStartTime = System.currentTimeMillis();
         final LongHelioQueryService port = getPort(accessInterface);
