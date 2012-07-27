@@ -23,11 +23,10 @@ public class HelioFieldTest {
 	public void testCreation() {
 		String id = "id";
 		String fieldName = "fieldName";
-		String fieldLabel = "fieldLabel";
 		String description = "description";
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
-		FieldType type = fieldTypeRegistry.getType("string");
+        FieldTypeFactory fieldTypeFactory = (FieldTypeFactory)context.getBean("fieldTypeFactory");
+		FieldType type = fieldTypeFactory.getTypeByName("string");
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2",
 				"string3");
 		String defaultValue = "string1";
@@ -74,7 +73,7 @@ public class HelioFieldTest {
 			assertNotNull(helioField3.toString());
 		}
 		{
-			HelioField<String> helioField4 = new HelioField<String>(id, fieldName, fieldLabel, description, type,
+			HelioField<String> helioField4 = new HelioField<String>(id, fieldName, description, type,
 					valueDomain, defaultValue);
 			assertNotNull(helioField4.getId());
 			assertNotNull(helioField4.getName());
@@ -94,17 +93,16 @@ public class HelioFieldTest {
 	public void testDomainConsitency() {
 		String id = "id";
 		String fieldName = "fieldName";
-		String fieldLabel = "fieldLabel";
 		String description = "description";
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
-		FieldType type = fieldTypeRegistry.getType("string");
+        FieldTypeFactory fieldTypeFactory = (FieldTypeFactory)context.getBean("fieldTypeFactory");
+		FieldType type = fieldTypeFactory.getTypeByName("string");
 		
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2",
 				"string3");
 		String defaultValue = "string1";
 
-		HelioField<String> helioField = new HelioField<String>(id, fieldName, fieldLabel, description, type,
+		HelioField<String> helioField = new HelioField<String>(id, fieldName, description, type,
 				valueDomain, defaultValue);
 		try {
 			helioField.setDefaultValue("string.not.existing");
@@ -140,9 +138,9 @@ public class HelioFieldTest {
 	@Test
 	public void testEqualsAndHashcode() {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        FieldTypeRegistry fieldTypeRegistry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
+        FieldTypeFactory fieldTypeFactory = (FieldTypeFactory)context.getBean("fieldTypeFactory");
 
-		FieldType type = fieldTypeRegistry.getType("string");
+		FieldType type = fieldTypeFactory.getTypeByName("string");
 		HelioField<String> helioField1 = new HelioField<String>("id1", "field1", null, type);
 		HelioField<String> helioField2 = new HelioField<String>("id1", "field2", null, type);
 		HelioField<String> helioField3 = new HelioField<String>("id3", "field3", null, type);

@@ -4,7 +4,7 @@ import eu.heliovo.clientapi.query.QueryDelegate;
 import eu.heliovo.clientapi.query.QueryMethodType;
 import eu.heliovo.clientapi.query.QueryType;
 import eu.heliovo.clientapi.query.asyncquery.impl.MockAsyncQueryDelegate;
-import eu.heliovo.clientapi.query.asyncquery.impl.MockAsyncQueryService.MockPort;
+import eu.heliovo.clientapi.query.asyncquery.impl.MockQueryService.MockPort;
 import eu.heliovo.clientapi.query.delegate.QueryDelegateFactory;
 import eu.heliovo.clientapi.query.syncquery.impl.MockSyncQueryService.MockQueryServicePort;
 import eu.heliovo.shared.props.HelioFileUtil;

@@ -12,14 +12,14 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 
-import eu.heliovo.clientapi.model.field.FieldTypeRegistry;
+import eu.heliovo.clientapi.model.field.FieldTypeFactory;
 import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
 
 public class PQLSerializerTest {
 
-	private FieldTypeRegistry fieldTypeRegistry;
+	private FieldTypeFactory fieldTypeFactory;
 
 	/**
 	 * the PQL Serializer
@@ -28,7 +28,7 @@ public class PQLSerializerTest {
 	
 	@Before	public void setUp() {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        fieldTypeRegistry = (FieldTypeRegistry) context.getBean("fieldTypeRegistry");
+        fieldTypeFactory = (FieldTypeFactory) context.getBean("fieldTypeFactory");
 
 	    pqlSerializer= new PQLSerializer();
 	    ConversionService service = new GenericConversionService();
@@ -44,7 +44,7 @@ public class PQLSerializerTest {
 		String where = pqlSerializer.getWhereClause(paramQueryTerms );
 		assertEquals("", where);
 		
-		HelioField<String> field = new HelioField<String>("string_test", "astring", "a description", fieldTypeRegistry.getType("string"));
+		HelioField<String> field = new HelioField<String>("string_test", "astring", "a description", fieldTypeFactory.getTypeByName("string"));
 		paramQueryTerms.add(new ParamQueryTerm<String>(field, Operator.EQUALS, "a value"));
 		assertEquals("astring=a%20value", pqlSerializer.getWhereClause(paramQueryTerms));
 		
@@ -68,7 +68,7 @@ public class PQLSerializerTest {
 	@Test public void testOrQueries() {
 	    List<ParamQueryTerm<?>> paramQueryTerms = new ArrayList<ParamQueryTerm<?>>();
         
-        HelioField<String> field = new HelioField<String>("string_test", "astring", "a description", fieldTypeRegistry.getType("string"));
+        HelioField<String> field = new HelioField<String>("string_test", "astring", "a description", fieldTypeFactory.getTypeByName("string"));
         paramQueryTerms.add(new ParamQueryTerm<String>(field, Operator.EQUALS, (Object[])new String[][] {new String[] {"a value", "another value"}}));
         assertEquals("astring=a%20value,another%20value", pqlSerializer.getWhereClause(paramQueryTerms));
         

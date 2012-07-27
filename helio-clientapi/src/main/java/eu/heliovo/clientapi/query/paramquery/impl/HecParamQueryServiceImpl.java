@@ -1,7 +1,7 @@
 package eu.heliovo.clientapi.query.paramquery.impl;
 
-import eu.heliovo.clientapi.model.catalog.HelioCatalogDao;
 import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao;
 import eu.heliovo.registryclient.HelioServiceName;
 /**
  * Default implementation of the param query for the HEC service. 
@@ -12,7 +12,7 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	/**
 	 * Keep a reference to the hecDao
 	 */
-	private HelioCatalogDao hecDao;
+	private HecCatalogueDescriptorDao hecCatalogueDescriptorDao;
 	
 	/**
 	 * Create a mock implementation of the DPAS.
@@ -29,10 +29,10 @@ public class HecParamQueryServiceImpl extends AbstractParamQueryServiceImpl {
 	@Override
 	public HelioField<?>[] getFieldDescriptions(String catalog) throws IllegalArgumentException {
 		if (catalog == null) {
-			return new HelioField[] {hecDao.getCatalogField()};
+			return hecCatalogueDescriptorDao.getDomainValues().toArray(new HelioField[0]);
 		}
 		
-		HelioField<?>[] helioFields = hecDao.getFields(catalog);
+		HelioField<?>[] helioFields = null; //77hecCatalogueDescriptorDao.getFields(catalog);
 		return helioFields;
 	}	
 

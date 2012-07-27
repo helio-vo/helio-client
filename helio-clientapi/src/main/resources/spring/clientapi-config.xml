@@ -7,7 +7,7 @@
         
     <bean id="desConfiguration" class="eu.heliovo.clientapi.config.des.DesConfiguration" init-method="init"></bean>
     
-    <bean id="configurationManager" class="eu.heliovo.clientapi.config.HelioConfigurationManagerImpl">
+    <bean id="configurationManager" class="eu.heliovo.clientapi.config.HelioConfigurationManagerImpl" lazy-init="true">
         <property name="propertyHandlers">
             <list>
                 <bean class="eu.heliovo.clientapi.config.catalog.HecFromPropertyHandler" init-method="init">

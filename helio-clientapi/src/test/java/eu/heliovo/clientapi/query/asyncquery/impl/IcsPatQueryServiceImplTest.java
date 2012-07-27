@@ -21,7 +21,7 @@ import eu.heliovo.registryclient.ServiceCapability;
  * @author MarcoSoldati
  *
  */
-public class IcsPatAsyncQueryServiceImplTest {
+public class IcsPatQueryServiceImplTest {
 
     /**
      * Test the loading of an instruments list.

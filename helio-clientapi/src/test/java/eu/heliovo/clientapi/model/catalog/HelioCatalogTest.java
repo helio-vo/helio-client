@@ -26,11 +26,10 @@ public class HelioCatalogTest {
 		assertEquals(0, catalog.getFields().length);
 		
 		FieldType stringType = new FieldType() {
-			@Override
-			public String getXsdType() {
-				return "string";
-			}
-			@Override
+			private String ucd;
+            private String unitString;
+            private String utype;
+            @Override
 			public Operator[] getOperatorDomain() {
 				return null;
 			}
@@ -42,6 +41,34 @@ public class HelioCatalogTest {
 			public Class<?> getJavaType() {
 				return String.class;
 			}
+            @Override
+            public String getUtype() {
+                return utype;
+            }
+            @Override
+            public String getUnit() {
+                return unitString;
+            }
+            @Override
+            public String getUcd() {
+                return ucd;
+            }
+            @Override
+            public void setUcd(String ucd) {
+                this.ucd = ucd;
+            }
+            @Override
+            public void setUnit(String unitString) {
+                this.unitString = unitString;
+            }
+            @Override
+            public void setUtype(String utype) {
+                this.utype = utype;
+            }
+            @Override
+            public FieldType clone() {
+                return this;
+            }
 		};
 		
 		assertTrue(catalog.addField(new HelioField<Object>("id", "fieldName", "description", stringType)));
@@ -53,4 +80,16 @@ public class HelioCatalogTest {
 		assertFalse(catalog.addField(new HelioField<Object>("id", "fieldName2", "description", stringType)));
 		assertEquals(2, catalog.getFields().length);
 	}
+
+    public String getUtype() {
+        return null;
+    }
+
+    public String getUnit() {
+        return null;
+    }
+
+    public String getUcd() {
+        return null;
+    }
 }

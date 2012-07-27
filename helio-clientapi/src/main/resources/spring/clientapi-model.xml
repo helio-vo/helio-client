@@ -5,32 +5,17 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
         
-    <bean id="fieldTypeRegistry" class="eu.heliovo.clientapi.model.field.FieldTypeRegistry" init-method="init">
-    </bean>
-
-    <bean id="hecDao" class="eu.heliovo.clientapi.model.catalog.impl.HecDao" init-method="init" lazy-init="true">
-        <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
-        <property name="serviceFactory" ref="helioServiceFactory"/>
-        <property name="helioFileUtil" ref="helioFileUtil"></property>
-    </bean>
-
-    <bean id="dpasDao" class="eu.heliovo.clientapi.model.catalog.impl.DpasDao" init-method="init"  lazy-init="true">
-        <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
-        <property name="helioFileUtil" ref="helioFileUtil"></property>
-    </bean>
-    
-    <bean id="ilsDao" class="eu.heliovo.clientapi.model.catalog.impl.IlsDao" init-method="init"  lazy-init="true">
-        <property name="fieldTypeRegistry" ref="fieldTypeRegistry"/>
-        <property name="helioFileUtil" ref="helioFileUtil"></property>
-    </bean>
-    
-    <bean id="hecCatalogueDescriptorDao" class="eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao" init-method="init">
+    <bean id="hecCatalogueDescriptorDao" class="eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao" init-method="init" lazy-init="true">
         <property name="helioFileUtil" ref="helioFileUtil"></property>    
         <property name="stilUtils" ref="stilUtils"></property>    
+        <property name="fieldTypeFactory" ref="fieldTypeFactory"></property>    
     </bean>
     
-    <bean id="instrumentDescriptorDao" class="eu.heliovo.clientapi.model.service.dao.InstrumentDescriptorDao" init-method="init">
+    <bean id="instrumentDescriptorDao" class="eu.heliovo.clientapi.model.service.dao.InstrumentDescriptorDao" init-method="init" lazy-init="true">
         <property name="helioFileUtil" ref="helioFileUtil"></property>    
+    </bean>
+
+    <bean id="fieldTypeFactory" class="eu.heliovo.clientapi.model.field.FieldTypeFactory" init-method="init">
     </bean>
 
 </beans>

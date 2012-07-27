@@ -2,8 +2,11 @@ package eu.heliovo.clientapi.model.field.descriptor;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
@@ -29,6 +32,7 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String> {
     private boolean ips;
     private boolean geo;
     private boolean planet;
+    private final Set<HelioField<?>> helioFields = new LinkedHashSet<HelioField<?>>();
     
     @Override
     public String getValue() {
@@ -325,5 +329,21 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String> {
      */
     public void setPlanet(String planet) {
         this.planet = "y".equals(planet);
+    }
+    
+    /**
+     * Get the fields as immutable set.
+     * @return the list, never null.
+     */
+    public Set<HelioField<?>> getHelioFields() {
+        return helioFields;
+    }
+    
+    /**
+     * Append a new field to the set of fields.
+     * @param helioField the field
+     */
+    public void addHelioField(HelioField<?> helioField) {
+        helioFields.add(helioField);
     }
 }

@@ -20,7 +20,7 @@
 
   <!-- Base query service -->
   <bean id="baseQueryService" class="eu.heliovo.clientapi.query.BaseQueryServiceImpl"
-    scope="prototype" parent="abstractService">
+    scope="prototype" parent="abstractService" lazy-init="true">
     <property name="serviceName">
       <null />
     </property>

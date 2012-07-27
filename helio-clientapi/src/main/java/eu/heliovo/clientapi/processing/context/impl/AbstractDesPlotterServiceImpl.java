@@ -253,7 +253,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractServiceImpl 
         
         /**
          * Set the async query factory to be used.
-         * @param asyncQueryServiceFactory
+         * @param serviceFactory the service factory
          */
         public void setServiceFactory(
                 ServiceFactory serviceFactory) {

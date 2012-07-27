@@ -25,14 +25,14 @@ import eu.heliovo.shared.util.FileUtil;
  * @author marco soldati at fhnw ch
  *
  */
-public class MockAsyncQueryService extends BaseQueryServiceImpl {
+public class MockQueryService extends BaseQueryServiceImpl {
 
 	private static final URL wsdlLocation = FileUtil.asURL("http://localhost/test/LongRunningQuery.wsdl");
 	private static final HelioServiceName name = HelioServiceName.register("test", "ivo://test");
 	private static final AccessInterface defaultInterface = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, wsdlLocation);
     private MockPort port;
 	
-	public MockAsyncQueryService(MockPort port) {
+	public MockQueryService(MockPort port) {
 		setAccessInterfaces(defaultInterface);
 		setLoadBalancer(new RandomLoadBalancer());
 		setServiceName(name);

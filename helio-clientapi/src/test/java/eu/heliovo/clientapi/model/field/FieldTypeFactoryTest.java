@@ -13,22 +13,21 @@ import org.springframework.context.support.GenericXmlApplicationContext;
  * @author marco soldati at fhnw ch
  *
  */
-public class FieldTypeRegistryTest {
+public class FieldTypeFactoryTest {
 
-	@Test public void testFieldTypeRegistry() {
+	@Test public void testFieldTypeFactory() {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        FieldTypeRegistry registry = (FieldTypeRegistry)context.getBean("fieldTypeRegistry");
+        FieldTypeFactory registry = (FieldTypeFactory)context.getBean("fieldTypeFactory");
 		
-		assertNotNull(registry.getType("string"));
-		assertNull(registry.getType("notexisting"));
-		assertNull(registry.getType(null));
+		assertNotNull(registry.getTypeByName("string"));
+		assertNull(registry.getTypeByName("notexisting"));
+		assertNull(registry.getTypeByName(null));
 		
 		
-		FieldType type = registry.getType("string");
+		FieldType type = registry.getTypeByName("string");
 		assertNotNull(type);
 		assertEquals(String.class, type.getJavaType());
 		assertEquals("string", type.getName());
-		assertEquals("xsd:string", type.getXsdType());
 		assertArrayEquals(new Operator[] {Operator.EQUALS}, type.getOperatorDomain());
 
 	}

@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.asyncquery.impl.MockAsyncQueryService.MockPort;
+import eu.heliovo.clientapi.query.asyncquery.impl.MockQueryService.MockPort;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
@@ -25,7 +25,7 @@ public class AsyncQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockAsyncQueryService service = new MockAsyncQueryService(port);
+		MockQueryService service = new MockQueryService(port);
 		assertNotNull(service.getServiceName());
 		
 		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), null, 100, 0, null);
@@ -70,7 +70,7 @@ public class AsyncQueryServiceTest {
 		URL resultFile = getDefaultVoTable();
 		
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockAsyncQueryService service = new MockAsyncQueryService(port);
+		MockQueryService service = new MockQueryService(port);
 		assertNotNull(service.getServiceName());
 		
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0);
@@ -116,7 +116,7 @@ public class AsyncQueryServiceTest {
 		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.ERROR};
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockAsyncQueryService service = new MockAsyncQueryService(port);
+		MockQueryService service = new MockQueryService(port);
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ERROR, result.getPhase());
@@ -143,7 +143,7 @@ public class AsyncQueryServiceTest {
 		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.TIMEOUT};
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockAsyncQueryService service = new MockAsyncQueryService(port);
+		MockQueryService service = new MockQueryService(port);
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ABORTED, result.getPhase());
@@ -173,7 +173,7 @@ public class AsyncQueryServiceTest {
 		
 		URL resultFile = getDefaultVoTable();
 		MockPort port = new MockPort("testid", resultFile, statusSequence, 200, 200, 200);
-		MockAsyncQueryService service = new MockAsyncQueryService(port);
+		MockQueryService service = new MockQueryService(port);
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		// poll one time
 		assertEquals(Phase.PENDING, result.getPhase());
