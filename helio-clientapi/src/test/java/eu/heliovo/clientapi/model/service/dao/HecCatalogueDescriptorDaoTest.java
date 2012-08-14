@@ -8,7 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
-import java.util.Set;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class HecCatalogueDescriptorDaoTest {
     }; 
     
     @Test public void testInit() throws Exception {
-        Set<HecCatalogueDescriptor> domainValues = catalogueDescriptorDao.getDomainValues();
+        List<HecCatalogueDescriptor> domainValues = catalogueDescriptorDao.getDomainValues();
         assertTrue(domainValues.size() > 0);
         for (HecCatalogueDescriptor hecCatalogueDescriptor : domainValues) {
             if ("goes_sxr_flare".equals(hecCatalogueDescriptor.getName())) {
@@ -68,7 +68,7 @@ public class HecCatalogueDescriptorDaoTest {
     
     
     @Test public void testBeanInfo() {
-        Set<HecCatalogueDescriptor> domainValues = catalogueDescriptorDao.getDomainValues();
+        List<HecCatalogueDescriptor> domainValues = catalogueDescriptorDao.getDomainValues();
         assertTrue(domainValues.size() > 0);
         BeanInfo beanInfo = domainValues.iterator().next().getBeanInfo();
         assertNotNull(beanInfo);

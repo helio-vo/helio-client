@@ -3,9 +3,9 @@ package eu.heliovo.clientapi.model.service.dao;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -66,7 +66,7 @@ public class HecCatalogueDescriptorDao {
     /**
      * Cache the created domain values
      */
-    private Set<HecCatalogueDescriptor> domainValues;
+    private List<HecCatalogueDescriptor> domainValues;
     
     // init the HEC configuration
     public void init() {
@@ -75,7 +75,7 @@ public class HecCatalogueDescriptorDao {
         
         _LOGGER.info("Loading configuration of " + table.getRowCount() + " event catalogues.");
         
-        Set<HecCatalogueDescriptor> domainValues = new LinkedHashSet<HecCatalogueDescriptor>();
+        List<HecCatalogueDescriptor> domainValues = new ArrayList<HecCatalogueDescriptor>();
         for (int r = 0; r < table.getRowCount(); r++) {
             // get the current data row
             Object[] row;
@@ -143,7 +143,7 @@ public class HecCatalogueDescriptorDao {
             
             domainValues.add(hecCatalogueDescriptor);
         }
-        this.domainValues = Collections.unmodifiableSet(domainValues);
+        this.domainValues = Collections.unmodifiableList(domainValues);
     }
 
     /**
@@ -199,7 +199,7 @@ public class HecCatalogueDescriptorDao {
      * The domain values for the HEC catalogue.
      * @return the domain values
      */
-    public Set<HecCatalogueDescriptor> getDomainValues() {
+    public List<HecCatalogueDescriptor> getDomainValues() {
         return domainValues;
     }
     
