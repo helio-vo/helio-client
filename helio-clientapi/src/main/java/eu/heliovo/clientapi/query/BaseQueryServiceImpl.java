@@ -17,6 +17,7 @@ import javax.xml.ws.WebServiceException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
+import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.HelioConfigurationManager;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.query.delegate.QueryDelegateFactory;

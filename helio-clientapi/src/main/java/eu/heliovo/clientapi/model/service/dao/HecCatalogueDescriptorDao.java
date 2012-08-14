@@ -34,7 +34,7 @@ public class HecCatalogueDescriptorDao {
      * The URL to get the VOTable from.
      */
     private static final URL CONFIG_URL = 
-            FileUtil.asURL("http://festung1.oats.inaf.it:8080/helio-hec/HelioQueryService?" +
+            FileUtil.asURL("http://festung3.oats.inaf.it:8080/helio-hec/HelioQueryService?" +
             		"STARTTIME=1900-01-01T00:00:00Z&" +
             		"ENDTIME=3000-12-31T00:00:00Z&" +
             		"FROM=hec_catalogue");

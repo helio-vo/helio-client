@@ -1,4 +1,4 @@
-package eu.heliovo.clientapi.query;
+package eu.heliovo.clientapi.config;
 
 /**
  * Marker interface for a bean that it contains a BeanInfo description.

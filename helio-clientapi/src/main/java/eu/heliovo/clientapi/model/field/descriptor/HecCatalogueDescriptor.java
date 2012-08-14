@@ -1,12 +1,15 @@
 package eu.heliovo.clientapi.model.field.descriptor;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.beans.SimpleBeanInfo;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
+import eu.heliovo.clientapi.config.AnnotatedBean;
+import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.field.HelioField;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
@@ -15,7 +18,74 @@ import eu.heliovo.shared.util.DateUtil;
  * @author MarcoSoldati
  *
  */
-public class HecCatalogueDescriptor implements DomainValueDescriptor<String> {
+public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, AnnotatedBean {
+    
+    /**
+     * Bean info class for the HecCatalogueDescriptor
+     * @author MarcoSoldati
+     *
+     */
+    public static class HecCatalogueDescriptorBeanInfo extends SimpleBeanInfo {
+        private static HecCatalogueDescriptorBeanInfo instance = new HecCatalogueDescriptorBeanInfo();
+        
+        /**
+         * Get the singleton instance of the BeanInfo
+         * @return the catalog descriptor
+         */
+        public static HecCatalogueDescriptorBeanInfo getInstance() {
+            return instance;
+        }
+
+        /**
+         * Cache for the property descriptors.
+         */
+        private final PropertyDescriptor[] propertyDescriptors;
+        
+        /**
+         * Hide the default constructor. Use getInstance() instead.
+         */
+        private HecCatalogueDescriptorBeanInfo() {
+                propertyDescriptors = new ConfigurablePropertyDescriptor<?>[] {
+                    createPropertyDescriptor("name", "Name", "Catalogue Name"),
+                    createPropertyDescriptor("description", "Description", "Short description of the catalogue"),
+                    createPropertyDescriptor("timefrom", "Time From", "Date of the earliest event of the catalogue"),
+                    createPropertyDescriptor("timeto", "Time To", "Date of the latest event of the catalogue"),
+                    createPropertyDescriptor("type", "Type", "Type of the list"),
+                    createPropertyDescriptor("status", "Status",
+                            "Active - The catalogue is either being updated automatically or manually. The latter may be performed irregularly,\n" +
+                            "Inactive - The catalogue is not updated anymore either on the provider side or on the HEC service side,\n" +
+                            "Closed - The catalogue will not be updated anymore,\n" +
+                            "Static - The catalogue has not been updated because the development of an automatic procedure on the HEC service side is in progress"),
+                    createPropertyDescriptor("flare", "Flare list?", "Is it a flare list?"),
+                    createPropertyDescriptor("cme", "CME list?", "Is it a CME list?"),
+                    createPropertyDescriptor("swind", "Solar wind list?", "Is it a Solar wind list?"),
+                    createPropertyDescriptor("part", "Particle?", "Is it a Particle list?"),
+                    createPropertyDescriptor("otyp", "Observation type", "Observation type: insitu or remote"),
+                    createPropertyDescriptor("solar", "Solar Location", "Did the event occur on the Sun?"),
+                    createPropertyDescriptor("ips", "Interplan. space", "Did the event occur in the Interplanetary Space?"),
+                    createPropertyDescriptor("geo", "Geo", "Did the event occur on the Earth?"),
+                    createPropertyDescriptor("planet", "Planet", "Did the event occur on any planet?"),
+                    
+                };
+        }
+        
+        private ConfigurablePropertyDescriptor<?> createPropertyDescriptor(String propertyName, String displayName, String shortDescription) {
+            try {
+                ConfigurablePropertyDescriptor<?> propDescriptor = new ConfigurablePropertyDescriptor<Object>("name", HecCatalogueDescriptor.class);
+                propDescriptor.setDisplayName(displayName);
+                propDescriptor.setShortDescription(shortDescription);
+                return propDescriptor;
+            } catch (IntrospectionException e) {
+                throw new IllegalStateException("Failed to create property descriptor '" + propertyName + "':" + e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public PropertyDescriptor[] getPropertyDescriptors() {
+            return propertyDescriptors;
+        }
+    }
+    
     
     private String name;
     private String description;
@@ -32,7 +102,11 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String> {
     private boolean ips;
     private boolean geo;
     private boolean planet;
-    private final Set<HelioField<?>> helioFields = new LinkedHashSet<HelioField<?>>();
+    
+    @Override
+    public BeanInfo getBeanInfo() {
+        return HecCatalogueDescriptorBeanInfo.getInstance();
+    }
     
     @Override
     public String getValue() {
@@ -329,21 +403,5 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String> {
      */
     public void setPlanet(String planet) {
         this.planet = "y".equals(planet);
-    }
-    
-    /**
-     * Get the fields as immutable set.
-     * @return the list, never null.
-     */
-    public Set<HelioField<?>> getHelioFields() {
-        return helioFields;
-    }
-    
-    /**
-     * Append a new field to the set of fields.
-     * @param helioField the field
-     */
-    public void addHelioField(HelioField<?> helioField) {
-        helioFields.add(helioField);
     }
 }
