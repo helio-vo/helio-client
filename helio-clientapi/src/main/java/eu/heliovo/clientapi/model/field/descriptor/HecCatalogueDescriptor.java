@@ -71,7 +71,7 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
         
         private ConfigurablePropertyDescriptor<?> createPropertyDescriptor(String propertyName, String displayName, String shortDescription) {
             try {
-                ConfigurablePropertyDescriptor<?> propDescriptor = new ConfigurablePropertyDescriptor<Object>("name", HecCatalogueDescriptor.class);
+                ConfigurablePropertyDescriptor<?> propDescriptor = new ConfigurablePropertyDescriptor<Object>(propertyName, HecCatalogueDescriptor.class);
                 propDescriptor.setDisplayName(displayName);
                 propDescriptor.setShortDescription(shortDescription);
                 return propDescriptor;

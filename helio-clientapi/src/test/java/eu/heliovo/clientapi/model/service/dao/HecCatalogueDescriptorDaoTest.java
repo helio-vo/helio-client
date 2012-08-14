@@ -76,6 +76,9 @@ public class HecCatalogueDescriptorDaoTest {
         assertNotNull(propDescs);
         assertEquals(15, propDescs.length);
         
+        assertEquals("name", propDescs[0].getName());
+        assertEquals("description", propDescs[1].getName());
+        assertEquals("timefrom", propDescs[2].getName());
         
     }
 }
