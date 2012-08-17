@@ -48,14 +48,14 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
                 propertyDescriptors = new ConfigurablePropertyDescriptor<?>[] {
                     createPropertyDescriptor("name", "Name", "Catalogue Name"),
                     createPropertyDescriptor("description", "Description", "Short description of the catalogue"),
-                    createPropertyDescriptor("timefrom", "Time From", "Date of the earliest event of the catalogue"),
-                    createPropertyDescriptor("timeto", "Time To", "Date of the latest event of the catalogue"),
+                    createPropertyDescriptor("timefrom", "From", "Date of the earliest event in the catalogue"),
+                    createPropertyDescriptor("timeto", "To", "Date of the latest event in the catalogue"),
                     createPropertyDescriptor("type", "Type", "Type of the list"),
                     createPropertyDescriptor("status", "Status",
-                            "Active - The catalogue is either being updated automatically or manually. The latter may be performed irregularly,\n" +
-                            "Inactive - The catalogue is not updated anymore either on the provider side or on the HEC service side,\n" +
-                            "Closed - The catalogue will not be updated anymore,\n" +
-                            "Static - The catalogue has not been updated because the development of an automatic procedure on the HEC service side is in progress"),
+                            "Active - The catalogue is being updated automatically or manually.,\n" +
+                            "Inactive - The catalogue is currently not maintained,\n" +
+                            "Closed - The catalogue is closed and will not be updated anymore,\n" +
+                            "Static - The catalogue's update mechanism is currently being worked on."),
                     createPropertyDescriptor("flare", "Flare list?", "Is it a flare list?"),
                     createPropertyDescriptor("cme", "CME list?", "Is it a CME list?"),
                     createPropertyDescriptor("swind", "Solar wind list?", "Is it a Solar wind list?"),
