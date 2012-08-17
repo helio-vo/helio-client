@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,7 +64,7 @@ public class InstrumentDescriptorDao {
      */
     private HelioFileUtil helioFileUtil;
 
-    private Set<InstrumentDescriptor> domainValues;
+    private List<InstrumentDescriptor> domainValues;
 	
 	/**
 	 * Populate the registry
@@ -162,11 +162,11 @@ public class InstrumentDescriptorDao {
 	 * @throws IOException 
 	 * @throws URISyntaxException
 	 */
-    private Set<InstrumentDescriptor> createInstrumentDomainValueDescriptors(
+    private List<InstrumentDescriptor> createInstrumentDomainValueDescriptors(
             Map<String, InstrumentDescriptor> instrumentDescriptorMap) throws IOException,
             URISyntaxException {
         
-        Set<InstrumentDescriptor> instrumentDomain = new LinkedHashSet<InstrumentDescriptor>();
+        List<InstrumentDescriptor> instrumentDomain = new ArrayList<InstrumentDescriptor>();
         URL pat = helioFileUtil.getFileFromRemoteOrCache(CACHE_LOCATION, CACHE_FILE, patTable);
         if (pat != null) {
             LineIterator it = FileUtils.lineIterator(new File(pat.toURI()), "UTF-8");
@@ -235,7 +235,7 @@ public class InstrumentDescriptorDao {
 	 * Get the domain values for the allowed instruments.
 	 * @return the instrument domain values.
 	 */
-	public Set<InstrumentDescriptor> getDomainValues() {
+	public List<InstrumentDescriptor> getDomainValues() {
         return domainValues;
     }
 	

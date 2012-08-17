@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Set;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class InstrumentDescriptorDaoTest {
     }; 
     
     @Test public void testInit() throws Exception {
-        Set<InstrumentDescriptor> domainValues = instrumentDescriptorDao.getDomainValues();
+        List<InstrumentDescriptor> domainValues = instrumentDescriptorDao.getDomainValues();
         assertTrue(domainValues.size() > 0);
         for (InstrumentDescriptor instrumentDescriptor : domainValues) {
             if ("SOHO__EIT".equals(instrumentDescriptor.getValue())) {

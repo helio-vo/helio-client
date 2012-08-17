@@ -6,6 +6,15 @@
 
     <import resource="clientapi-main.xml"/>
 
+    <bean id="propertyPlaceholderConfigurer"
+      class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="locations">
+        <list>
+          <value>classpath:helio-test.properties</value>
+        </list>
+      </property>
+    </bean>
+
     <bean id="serviceRegistryClient" class="eu.heliovo.clientapi.registry.impl.HelioDummyServiceRegistryClient" init-method="init"></bean> 
     
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -176,7 +175,7 @@ public class IcsPatQueryServiceImpl extends BaseQueryServiceImpl {
             int obsInstKey = findObsInstKeyColumn(ics);
             
             // optimize the list for faster comparison
-            Set<InstrumentDescriptor> instruments = instrumentDescriptorDao.getDomainValues();
+            List<InstrumentDescriptor> instruments = instrumentDescriptorDao.getDomainValues();
             SortedSet<String> patInstruments = getSetOfPatInstrumentNames(instruments);
 
             // now compare ics and pat and fill in boolean []
@@ -255,7 +254,7 @@ public class IcsPatQueryServiceImpl extends BaseQueryServiceImpl {
          * @return set of names only.
          */
         private SortedSet<String> getSetOfPatInstrumentNames(
-                Set<InstrumentDescriptor> instruments) {
+                List<InstrumentDescriptor> instruments) {
             SortedSet<String> patInstruments = new TreeSet<String>(); 
             for (InstrumentDescriptor instrument : instruments) {
                 if (instrument.hasProviders()) {
