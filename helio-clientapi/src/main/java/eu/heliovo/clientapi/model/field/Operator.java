@@ -13,7 +13,8 @@ public enum Operator {
 	LARGER_EQUAL_THAN(">=", 2),
 	LIKE("like", 2),
 	NOT("not", 1),
-	BETWEEN("between", 3);
+	BETWEEN("between", 3),
+//	IN("in", Integer.MAX_VALUE)
 	;
 	
 	/**

@@ -2,6 +2,7 @@ package eu.heliovo.clientapi.config;
 
 import java.beans.PropertyDescriptor;
 
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.registryclient.HelioServiceName;
 
 /**
@@ -37,7 +38,8 @@ public interface HelioPropertyHandler {
 
     /**
      * Get the descriptor for a specific property.
+     * @param helioService Instance of the current service.
      * @return the property descriptor, potentially read from a cache.
      */
-    public PropertyDescriptor getPropertyDescriptor();
+    public PropertyDescriptor getPropertyDescriptor(HelioService helioService);
 }

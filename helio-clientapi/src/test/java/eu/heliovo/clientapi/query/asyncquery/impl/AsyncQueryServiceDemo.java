@@ -44,7 +44,7 @@ public class AsyncQueryServiceDemo {
 //	    testLongRunningService(client, HelioServiceName.DPAS, Arrays.asList("1890-10-20T20:30:56"), Arrays.asList("2009-10-20T20:30:56"), Arrays.asList("HXT"), "helio", (String)null, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE, HelioFileUtil.asURL("http://localhost:8080/helio-queryservice-server/HelioLongQueryService?wsdl")));
 //	    end = System.currentTimeMillis();
 //	    System.out.println("query took " + (end - start) + "ms.");
-	    testLongRunningService(client, HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"), "");
+	    testLongRunningService(client, HelioServiceName.DPAS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("SOHO__CDS"));
 		testLongRunningService(client, HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"));
 		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("kso_halpha_flare"));
 //		testLongRunningService(client, HelioServiceName.HEC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("cactus_soho_flow"), null);
@@ -58,7 +58,7 @@ public class AsyncQueryServiceDemo {
 		testLongRunningService(client, HelioServiceName.ILS, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("trajectories"));
 		testLongRunningService(client, HelioServiceName.ICS, Arrays.asList("2003-02-01T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2005-02-01T00:00:00"), Arrays.asList("instrument"));
 		testLongRunningService(client, HelioServiceName.UOC, Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("test"));
-	    testLongRunningService(client, HelioServiceName.DES, Arrays.asList("2007-07-10T12:00:00"), Arrays.asList("2007-07-11T12:00:00"), Arrays.asList("ACE"), "VAR,ACE:N:/16.0:1200.0:60.0", (AccessInterface[])null);	//DebugUtils.disableDump();
+	    //testLongRunningService(client, HelioServiceName.DES, Arrays.asList("2007-07-10T12:00:00"), Arrays.asList("2007-07-11T12:00:00"), Arrays.asList("ACE"), "VAR,ACE:N:/16.0:1200.0:60.0", (AccessInterface[])null);	//DebugUtils.disableDump();
 	    DebugUtils.disableDump();
 	}
 	
@@ -113,13 +113,13 @@ public class AsyncQueryServiceDemo {
 	 * @param where
 	 * @param accessInterfaces
 	 */
-	private static synchronized void testLongRunningService(HelioClient client, HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String where, AccessInterface ... accessInterfaces) {
+	private static synchronized void testLongRunningTimeQuery(HelioClient client, HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, AccessInterface ... accessInterfaces) {
 		System.out.println("--------------------" + serviceName + "--------------------");
 		try {
 	        QueryService queryService = (QueryService) client.getServiceInstance(serviceName, null, ServiceCapability.ASYNC_QUERY_SERVICE);
 	        queryService.setQueryType(QueryType.ASYNC_QUERY);
 
-			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null);
+			HelioQueryResult result = queryService.query(startTime, endTime, from, 100, 0, null);
 			
 			System.out.println(result);
 			if (result != null) {

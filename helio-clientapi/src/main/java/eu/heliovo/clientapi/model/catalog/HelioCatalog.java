@@ -4,15 +4,15 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Configuration of the fields of a catalogues. This consists of a list of links to the parameters.
  * @author marco soldati at fhnw ch
- *
+ * @deprecated to be removed
  */
-public class HelioCatalog implements DomainValueDescriptor<String> {
+@Deprecated public class HelioCatalog implements DomainValueDescriptor<String> {
 	/**
 	 * Name of the field that describes the catalog
 	 */
@@ -21,7 +21,7 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 	/**
 	 * Linked hash set of fields in this catalog.
 	 */
-	private final Set<HelioField<?>> fields = new LinkedHashSet<HelioField<?>>();
+	private final Set<HelioFieldDescriptor<?>> fields = new LinkedHashSet<HelioFieldDescriptor<?>>();
 
 	/**
 	 * name and identifier of this catalog.
@@ -56,7 +56,7 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 	 * @param field the field to add
 	 * @return true if the field has been added, false if the field already existed in this catalog and thus will be ignored.
 	 */
-	public boolean addField(HelioField<?> field) {
+	public boolean addField(HelioFieldDescriptor<?> field) {
 		return fields.add(field);
 	}
 	
@@ -77,7 +77,7 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 		sb.append(", description=").append(catalogDescription);
 		sb.append(", fields=[");
 		boolean first = true;
-		for (HelioField<?> field : fields) {
+		for (HelioFieldDescriptor<?> field : fields) {
 			if (first) {
 				first = false;
 			} else {
@@ -116,13 +116,13 @@ public class HelioCatalog implements DomainValueDescriptor<String> {
 	 * Get the fields registered with this catalog
 	 * @return the fields of this catalog.
 	 */
-	public HelioField<?>[] getFields() {
-		return fields.toArray(new HelioField[fields.size()]);
+	public HelioFieldDescriptor<?>[] getFields() {
+		return fields.toArray(new HelioFieldDescriptor[fields.size()]);
 	}
 	
-	public HelioField<?> getFieldById(String id) {
+	public HelioFieldDescriptor<?> getFieldById(String id) {
 	    AssertUtil.assertArgumentHasText(id, "id");
-	    for (HelioField<?> current : fields) {
+	    for (HelioFieldDescriptor<?> current : fields) {
             if (id.equals(current.getId())) {
                 return current;
             }

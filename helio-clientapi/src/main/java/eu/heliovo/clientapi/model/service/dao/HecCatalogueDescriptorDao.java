@@ -5,7 +5,9 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -13,10 +15,11 @@ import uk.ac.starlink.table.ColumnInfo;
 import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.model.field.FieldType;
 import eu.heliovo.clientapi.model.field.FieldTypeFactory;
-import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HecCatalogueDescriptor;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.AssertUtil;
 import eu.heliovo.shared.util.FileUtil;
 
 /**
@@ -68,6 +71,12 @@ public class HecCatalogueDescriptorDao {
      */
     private List<HecCatalogueDescriptor> domainValues;
     
+    /**
+     * Cache the fields per catalogue
+     */
+    private Map<String, List<HelioFieldDescriptor<?>>> fieldDescriptorMap = 
+            new HashMap<String, List<HelioFieldDescriptor<?>>>();
+    
     // init the HEC configuration
     public void init() {
         URL hecCatalogueUrl = helioFileUtil.getFileFromRemoteOrCache("hec", "hec_catalogues.xml", CONFIG_URL);
@@ -117,9 +126,10 @@ public class HecCatalogueDescriptorDao {
 //                    TableElement fieldTtable = tables[0];
                     
                     StarTable fieldTable = readIntoStarTableModel(hecFieldUrl);
+                    List<HelioFieldDescriptor<?>> fieldDescriptors = new ArrayList<HelioFieldDescriptor<?>>();
                     for (int i = 0; i < fieldTable.getColumnCount(); i++) {
                         ColumnInfo colInfo = fieldTable.getColumnInfo(i);
-                        HelioField<?> helioField = new HelioField<Object>();
+                        HelioFieldDescriptor<?> helioField = new HelioFieldDescriptor<Object>();
                         helioField.setDescription(colInfo.getDescription());
                         helioField.setName(colInfo.getName());
                         helioField.setId(colInfo.getName());
@@ -133,7 +143,9 @@ public class HecCatalogueDescriptorDao {
                         } else {
                             _LOGGER.warn("Unable to find field type for class " + colInfo.getContentClass());
                         }
+                        fieldDescriptors.add(helioField);
                     }
+                    fieldDescriptorMap.put(currentCatalogName, fieldDescriptors);
                     
                 } catch (Exception e) {
                     _LOGGER.warn("Failed to parse " + hecFieldUrlTemplate + ": " + e.getMessage(), e);
@@ -201,6 +213,16 @@ public class HecCatalogueDescriptorDao {
      */
     public List<HecCatalogueDescriptor> getDomainValues() {
         return domainValues;
+    }
+    
+    /**
+     * Get the field descriptors for a given catalog.
+     * @param catalogName the name of the catalog, must not be null.
+     * @return the field descriptor or null if not found.
+     */
+    public List<HelioFieldDescriptor<?>> getFieldDescriptors(String catalogName) {
+        AssertUtil.assertArgumentHasText(catalogName, "catalogName");
+        return fieldDescriptorMap.get(catalogName);
     }
     
     /**

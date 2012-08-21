@@ -9,6 +9,7 @@ import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.config.HelioPropertyHandler;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.DomainValueDescriptorUtil;
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.registryclient.HelioServiceName;
 
@@ -73,7 +74,7 @@ public class IcsFromPropertyHandler implements HelioPropertyHandler {
     }
     
     @Override
-    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor() {
+    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor(HelioService helioService) {
         return propertyDescriptor;
     }
 }

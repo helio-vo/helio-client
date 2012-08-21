@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.model.field.FieldType;
-import eu.heliovo.clientapi.model.field.HelioField;
+import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.Operator;
 
 public class HelioCatalogTest {
@@ -71,13 +71,13 @@ public class HelioCatalogTest {
             }
 		};
 		
-		assertTrue(catalog.addField(new HelioField<Object>("id", "fieldName", "description", stringType)));
+		assertTrue(catalog.addField(new HelioFieldDescriptor<Object>("id", "fieldName", "description", stringType)));
 		assertEquals(1, catalog.getFields().length);
 		
-		assertTrue(catalog.addField(new HelioField<Object>("id2", "fieldName", "description", stringType)));
+		assertTrue(catalog.addField(new HelioFieldDescriptor<Object>("id2", "fieldName", "description", stringType)));
 		assertEquals(2, catalog.getFields().length);
 		
-		assertFalse(catalog.addField(new HelioField<Object>("id", "fieldName2", "description", stringType)));
+		assertFalse(catalog.addField(new HelioFieldDescriptor<Object>("id", "fieldName2", "description", stringType)));
 		assertEquals(2, catalog.getFields().length);
 	}
 

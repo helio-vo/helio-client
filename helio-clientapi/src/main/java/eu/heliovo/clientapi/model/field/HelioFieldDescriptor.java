@@ -6,12 +6,12 @@ import eu.heliovo.shared.util.AssertUtil;
 
 /**
  * Description of a helio field.
- * @param <T> Java type of the field. This type has to match the provided type.
+ * @param <T> Java type of the field. 
  * 
  * @author marco soldati at fhnw ch
  *
  */
-public class HelioField<T extends Object> {
+public class HelioFieldDescriptor<T extends Object> {
 	/**
 	 * name of the stored VOTable.
 	 */
@@ -71,7 +71,7 @@ public class HelioField<T extends Object> {
 	/**
 	 * Default constructor for an empty field
 	 */
-	public HelioField() {
+	public HelioFieldDescriptor() {
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class HelioField<T extends Object> {
 	 * @param description the description of the field in user friendly format. May be null.
 	 * @param type the type of the field in XML Schema definition. Must not be null
 	 */
-	public HelioField(String id, String name, String description, FieldType type) {
+	public HelioFieldDescriptor(String id, String name, String description, FieldType type) {
 		this(id, name, description, type, null, null);	
 	}
 	
@@ -93,7 +93,7 @@ public class HelioField<T extends Object> {
 	 * @param type the type of the field in XML Schema definition. Must not be null
 	 * @param defaultValue the default value. Will be ignored if null. 
 	 */
-	public HelioField(String id, String name, String description, FieldType type, T defaultValue) {
+	public HelioFieldDescriptor(String id, String name, String description, FieldType type, T defaultValue) {
 		this(id, name, description, type, null, defaultValue);
 	}
 
@@ -105,7 +105,7 @@ public class HelioField<T extends Object> {
 	 * @param type the type of the field in XML Schema definition. Must not be null
 	 * @param valueDomain the value domain. Will be ignored if null. 
 	 */
-	public HelioField(String id, String name, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain) {
+	public HelioFieldDescriptor(String id, String name, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain) {
 		this(id, name, description, type, valueDomain, null);
 	}
 	/**
@@ -117,7 +117,7 @@ public class HelioField<T extends Object> {
 	 * @param valueDomain the value domain. Will be ignored if null. 
 	 * @param defaultValue the default value. Will be ignored if null.
 	 */
-	public HelioField(String id, String name, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain, T defaultValue) {
+	public HelioFieldDescriptor(String id, String name, String description, FieldType type, DomainValueDescriptor<T>[] valueDomain, T defaultValue) {
 	    setId(id);
 	    setName(name);
 	    setType(type);
@@ -234,18 +234,6 @@ public class HelioField<T extends Object> {
         AssertUtil.assertArgumentNotNull(type, "type");
         this.type = type;
     }
-
-    @Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof HelioField)) {
-			return false;
-		}
-		boolean ret = this.id.equals(((HelioField<?>)obj).id);
-		return ret;
-	}
 	
 	@Override
 	public String toString() {
@@ -260,6 +248,18 @@ public class HelioField<T extends Object> {
 			sb.append(", description=").append(description);
 		sb.append("}");
 		return sb.toString();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+	    if (obj == null) {
+	        return false;
+	    }
+	    if (!(obj instanceof HelioFieldDescriptor)) {
+	        return false;
+	    }
+	    boolean ret = this.id.equals(((HelioFieldDescriptor<?>)obj).id);
+	    return ret;
 	}
 	
 	@Override

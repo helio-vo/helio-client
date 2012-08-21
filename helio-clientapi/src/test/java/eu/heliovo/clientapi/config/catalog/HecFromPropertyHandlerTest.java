@@ -31,8 +31,8 @@ public class HecFromPropertyHandlerTest {
         hecFromPropertyHandler.setHecCatalogueDescriptorDao(hecCatalogueDescriptorDao);
         hecFromPropertyHandler.init();
         
-        assertNotNull(hecFromPropertyHandler.getPropertyDescriptor());
-        Collection<DomainValueDescriptor<String>> domainValues = hecFromPropertyHandler.getPropertyDescriptor().getValueDomain();
+        assertNotNull(hecFromPropertyHandler.getPropertyDescriptor(null));
+        Collection<DomainValueDescriptor<String>> domainValues = hecFromPropertyHandler.getPropertyDescriptor(null).getValueDomain();
         int i =0;
         for (DomainValueDescriptor<String> domainValueDescriptor : domainValues) {
             i++;

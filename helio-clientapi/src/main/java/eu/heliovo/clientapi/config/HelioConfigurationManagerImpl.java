@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -24,20 +25,19 @@ public class HelioConfigurationManagerImpl implements HelioConfigurationManager 
   
 
     @Override
-    public PropertyDescriptor getPropertyDescriptor(
-            HelioServiceName serviceName, String serviceVariant,
-            String propertyName, Class<?> beanClass) {
-        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
+    public PropertyDescriptor getPropertyDescriptor(HelioService helioService, String propertyName) {
+        AssertUtil.assertArgumentNotNull(helioService, "helioService");
         AssertUtil.assertArgumentNotNull(propertyName, "propertyName");
 
-        HelioPropertyHandler bestMatch = findBestMatchingPropertyHandler(serviceName, serviceVariant, propertyName);
+        HelioPropertyHandler bestMatch = findBestMatchingPropertyHandler(
+                helioService.getServiceName(), helioService.getServiceVariant(), propertyName);
         
         // create a default handler for unknown property handlers
         PropertyDescriptor propertyDescriptor;
         if (bestMatch == null) {
-            propertyDescriptor = getStandardPropertyDescriptor(propertyName, beanClass);
+            propertyDescriptor = getStandardPropertyDescriptor(propertyName, helioService.getClass());
         } else {
-            propertyDescriptor = bestMatch.getPropertyDescriptor();
+            propertyDescriptor = bestMatch.getPropertyDescriptor(helioService);
             if (propertyDescriptor == null) {
                 throw new RuntimeException("Return type of HelioPropertyHandler.getPropertyDescriptor() must not be null.");
             }

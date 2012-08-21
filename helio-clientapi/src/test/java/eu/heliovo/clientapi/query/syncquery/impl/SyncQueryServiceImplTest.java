@@ -8,22 +8,29 @@ import static org.junit.Assert.fail;
 import java.net.URL;
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
+import eu.heliovo.clientapi.query.paramquery.serialize.PQLSerializer;
 import eu.heliovo.clientapi.query.syncquery.impl.MockSyncQueryService.MockQueryServicePort;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
 
 public class SyncQueryServiceImplTest {
+    MockSyncQueryService service;
+    
+    @Before public void setup() {
+        URL resultFile = getDefaultVoTable();
+        MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
+        service = new MockSyncQueryService(port);
+        service.setWhereClauseFactoryBean(new WhereClauseFactoryBean());
+        service.setQuerySerializer(new PQLSerializer());
+        assertNotNull(service.getServiceName());
+    }
 	
 	@Test public void testQuery() {
-		URL resultFile = getDefaultVoTable();
-		MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
-		MockSyncQueryService service = new MockSyncQueryService(port);
-		
-		assertNotNull(service.getServiceName());
-		
-		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), "where", 100, 0, null);
+		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 		
 		assertEquals(Phase.COMPLETED, result.getPhase());
 		
@@ -37,19 +44,19 @@ public class SyncQueryServiceImplTest {
 		
 		// test invalid calls
 		try {
-			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), "where", 100, 0, null);
+			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.query(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), "where", 100, 0, null);
+			service.query(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
 		}
 		try {
-			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), "where", 100, 0, null);
+			service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument", "instrument2", "instrument3"), 100, 0, null);
 			fail("IllegalArgumentException expected.");
 		} catch (IllegalArgumentException e) {
 			// we're fine
@@ -58,12 +65,6 @@ public class SyncQueryServiceImplTest {
 	}
 	
 	@Test public void testTimeQuery() {
-		URL resultFile = getDefaultVoTable();
-		MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
-		MockSyncQueryService service = new MockSyncQueryService(port);
-		
-		assertNotNull(service.getServiceName());
-		
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0);
 		
 		assertEquals(Phase.COMPLETED, result.getPhase());

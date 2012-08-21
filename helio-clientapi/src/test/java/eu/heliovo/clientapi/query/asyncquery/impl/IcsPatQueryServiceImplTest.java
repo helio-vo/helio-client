@@ -32,7 +32,7 @@ public class IcsPatQueryServiceImplTest {
         
         IcsPatQueryServiceImpl icsService = (IcsPatQueryServiceImpl) helioClient.getServiceInstance(HelioServiceName.ICS, IcsPatQueryServiceImpl.SERVICE_VARIANT, ServiceCapability.ASYNC_QUERY_SERVICE);
         assertNotNull(icsService);
-        HelioQueryResult result = icsService.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
+        HelioQueryResult result = icsService.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), 0, 0, null);
         assertNotNull(result);
         STILUtils stilUtils = new STILUtils();
         StarTable[] votable = stilUtils.read(result.asURL());

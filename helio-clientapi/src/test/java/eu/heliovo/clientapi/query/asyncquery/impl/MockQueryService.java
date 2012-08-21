@@ -66,7 +66,7 @@ public class MockQueryService extends BaseQueryServiceImpl {
 		/**
 		 * the sequence of status.
 		 */
-		private final StatusValue[] statusSequence;
+		private StatusValue[] statusSequence;
 		
 		/**
 		 * URL pointing to the result file.
@@ -88,14 +88,21 @@ public class MockQueryService extends BaseQueryServiceImpl {
 		 */
 		private final long resultDelay;
 		
-		public MockPort(String id, URL resultFile, StatusValue[] statusSequence, long queryDelay, long statusDelay, long resultDelay) {
+		public MockPort(String id, URL resultFile, long queryDelay, long statusDelay, long resultDelay) {
 			this.id = id;
 			this.resultFile = resultFile;
-			this.statusSequence = statusSequence;
 			this.queryDelay = queryDelay;
 			this.statusDelay = statusDelay;
 			this.resultDelay = resultDelay;
 		}
+		
+		/**
+		 * Set the expected status sequence
+		 * @param statusSequence
+		 */
+		public void setStatusSequence(StatusValue[] statusSequence) {
+            this.statusSequence = statusSequence;
+        }
 		
 		@Override
 		public String longQuery(List<String> starttime, List<String> endtime, List<String> from, String where,

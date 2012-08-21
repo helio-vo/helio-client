@@ -1,13 +1,15 @@
 package eu.heliovo.clientapi.query.paramquery.serialize;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.core.convert.ConversionService;
 
+import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.Operator;
-import eu.heliovo.clientapi.query.paramquery.ParamQueryTerm;
+import eu.heliovo.clientapi.query.ParamQueryTerm;
 
 /**
  * convert a list of given param query terms to PQL.
@@ -18,7 +20,7 @@ public class PQLSerializer implements QuerySerializer {
 	/**
 	 * Main template.
 	 */
-	private static final String ASSIGN_TEMPLATE = "%1$s=%2$s";
+	private static final String ASSIGN_TEMPLATE = "%1$s.%2$s,%3$s";
 	
 	/**
 	 * template for =
@@ -48,18 +50,12 @@ public class PQLSerializer implements QuerySerializer {
 	/**
 	 * Symbol for OR
 	 */
-	private static final String OR_SYMBOL = ",";
-	
-	/**
-	 * Symbol for AND.
-	 */
-	@SuppressWarnings("unused")
-	private static final String AND_SYMBOL = ";";
-	
+	private static final String LIST_SEPARATOR = ",";
+		
 	/**
 	 * Separator between two parameters
 	 */
-	private static final String PARAMETER_SEPARATOR = "&";
+	private static final String FIELD_SEPARATOR = ";";
 	
     /**
      * Hold the conversion service for data type conversion.
@@ -68,38 +64,52 @@ public class PQLSerializer implements QuerySerializer {
     
 
 	@Override
-	public String getWhereClause(List<ParamQueryTerm<?>> paramQueryTerms) throws QuerySerializationException {
+	public String getWhereClause(String catalogueName, List<ParamQueryTerm<?>> paramQueryTerms) throws QuerySerializationException {
 		List<QuerySerializationException> exceptions = new ArrayList<QuerySerializationException>();
 		
 		StringBuilder sb = new StringBuilder();
 		
-		// iterate over the terms
-		for (ParamQueryTerm<?> term : paramQueryTerms) {
-			try {
-				if (sb.length() > 0) {
-					sb.append(PARAMETER_SEPARATOR);
-				}
-				
-				String paramName = term.getHelioField().getName();
-				String template = getTemplate(term);
-				
-				switch (term.getOperator().getArity()) {
-				case 1:
-					sb.append(handleUnaryTerm(paramName, template));
-				case 2:
-					sb.append(handleBinaryTerm(paramName, template, term.getArguments()[0]));
-					break;
-				case 3:
-					sb.append(handleTernaryTerm(paramName, template, term.getArguments()[0], term.getArguments()[1]));
-					break;
-				default:
-					break;
-				}
-			} catch (QuerySerializationException e) {
-				exceptions.add(e);
-				// continue, but throw exception at a later stage
-			}
-		}
+		Map<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> groupedTerms = groupTerms(paramQueryTerms);
+		
+		// iterate over the grouped terms.
+		for (Map.Entry<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> termGroup : groupedTerms.entrySet()) {
+		    if (sb.length() > 0) {
+		        sb.append(FIELD_SEPARATOR);
+		    }
+		    
+		    // build the right side of a query.
+		    StringBuilder rightSide = new StringBuilder();
+		    String paramName = termGroup.getKey().getName();
+		    
+		    // iterate over the terms
+		    for (ParamQueryTerm<?> term : termGroup.getValue()) {
+		        try {
+		            if (rightSide.length() > 0) {
+		                rightSide.append(LIST_SEPARATOR);
+		            }
+		            
+		            String template = getTemplate(term);
+		            
+		            switch (term.getOperator().getArity()) {
+		            case 1:
+		                rightSide.append(handleUnaryTerm(paramName, template));
+		            case 2:
+		                rightSide.append(handleBinaryTerm(template, term.getArguments()[0]));
+		                break;
+		            case 3:
+		                rightSide.append(handleTernaryTerm(template, term.getArguments()[0], term.getArguments()[1]));
+		                break;
+		            default:
+		                break;
+		            }
+		        } catch (QuerySerializationException e) {
+		            exceptions.add(e);
+		            // continue, but throw exception at a later stage
+		        }
+		    }
+		    sb.append(String.format(ASSIGN_TEMPLATE, catalogueName, paramName, rightSide.toString()));
+		    
+        }
 		
 		if (exceptions.size() == 1) {
 			throw exceptions.get(0);
@@ -110,6 +120,25 @@ public class PQLSerializer implements QuerySerializer {
 	}
 
 	/**
+	 * Group the terms with the same field id
+	 * @param paramQueryTerms the terms to group
+	 * @return a map containing one entry per term with all set values.
+	 */
+    private Map<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> groupTerms(List<ParamQueryTerm<?>> paramQueryTerms) {
+        Map<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> ret = new LinkedHashMap<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>>();
+        
+        for (ParamQueryTerm<?> paramQueryTerm : paramQueryTerms) {
+            List<ParamQueryTerm<?>> args = ret.get(paramQueryTerm.getHelioFieldDescriptor());
+            if (args == null) {
+                args = new ArrayList<ParamQueryTerm<?>>();
+                ret.put(paramQueryTerm.getHelioFieldDescriptor(), args);
+            }
+            args.add(paramQueryTerm);
+        }
+        return ret;
+    }
+
+    /**
 	 * Get the template according to the selected operator.
 	 * @param term the query term.
 	 * @return the template.
@@ -140,57 +169,31 @@ public class PQLSerializer implements QuerySerializer {
 	 */
 	private String handleUnaryTerm(String paramName, String template) throws QuerySerializationException{
 		throw new QuerySerializationException("Unary operators are not supported by PQL.");
-		//return String.format(template, paramName);
 	}
 
 	/**
 	 * Generate a PQL term for a binary operator.
-	 * @param paramName name of the parameter (left side of =)
  	 * @param template the template to apply to the arguments
-	 * @param args the arguments to fill into the template. arguments will be or connected. 
-	 * @return a string with the param name on the left side and the arguments as OR connected list.
+	 * @param arg the argument to fill into the template. 
+	 * @return a string with the right side of a query term.
 	 */
-	private String handleBinaryTerm(String paramName, String template, Object args)  throws QuerySerializationException {
+	private String handleBinaryTerm(String template, Object arg)  throws QuerySerializationException {
 		StringBuilder sb = new StringBuilder();
-		if (args.getClass().isArray()) {
-    		for (int i = 0; i < Array.getLength(args); i++) {
-    			if (i > 0) { 
-    				// prepend OR
-    				sb.append(OR_SYMBOL);
-    			}
-    			sb.append(String.format(template, convertToString(Array.get(args, i))));
-    		}
-		} else {
-		    sb.append(String.format(template, convertToString(args)));
-		}
-		return String.format(ASSIGN_TEMPLATE, paramName, sb.toString());
+		sb.append(String.format(template, convertToString(arg)));
+		return sb.toString();
 	}
 	
 	/**
 	 * Generate a PQL term for a ternary operator.
-	 * @param paramName the name of the parater (left side of =)
 	 * @param template the template to apply to the arguments
-	 * @param args1 first argument. May be an object or an object array.
-	 * @param args2 second argument. May be an object or an object array.
-	 * @return a string with the param name on the left side and the arguments as or connected list.
+	 * @param arg1 first argument.
+	 * @param arg2 second argument.
+	 * @return a string with the right side of a query term.
 	 */
-	private String handleTernaryTerm(String paramName, String template, Object args1, Object args2)  throws QuerySerializationException {
-		Object[] argArray1 = args1 instanceof Object[] ? (Object[])args1 : new Object[] {args1};
-		Object[] argArray2 = args2 instanceof Object[] ? (Object[])args2 : new Object[] {args2};
-
-		if (argArray1.length != argArray2.length) {
-			throw new IllegalArgumentException("Internal error: arrays must have the same size: " + argArray1.length + "!=" + argArray2.length);
-		}
-		
+	private String handleTernaryTerm(String template, Object arg1, Object arg2)  throws QuerySerializationException {
 		StringBuilder value = new StringBuilder();
-		for (int i = 0; i < argArray1.length; i++) {
-			if (i > 0) {
-				// prepend OR
-				value.append(OR_SYMBOL);
-			}
-			value.append(String.format(template, convertToString(argArray1[i]), convertToString(argArray2[i])));
-		}
-		return String.format(ASSIGN_TEMPLATE, paramName, value.toString());
+		value.append(String.format(template, convertToString(arg1), convertToString(arg2)));
+		return value.toString();
 	}
 	
 	/**

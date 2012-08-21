@@ -8,6 +8,7 @@ import java.util.List;
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.config.HelioPropertyHandler;
 import eu.heliovo.clientapi.model.field.descriptor.InstrumentDescriptor;
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.dao.InstrumentDescriptorDao;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.registryclient.HelioServiceName;
@@ -92,7 +93,7 @@ public class DpasFromPropertyHandler implements HelioPropertyHandler {
     }
 
     @Override
-    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor() {
+    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor(HelioService helioService) {
         return propertyDescriptor;
     }
 

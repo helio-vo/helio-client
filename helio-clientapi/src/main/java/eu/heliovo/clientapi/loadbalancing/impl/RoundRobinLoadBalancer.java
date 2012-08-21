@@ -16,7 +16,7 @@ public class RoundRobinLoadBalancer implements LoadBalancer {
     /**
      * Number of rounds to skip a service that is down.
      */
-    private static final int PENALTY = 1000;
+    private static final int PENALTY = 100;
     
     /**
      * count how many time a specific service has been accessed

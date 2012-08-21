@@ -5,8 +5,10 @@ import java.beans.SimpleBeanInfo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -21,6 +23,7 @@ import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.HelioConfigurationManager;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.query.delegate.QueryDelegateFactory;
+import eu.heliovo.clientapi.query.paramquery.serialize.QuerySerializer;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.AccessInterface;
 import eu.heliovo.registryclient.AccessInterfaceType;
@@ -65,7 +68,7 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
     /**
      * The where clause
      */
-    private String where;
+    //private String where;
 
     /**
      * The join clause
@@ -108,10 +111,30 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
     private transient QueryDelegateFactory queryDelegateFactory;
 
     /**
+     * Pointer to the factory bean to create new where clauses.
+     */
+    private transient WhereClauseFactoryBean whereClauseFactoryBean;
+    
+    /**
+     * The query serializer bean
+     */
+    private transient QuerySerializer querySerializer; 
+    
+    /**
      * Store the BeanInfo for this service instance. assigned in the init method
      */
-    private BeanInfo beanInfo = null;
+    private transient BeanInfo beanInfo = null;
 
+    /**
+     * hold the where-clauses
+     */
+    private List<WhereClause> whereClauses = new ArrayList<WhereClause>();
+
+    /**
+     * Cache where clauses that have been removed. 
+     */
+    private transient Map<String, WhereClause> whereClauseCache = new HashMap<String, WhereClause>();
+    
     /**
      * Initialize this object.
      */
@@ -121,8 +144,7 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
         List<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>();
         for (int i = 0; i < propertyNames.length; i++) {
             String propName = propertyNames[i];
-            PropertyDescriptor descriptor = configurationManager.getPropertyDescriptor(getServiceName(),
-                    getServiceVariant(), propName, getClass());
+            PropertyDescriptor descriptor = configurationManager.getPropertyDescriptor(this, propName);
             if (descriptor == null) {
                 _LOGGER.warn("Unable to find descriptor for property '"
                         + propName
@@ -136,21 +158,20 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
     }
 
     @Override
-    public HelioQueryResult query(String startTime, String endTime, String from, String where, Integer maxrecords,
+    public HelioQueryResult query(String startTime, String endTime, String from, Integer maxrecords,
             Integer startindex, String join) throws JobExecutionException, IllegalArgumentException {
         HelioQueryResult result = query(Collections.singletonList(startTime), Collections.singletonList(endTime),
-                Collections.singletonList(from), where, maxrecords, startindex, join);
+                Collections.singletonList(from), maxrecords, startindex, join);
         return result;
     }
 
     @Override
-    public HelioQueryResult query(List<String> startTime, List<String> endTime, List<String> from, String where,
+    public HelioQueryResult query(List<String> startTime, List<String> endTime, List<String> from, 
             Integer maxrecords, Integer startindex, String join) throws JobExecutionException, IllegalArgumentException {
         setQueryMethodType(QueryMethodType.FULL_QUERY);
         setStartTime(startTime);
         setEndTime(endTime);
         setFrom(from);
-        setWhere(where);
         setMaxRecords(maxrecords);
         setStartIndex(startindex);
         setJoin(join);
@@ -208,7 +229,7 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
             message.append("startTime=").append(startTime);
             message.append(", ").append("endTime=").append(endTime);
             message.append(", ").append("from=").append(from);
-            message.append(", ").append("where=").append(where);
+            message.append(", ").append("where=").append(getWhere());
             message.append(", ").append("maxrecords=").append(maxRecords);
             message.append(", ").append("startIndex=").append(startIndex);
             message.append(", ").append("join=").append(join);
@@ -276,6 +297,24 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
         return ServiceCapability.SYNC_QUERY_SERVICE.equals(accessInterface.getCapability())
                 || ServiceCapability.ASYNC_QUERY_SERVICE.equals(accessInterface.getCapability());
     }
+    
+    /**
+     * Update the where clauses, depending on the from property. 
+     */
+    private void updateWhereClauses() {
+        // empty the where clauses
+        whereClauses.clear();
+        
+        // and repopulate from cache or create new clause
+        for (String catalogue : getFrom()) {
+            WhereClause clause = whereClauseCache.get(catalogue);
+            if (clause == null) {
+                clause = whereClauseFactoryBean.createWhereClause(getServiceName(), catalogue);
+                whereClauseCache.put(catalogue, clause);
+            }
+            whereClauses.add(clause);
+        }
+    }
 
     /**
      * Validate the input values. Subclasses my want to override this method for
@@ -325,6 +364,7 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
      */
     public void setFrom(List<String> from) {
         this.from = from;
+        updateWhereClauses();
     }
 
     /**
@@ -361,15 +401,14 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
      * @return the where
      */
     public String getWhere() {
-        return where;
-    }
-
-    /**
-     * @param where
-     *            the where to set
-     */
-    public void setWhere(String where) {
-        this.where = where;
+        StringBuilder sb = new StringBuilder();
+        for (WhereClause whereClause : whereClauses) {
+            if (sb.length() > 0) {
+                sb.append(";");  // separator between multiple where clauses
+            }
+            sb.append(querySerializer.getWhereClause(whereClause.getCatalogName(), whereClause.getQueryTerms()));
+        }
+        return sb.toString();
     }
 
     /**
@@ -500,6 +539,45 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
      */
     public void setQueryDelegateFactory(QueryDelegateFactory queryDelegateFactory) {
         this.queryDelegateFactory = queryDelegateFactory;
+    }
+    
+    /**
+     * @return the whereClauseFactoryBean
+     */
+    public WhereClauseFactoryBean getWhereClauseFactoryBean() {
+        return whereClauseFactoryBean;
+    }
+
+    /**
+     * @param whereClauseFactoryBean the whereClauseFactoryBean to set
+     */
+    public void setWhereClauseFactoryBean(WhereClauseFactoryBean whereClauseFactoryBean) {
+        this.whereClauseFactoryBean = whereClauseFactoryBean;
+    }
+    
+    /**
+     * @return the querySerializer
+     */
+    public QuerySerializer getQuerySerializer() {
+        return querySerializer;
+    }
+
+    /**
+     * @param querySerializer the querySerializer to set
+     */
+    public void setQuerySerializer(QuerySerializer querySerializer) {
+        this.querySerializer = querySerializer;
+    }
+
+    /**
+     * Get the currently available where clauses. If a catalog does not support where clauses
+     * the where clause will have an empty helioFieldDescriptor field.  
+     * There will be one where clause per entry in the from property.
+     * @return a list for where clauses, if the from property is set. An empty list otherwise.
+     */
+    @Override
+    public List<WhereClause> getWhereClauses() {
+        return whereClauses;
     }
 
     /**

@@ -18,7 +18,6 @@ public interface QueryService extends HelioService {
 	 * @param starttime the start date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null.
 	 * @param endtime the end date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null.
 	 * @param from the table to query. Must not be null.
-	 * @param where where clause of the query in PQL.
 	 * @param maxrecords max number of records to display. 0 means all. defaults to 0.
 	 * @param startindex position of first record to return. Starting at 0. 
 	 * @param join ???
@@ -30,7 +29,6 @@ public interface QueryService extends HelioService {
 			String startTime, 
 			String endTime, 
 			String from, 
-			String where, 
 			Integer maxrecords, 
 			Integer startindex, 
 			String join)
@@ -41,7 +39,6 @@ public interface QueryService extends HelioService {
 	 * @param starttime the start date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null or empty list.
      * @param endtime the end date and time of the query range. Expected format is ISO8601 (YYYY-MM-dd['T'HH:mm:ss[SSS]]). Must not be null or empty list. Must match the size of 'startTime'
 	 * @param from the table to query. Must not be null or empty.
-	 * @param where where clause of the query in PQL.
 	 * @param maxrecords max number of records to display. 0 means all. defaults to 0.
 	 * @param startindex position of first record to return. Starting at 0. 
 	 * @param join ???
@@ -53,7 +50,6 @@ public interface QueryService extends HelioService {
 			List<String> startTime, 
 			List<String> endTime, 
 			List<String> from, 
-			String where, 
 			Integer maxrecords, 
 			Integer startindex, 
 			String join)
@@ -168,13 +164,15 @@ public interface QueryService extends HelioService {
 	 * @return the where clause
 	 */
 	public String getWhere();
-	
-	/**
-	 * Set the where clause
-	 * @param where the where clause
-	 */
-	public void setWhere(String where);
-	
+    
+    /**
+     * Get the currently available where clauses. If a catalog does not support where clauses
+     * the where clause will have an empty helioFieldDescriptor field.  
+     * There will be one where clause per entry in the from property.
+     * @return a list for where clauses, if the from property is set. An empty list otherwise.
+     */
+    public List<WhereClause> getWhereClauses();
+
 	/**
 	 * Join two tables (expert feature)
 	 * @return the joined tables

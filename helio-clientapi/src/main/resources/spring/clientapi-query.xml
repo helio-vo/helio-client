@@ -18,6 +18,16 @@
   <bean id="asyncTimeQueryDelegate"
     class="eu.heliovo.clientapi.query.delegate.AsyncTimeQueryDelegate"></bean>
 
+  <bean id="whereClauseFactoryBean" class="eu.heliovo.clientapi.query.WhereClauseFactoryBean">
+    <property name="hecCatalogueDescriptorDao" ref="hecCatalogueDescriptorDao"></property>
+  </bean>
+  
+  <bean id="conversionService" class="eu.heliovo.clientapi.utils.convert.HelioConversionService"></bean>
+  
+  <bean id="pqlSerializer" class="eu.heliovo.clientapi.query.paramquery.serialize.PQLSerializer">
+    <property name="conversionService" ref="conversionService"></property>
+  </bean>
+
   <!-- Base query service -->
   <bean id="baseQueryService" class="eu.heliovo.clientapi.query.BaseQueryServiceImpl"
     scope="prototype" parent="abstractService" lazy-init="true">
@@ -29,6 +39,8 @@
     </property>
     <property name="configurationManager" ref="configurationManager"></property>
     <property name="queryDelegateFactory" ref="queryDelegateFactory" />
+    <property name="whereClauseFactoryBean" ref="whereClauseFactoryBean"></property>
+    <property name="querySerializer" ref="pqlSerializer"></property>
   </bean>
 
   <!-- Speicalized query services -->

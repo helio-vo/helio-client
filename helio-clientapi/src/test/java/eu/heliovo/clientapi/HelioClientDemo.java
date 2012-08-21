@@ -13,6 +13,8 @@ import java.util.logging.LogRecord;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
+import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
+import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
@@ -42,8 +44,10 @@ import eu.heliovo.clientapi.processing.hps.impl.SepPropagationModelImpl;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.ParamQueryTerm;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.query.QueryType;
+import eu.heliovo.clientapi.query.WhereClause;
 import eu.heliovo.clientapi.utils.DebugUtils;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
@@ -87,22 +91,23 @@ public class HelioClientDemo {
 //        config.add("icsPat");
 //        config.add("hec");
 //        config.add("hec_sync");
+        config.add("hec_pql");
 //        config.add("dpas");
-        config.add("desPlot_Ace");
-        config.add("desPlot_Sta");
-        config.add("desPlot_Stb");
-        config.add("desPlot_Ulysses");
-        config.add("desPlot_Wind");
-        config.add("flarePlot");
+//        config.add("desPlot_Ace");
+//        config.add("desPlot_Sta");
+//        config.add("desPlot_Stb");
+//        config.add("desPlot_Ulysses");
+//        config.add("desPlot_Wind");
+//        config.add("flarePlot");
 //        config.add("cmePM");
-        config.add("cmeBwPM");
-        config.add("cirPM");
-        config.add("cirBwPM");
-        config.add("sepPM");
-        config.add("sepBwPM");
-        config.add("dumpServices");
-        config.add("taverna2283");
-        config.add("links");
+//        config.add("cmeBwPM");
+//        config.add("cirPM");
+//        config.add("cirBwPM");
+//        config.add("sepPM");
+//        config.add("sepBwPM");
+//        config.add("dumpServices");
+//        config.add("taverna2283");
+//        config.add("links");
     }
     
 
@@ -119,6 +124,7 @@ public class HelioClientDemo {
         if (config.contains("icsPat")) getIcsPat(helioClient);
         if (config.contains("hec")) getHec(helioClient);
         if (config.contains("hec_sync")) getHecSync(helioClient);
+        if (config.contains("hec_pql")) getHecPql(helioClient);
         if (config.contains("dpas")) runDPAS(helioClient);
         if (config.contains("desPlot_Ace")) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Sta")) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
@@ -356,7 +362,7 @@ public class HelioClientDemo {
         QueryService service = (QueryService)helioClient.getServiceInstance(
                 HelioServiceName.ILS, null, null);
         //System.out.println(service.getClass());
-        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2009-01-02T00:00:00"), Arrays.asList("trajectories"), null, 0, 0, null);
+        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2009-01-02T00:00:00"), Arrays.asList("trajectories"), 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));        
     }
@@ -368,7 +374,7 @@ public class HelioClientDemo {
     private void getIcs(HelioClient helioClient) {
         QueryService service = (QueryService)helioClient.getServiceInstance(
                 HelioServiceName.ICS, null, null);
-        HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
+        HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument"), 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), Integer.MAX_VALUE));        
     }
@@ -381,7 +387,7 @@ public class HelioClientDemo {
         QueryService service = (QueryService)helioClient.getServiceInstance(HelioServiceName.ICS, 
                 "ivo://helio-vo.eu/ics/ics_pat", null);
         //System.out.println(service.getClass());
-        HelioQueryResult result = service.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), null, 0, 0, null);
+        HelioQueryResult result = service.query(Arrays.asList("1900-01-01T00:00:00"), Arrays.asList("2020-12-31T00:00:00"), Arrays.asList("instrument"), 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));        
     }
@@ -394,7 +400,7 @@ public class HelioClientDemo {
         QueryService service = (QueryService)helioClient.getServiceInstance(HelioServiceName.HEC, null, null);
         service.setQueryType(QueryType.ASYNC_QUERY);
         //System.out.println(service.getClass());
-        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2009-01-02T00:00:00"), Arrays.asList("goes_sxr_flare"), null, 0, 0, null);
+        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2009-01-02T00:00:00"), Arrays.asList("goes_sxr_flare"), 0, 0, null);
         System.out.println(result.asURL());
         //System.out.println(trunc(result.asString(), 5000));        
     }
@@ -406,11 +412,54 @@ public class HelioClientDemo {
     private void getHecSync(HelioClient helioClient) {
         QueryService service = (QueryService)helioClient.getServiceInstance(HelioServiceName.HEC, null, null);
         //System.out.println(service.getClass());
-        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2010-01-30T00:00:00"), Arrays.asList("goes_sxr_flare"), null, 0, 0, null);
+        HelioQueryResult result = service.query(Arrays.asList("2009-01-01T00:00:00"), Arrays.asList("2010-01-30T00:00:00"), Arrays.asList("goes_sxr_flare"), 0, 0, null);
         System.out.println(result.asURL());
         //System.out.println(trunc(result.asString(), 5000));
     }
     
+    /**
+     * Get the HEC table.
+     * @param helioClient the client
+     */
+    private void getHecPql(HelioClient helioClient) {
+        QueryService service = (QueryService)helioClient.getServiceInstance(HelioServiceName.HEC, null, null);
+        service.setQueryType(QueryType.SYNC_QUERY);
+        
+        //System.out.println(service.getClass());
+        service.setStartTime(Arrays.asList("2000-01-01T00:00:00"));
+        service.setEndTime(Arrays.asList("2010-01-30T00:00:00"));
+        service.setFrom(Arrays.asList("rhessi_hxr_flare"));
+        service.setMaxRecords(20);
+        
+        List<WhereClause> whereClauses = service.getWhereClauses();
+        WhereClause clause = whereClauses.get(0);
+        List<HelioFieldDescriptor<?>> descriptors = clause.getFieldDescriptors();
+        HelioFieldDescriptor<Long> totalCount = (HelioFieldDescriptor<Long>) findById(descriptors, "total_count");
+        clause.setQueryTerm(totalCount, new ParamQueryTerm<Long>(totalCount, Operator.LARGER_EQUAL_THAN, 100000000l));
+        
+        System.out.println(descriptors);
+        
+        HelioQueryResult result = service.execute();
+        System.out.println(result.asURL());
+        System.out.println(trunc(result.asString(), 20000));
+    }
+    
+    /**
+     * Find a specific descriptor by id.
+     * @param descriptors the descriptors to search
+     * @param id the id to look for.
+     * @return the descriptor or null if not found.
+     */
+    private HelioFieldDescriptor<?> findById(List<HelioFieldDescriptor<?>> descriptors, String id) {
+        for (HelioFieldDescriptor<?> helioFieldDescriptor : descriptors) {
+            if (id.equals(helioFieldDescriptor.getId())) {
+                return helioFieldDescriptor;
+            }
+        }
+        return null;
+    }
+
+
     /**
      * Exec a DPAS query
      * @param helioClient the client
@@ -418,7 +467,7 @@ public class HelioClientDemo {
     private void runDPAS(HelioClient helioClient) {
         QueryService service = (QueryService)helioClient.getServiceInstance(HelioServiceName.DPAS, null, ServiceCapability.SYNC_QUERY_SERVICE);
         //System.out.println(service.getClass());
-        HelioQueryResult result = service.query(Arrays.asList("2007-10-30T20:00:00"), Arrays.asList("2007-10-31T03:59:59"), Arrays.asList("BBSO__GONG"), null, 0, 0, null);
+        HelioQueryResult result = service.query(Arrays.asList("2007-10-30T20:00:00"), Arrays.asList("2007-10-31T03:59:59"), Arrays.asList("BBSO__GONG"), 0, 0, null);
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 5000));        
     }

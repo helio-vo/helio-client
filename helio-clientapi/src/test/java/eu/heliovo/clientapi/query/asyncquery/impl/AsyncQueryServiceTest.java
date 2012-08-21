@@ -10,25 +10,34 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.asyncquery.impl.MockQueryService.MockPort;
+import eu.heliovo.clientapi.query.paramquery.serialize.PQLSerializer;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 public class AsyncQueryServiceTest {
-	
+    private MockQueryService service;
+    private MockPort port;
+    
+    @Before public void setup() {
+        URL resultFile = getDefaultVoTable();
+        port = new MockPort("testid", resultFile, 0, 0, 0);
+        service = new MockQueryService(port);
+        service.setWhereClauseFactoryBean(new WhereClauseFactoryBean());
+        service.setQuerySerializer(new PQLSerializer());
+        assertNotNull(service.getServiceName());
+    }
+
 	@Test public void testLongQuery() {
 		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.PENDING, StatusValue.PENDING, StatusValue.COMPLETED};
-		URL resultFile = getDefaultVoTable();
-		
-		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockQueryService service = new MockQueryService(port);
-		assertNotNull(service.getServiceName());
-		
-		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), null, 100, 0, null);
+		port.setStatusSequence(statusSequence);
+		HelioQueryResult result = service.query(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0, null);
 		
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.PENDING, result.getPhase());
@@ -59,7 +68,7 @@ public class AsyncQueryServiceTest {
 		}
 		
 		// test variations of time query
-        result = service.query("2003-02-01T00:00:00", "2003-02-10T00:00:00", "instrument", null, 100, 0, null);
+        result = service.query("2003-02-01T00:00:00", "2003-02-10T00:00:00", "instrument", 100, 0, null);
         assertEquals(Phase.COMPLETED, result.getPhase());
         
 		assertNotNull(result.toString());
@@ -67,11 +76,7 @@ public class AsyncQueryServiceTest {
 	
 	@Test public void testLongTimeQuery() {
 		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.PENDING, StatusValue.PENDING, StatusValue.COMPLETED};
-		URL resultFile = getDefaultVoTable();
-		
-		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockQueryService service = new MockQueryService(port);
-		assertNotNull(service.getServiceName());
+		port.setStatusSequence(statusSequence);
 		
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00", "2003-02-02T00:00:00"), Arrays.asList("2003-02-10T00:00:00", "2003-02-12T00:00:00"), Arrays.asList("instrument"), 100, 0);
 		
@@ -114,9 +119,8 @@ public class AsyncQueryServiceTest {
 	 */
 	@Test public void testErrorTimeQuery() {
 		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.ERROR};
-		URL resultFile = getDefaultVoTable();
-		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockQueryService service = new MockQueryService(port);
+		port.setStatusSequence(statusSequence);
+
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ERROR, result.getPhase());
@@ -141,9 +145,8 @@ public class AsyncQueryServiceTest {
 	 */
 	@Test public void testServiceTimeoutQuery() {
 		StatusValue[] statusSequence = new StatusValue[] {StatusValue.PENDING, StatusValue.TIMEOUT};
-		URL resultFile = getDefaultVoTable();
-		MockPort port = new MockPort("testid", resultFile, statusSequence, 0, 0, 0);
-		MockQueryService service = new MockQueryService(port);
+		port.setStatusSequence(statusSequence);
+		
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		assertEquals(Phase.PENDING, result.getPhase());
 		assertEquals(Phase.ABORTED, result.getPhase());
@@ -170,10 +173,14 @@ public class AsyncQueryServiceTest {
 		StatusValue[] statusSequence = new StatusValue[10];
 		Arrays.fill(statusSequence, StatusValue.PENDING);
 		statusSequence[statusSequence.length - 1] = StatusValue.COMPLETED;
-		
-		URL resultFile = getDefaultVoTable();
-		MockPort port = new MockPort("testid", resultFile, statusSequence, 200, 200, 200);
-		MockQueryService service = new MockQueryService(port);
+        
+        URL resultFile = getDefaultVoTable();
+        MockPort port = new MockPort("testid", resultFile, 200, 200, 200);
+        port.setStatusSequence(statusSequence);
+        MockQueryService service = new MockQueryService(port);
+        service.setWhereClauseFactoryBean(new WhereClauseFactoryBean());
+        service.setQuerySerializer(new PQLSerializer());
+
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);
 		// poll one time
 		assertEquals(Phase.PENDING, result.getPhase());

@@ -7,6 +7,7 @@ import java.util.List;
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.config.HelioPropertyHandler;
 import eu.heliovo.clientapi.model.field.descriptor.HecCatalogueDescriptor;
+import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.registryclient.HelioServiceName;
@@ -78,7 +79,7 @@ public class HecFromPropertyHandler implements HelioPropertyHandler {
     }
 
     @Override
-    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor() {
+    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor(HelioService helioService) {
         return propertyDescriptor;
     }
 

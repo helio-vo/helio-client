@@ -17,7 +17,7 @@ import org.springframework.context.support.GenericXmlApplicationContext;
  * @author marco soldati at fhnw ch
  * 
  */
-public class HelioFieldTest {
+public class HelioFieldDescriptorTest {
 
 	@Test
 	public void testCreation() {
@@ -34,7 +34,7 @@ public class HelioFieldTest {
 		assertNotNull(type);
 
 		{
-			HelioField<String> helioField1 = new HelioField<String>(id, fieldName, description, type);
+			HelioFieldDescriptor<String> helioField1 = new HelioFieldDescriptor<String>(id, fieldName, description, type);
 			assertNotNull(helioField1.getId());
 			assertEquals(id, helioField1.getId());
 			assertNotNull(helioField1.getName());
@@ -51,7 +51,7 @@ public class HelioFieldTest {
 		}
 
 		{
-			HelioField<String> helioField2 = new HelioField<String>(id, fieldName, description, type, valueDomain);
+			HelioFieldDescriptor<String> helioField2 = new HelioFieldDescriptor<String>(id, fieldName, description, type, valueDomain);
 			assertNotNull(helioField2.getId());
 			assertNotNull(helioField2.getName());
 			assertNotNull(helioField2.getDescription());
@@ -62,7 +62,7 @@ public class HelioFieldTest {
 			assertNotNull(helioField2.toString());
 		}
 		{
-			HelioField<String> helioField3 = new HelioField<String>(id, fieldName, description, type, defaultValue);
+			HelioFieldDescriptor<String> helioField3 = new HelioFieldDescriptor<String>(id, fieldName, description, type, defaultValue);
 			assertNotNull(helioField3.getId());
 			assertNotNull(helioField3.getName());
 			assertNotNull(helioField3.getDescription());
@@ -73,7 +73,7 @@ public class HelioFieldTest {
 			assertNotNull(helioField3.toString());
 		}
 		{
-			HelioField<String> helioField4 = new HelioField<String>(id, fieldName, description, type,
+			HelioFieldDescriptor<String> helioField4 = new HelioFieldDescriptor<String>(id, fieldName, description, type,
 					valueDomain, defaultValue);
 			assertNotNull(helioField4.getId());
 			assertNotNull(helioField4.getName());
@@ -102,7 +102,7 @@ public class HelioFieldTest {
 				"string3");
 		String defaultValue = "string1";
 
-		HelioField<String> helioField = new HelioField<String>(id, fieldName, description, type,
+		HelioFieldDescriptor<String> helioField = new HelioFieldDescriptor<String>(id, fieldName, description, type,
 				valueDomain, defaultValue);
 		try {
 			helioField.setDefaultValue("string.not.existing");
@@ -141,9 +141,9 @@ public class HelioFieldTest {
         FieldTypeFactory fieldTypeFactory = (FieldTypeFactory)context.getBean("fieldTypeFactory");
 
 		FieldType type = fieldTypeFactory.getTypeByName("string");
-		HelioField<String> helioField1 = new HelioField<String>("id1", "field1", null, type);
-		HelioField<String> helioField2 = new HelioField<String>("id1", "field2", null, type);
-		HelioField<String> helioField3 = new HelioField<String>("id3", "field3", null, type);
+		HelioFieldDescriptor<String> helioField1 = new HelioFieldDescriptor<String>("id1", "field1", null, type);
+		HelioFieldDescriptor<String> helioField2 = new HelioFieldDescriptor<String>("id1", "field2", null, type);
+		HelioFieldDescriptor<String> helioField3 = new HelioFieldDescriptor<String>("id3", "field3", null, type);
 
 		assertTrue(helioField1.equals(helioField2));
 		assertFalse(helioField1.equals(helioField3));

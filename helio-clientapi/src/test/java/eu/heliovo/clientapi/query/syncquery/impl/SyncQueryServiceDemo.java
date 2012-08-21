@@ -54,31 +54,4 @@ public class SyncQueryServiceDemo {
 			e.printStackTrace();
 		}
 	}
-
-	@SuppressWarnings("unused")
-    private static synchronized void testSyncService(HelioClient client, HelioServiceName serviceName, List<String> startTime, List<String> endTime, List<String> from, String where, String saveto) {
-		System.out.println("--------------------" + serviceName + "--------------------");
-		try {
-            QueryService queryService = (QueryService) client.getServiceInstance(serviceName, null, ServiceCapability.SYNC_QUERY_SERVICE);
-			HelioQueryResult result = queryService.query(startTime, endTime, from, where, 100, 0, null);
-			
-			System.out.println(result);
-			if (result != null) {
-				System.out.println("Phase: " + result.getPhase());
-				System.out.println("Result URL: " + result.asURL());
-				System.out.println("Result VOTable: " + result.asVOTable());
-				StringBuilder sb = new StringBuilder("User log: ");
-				for (LogRecord logRecord : result.getUserLogs()) {
-					if (sb.length() > 0) {
-						sb.append(", ");
-					}
-					sb.append(logRecord.getMessage());
-				}
-				System.out.println(sb.toString());
-			}System.out.println();
-		} catch (Exception e) {
-			System.err.println("Error occured: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
 }

@@ -1,5 +1,6 @@
 package eu.heliovo.clientapi.model.field;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,19 +38,14 @@ public class FieldTypeFactory {
 		add(new SimpleFieldType("Boolean ", Boolean.class, new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("byte", byte.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("Byte", Byte.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("Qname", javax.xml.namespace.QName.class, new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("dateTime", javax.xml.datatype.XMLGregorianCalendar.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("dateTime", Date.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("base64Binary", byte[].class, new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("hexBinary", byte[].class, new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("unsignedInt", long.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("unsignedShort", int.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("unsignedByte", short.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("time", javax.xml.datatype.XMLGregorianCalendar.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("date", javax.xml.datatype.XMLGregorianCalendar.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("g", javax.xml.datatype.XMLGregorianCalendar.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("time", Date.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("date", Date.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("object", java.lang.Object.class, new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("duration", javax.xml.datatype.Duration.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("NOTATION", javax.xml.namespace.QName.class, new Operator[] {Operator.EQUALS}));
     
 		add(new SimpleFieldType("xclass", java.lang.String.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
         add(new SimpleFieldType("oclass", java.lang.String.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
