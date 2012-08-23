@@ -52,10 +52,11 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
                     createPropertyDescriptor("timeto", "To", "Date of the latest event in the catalogue"),
                     createPropertyDescriptor("type", "Type", "Type of the list"),
                     createPropertyDescriptor("status", "Status",
-                            "Active - The catalogue is being updated automatically or manually.,\n" +
-                            "Inactive - The catalogue is currently not maintained,\n" +
-                            "Closed - The catalogue is closed and will not be updated anymore,\n" +
-                            "Static - The catalogue's update mechanism is currently being worked on."),
+                            "Active - The catalogue is being constantly updated,\n" +
+                            "Static - The catalogue is not regularly updated at source.\n" +
+                            "Inactive - The catalogue is currently not maintained at source,\n" +
+                            "Closed - The catalogue is closed (i.e. from a paper) and will not be updated anymore"
+                            ),
                     createPropertyDescriptor("flare", "Flare list?", "Is it a flare list?"),
                     createPropertyDescriptor("cme", "CME list?", "Is it a CME list?"),
                     createPropertyDescriptor("swind", "Solar wind list?", "Is it a Solar wind list?"),
@@ -65,13 +66,18 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
                     createPropertyDescriptor("ips", "Interplan. space", "Did the event occur in the Interplanetary Space?"),
                     createPropertyDescriptor("geo", "Geo", "Did the event occur on the Earth?"),
                     createPropertyDescriptor("planet", "Planet", "Did the event occur on any planet?"),
-                    
+                    createPropertyDescriptor("infoUrl", "URL", "URL with more information about a catalogue", true),
                 };
         }
         
         private ConfigurablePropertyDescriptor<?> createPropertyDescriptor(String propertyName, String displayName, String shortDescription) {
+            return createPropertyDescriptor(propertyName, displayName, shortDescription, false);
+        }
+        
+        private ConfigurablePropertyDescriptor<?> createPropertyDescriptor(String propertyName, String displayName, String shortDescription, boolean isReadOnly) {
             try {
-                ConfigurablePropertyDescriptor<?> propDescriptor = new ConfigurablePropertyDescriptor<Object>(propertyName, HecCatalogueDescriptor.class);
+                ConfigurablePropertyDescriptor<?> propDescriptor;
+                propDescriptor = new ConfigurablePropertyDescriptor<Object>(propertyName, HecCatalogueDescriptor.class, true, !isReadOnly);
                 propDescriptor.setDisplayName(displayName);
                 propDescriptor.setShortDescription(shortDescription);
                 return propDescriptor;
@@ -85,6 +91,11 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
             return propertyDescriptors;
         }
     }
+    
+    /**
+     * Tempate for the URL string
+     */
+    private static final String URL_TEMPLATE = "http://hec.ts.astro.it/hec/stfc/HEC_ListsAll.html#51$s";
     
     
     private String name;
@@ -403,5 +414,12 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
      */
     public void setPlanet(String planet) {
         this.planet = "y".equals(planet);
+    }
+
+    /**
+     * @return the url
+     */
+    public String getInfoUrl() {
+        return String.format(URL_TEMPLATE, name);
     }
 }

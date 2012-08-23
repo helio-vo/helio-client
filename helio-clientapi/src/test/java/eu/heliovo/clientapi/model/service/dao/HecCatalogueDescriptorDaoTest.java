@@ -74,11 +74,12 @@ public class HecCatalogueDescriptorDaoTest {
         assertNotNull(beanInfo);
         PropertyDescriptor[] propDescs = beanInfo.getPropertyDescriptors();
         assertNotNull(propDescs);
-        assertEquals(15, propDescs.length);
+        assertEquals(16, propDescs.length);
         
         assertEquals("name", propDescs[0].getName());
         assertEquals("description", propDescs[1].getName());
         assertEquals("timefrom", propDescs[2].getName());
+        assertEquals("infoUrl", propDescs[15].getName());
     }
     
     @Test public void testFieldDescriptor() {
