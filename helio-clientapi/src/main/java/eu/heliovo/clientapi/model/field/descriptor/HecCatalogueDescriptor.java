@@ -95,7 +95,7 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
     /**
      * Tempate for the URL string
      */
-    private static final String URL_TEMPLATE = "http://hec.ts.astro.it/hec/stfc/HEC_ListsAll.html#51$s";
+    private static final String URL_TEMPLATE = "http://hec.ts.astro.it/hec/stfc/HEC_ListsAll.html#%1$s";
     
     
     private String name;
