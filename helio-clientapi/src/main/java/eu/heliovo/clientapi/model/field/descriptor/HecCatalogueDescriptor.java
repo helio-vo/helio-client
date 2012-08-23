@@ -66,7 +66,7 @@ public class HecCatalogueDescriptor implements DomainValueDescriptor<String>, An
                     createPropertyDescriptor("ips", "Interplan. space", "Did the event occur in the Interplanetary Space?"),
                     createPropertyDescriptor("geo", "Geo", "Did the event occur on the Earth?"),
                     createPropertyDescriptor("planet", "Planet", "Did the event occur on any planet?"),
-                    createPropertyDescriptor("infoUrl", "URL", "URL with more information about a catalogue", true),
+                    createPropertyDescriptor("infoUrl", "Info", "More information about a catalogue", true),
                 };
         }
         
