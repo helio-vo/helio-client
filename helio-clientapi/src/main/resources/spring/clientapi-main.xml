@@ -33,7 +33,7 @@
   </bean>
 
   <!-- a factory to create concrete helio service instances -->
-  <bean id="helioServiceFactory" class="eu.heliovo.clientapi.model.service.HelioServiceFactory"
+  <bean id="helioServiceFactory" class="eu.heliovo.clientapi.config.service.HelioServiceFactory"
     init-method="init">
     <property name="configuration">
       <list>

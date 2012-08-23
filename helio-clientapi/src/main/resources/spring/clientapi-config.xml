@@ -7,17 +7,17 @@
         
     <bean id="desConfiguration" class="eu.heliovo.clientapi.config.des.DesConfiguration" init-method="init"></bean>
     
-    <bean id="configurationManager" class="eu.heliovo.clientapi.config.HelioConfigurationManagerImpl" lazy-init="true">
+    <bean id="configurationManager" class="eu.heliovo.clientapi.config.impl.HelioConfigurationManagerImpl" lazy-init="true">
         <property name="propertyHandlers">
             <list>
-                <bean class="eu.heliovo.clientapi.config.catalog.HecFromPropertyHandler" init-method="init">
+                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.HecFromPropertyHandler" init-method="init">
                   <property name="hecCatalogueDescriptorDao" ref="hecCatalogueDescriptorDao"></property>
                 </bean>
-                <bean class="eu.heliovo.clientapi.config.catalog.DpasFromPropertyHandler" init-method="init">
+                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.DpasFromPropertyHandler" init-method="init">
                   <property name="instrumentDescriptorDao" ref="instrumentDescriptorDao"></property>
                 </bean>
-                <bean class="eu.heliovo.clientapi.config.catalog.IcsFromPropertyHandler" init-method="init" />
-                <bean class="eu.heliovo.clientapi.config.catalog.IlsFromPropertyHandler" init-method="init" />
+                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.IcsFromPropertyHandler" init-method="init" />
+                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.IlsFromPropertyHandler" init-method="init" />
             </list>
         </property>
     </bean>
