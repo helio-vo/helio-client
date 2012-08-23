@@ -3,8 +3,8 @@ package eu.heliovo.clientapi.model.catalog;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
+import eu.heliovo.clientapi.model.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**

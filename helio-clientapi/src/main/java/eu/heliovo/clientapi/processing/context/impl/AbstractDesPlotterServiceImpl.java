@@ -19,8 +19,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import uk.ac.starlink.table.StarTable;
+import eu.heliovo.clientapi.config.service.ServiceFactory;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
-import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;

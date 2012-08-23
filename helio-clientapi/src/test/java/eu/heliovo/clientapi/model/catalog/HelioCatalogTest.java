@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.model.field.FieldType;
-import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.Operator;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
+import eu.heliovo.clientapi.model.field.type.FieldType;
 
 public class HelioCatalogTest {
 

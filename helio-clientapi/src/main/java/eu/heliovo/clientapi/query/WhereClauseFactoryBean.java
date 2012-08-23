@@ -3,8 +3,8 @@ package eu.heliovo.clientapi.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
-import eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.registryclient.HelioServiceName;
 
 /**

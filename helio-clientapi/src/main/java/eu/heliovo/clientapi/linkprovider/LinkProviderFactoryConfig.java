@@ -1,12 +1,12 @@
 package eu.heliovo.clientapi.linkprovider;
 
+import eu.heliovo.clientapi.config.service.ServiceFactoryConfiguration;
+import eu.heliovo.clientapi.config.service.ServiceVariantRegistry;
 import eu.heliovo.clientapi.linkprovider.impl.CdawStereoLinkProvider;
 import eu.heliovo.clientapi.linkprovider.impl.RadioMonitorLinkProvider;
 import eu.heliovo.clientapi.linkprovider.impl.SolarMonitorLinkProvider;
 import eu.heliovo.clientapi.linkprovider.impl.SpaceWeatherLinkProvider;
 import eu.heliovo.clientapi.linkprovider.impl.TheSunTodayLinkProvider;
-import eu.heliovo.clientapi.model.service.ServiceFactoryConfiguration;
-import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 

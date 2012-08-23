@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.model.field.FieldTypeFactory;
-import eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
 import eu.heliovo.clientapi.query.WhereClause;
 import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
 import eu.heliovo.clientapi.utils.STILUtils;

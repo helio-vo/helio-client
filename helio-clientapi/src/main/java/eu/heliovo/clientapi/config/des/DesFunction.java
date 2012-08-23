@@ -3,7 +3,7 @@ package eu.heliovo.clientapi.config.des;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.DomainValueDescriptor;
 
 /**
  * A AMDA function that can be called.

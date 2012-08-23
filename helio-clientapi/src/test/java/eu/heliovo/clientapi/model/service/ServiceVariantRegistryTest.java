@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import eu.heliovo.clientapi.config.service.ServiceVariantRegistry;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 

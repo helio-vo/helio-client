@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import eu.heliovo.clientapi.config.service.ServiceFactory;
 import eu.heliovo.clientapi.model.service.HelioService;
-import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.registryclient.AccessInterfaceType;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;

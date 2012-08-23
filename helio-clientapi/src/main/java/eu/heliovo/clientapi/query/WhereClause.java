@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
+import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.shared.util.AssertUtil;
 
 public class WhereClause {
@@ -25,8 +26,8 @@ public class WhereClause {
     /**
      * Store the field that are currently set
      */
-    private final Map<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> fieldMap = 
-            new HashMap<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>>();
+    private final Map<HelioFieldDescriptor<?>, List<HelioFieldQueryTerm<?>>> fieldMap = 
+            new HashMap<HelioFieldDescriptor<?>, List<HelioFieldQueryTerm<?>>>();
 
     /**
      * Create and initalize the where clause.
@@ -61,7 +62,7 @@ public class WhereClause {
      * @param queryTerms the query terms to set for a given fieldDescriptor. Use null to reset a term. 
      * Any existing terms for this descriptor will be overwritten.
      */
-    public void setQueryTerm(HelioFieldDescriptor<?> fieldDescriptor, ParamQueryTerm<?> ...queryTerms) {
+    public void setQueryTerm(HelioFieldDescriptor<?> fieldDescriptor, HelioFieldQueryTerm<?> ...queryTerms) {
         AssertUtil.assertArgumentNotNull(fieldDescriptor, "fieldDescriptor");
         if (supportsFieldDescriptor(fieldDescriptor)) {
             if (queryTerms == null || queryTerms.length == 0) {
@@ -81,17 +82,17 @@ public class WhereClause {
      * @param fieldDescriptor 
      * @param queryTerms
      */
-    private void checkDataConsistency(HelioFieldDescriptor<?> fieldDescriptor, ParamQueryTerm<?>[] queryTerms) {
-        for (ParamQueryTerm<?> paramQueryTerm : queryTerms) {
+    private void checkDataConsistency(HelioFieldDescriptor<?> fieldDescriptor, HelioFieldQueryTerm<?>[] queryTerms) {
+        for (HelioFieldQueryTerm<?> paramQueryTerm : queryTerms) {
             if (!fieldDescriptor.equals(paramQueryTerm.getHelioFieldDescriptor())) {
                 throw new IllegalArgumentException("The given query term does not match the given field descriptor: " + paramQueryTerm + ", " + fieldDescriptor);
             }
         }
     }
 
-    public List<ParamQueryTerm<?>> getQueryTerms() {
-        List<ParamQueryTerm<?>> ret = new ArrayList<ParamQueryTerm<?>>();
-        for (List<ParamQueryTerm<?>> paramQueryTerms : fieldMap.values()) {
+    public List<HelioFieldQueryTerm<?>> getQueryTerms() {
+        List<HelioFieldQueryTerm<?>> ret = new ArrayList<HelioFieldQueryTerm<?>>();
+        for (List<HelioFieldQueryTerm<?>> paramQueryTerms : fieldMap.values()) {
             ret.addAll(paramQueryTerms);
         }
         return ret;

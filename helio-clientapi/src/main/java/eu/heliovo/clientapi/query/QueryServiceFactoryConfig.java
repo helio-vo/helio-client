@@ -1,7 +1,7 @@
 package eu.heliovo.clientapi.query;
 
-import eu.heliovo.clientapi.model.service.ServiceFactoryConfiguration;
-import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
+import eu.heliovo.clientapi.config.service.ServiceFactoryConfiguration;
+import eu.heliovo.clientapi.config.service.ServiceVariantRegistry;
 import eu.heliovo.clientapi.processing.context.DesPlotterService;
 import eu.heliovo.clientapi.query.impl.IcsPatQueryServiceImpl;
 import eu.heliovo.registryclient.HelioServiceName;

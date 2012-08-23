@@ -6,9 +6,10 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.field.FieldTypeFactory;
-import eu.heliovo.clientapi.model.service.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.propertyhandler.HecFromPropertyHandler;
+import eu.heliovo.clientapi.model.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.shared.props.HelioFileUtil;
 

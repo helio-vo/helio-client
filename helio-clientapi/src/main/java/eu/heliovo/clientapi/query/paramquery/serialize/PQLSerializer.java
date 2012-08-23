@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.springframework.core.convert.ConversionService;
 
-import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.Operator;
-import eu.heliovo.clientapi.query.ParamQueryTerm;
+import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 
 /**
  * convert a list of given param query terms to PQL.
@@ -64,15 +64,15 @@ public class PQLSerializer implements QuerySerializer {
     
 
 	@Override
-	public String getWhereClause(String catalogueName, List<ParamQueryTerm<?>> paramQueryTerms) throws QuerySerializationException {
+	public String getWhereClause(String catalogueName, List<HelioFieldQueryTerm<?>> paramQueryTerms) throws QuerySerializationException {
 		List<QuerySerializationException> exceptions = new ArrayList<QuerySerializationException>();
 		
 		StringBuilder sb = new StringBuilder();
 		
-		Map<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> groupedTerms = groupTerms(paramQueryTerms);
+		Map<HelioFieldDescriptor<?>, List<HelioFieldQueryTerm<?>>> groupedTerms = groupTerms(paramQueryTerms);
 		
 		// iterate over the grouped terms.
-		for (Map.Entry<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> termGroup : groupedTerms.entrySet()) {
+		for (Map.Entry<HelioFieldDescriptor<?>, List<HelioFieldQueryTerm<?>>> termGroup : groupedTerms.entrySet()) {
 		    if (sb.length() > 0) {
 		        sb.append(FIELD_SEPARATOR);
 		    }
@@ -82,7 +82,7 @@ public class PQLSerializer implements QuerySerializer {
 		    String paramName = termGroup.getKey().getName();
 		    
 		    // iterate over the terms
-		    for (ParamQueryTerm<?> term : termGroup.getValue()) {
+		    for (HelioFieldQueryTerm<?> term : termGroup.getValue()) {
 		        try {
 		            if (rightSide.length() > 0) {
 		                rightSide.append(LIST_SEPARATOR);
@@ -124,13 +124,13 @@ public class PQLSerializer implements QuerySerializer {
 	 * @param paramQueryTerms the terms to group
 	 * @return a map containing one entry per term with all set values.
 	 */
-    private Map<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> groupTerms(List<ParamQueryTerm<?>> paramQueryTerms) {
-        Map<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>> ret = new LinkedHashMap<HelioFieldDescriptor<?>, List<ParamQueryTerm<?>>>();
+    private Map<HelioFieldDescriptor<?>, List<HelioFieldQueryTerm<?>>> groupTerms(List<HelioFieldQueryTerm<?>> paramQueryTerms) {
+        Map<HelioFieldDescriptor<?>, List<HelioFieldQueryTerm<?>>> ret = new LinkedHashMap<HelioFieldDescriptor<?>, List<HelioFieldQueryTerm<?>>>();
         
-        for (ParamQueryTerm<?> paramQueryTerm : paramQueryTerms) {
-            List<ParamQueryTerm<?>> args = ret.get(paramQueryTerm.getHelioFieldDescriptor());
+        for (HelioFieldQueryTerm<?> paramQueryTerm : paramQueryTerms) {
+            List<HelioFieldQueryTerm<?>> args = ret.get(paramQueryTerm.getHelioFieldDescriptor());
             if (args == null) {
-                args = new ArrayList<ParamQueryTerm<?>>();
+                args = new ArrayList<HelioFieldQueryTerm<?>>();
                 ret.put(paramQueryTerm.getHelioFieldDescriptor(), args);
             }
             args.add(paramQueryTerm);
@@ -143,7 +143,7 @@ public class PQLSerializer implements QuerySerializer {
 	 * @param term the query term.
 	 * @return the template.
 	 */
-	private String getTemplate(ParamQueryTerm<?> term) throws QuerySerializationException {
+	private String getTemplate(HelioFieldQueryTerm<?> term) throws QuerySerializationException {
 		Operator operator = term.getOperator();
 		switch (operator) {
 		case EQUALS:

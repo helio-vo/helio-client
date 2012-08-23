@@ -13,8 +13,9 @@ import java.util.logging.LogRecord;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
-import eu.heliovo.clientapi.model.field.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.Operator;
+import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
@@ -44,7 +45,6 @@ import eu.heliovo.clientapi.processing.hps.impl.SepPropagationModelImpl;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283;
 import eu.heliovo.clientapi.processing.taverna.impl.TavernaWorkflow2283.TavernaWorkflow2283ResultObject;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.query.ParamQueryTerm;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.query.QueryType;
 import eu.heliovo.clientapi.query.WhereClause;
@@ -435,7 +435,7 @@ public class HelioClientDemo {
         WhereClause clause = whereClauses.get(0);
         List<HelioFieldDescriptor<?>> descriptors = clause.getFieldDescriptors();
         HelioFieldDescriptor<Long> totalCount = (HelioFieldDescriptor<Long>) findById(descriptors, "total_count");
-        clause.setQueryTerm(totalCount, new ParamQueryTerm<Long>(totalCount, Operator.LARGER_EQUAL_THAN, 100000000l));
+        clause.setQueryTerm(totalCount, new HelioFieldQueryTerm<Long>(totalCount, Operator.LARGER_EQUAL_THAN, 100000000l));
         
         System.out.println(descriptors);
         

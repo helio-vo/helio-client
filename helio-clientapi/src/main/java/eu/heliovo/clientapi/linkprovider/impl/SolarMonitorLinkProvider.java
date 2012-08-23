@@ -3,8 +3,8 @@ package eu.heliovo.clientapi.linkprovider.impl;
 import java.util.Calendar;
 import java.util.Date;
 
+import eu.heliovo.clientapi.config.service.ServiceFactory;
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
-import eu.heliovo.clientapi.model.service.ServiceFactory;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 

@@ -1,6 +1,6 @@
 package eu.heliovo.clientapi.config.des;
 
-import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.DomainValueDescriptor;
 
 /**
  * Description of a DES parameter

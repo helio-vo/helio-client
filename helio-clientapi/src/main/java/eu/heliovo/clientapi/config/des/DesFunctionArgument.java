@@ -2,7 +2,7 @@ package eu.heliovo.clientapi.config.des;
 
 import java.beans.SimpleBeanInfo;
 
-import eu.heliovo.clientapi.model.field.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.DomainValueDescriptor;
 
 /**
  * Argument to be used in a function

@@ -1,7 +1,7 @@
 package eu.heliovo.clientapi.processing;
 
-import eu.heliovo.clientapi.model.service.ServiceFactoryConfiguration;
-import eu.heliovo.clientapi.model.service.ServiceVariantRegistry;
+import eu.heliovo.clientapi.config.service.ServiceFactoryConfiguration;
+import eu.heliovo.clientapi.config.service.ServiceVariantRegistry;
 import eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.GoesPlotterServiceImpl;
 import eu.heliovo.clientapi.processing.context.impl.SimpleParkerModelServiceImpl;

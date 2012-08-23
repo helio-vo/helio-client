@@ -2,7 +2,7 @@ package eu.heliovo.clientapi.query.paramquery.serialize;
 
 import java.util.List;
 
-import eu.heliovo.clientapi.query.ParamQueryTerm;
+import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
 
 /**
  * Serialiser for the WHERE part of a query.
@@ -19,5 +19,5 @@ public interface QuerySerializer {
 	 * @return the where clause in String form.
 	 * @throws QuerySerializationException if anything goes wrong.
 	 */
-	public String getWhereClause(String catalogueName, List<ParamQueryTerm<?>> paramQueryTerms) throws QuerySerializationException;
+	public String getWhereClause(String catalogueName, List<HelioFieldQueryTerm<?>> paramQueryTerms) throws QuerySerializationException;
 }
