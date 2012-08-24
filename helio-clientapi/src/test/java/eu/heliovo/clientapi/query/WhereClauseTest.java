@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.config.catalog.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.dao.EventListDescriptorDao;
 import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
 import eu.heliovo.clientapi.query.WhereClause;
 import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
@@ -45,14 +45,14 @@ public class WhereClauseTest {
         STILUtils stilUtils = new STILUtils();
         stilUtils.setHelioFileUtil(fileUtil);
         
-        HecCatalogueDescriptorDao hecCatalogueDescriptorDao = new HecCatalogueDescriptorDao();
-        hecCatalogueDescriptorDao.setHelioFileUtil(fileUtil);
-        hecCatalogueDescriptorDao.setStilUtils(stilUtils);
-        hecCatalogueDescriptorDao.setFieldTypeFactory(fieldTypeFactory);
-        hecCatalogueDescriptorDao.init();
+        EventListDescriptorDao eventListDescriptorDao = new EventListDescriptorDao();
+        eventListDescriptorDao.setHelioFileUtil(fileUtil);
+        eventListDescriptorDao.setStilUtils(stilUtils);
+        eventListDescriptorDao.setFieldTypeFactory(fieldTypeFactory);
+        eventListDescriptorDao.init();
         
         WhereClauseFactoryBean whereClauseFactoryBean = new WhereClauseFactoryBean();
-        whereClauseFactoryBean.setHecCatalogueDescriptorDao(hecCatalogueDescriptorDao);
+        whereClauseFactoryBean.setEventListDescriptorDao(eventListDescriptorDao);
         return whereClauseFactoryBean;
     }
     

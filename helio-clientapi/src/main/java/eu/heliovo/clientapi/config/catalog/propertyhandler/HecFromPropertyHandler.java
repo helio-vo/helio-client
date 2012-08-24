@@ -6,7 +6,7 @@ import java.util.List;
 
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.config.HelioPropertyHandler;
-import eu.heliovo.clientapi.config.catalog.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.dao.EventListDescriptorDao;
 import eu.heliovo.clientapi.model.catalog.descriptor.EventListDescriptor;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.QueryService;
@@ -46,7 +46,7 @@ public class HecFromPropertyHandler implements HelioPropertyHandler {
     /**
      * DAO to get the HEC catalogue descriptors.
      */
-    private HecCatalogueDescriptorDao hecCatalogueDescriptorDao;
+    private EventListDescriptorDao eventListDescriptorDao;
     
     @Override
     public HelioServiceName getHelioServiceName() {
@@ -73,7 +73,7 @@ public class HecFromPropertyHandler implements HelioPropertyHandler {
             throw new RuntimeException("Internal Error: Unable to create 'from' property: " + e.getMessage(), e);
         }
         
-        Collection<EventListDescriptor> domainValues = hecCatalogueDescriptorDao.getDomainValues();
+        Collection<EventListDescriptor> domainValues = eventListDescriptorDao.getDomainValues();
         propDescriptor.setValueDomain(domainValues);
         this.propertyDescriptor = propDescriptor;
     }
@@ -84,17 +84,17 @@ public class HecFromPropertyHandler implements HelioPropertyHandler {
     }
 
     /**
-     * @return the hecCatalogueDescriptorDao
+     * @return the eventListDescriptorDao
      */
-    public HecCatalogueDescriptorDao getHecCatalogueDescriptorDao() {
-        return hecCatalogueDescriptorDao;
+    public EventListDescriptorDao getEventListDescriptorDao() {
+        return eventListDescriptorDao;
     }
 
     /**
-     * @param hecCatalogueDescriptorDao the hecCatalogueDescriptorDao to set
+     * @param eventListDescriptorDao the eventListDescriptorDao to set
      */
-    public void setHecCatalogueDescriptorDao(
-            HecCatalogueDescriptorDao hecCatalogueDescriptorDao) {
-        this.hecCatalogueDescriptorDao = hecCatalogueDescriptorDao;
+    public void setEventListDescriptorDao(
+            EventListDescriptorDao eventListDescriptorDao) {
+        this.eventListDescriptorDao = eventListDescriptorDao;
     }
 }

@@ -19,7 +19,7 @@
     class="eu.heliovo.clientapi.query.delegate.AsyncTimeQueryDelegate"></bean>
 
   <bean id="whereClauseFactoryBean" class="eu.heliovo.clientapi.query.WhereClauseFactoryBean">
-    <property name="hecCatalogueDescriptorDao" ref="hecCatalogueDescriptorDao"></property>
+    <property name="eventListDescriptorDao" ref="eventListDescriptorDao"></property>
   </bean>
   
   <bean id="conversionService" class="eu.heliovo.clientapi.utils.convert.HelioConversionService"></bean>

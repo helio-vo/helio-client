@@ -11,7 +11,7 @@
         <property name="propertyHandlers">
             <list>
                 <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.HecFromPropertyHandler" init-method="init">
-                  <property name="hecCatalogueDescriptorDao" ref="hecCatalogueDescriptorDao"></property>
+                  <property name="eventListDescriptorDao" ref="eventListDescriptorDao"></property>
                 </bean>
                 <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.DpasFromPropertyHandler" init-method="init">
                   <property name="instrumentDescriptorDao" ref="instrumentDescriptorDao"></property>

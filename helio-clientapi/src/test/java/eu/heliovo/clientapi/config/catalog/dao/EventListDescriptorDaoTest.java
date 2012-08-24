@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.heliovo.clientapi.config.catalog.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.dao.EventListDescriptorDao;
 import eu.heliovo.clientapi.model.catalog.descriptor.EventListDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
@@ -22,46 +22,46 @@ import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.DateUtil;
 
 
-public class HecCatalogueDescriptorDaoTest {
+public class EventListDescriptorDaoTest {
     
-    private HecCatalogueDescriptorDao catalogueDescriptorDao;
+    private EventListDescriptorDao eventListDescriptorDao;
 
     @Before public void setup() {
-        catalogueDescriptorDao = new HecCatalogueDescriptorDao();
+        eventListDescriptorDao = new EventListDescriptorDao();
         HelioFileUtil helioFileUtil = new HelioFileUtil("test");
         STILUtils stilUtils = new STILUtils();
         stilUtils.setHelioFileUtil(helioFileUtil);
         FieldTypeFactory fieldTypeFactory = new FieldTypeFactory();
         fieldTypeFactory.init();
         
-        catalogueDescriptorDao.setHelioFileUtil(helioFileUtil);
-        catalogueDescriptorDao.setStilUtils(stilUtils);
-        catalogueDescriptorDao.setFieldTypeFactory(fieldTypeFactory);
+        eventListDescriptorDao.setHelioFileUtil(helioFileUtil);
+        eventListDescriptorDao.setStilUtils(stilUtils);
+        eventListDescriptorDao.setFieldTypeFactory(fieldTypeFactory);
         
-        catalogueDescriptorDao.init();
+        eventListDescriptorDao.init();
         
     }; 
     
     @Test public void testInit() throws Exception {
-        List<EventListDescriptor> domainValues = catalogueDescriptorDao.getDomainValues();
+        List<EventListDescriptor> domainValues = eventListDescriptorDao.getDomainValues();
         assertTrue(domainValues.size() > 0);
-        for (EventListDescriptor hecCatalogueDescriptor : domainValues) {
-            if ("goes_sxr_flare".equals(hecCatalogueDescriptor.getName())) {
-                assertEquals("goes_sxr_flare",hecCatalogueDescriptor.getName());
-                assertEquals("goes_sxr_flare", hecCatalogueDescriptor.getValue());
-                assertEquals("GOES Soft X-ray Flare List", hecCatalogueDescriptor.getDescription());
-                assertEquals("GOES Soft X-ray Flare List", hecCatalogueDescriptor.getLabel());
-                assertEquals("r", hecCatalogueDescriptor.getOtyp());
-                assertEquals("active", hecCatalogueDescriptor.getStatus());
-                assertEquals(DateUtil.fromIsoDate("1975-09-01T00:00:00"), hecCatalogueDescriptor.getTimefrom());
-                //assertEquals(DateUtil.fromIsoDate("2011-12-31T00:00:00"), hecCatalogueDescriptor.getTimeto());
-                assertEquals("event", hecCatalogueDescriptor.getType());
-                assertFalse(hecCatalogueDescriptor.isCme());
-                assertTrue(hecCatalogueDescriptor.isFlare());
-                assertFalse(hecCatalogueDescriptor.isGeo());
-                assertFalse(hecCatalogueDescriptor.isIps());
-                assertFalse(hecCatalogueDescriptor.isPart());
-                assertFalse(hecCatalogueDescriptor.isPlanet());
+        for (EventListDescriptor eventListDescriptor : domainValues) {
+            if ("goes_sxr_flare".equals(eventListDescriptor.getName())) {
+                assertEquals("goes_sxr_flare",eventListDescriptor.getName());
+                assertEquals("goes_sxr_flare", eventListDescriptor.getValue());
+                assertEquals("GOES Soft X-ray Flare List", eventListDescriptor.getDescription());
+                assertEquals("GOES Soft X-ray Flare List", eventListDescriptor.getLabel());
+                assertEquals("r", eventListDescriptor.getOtyp());
+                assertEquals("active", eventListDescriptor.getStatus());
+                assertEquals(DateUtil.fromIsoDate("1975-09-01T00:00:00"), eventListDescriptor.getTimefrom());
+                //assertEquals(DateUtil.fromIsoDate("2011-12-31T00:00:00"), eventListDescriptor.getTimeto());
+                assertEquals("event", eventListDescriptor.getType());
+                assertFalse(eventListDescriptor.isCme());
+                assertTrue(eventListDescriptor.isFlare());
+                assertFalse(eventListDescriptor.isGeo());
+                assertFalse(eventListDescriptor.isIps());
+                assertFalse(eventListDescriptor.isPart());
+                assertFalse(eventListDescriptor.isPlanet());
                 return;
             }
         }
@@ -69,7 +69,7 @@ public class HecCatalogueDescriptorDaoTest {
     }
     
     @Test public void testBeanInfo() {
-        List<EventListDescriptor> domainValues = catalogueDescriptorDao.getDomainValues();
+        List<EventListDescriptor> domainValues = eventListDescriptorDao.getDomainValues();
         assertTrue(domainValues.size() > 0);
         BeanInfo beanInfo = domainValues.iterator().next().getBeanInfo();
         assertNotNull(beanInfo);
@@ -84,7 +84,8 @@ public class HecCatalogueDescriptorDaoTest {
     }
     
     @Test public void testFieldDescriptor() {
-        List<HelioFieldDescriptor<?>> fieldDescriptors = catalogueDescriptorDao.getFieldDescriptors("goes_sxr_flare");
+        List<HelioFieldDescriptor<?>> fieldDescriptors = 
+                eventListDescriptorDao.findByListName("goes_sxr_flare").getFieldDescriptors();
         assertNotNull(fieldDescriptors);
         assertTrue(fieldDescriptors.size() > 0);
         assertEquals(10, fieldDescriptors.size());

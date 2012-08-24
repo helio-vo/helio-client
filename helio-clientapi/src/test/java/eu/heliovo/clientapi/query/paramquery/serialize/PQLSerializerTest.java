@@ -11,10 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.GenericConversionService;
 
-import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
+import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
 import eu.heliovo.clientapi.utils.convert.HelioConversionService;

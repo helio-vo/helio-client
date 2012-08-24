@@ -5,11 +5,14 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
@@ -21,18 +24,18 @@ import eu.heliovo.shared.util.DateUtil;
 public class EventListDescriptor implements DomainValueDescriptor<String>, AnnotatedBean {
     
     /**
-     * Bean info class for the HecCatalogueDescriptor
+     * Bean info class for the {@link EventListDescriptor}
      * @author MarcoSoldati
      *
      */
-    public static class HecCatalogueDescriptorBeanInfo extends SimpleBeanInfo {
-        private static HecCatalogueDescriptorBeanInfo instance = new HecCatalogueDescriptorBeanInfo();
+    public static class EventListDescriptorBeanInfo extends SimpleBeanInfo {
+        private static EventListDescriptorBeanInfo instance = new EventListDescriptorBeanInfo();
         
         /**
          * Get the singleton instance of the BeanInfo
          * @return the catalog descriptor
          */
-        public static HecCatalogueDescriptorBeanInfo getInstance() {
+        public static EventListDescriptorBeanInfo getInstance() {
             return instance;
         }
 
@@ -44,7 +47,7 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
         /**
          * Hide the default constructor. Use getInstance() instead.
          */
-        private HecCatalogueDescriptorBeanInfo() {
+        private EventListDescriptorBeanInfo() {
                 propertyDescriptors = new ConfigurablePropertyDescriptor<?>[] {
                     createPropertyDescriptor("name", "Name", "Catalogue Name"),
                     createPropertyDescriptor("description", "Description", "Short description of the catalogue"),
@@ -113,10 +116,15 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
     private boolean ips;
     private boolean geo;
     private boolean planet;
+
+    /**
+     * Unmodifiable set of field descriptors
+     */
+    private List<HelioFieldDescriptor<?>> fieldDescriptors;
     
     @Override
     public BeanInfo getBeanInfo() {
-        return HecCatalogueDescriptorBeanInfo.getInstance();
+        return EventListDescriptorBeanInfo.getInstance();
     }
     
     @Override
@@ -421,5 +429,21 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
      */
     public String getInfoUrl() {
         return String.format(URL_TEMPLATE, name);
+    }
+
+    /**
+     * Set the field descriptors of this catalogue.
+     * @param fieldDescriptors the field descriptors will be wrapped in an unmodifiable list.
+     */
+    public void setFieldDescriptors(List<HelioFieldDescriptor<?>> fieldDescriptors) {
+        this.fieldDescriptors = Collections.unmodifiableList(fieldDescriptors);
+    }
+    
+    /**
+     * Get the field descriptors for this catalogue
+     * @return
+     */
+    public List<HelioFieldDescriptor<?>> getFieldDescriptors() {
+        return fieldDescriptors;
     }
 }

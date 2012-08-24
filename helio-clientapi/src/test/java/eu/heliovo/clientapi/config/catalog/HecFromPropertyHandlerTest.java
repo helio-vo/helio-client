@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import eu.heliovo.clientapi.config.catalog.dao.HecCatalogueDescriptorDao;
+import eu.heliovo.clientapi.config.catalog.dao.EventListDescriptorDao;
 import eu.heliovo.clientapi.config.catalog.propertyhandler.HecFromPropertyHandler;
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
@@ -23,13 +23,13 @@ public class HecFromPropertyHandlerTest {
         FieldTypeFactory fieldTypeFactory = new FieldTypeFactory();
         fieldTypeFactory.init();
         
-        HecCatalogueDescriptorDao hecCatalogueDescriptorDao = new HecCatalogueDescriptorDao();
-        hecCatalogueDescriptorDao.setStilUtils(stilUtils);
-        hecCatalogueDescriptorDao.setHelioFileUtil(helioFileUtil);
-        hecCatalogueDescriptorDao.setFieldTypeFactory(fieldTypeFactory);
-        hecCatalogueDescriptorDao.init();
+        EventListDescriptorDao eventListDescriptorDao = new EventListDescriptorDao();
+        eventListDescriptorDao.setStilUtils(stilUtils);
+        eventListDescriptorDao.setHelioFileUtil(helioFileUtil);
+        eventListDescriptorDao.setFieldTypeFactory(fieldTypeFactory);
+        eventListDescriptorDao.init();
         
-        hecFromPropertyHandler.setHecCatalogueDescriptorDao(hecCatalogueDescriptorDao);
+        hecFromPropertyHandler.setEventListDescriptorDao(eventListDescriptorDao);
         hecFromPropertyHandler.init();
         
         assertNotNull(hecFromPropertyHandler.getPropertyDescriptor(null));
