@@ -10,7 +10,6 @@ import java.util.Collection;
 import org.springframework.validation.Validator;
 
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.catalog.descriptor.EventListDescriptor;
 
 /**
  * Convenience property descriptor to add restrictions and value domains to a
@@ -42,7 +41,7 @@ public class ConfigurablePropertyDescriptor<T> extends PropertyDescriptor {
         super(propertyName, readMethod, writeMethod);
     }
 
-    public ConfigurablePropertyDescriptor(String propertyName, Class<EventListDescriptor> beanClass, boolean isRead,
+    public ConfigurablePropertyDescriptor(String propertyName, Class<?> beanClass, boolean isRead,
             boolean isWrite) throws IntrospectionException {
         super(propertyName, beanClass, isRead ? "is" + capitalize(propertyName) : null, isWrite ? "set"
                 + capitalize(propertyName) : null);

@@ -1,10 +1,7 @@
 package eu.heliovo.clientapi.model.catalog.descriptor;
 
 import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.beans.SimpleBeanInfo;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +10,6 @@ import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
-import eu.heliovo.shared.util.DateUtil;
 
 /**
  * Descriptor for one value that is permitted as "from"-value in a HEC catalogue.
@@ -21,14 +17,14 @@ import eu.heliovo.shared.util.DateUtil;
  * @author MarcoSoldati
  *
  */
-public class EventListDescriptor implements DomainValueDescriptor<String>, AnnotatedBean {
+public class EventListDescriptor extends AbstractCatalogueDescriptor implements DomainValueDescriptor<String>, AnnotatedBean {
     
     /**
      * Bean info class for the {@link EventListDescriptor}
      * @author MarcoSoldati
      *
      */
-    public static class EventListDescriptorBeanInfo extends SimpleBeanInfo {
+    public static class EventListDescriptorBeanInfo extends AbstractCatalogueDescriptor.AbstractCatalogueDescriptorBeanInfo<EventListDescriptor> {
         private static EventListDescriptorBeanInfo instance = new EventListDescriptorBeanInfo();
         
         /**
@@ -48,6 +44,7 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
          * Hide the default constructor. Use getInstance() instead.
          */
         private EventListDescriptorBeanInfo() {
+            super(EventListDescriptor.class);
                 propertyDescriptors = new ConfigurablePropertyDescriptor<?>[] {
                     createPropertyDescriptor("name", "Name", "Catalogue Name"),
                     createPropertyDescriptor("description", "Description", "Short description of the catalogue"),
@@ -73,22 +70,6 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
                 };
         }
         
-        private ConfigurablePropertyDescriptor<?> createPropertyDescriptor(String propertyName, String displayName, String shortDescription) {
-            return createPropertyDescriptor(propertyName, displayName, shortDescription, false);
-        }
-        
-        private ConfigurablePropertyDescriptor<?> createPropertyDescriptor(String propertyName, String displayName, String shortDescription, boolean isReadOnly) {
-            try {
-                ConfigurablePropertyDescriptor<?> propDescriptor;
-                propDescriptor = new ConfigurablePropertyDescriptor<Object>(propertyName, EventListDescriptor.class, true, !isReadOnly);
-                propDescriptor.setDisplayName(displayName);
-                propDescriptor.setShortDescription(shortDescription);
-                return propDescriptor;
-            } catch (IntrospectionException e) {
-                throw new IllegalStateException("Failed to create property descriptor '" + propertyName + "':" + e.getMessage(), e);
-            }
-        }
-
         @Override
         public PropertyDescriptor[] getPropertyDescriptors() {
             return propertyDescriptors;
@@ -96,7 +77,7 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
     }
     
     /**
-     * Tempate for the URL string
+     * Template for the URL string
      */
     private static final String URL_TEMPLATE = "http://hec.ts.astro.it/hec/stfc/HEC_ListsAll.html#%1$s";
     
@@ -174,11 +155,7 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
      * @param timefrom the timefrom to set
      */
     public void setTimefrom(String timefrom) {
-        try {
-            this.timefrom = DateUtil.fromIsoDate(timefrom + "T00:00:00");
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("String cannot be converted to Date: " + timefrom);
-        }
+        this.timefrom = toDate(timefrom);
     }
 
     /**
@@ -195,16 +172,11 @@ public class EventListDescriptor implements DomainValueDescriptor<String>, Annot
         return timeto;
     }
 
-
     /**
      * @param timeto the timeto to set
      */
     public void setTimeto(String timeto) {
-        try {
-            this.timeto = DateUtil.fromIsoDate(timeto + "T00:00:00");
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("String cannot be converted to Date: " + timeto);
-        }
+        this.timeto = toDate(timeto);
     }
 
     /**

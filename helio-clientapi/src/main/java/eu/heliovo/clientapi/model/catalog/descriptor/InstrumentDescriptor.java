@@ -1,9 +1,12 @@
 package eu.heliovo.clientapi.model.catalog.descriptor;
 
+import java.beans.PropertyDescriptor;
+import java.util.Date;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
 
 /**
@@ -12,7 +15,64 @@ import eu.heliovo.clientapi.model.DomainValueDescriptor;
  * @author MarcoSoldati
  * 
  */
-public class InstrumentDescriptor implements DomainValueDescriptor<String> {
+public class InstrumentDescriptor extends AbstractCatalogueDescriptor implements DomainValueDescriptor<String> {
+    
+    /**
+     * Bean info class for the {@link InstrumentDescriptor}
+     * @author MarcoSoldati
+     *
+     */
+    public static class InstrumentDescriptorBeanInfo extends AbstractCatalogueDescriptor.AbstractCatalogueDescriptorBeanInfo<InstrumentDescriptor> {
+        private static InstrumentDescriptorBeanInfo instance = new InstrumentDescriptorBeanInfo();
+        
+        /**
+         * Get the singleton instance of the BeanInfo
+         * @return the catalog descriptor
+         */
+        public static InstrumentDescriptorBeanInfo getInstance() {
+            return instance;
+        }
+
+        /**
+         * Cache for the property descriptors.
+         */
+        private final PropertyDescriptor[] propertyDescriptors;
+        
+        /**
+         * Hide the default constructor. Use getInstance() instead.
+         */
+        private InstrumentDescriptorBeanInfo() {
+            super(InstrumentDescriptor.class);
+                propertyDescriptors = new ConfigurablePropertyDescriptor<?>[] {
+                    createPropertyDescriptor("name", "Instrument Name", "Instrument Name"),
+                    createPropertyDescriptor("observatory_name", "Observatory Name", "Observatory Name"),
+                    createPropertyDescriptor("obsinstKey", "HELIO ID", "Helio Instrument Name"),
+                    createPropertyDescriptor("experimentId", "Experiment ID", "Experiment ID"),
+                    createPropertyDescriptor("timeStart", "Instrument Start Date", "Date when the instrument started to observe"),
+                    createPropertyDescriptor("timeEnd", "Instrument End Date", "Date when the instrument stopped to observe"),
+                    createPropertyDescriptor("longname", "Instrument Full Name", "Instrument Full Name"),
+                    createPropertyDescriptor("instType", "Instrument Type", "Type of the instrument"),
+                    createPropertyDescriptor("instOd1", "Observation Domain 1", "Instrument observation domain, 1st category"),
+                    createPropertyDescriptor("instOd2", "Observation Domain 2", "Instrument observation domain, 2nd category"),
+                    createPropertyDescriptor("instOe1", "Observable Entity", "Instrument observation entity element"),
+                    createPropertyDescriptor("instOe2", "Observable Entity", "Instrument observation entity type"),
+                    createPropertyDescriptor("instFd", "Wavelength FD", "Instrument observation wave length fd"),
+                    createPropertyDescriptor("instNd", "Wavelength ND", "Instrument observation wavelength nd"),
+                    createPropertyDescriptor("groupName", "Group Name", "Group name"),
+                    createPropertyDescriptor("keywords", "Keywords", "Complete focusing type"),
+                    createPropertyDescriptor("netKey", "Net Key", "Net Key"),
+                    createPropertyDescriptor("isInPat", "Is in PAT", "Boolean values to indicate if a field from the ICS " +
+                    		"is contained in the Provider Access Table, i.e. if the Data Access Provider Service is able " +
+                    		"to access the specific instrument."),
+                };
+        }
+        
+        @Override
+        public PropertyDescriptor[] getPropertyDescriptors() {
+            return propertyDescriptors;
+        }
+    }
+
     /**
      * Id of the instrument
      */
@@ -28,6 +88,28 @@ public class InstrumentDescriptor implements DomainValueDescriptor<String> {
      */
     private final String description;
 
+    private String name;
+    private String observatoryName;
+    private String obsinstKey;
+    private String experimentId;
+    private Date timeStart;
+    private Date timeEnd;
+    private String longname;
+    private String instType;
+    private String instOd1;
+    private String instOd2;
+    private String instOe1;
+    private String instOe2;
+    private String instFd;
+    private String instNd;
+    private String groupName;
+    private String keywords;
+    private String netKey;
+    private boolean isInPat;    
+    
+    private boolean isInInstrumentsXsd;
+    private boolean isInIcs;
+    
     /**
      * Store the providers
      */
@@ -95,6 +177,308 @@ public class InstrumentDescriptor implements DomainValueDescriptor<String> {
         return providers;
     }
     
+    
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the observatoryName
+     */
+    public String getObservatoryName() {
+        return observatoryName;
+    }
+
+    /**
+     * @param observatoryName the observatoryName to set
+     */
+    public void setObservatoryName(String observatoryName) {
+        this.observatoryName = observatoryName;
+    }
+
+    /**
+     * @return the obsinstKey
+     */
+    public String getObsinstKey() {
+        return obsinstKey;
+    }
+
+    /**
+     * @param obsinstKey the obsinstKey to set
+     */
+    public void setObsinstKey(String obsinstKey) {
+        this.obsinstKey = obsinstKey;
+    }
+
+    /**
+     * @return the experimentId
+     */
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    /**
+     * @param experimentId the experimentId to set
+     */
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
+    }
+
+    /**
+     * @return the timeStart
+     */
+    public Date getTimeStart() {
+        return timeStart;
+    }
+
+    /**
+     * @param timeStart the timeStart to set
+     */
+    public void setTimeStart(Date timeStart) {
+        this.timeStart = timeStart;
+    }
+    
+    /**
+     * @param timeStart the timeStart to set
+     */
+    public void setTimeStart(String timeStart) {
+        this.timeStart = toDate(timeStart);
+    }
+    
+    /**
+     * @return the timeEnd
+     */
+    public Date getTimeEnd() {
+        return timeEnd;
+    }
+
+    /**
+     * @param timeEnd the timeEnd to set
+     */
+    public void setTimeEnd(Date timeEnd) {
+        this.timeEnd = timeEnd;
+    }
+    
+    /**
+     * @param timeEnd the timeEnd to set
+     */
+    public void setTimeEnd(String timeEnd) {
+        this.timeEnd = toDate(timeEnd);
+    }
+
+    /**
+     * @return the longname
+     */
+    public String getLongname() {
+        return longname;
+    }
+
+    /**
+     * @param longname the longname to set
+     */
+    public void setLongname(String longname) {
+        this.longname = longname;
+    }
+
+    /**
+     * @return the instType
+     */
+    public String getInstType() {
+        return instType;
+    }
+
+    /**
+     * @param instType the instType to set
+     */
+    public void setInstType(String instType) {
+        this.instType = instType;
+    }
+
+    /**
+     * @return the instOd1
+     */
+    public String getInstOd1() {
+        return instOd1;
+    }
+
+    /**
+     * @param instOd1 the instOd1 to set
+     */
+    public void setInstOd1(String instOd1) {
+        this.instOd1 = instOd1;
+    }
+
+    /**
+     * @return the instOd2
+     */
+    public String getInstOd2() {
+        return instOd2;
+    }
+
+    /**
+     * @param instOd2 the instOd2 to set
+     */
+    public void setInstOd2(String instOd2) {
+        this.instOd2 = instOd2;
+    }
+
+    /**
+     * @return the instOe1
+     */
+    public String getInstOe1() {
+        return instOe1;
+    }
+
+    /**
+     * @param instOe1 the instOe1 to set
+     */
+    public void setInstOe1(String instOe1) {
+        this.instOe1 = instOe1;
+    }
+
+    /**
+     * @return the instOe2
+     */
+    public String getInstOe2() {
+        return instOe2;
+    }
+
+    /**
+     * @param instOe2 the instOe2 to set
+     */
+    public void setInstOe2(String instOe2) {
+        this.instOe2 = instOe2;
+    }
+
+    /**
+     * @return the instFd
+     */
+    public String getInstFd() {
+        return instFd;
+    }
+
+    /**
+     * @param instFd the instFd to set
+     */
+    public void setInstFd(String instFd) {
+        this.instFd = instFd;
+    }
+
+    /**
+     * @return the instNd
+     */
+    public String getInstNd() {
+        return instNd;
+    }
+
+    /**
+     * @param instNd the instNd to set
+     */
+    public void setInstNd(String instNd) {
+        this.instNd = instNd;
+    }
+
+    /**
+     * @return the groupName
+     */
+    public String getGroupName() {
+        return groupName;
+    }
+
+    /**
+     * @param groupName the groupName to set
+     */
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    /**
+     * @return the keywords
+     */
+    public String getKeywords() {
+        return keywords;
+    }
+
+    /**
+     * @param keywords the keywords to set
+     */
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
+
+    /**
+     * @return the netKey
+     */
+    public String getNetKey() {
+        return netKey;
+    }
+
+    /**
+     * @param netKey the netKey to set
+     */
+    public void setNetKey(String netKey) {
+        this.netKey = netKey;
+    }
+
+    /**
+     * @return the isInPat
+     */
+    public boolean isInPat() {
+        return isInPat;
+    }
+
+    /**
+     * @param isInPat the isInPat to set
+     */
+    public void setIsInPat(String isInPat) {
+        this.isInPat = Boolean.parseBoolean(isInPat);
+    }
+    
+    /**
+     * @param isInPat the isInPat to set
+     */
+    public void setIsInPat(boolean isInPat) {
+        this.isInPat = isInPat;
+    }
+
+    /**
+     * @return the isInInstrumentsXsd
+     */
+    public boolean isInInstrumentsXsd() {
+        return isInInstrumentsXsd;
+    }
+
+    /**
+     * @param isInInstrumentsXsd the isInInstrumentsXsd to set
+     */
+    public void setInInstrumentsXsd(boolean isInInstrumentsXsd) {
+        this.isInInstrumentsXsd = isInInstrumentsXsd;
+    }
+
+    /**
+     * @return the isInIcs
+     */
+    public boolean isInIcs() {
+        return isInIcs;
+    }
+
+    /**
+     * @param isInIcs the isInIcs to set
+     */
+    public void setInIcs(boolean isInIcs) {
+        this.isInIcs = isInIcs;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -16,7 +16,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,8 +23,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import uk.ac.starlink.table.ColumnInfo;
+import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.model.catalog.descriptor.InstrumentDescriptor;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.FileUtil;
 
 /**
@@ -34,11 +34,23 @@ import eu.heliovo.shared.util.FileUtil;
  * @author marco soldati at fhnw ch
  * 
  */
-public class InstrumentDescriptorDao {
-	private static final String CACHE_FILE = "patTable.csv";
+public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 
+    /**
+     * The pat table
+     */
+    private static final String CACHE_FILE = "patTable.csv";
+
+    /**
+     * where to cache the file
+     */
     private static final String CACHE_LOCATION = "dpas_cache";
 
+    /**
+     * Column name of the "obs inst key" in the ICS table
+     */
+    private static final String OBSINST_KEY = "obsinst_key";
+    
     /**
 	 * The logger to use.
 	 */
@@ -52,17 +64,12 @@ public class InstrumentDescriptorDao {
 	/**
 	 * Location of the ICS table.
 	 */
-	//private URL icsTable = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-ics/HelioQueryService?STARTTIME=1900-01-01T00:00:00Z&ENDTIME=3000-12-31T00:00:00Z&FROM=instrument");
+	private URL icsTable = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-ics/HelioQueryService?STARTTIME=1900-01-01T00:00:00Z&ENDTIME=3000-12-31T00:00:00Z&FROM=instrument");
 	
 	/**
 	 * The pat table url
 	 */
 	private URL patTable = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
-	
-    /**
-     * The HELIO file utils
-     */
-    private HelioFileUtil helioFileUtil;
 
     private List<InstrumentDescriptor> domainValues;
 	
@@ -79,15 +86,20 @@ public class InstrumentDescriptorDao {
 		try {
 			// create the instruments field
 			// get the instruments.xsd ...
-			URL instruments = helioFileUtil.getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsLocation);
+			URL instruments = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsLocation);
 			InputSource instrumentsSource = getInputSource(instruments);
 			Document dInstruments = parseInputSourceToDom(instrumentsSource);
 			
 			// ...  and extract instruments into a map
 			Map<String, InstrumentDescriptor> instrumentsMap = createMapOfInstruments(dInstruments);
 			
-			// now parse the pat table and create the instrument domain descriptor.
-			domainValues = createInstrumentDomainValueDescriptors(instrumentsMap);			
+			// now parse the pat table and add to the instrument descriptors.
+			enhanceProviderInformationFromPat(instrumentsMap);
+			
+			// next parse the ics table and enhance insturment descriptors
+			enhanceInstrumentDescriptorsFromICS(instrumentsMap, icsTable);
+			
+			domainValues = createInstrumentDescriptorDomain(instrumentsMap);
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to initialize registry: " + e.getMessage(), e);
 		}
@@ -125,13 +137,14 @@ public class InstrumentDescriptorDao {
     private Map<String, InstrumentDescriptor> createMapOfInstruments(Document dInstruments) {
         Map<String, InstrumentDescriptor> instrumentsMap = new LinkedHashMap<String, InstrumentDescriptor>();
         //NodeList lists = dInstruments.getChildNodes();
+//        System.out.println("from instruments.xsd");
         NodeList lists = dInstruments.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "enumeration");
         for (int i = 0; i < lists.getLength(); i++) {
             Element listElement = (Element) lists.item(i);
             String instrumentName = listElement.getAttribute("value");
-            //System.out.println(instrumentName);
             String instrumentLabel = getTextContent(listElement, "documentation");
             InstrumentDescriptor instrumentDescriptor = new InstrumentDescriptor(instrumentName, instrumentLabel, null);
+            instrumentDescriptor.setInInstrumentsXsd(true);
             instrumentsMap.put(instrumentName, instrumentDescriptor);
         }
         return instrumentsMap;
@@ -162,12 +175,11 @@ public class InstrumentDescriptorDao {
 	 * @throws IOException 
 	 * @throws URISyntaxException
 	 */
-    private List<InstrumentDescriptor> createInstrumentDomainValueDescriptors(
+    private void enhanceProviderInformationFromPat(
             Map<String, InstrumentDescriptor> instrumentDescriptorMap) throws IOException,
             URISyntaxException {
         
-        List<InstrumentDescriptor> instrumentDomain = new ArrayList<InstrumentDescriptor>();
-        URL pat = helioFileUtil.getFileFromRemoteOrCache(CACHE_LOCATION, CACHE_FILE, patTable);
+        URL pat = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, CACHE_FILE, patTable);
         if (pat != null) {
             LineIterator it = FileUtils.lineIterator(new File(pat.toURI()), "UTF-8");
             try {
@@ -177,6 +189,9 @@ public class InstrumentDescriptorDao {
                     String[] entries = line.split(",");
                     if (entries.length >= 3) {
                         String instrumentName = entries[0].trim();
+                        if ("null".equals(instrumentName)) {
+                            continue;
+                        }
                         String provider = entries[1].trim();
                         String archive = entries[2].trim();
                         int priority = getInt(entries[3].trim());
@@ -187,10 +202,10 @@ public class InstrumentDescriptorDao {
                             instrument = new InstrumentDescriptor(instrumentName, instrumentName, null);
                             instrumentDescriptorMap.put(instrumentName, instrument);
                         }
+                        instrument.setIsInPat(true);
                         
                         // ... and add provider from the PAT.
                         instrument.addProvider(provider, archive, priority);
-                        instrumentDomain.add(instrument);
                     }
                 }
             } finally {
@@ -199,7 +214,74 @@ public class InstrumentDescriptorDao {
         } else {                
             _LOGGER.warn("Unable to load PAT table from remote or local: " + patTable);
         }
-        return instrumentDomain;
+        
+    }
+    
+    /**
+     * Read the ICS and set the properties in the instrumentDescriptor
+     * @param instrumentDescriptorMap the current instrumentDescriptors, new instruments may be added.
+     * @param icsTable the ics table URL
+     */
+    private void enhanceInstrumentDescriptorsFromICS(Map<String, InstrumentDescriptor> instrumentDescriptorMap, URL icsTable) {
+        StarTable table = readIntoStarTableModel(icsTable);
+
+        int obsInstKey = findColumnPos(table, OBSINST_KEY);
+        if (obsInstKey < 0) {
+            throw new IllegalStateException("Unable to find column '" + OBSINST_KEY + "' in ICS table at " + icsTable);
+        }
+        
+        for (int r = 0; r < table.getRowCount(); r++) {
+            // get the current data row
+            Object[] row;
+            try {
+                row = table.getRow(r);
+            } catch (IOException e) {
+                _LOGGER.warn("Failed to load row data from votable: " + e.getMessage(), e);
+                continue;
+            }
+            
+            // create or load descriptor
+            String obsInstKeyName = row[obsInstKey].toString();
+            InstrumentDescriptor instrumentDescriptor = instrumentDescriptorMap.get(obsInstKeyName);
+            if (instrumentDescriptor == null) {
+                instrumentDescriptor = new InstrumentDescriptor(obsInstKeyName, obsInstKeyName, null);
+                instrumentDescriptorMap.put(obsInstKeyName, instrumentDescriptor);
+            }
+            instrumentDescriptor.setInIcs(true);
+            
+            // loop over the columns ...
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                ColumnInfo colInfo = table.getColumnInfo(col);
+                Object cell = row[col];
+                
+                // ... and fill the current cell into the descriptor
+                setCellInDescriptor(instrumentDescriptor, colInfo, cell);
+            }
+        }
+    }
+
+    /**
+     * Find the position of a column with a given name
+     * @param table the table to check
+     * @param columnName the name of the column to look for
+     * @return the position of the table or -1 if not found
+     */
+    private int findColumnPos(StarTable table, String columnName) {
+        // loop over the columns
+        for (int col = 0; col < table.getColumnCount(); col++) {
+            // and fill the current cell into the descriptor
+            ColumnInfo colInfo = table.getColumnInfo(col);
+            
+            // we also need to find the column name for later.
+            if (columnName.equals(colInfo.getName())) {
+                return col;
+            }
+        }
+        return -1;
+    }
+
+    private List<InstrumentDescriptor> createInstrumentDescriptorDomain(Map<String, InstrumentDescriptor> instrumentDescriptorMap) {
+        return new ArrayList<InstrumentDescriptor>(instrumentDescriptorMap.values());
     }
 
     /**
@@ -237,20 +319,5 @@ public class InstrumentDescriptorDao {
 	 */
 	public List<InstrumentDescriptor> getDomainValues() {
         return domainValues;
-    }
-	
-    /**
-     * @return the helioFileUtil
-     */
-    @Required
-    public HelioFileUtil getHelioFileUtil() {
-        return helioFileUtil;
-    }
-
-    /**
-     * @param helioFileUtil the helioFileUtil to set
-     */
-    public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
-        this.helioFileUtil = helioFileUtil;
     }
 }

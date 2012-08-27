@@ -1,7 +1,6 @@
 package eu.heliovo.clientapi.config.catalog.dao;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +14,6 @@ import eu.heliovo.clientapi.model.catalog.descriptor.EventListDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.type.FieldType;
 import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
-import eu.heliovo.clientapi.utils.STILUtils;
-import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.FileUtil;
 
 /**
@@ -24,7 +21,7 @@ import eu.heliovo.shared.util.FileUtil;
  * @author MarcoSoldati
  *
  */
-public class EventListDescriptorDao {
+public class EventListDescriptorDao extends AbstractCatalogueDescriptorDao {
     /**
      * The logger
      */
@@ -53,28 +50,19 @@ public class EventListDescriptorDao {
     private static final String HEC_FIELD_CACHE_TEMPLATE = "hec_fields_%1$s.xml";
     
     /**
-     * The file utils.
-     */
-    private transient HelioFileUtil helioFileUtil;
-    
-    /**
-     * The stil utils
-     */
-    private transient STILUtils stilUtils;
-    
-    /**
      * Reference to the field type factory.
      */
     private transient FieldTypeFactory fieldTypeFactory;
-
+    
     /**
      * Cache the created domain values
      */
     private List<EventListDescriptor> domainValues;
+
         
     // init the HEC configuration
     public void init() {
-        URL hecCatalogueUrl = helioFileUtil.getFileFromRemoteOrCache("hec", "hec_catalogues.xml", CONFIG_URL);
+        URL hecCatalogueUrl = getHelioFileUtil().getFileFromRemoteOrCache("hec", "hec_catalogues.xml", CONFIG_URL);
         StarTable table = readIntoStarTableModel(hecCatalogueUrl);
         
         _LOGGER.info("Loading configuration of " + table.getRowCount() + " event catalogues.");
@@ -112,7 +100,7 @@ public class EventListDescriptorDao {
                 String cacheFileName = String.format(HEC_FIELD_CACHE_TEMPLATE, currentCatalogName);
                 URL hecFieldUrlTemplate = FileUtil.asURL(String.format(HEC_FIELD_URL_TEMPLATE, currentCatalogName));
 
-                URL hecFieldUrl = helioFileUtil.getFileFromRemoteOrCache("hec", cacheFileName, hecFieldUrlTemplate);
+                URL hecFieldUrl = getHelioFileUtil().getFileFromRemoteOrCache("hec", cacheFileName, hecFieldUrlTemplate);
                 try {
 //                    VOElement votableModel = stilUtils.readVOElement(hecFieldUrl);
 //                    NodeList resources = votableModel.getElementsByTagName("RESOURCE");
@@ -152,56 +140,7 @@ public class EventListDescriptorDao {
         }
         this.domainValues = Collections.unmodifiableList(domainValues);
     }
-
-    /**
-     * Set the value of one field in the descriptor
-     * @param eventListDescriptor the descriptor to modify.
-     * @param colInfo the header of the current cell.
-     * @param cell the cell's value to add to the descriptor.
-     */
-    private void setCellInDescriptor(EventListDescriptor eventListDescriptor, ColumnInfo colInfo, Object cell) {
-        String setterName = "set" + colInfo.getName().substring(0,1).toUpperCase() + colInfo.getName().substring(1);
-        Method writer;
-        try {
-            writer = EventListDescriptor.class.getMethod(setterName, String.class);
-        } catch (Exception e) {
-            _LOGGER.warn("Failed to find  writer method '" + setterName + "': " + e.getMessage(), e);
-            return;
-        }
-        if (writer != null) {
-            try {
-                if (cell != null) {
-                    writer.invoke(eventListDescriptor, cell);
-                }
-            } catch (Exception e) {
-                _LOGGER.warn("Failed to fully initialize catalogue descriptor for " + colInfo.getName() + ": " + e.getMessage(), e);
-            }
-        } else {
-            _LOGGER.warn("Unable to find  writer method  " + setterName);
-        }
-    }
-
-    /**
-     * Read the HEC catalog or field VOTable into an URL 
-     * @param url the  URL.
-     * @return the catalog or field list as star table model.
-     */
-    private StarTable readIntoStarTableModel(URL url) {
-        StarTable[] tables;
-        try {
-            tables = stilUtils.read(url);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to parse the configuration " + url);
-        }
-        
-        if (tables.length != 1) {
-            throw new RuntimeException("Failed to parse the configuration " + url + ". tables.length=" + tables.length);
-        }
-        
-        StarTable table = tables[0];
-        return table;
-    }
-
+    
     /**
      * The domain values for the HEC catalogue.
      * @return the domain values
@@ -209,7 +148,8 @@ public class EventListDescriptorDao {
     public List<EventListDescriptor> getDomainValues() {
         return domainValues;
     }
-    
+
+
     /**
      * Find an event list descriptor by its name.
      * @param listName the list name
@@ -225,34 +165,6 @@ public class EventListDescriptorDao {
     }
 
     
-    /**
-     * @return the helioFileUtil
-     */
-    public HelioFileUtil getHelioFileUtil() {
-        return helioFileUtil;
-    }
-
-    /**
-     * @param helioFileUtil the helioFileUtil to set
-     */
-    public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
-        this.helioFileUtil = helioFileUtil;
-    }
-
-    /**
-     * @return the stilUtils
-     */
-    public STILUtils getStilUtils() {
-        return stilUtils;
-    }
-
-    /**
-     * @param stilUtils the stilUtils to set
-     */
-    public void setStilUtils(STILUtils stilUtils) {
-        this.stilUtils = stilUtils;
-    }
-
     /**
      * @return the fieldTypeFactory
      */
