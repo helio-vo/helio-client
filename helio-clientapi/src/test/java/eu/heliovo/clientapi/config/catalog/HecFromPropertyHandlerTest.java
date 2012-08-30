@@ -33,7 +33,8 @@ public class HecFromPropertyHandlerTest {
         hecFromPropertyHandler.init();
         
         assertNotNull(hecFromPropertyHandler.getPropertyDescriptor(null));
-        Collection<DomainValueDescriptor<String>> domainValues = hecFromPropertyHandler.getPropertyDescriptor(null).getValueDomain();
+        @SuppressWarnings("unchecked")
+        Collection<DomainValueDescriptor<String>> domainValues = (Collection<DomainValueDescriptor<String>>) hecFromPropertyHandler.getPropertyDescriptor(null).getValueDomain();
         int i =0;
         for (DomainValueDescriptor<String> domainValueDescriptor : domainValues) {
             i++;

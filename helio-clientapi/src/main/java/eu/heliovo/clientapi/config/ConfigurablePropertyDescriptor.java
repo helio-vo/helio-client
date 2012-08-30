@@ -99,7 +99,7 @@ public class ConfigurablePropertyDescriptor<T> extends PropertyDescriptor {
      * 
      * @return the domain value descriptor.
      */
-    public <S> Collection<DomainValueDescriptor<S>> getValueDomain() {
+    public <S> Collection<? extends DomainValueDescriptor<S>> getValueDomain() {
         @SuppressWarnings("unchecked")
         Collection<DomainValueDescriptor<S>> current = (Collection<DomainValueDescriptor<S>>) this
                 .getValue(VALUE_DOMAIN);

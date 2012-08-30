@@ -35,12 +35,6 @@ import eu.heliovo.shared.util.FileUtil;
  * 
  */
 public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
-
-    /**
-     * The pat table
-     */
-    private static final String CACHE_FILE = "patTable.csv";
-
     /**
      * where to cache the file
      */
@@ -59,17 +53,17 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 	/**
 	 * Location of the instruments list.
 	 */
-	private URL instrumentsLocation = FileUtil.asURL("http://www.helio-vo.eu/services/xml/instruments.xsd");
+	private URL instrumentsXsdUrl = FileUtil.asURL("http://www.helio-vo.eu/services/xml/instruments.xsd");
 
 	/**
 	 * Location of the ICS table.
 	 */
-	private URL icsTable = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-ics/HelioQueryService?STARTTIME=1900-01-01T00:00:00Z&ENDTIME=3000-12-31T00:00:00Z&FROM=instrument");
+	private URL icsTableUrl = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-ics/HelioQueryService?STARTTIME=1900-01-01T00:00:00Z&ENDTIME=3000-12-31T00:00:00Z&FROM=instrument");
 	
 	/**
 	 * The pat table url
 	 */
-	private URL patTable = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
+	private URL patTableUrl = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
 
     private List<InstrumentDescriptor> domainValues;
 	
@@ -86,7 +80,12 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 		try {
 			// create the instruments field
 			// get the instruments.xsd ...
-			URL instruments = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsLocation);
+			URL instruments = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsXsdUrl);
+			assertNutNull(instruments, "instruments");
+			URL icsVoTable = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "full_ics_instrument.xml", icsTableUrl);
+			assertNutNull(icsVoTable, "icsVoTable");
+			URL patTable = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "patTable.csv", patTableUrl);
+			assertNutNull(patTable, "patTable");
 			InputSource instrumentsSource = getInputSource(instruments);
 			Document dInstruments = parseInputSourceToDom(instrumentsSource);
 			
@@ -94,10 +93,10 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 			Map<String, InstrumentDescriptor> instrumentsMap = createMapOfInstruments(dInstruments);
 			
 			// now parse the pat table and add to the instrument descriptors.
-			enhanceProviderInformationFromPat(instrumentsMap);
+			enhanceProviderInformationFromPat(instrumentsMap, patTable);
 			
 			// next parse the ics table and enhance insturment descriptors
-			enhanceInstrumentDescriptorsFromICS(instrumentsMap, icsTable);
+			enhanceInstrumentDescriptorsFromICS(instrumentsMap, icsVoTable);
 			
 			domainValues = createInstrumentDescriptorDomain(instrumentsMap);
 		} catch (Exception e) {
@@ -105,7 +104,13 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 		}
 	}
 
-	/**
+	private void assertNutNull(URL url, String propertyName) {
+       if (url == null) {
+           throw new IllegalStateException("Failed to load '" + propertyName + "' from local cache or remote.");
+       }
+    }
+
+    /**
 	 * Parse the input source into a DOM tree and normalize the DOM tree.
 	 * @param instrumentsSource
 	 * @return a normalized DOM node
@@ -176,10 +181,8 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 	 * @throws URISyntaxException
 	 */
     private void enhanceProviderInformationFromPat(
-            Map<String, InstrumentDescriptor> instrumentDescriptorMap) throws IOException,
+            Map<String, InstrumentDescriptor> instrumentDescriptorMap, URL pat) throws IOException,
             URISyntaxException {
-        
-        URL pat = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, CACHE_FILE, patTable);
         if (pat != null) {
             LineIterator it = FileUtils.lineIterator(new File(pat.toURI()), "UTF-8");
             try {
@@ -212,7 +215,7 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
                 LineIterator.closeQuietly(it);
             }
         } else {                
-            _LOGGER.warn("Unable to load PAT table from remote or local: " + patTable);
+            _LOGGER.warn("Unable to load PAT table from remote or local: " + pat);
         }
         
     }
