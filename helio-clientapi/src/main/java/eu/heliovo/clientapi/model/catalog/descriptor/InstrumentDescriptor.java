@@ -1,13 +1,17 @@
 package eu.heliovo.clientapi.model.catalog.descriptor;
 
+import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
+import eu.heliovo.clientapi.model.field.type.FieldType;
 
 /**
  * Describe an instrument.
@@ -17,12 +21,36 @@ import eu.heliovo.clientapi.model.DomainValueDescriptor;
  */
 public class InstrumentDescriptor extends AbstractCatalogueDescriptor implements DomainValueDescriptor<String> {
     
+    private static final HelioFieldDescriptor<?>[] fieldDescriptors = new HelioFieldDescriptor<?>[]  {
+        new HelioFieldDescriptor<String>("name", "Instrument Name", "Instrument Name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("observatory_name", "Observatory Name", "Observatory Name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("obsinstKey", "HELIO ID", "Helio Instrument Name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("experimentId", "Experiment ID", "Experiment ID", FieldType.STRING),
+        new HelioFieldDescriptor<Date>("timeStart", "Instrument Start Date", "Date when the instrument started to observe", FieldType.DATETIME),
+        new HelioFieldDescriptor<Date>("timeEnd", "Instrument End Date", "Date when the instrument stopped to observe", FieldType.DATETIME),
+        new HelioFieldDescriptor<String>("longname", "Instrument Full Name", "Instrument Full Name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("instType", "Instrument Type", "Type of the instrument", FieldType.STRING),
+        new HelioFieldDescriptor<String>("instOd1", "Observation Domain 1", "Instrument observation domain, 1st category", FieldType.STRING),
+        new HelioFieldDescriptor<String>("instOd2", "Observation Domain 2", "Instrument observation domain, 2nd category", FieldType.STRING),
+        new HelioFieldDescriptor<String>("instOe1", "Observable Entity", "Instrument observation entity element", FieldType.STRING),
+        new HelioFieldDescriptor<String>("instOe2", "Observable Entity", "Instrument observation entity type", FieldType.STRING),
+        new HelioFieldDescriptor<String>("instFd", "Wavelength FD", "Instrument observation wave length fd", FieldType.STRING),
+        new HelioFieldDescriptor<String>("instNd", "Wavelength ND", "Instrument observation wavelength nd", FieldType.STRING),
+        new HelioFieldDescriptor<String>("groupName", "Group Name", "Group name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("keywords", "Keywords", "Complete focusing type", FieldType.STRING),
+        new HelioFieldDescriptor<String>("netKey", "Net Key", "Net Key", FieldType.STRING),
+        new HelioFieldDescriptor<Boolean>("isInPat", "Is in PAT", "Boolean values to indicate if a field from the ICS " +
+                "is contained in the Provider Access Table, i.e. if the Data Access Provider Service is able " +
+                "to access the specific instrument.", FieldType.BOOLEAN),
+
+    };
+    
     /**
      * Bean info class for the {@link InstrumentDescriptor}
      * @author MarcoSoldati
      *
      */
-    public static class InstrumentDescriptorBeanInfo extends AbstractCatalogueDescriptor.AbstractCatalogueDescriptorBeanInfo<InstrumentDescriptor> {
+    static class InstrumentDescriptorBeanInfo extends AbstractCatalogueDescriptor.AbstractCatalogueDescriptorBeanInfo<InstrumentDescriptor> {
         private static InstrumentDescriptorBeanInfo instance = new InstrumentDescriptorBeanInfo();
         
         /**
@@ -43,30 +71,18 @@ public class InstrumentDescriptor extends AbstractCatalogueDescriptor implements
          */
         private InstrumentDescriptorBeanInfo() {
             super(InstrumentDescriptor.class);
-                propertyDescriptors = new ConfigurablePropertyDescriptor<?>[] {
-                    createPropertyDescriptor("name", "Instrument Name", "Instrument Name"),
-                    createPropertyDescriptor("observatory_name", "Observatory Name", "Observatory Name"),
-                    createPropertyDescriptor("obsinstKey", "HELIO ID", "Helio Instrument Name"),
-                    createPropertyDescriptor("experimentId", "Experiment ID", "Experiment ID"),
-                    createPropertyDescriptor("timeStart", "Instrument Start Date", "Date when the instrument started to observe"),
-                    createPropertyDescriptor("timeEnd", "Instrument End Date", "Date when the instrument stopped to observe"),
-                    createPropertyDescriptor("longname", "Instrument Full Name", "Instrument Full Name"),
-                    createPropertyDescriptor("instType", "Instrument Type", "Type of the instrument"),
-                    createPropertyDescriptor("instOd1", "Observation Domain 1", "Instrument observation domain, 1st category"),
-                    createPropertyDescriptor("instOd2", "Observation Domain 2", "Instrument observation domain, 2nd category"),
-                    createPropertyDescriptor("instOe1", "Observable Entity", "Instrument observation entity element"),
-                    createPropertyDescriptor("instOe2", "Observable Entity", "Instrument observation entity type"),
-                    createPropertyDescriptor("instFd", "Wavelength FD", "Instrument observation wave length fd"),
-                    createPropertyDescriptor("instNd", "Wavelength ND", "Instrument observation wavelength nd"),
-                    createPropertyDescriptor("groupName", "Group Name", "Group name"),
-                    createPropertyDescriptor("keywords", "Keywords", "Complete focusing type"),
-                    createPropertyDescriptor("netKey", "Net Key", "Net Key"),
-                    createPropertyDescriptor("isInPat", "Is in PAT", "Boolean values to indicate if a field from the ICS " +
-                    		"is contained in the Provider Access Table, i.e. if the Data Access Provider Service is able " +
-                    		"to access the specific instrument."),
-                };
+                propertyDescriptors = asPropertyDescriptor(fieldDescriptors);
         }
         
+        private PropertyDescriptor[] asPropertyDescriptor(HelioFieldDescriptor<?>[] fieldDescriptors) {
+            PropertyDescriptor[] ret = new PropertyDescriptor[fieldDescriptors.length];
+            for (int i = 0; i < fieldDescriptors.length; i++) {
+                HelioFieldDescriptor<?> fd = fieldDescriptors[i];
+                ret[i] = createPropertyDescriptor(fd.getId(), fd.getLabel(), fd.getDescription());
+            }
+            return ret;
+        }
+
         @Override
         public PropertyDescriptor[] getPropertyDescriptors() {
             return propertyDescriptors;
@@ -130,7 +146,17 @@ public class InstrumentDescriptor extends AbstractCatalogueDescriptor implements
         this.label = label;
         this.description = description;
     }
+    
+    @Override
+    public BeanInfo getBeanInfo() {
+        return InstrumentDescriptorBeanInfo.getInstance();
+    }
 
+    @Override
+    public List<HelioFieldDescriptor<?>> getFieldDescriptors() {
+        return Arrays.asList(fieldDescriptors);
+    }
+    
     @Override
     public String getValue() {
         return id;

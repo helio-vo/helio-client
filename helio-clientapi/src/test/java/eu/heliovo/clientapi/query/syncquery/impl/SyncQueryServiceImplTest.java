@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.MockWhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.paramquery.serialize.PQLSerializer;
 import eu.heliovo.clientapi.query.syncquery.impl.MockSyncQueryService.MockQueryServicePort;
@@ -24,7 +25,8 @@ public class SyncQueryServiceImplTest {
         URL resultFile = getDefaultVoTable();
         MockQueryServicePort port = new MockQueryServicePort(resultFile, 0);
         service = new MockSyncQueryService(port);
-        service.setWhereClauseFactoryBean(new WhereClauseFactoryBean());
+        WhereClauseFactoryBean whereClauseFactoryBean = new MockWhereClauseFactoryBean(); 
+        service.setWhereClauseFactoryBean(whereClauseFactoryBean);
         service.setQuerySerializer(new PQLSerializer());
         assertNotNull(service.getServiceName());
     }

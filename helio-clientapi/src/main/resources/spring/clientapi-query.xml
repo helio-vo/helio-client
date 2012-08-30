@@ -18,8 +18,8 @@
   <bean id="asyncTimeQueryDelegate"
     class="eu.heliovo.clientapi.query.delegate.AsyncTimeQueryDelegate"></bean>
 
-  <bean id="whereClauseFactoryBean" class="eu.heliovo.clientapi.query.WhereClauseFactoryBean">
-    <property name="eventListDescriptorDao" ref="eventListDescriptorDao"></property>
+  <bean id="whereClauseFactoryBean" class="eu.heliovo.clientapi.query.WhereClauseFactoryBeanImpl">
+    <property name="configurationManager" ref="configurationManager"></property>
   </bean>
   
   <bean id="conversionService" class="eu.heliovo.clientapi.utils.convert.HelioConversionService"></bean>

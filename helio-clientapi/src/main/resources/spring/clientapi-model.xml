@@ -11,9 +11,18 @@
         <property name="fieldTypeFactory" ref="fieldTypeFactory"></property>    
     </bean>
     
+    <!-- descriptor of the DPAS tables. -->
     <bean id="instrumentDescriptorDao" class="eu.heliovo.clientapi.config.catalog.dao.InstrumentDescriptorDao" init-method="init" lazy-init="true">
         <property name="helioFileUtil" ref="helioFileUtil"></property>    
         <property name="stilUtils" ref="stilUtils"></property>    
+    </bean>
+    
+    <!-- descriptor of the ICS tables. -->
+    <bean id="icsCatalogueDescriptorDao" class="eu.heliovo.clientapi.config.catalog.dao.IcsCatalogueDescriptorDao" init-method="init" lazy-init="true">
+    </bean>
+    
+    <!-- descriptor of the ILS tables. -->
+    <bean id="ilsCatalogueDescriptorDao" class="eu.heliovo.clientapi.config.catalog.dao.IlsCatalogueDescriptorDao" init-method="init" lazy-init="true">
     </bean>
 
     <bean id="fieldTypeFactory" class="eu.heliovo.clientapi.model.field.type.FieldTypeFactory" init-method="init">

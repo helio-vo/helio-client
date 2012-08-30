@@ -149,22 +149,6 @@ public class EventListDescriptorDao extends AbstractCatalogueDescriptorDao {
         return domainValues;
     }
 
-
-    /**
-     * Find an event list descriptor by its name.
-     * @param listName the list name
-     * @return the descriptor with the given name or null if not found.
-     */
-    public EventListDescriptor findByListName(String listName) {
-        for (EventListDescriptor eventListDescriptor : domainValues) {
-            if (listName.equals(eventListDescriptor.getName())) {
-                return eventListDescriptor;
-            }
-        }
-        return null;
-    }
-
-    
     /**
      * @return the fieldTypeFactory
      */

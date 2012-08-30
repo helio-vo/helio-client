@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import eu.helio_vo.xml.longqueryservice.v0.StatusValue;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.MockWhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.asyncquery.impl.MockQueryService.MockPort;
 import eu.heliovo.clientapi.query.paramquery.serialize.PQLSerializer;
@@ -29,7 +30,8 @@ public class AsyncQueryServiceTest {
         URL resultFile = getDefaultVoTable();
         port = new MockPort("testid", resultFile, 0, 0, 0);
         service = new MockQueryService(port);
-        service.setWhereClauseFactoryBean(new WhereClauseFactoryBean());
+        WhereClauseFactoryBean whereClauseFactoryBean = new MockWhereClauseFactoryBean(); 
+        service.setWhereClauseFactoryBean(whereClauseFactoryBean);
         service.setQuerySerializer(new PQLSerializer());
         assertNotNull(service.getServiceName());
     }
@@ -178,7 +180,7 @@ public class AsyncQueryServiceTest {
         MockPort port = new MockPort("testid", resultFile, 200, 200, 200);
         port.setStatusSequence(statusSequence);
         MockQueryService service = new MockQueryService(port);
-        service.setWhereClauseFactoryBean(new WhereClauseFactoryBean());
+        service.setWhereClauseFactoryBean(new MockWhereClauseFactoryBean());
         service.setQuerySerializer(new PQLSerializer());
 
 		HelioQueryResult result = service.timeQuery(Arrays.asList("2003-02-01T00:00:00"), Arrays.asList("2003-02-10T00:00:00"), Arrays.asList("instrument1", "instrument2"), 100, 0);

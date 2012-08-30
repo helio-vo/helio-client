@@ -1,5 +1,7 @@
 package eu.heliovo.clientapi.model.field.type;
 
+import java.util.Date;
+
 import eu.heliovo.clientapi.model.field.Operator;
 
 
@@ -10,6 +12,16 @@ import eu.heliovo.clientapi.model.field.Operator;
  *
  */
 public interface FieldType extends Cloneable {
+    public static final FieldType STRING = new SimpleFieldType("string", java.lang.String.class, new Operator[] {Operator.EQUALS});
+    public static final FieldType INTEGER = new SimpleFieldType("Integer", Integer.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN});
+    public static final FieldType LONG = new SimpleFieldType("Long", Long.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN});
+    public static final FieldType SHORT = new SimpleFieldType("Short", Short.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN});
+    public static final FieldType FLOAT = new SimpleFieldType("Float", Float.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN});
+    public static final FieldType DOUBLE = new SimpleFieldType("Double", Double.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN});
+    public static final FieldType BOOLEAN = new SimpleFieldType("Boolean ", Boolean.class, new Operator[] {Operator.EQUALS});
+    public static final FieldType BYTE = new SimpleFieldType("Byte", Byte.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN});
+    public static final FieldType DATETIME = new SimpleFieldType("dateTime", Date.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN});
+    
 	/**
 	 * Get the name of the field type
 	 * @return the type name.

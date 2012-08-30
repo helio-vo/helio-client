@@ -16,8 +16,12 @@
                 <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.DpasFromPropertyHandler" init-method="init">
                   <property name="instrumentDescriptorDao" ref="instrumentDescriptorDao"></property>
                 </bean>
-                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.IcsFromPropertyHandler" init-method="init" />
-                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.IlsFromPropertyHandler" init-method="init" />
+                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.IcsFromPropertyHandler" init-method="init" >
+                  <property name="catalogueDescriptorDao" ref="icsCatalogueDescriptorDao"></property>
+                </bean>
+                <bean class="eu.heliovo.clientapi.config.catalog.propertyhandler.IlsFromPropertyHandler" init-method="init" >
+                  <property name="catalogueDescriptorDao" ref="ilsCatalogueDescriptorDao"></property>
+                </bean>
             </list>
         </property>
     </bean>

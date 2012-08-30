@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
@@ -17,7 +16,7 @@ import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
  * @author MarcoSoldati
  *
  */
-public class EventListDescriptor extends AbstractCatalogueDescriptor implements DomainValueDescriptor<String>, AnnotatedBean {
+public class EventListDescriptor extends AbstractCatalogueDescriptor implements DomainValueDescriptor<String> {
     
     /**
      * Bean info class for the {@link EventListDescriptor}

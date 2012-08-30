@@ -2,13 +2,12 @@ package eu.heliovo.clientapi.config.catalog.propertyhandler;
 
 import java.beans.IntrospectionException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.config.HelioPropertyHandler;
-import eu.heliovo.clientapi.model.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.DomainValueDescriptorUtil;
+import eu.heliovo.clientapi.config.catalog.dao.IlsCatalogueDescriptorDao;
+import eu.heliovo.clientapi.model.catalog.descriptor.IlsCatalogueDescriptor;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.registryclient.HelioServiceName;
@@ -40,6 +39,11 @@ public class IlsFromPropertyHandler implements HelioPropertyHandler {
      */
     private ConfigurablePropertyDescriptor<List<String>> propertyDescriptor;
     
+    /**
+     * Keep a reference to the catalogue descriptor dao.
+     */
+    private IlsCatalogueDescriptorDao catalogueDescriptorDao; 
+    
     @Override
     public HelioServiceName getHelioServiceName() {
         return SERVICE_NAME;
@@ -55,7 +59,7 @@ public class IlsFromPropertyHandler implements HelioPropertyHandler {
         return PROPERTY_NAME;
     }
 
-    // init the HEC configuration
+    // init the configuration
     @Override
     public void init() {
         ConfigurablePropertyDescriptor<List<String>> propDescriptor;
@@ -65,17 +69,29 @@ public class IlsFromPropertyHandler implements HelioPropertyHandler {
             throw new RuntimeException("Internal Error: Unable to create 'from' property: " + e.getMessage(), e);
         }
         
-        Collection<DomainValueDescriptor<String>> domainValues = new HashSet<DomainValueDescriptor<String>>();
-        domainValues.add(DomainValueDescriptorUtil.asDomainValue("trajectories", "Trajectories", null));
-        domainValues.add(DomainValueDescriptorUtil.asDomainValue("keyevents", "Key Events", null));
-        domainValues.add(DomainValueDescriptorUtil.asDomainValue("obs_hbo", "Observatory HBO", null));
-        
+        Collection<IlsCatalogueDescriptor> domainValues = catalogueDescriptorDao.getDomainValues();
         propDescriptor.setValueDomain(domainValues);
         this.propertyDescriptor = propDescriptor;
     }
     
     @Override
-    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor(HelioService helioService) {
+    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor(Class<? extends HelioService> serviceClass) {
         return propertyDescriptor;
     }
+
+    /**
+     * @return the ilsCatalogueDescriptorDao
+     */
+    public IlsCatalogueDescriptorDao getCatalogueDescriptorDao() {
+        return catalogueDescriptorDao;
+    }
+
+    /**
+     * @param ilsCatalogueDescriptorDao the ilsCatalogueDescriptorDao to set
+     */
+    public void setCatalogueDescriptorDao(IlsCatalogueDescriptorDao ilsCatalogueDescriptorDao) {
+        this.catalogueDescriptorDao = ilsCatalogueDescriptorDao;
+    }
+    
+    
 }

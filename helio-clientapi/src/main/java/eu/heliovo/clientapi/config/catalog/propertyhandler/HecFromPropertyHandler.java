@@ -79,7 +79,7 @@ public class HecFromPropertyHandler implements HelioPropertyHandler {
     }
 
     @Override
-    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor(HelioService helioService) {
+    public ConfigurablePropertyDescriptor<List<String>> getPropertyDescriptor(Class<? extends HelioService> serviceClass) {
         return propertyDescriptor;
     }
 

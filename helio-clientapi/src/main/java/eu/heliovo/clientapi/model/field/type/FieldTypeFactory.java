@@ -16,31 +16,32 @@ public class FieldTypeFactory {
 	 * default constructor
 	 */
 	public FieldTypeFactory() { 
-	    
 	}
 	
-	/**
+
+    /**
 	 * Init the registry with default types.
 	 */
 	public void init() {
-		add(new SimpleFieldType("string", java.lang.String.class, new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("biginteger", java.math.BigInteger.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(FieldType.STRING);
+		add(FieldType.INTEGER);
+		add(FieldType.LONG);
+		add(FieldType.SHORT);
+		add(FieldType.FLOAT);
+		add(FieldType.DOUBLE);
+		add(FieldType.BOOLEAN);
+		add(FieldType.BYTE);
+		add(FieldType.DATETIME);
+
 		add(new SimpleFieldType("int", int.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("Integer", Integer.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("long", long.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("Long", Long.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("short", short.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("Short", Short.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
+		add(new SimpleFieldType("biginteger", java.math.BigInteger.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("decimal", java.math.BigDecimal.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("float", float.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("Float", Float.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("double", double.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("Double", Double.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("boolean ", boolean.class, new Operator[] {Operator.EQUALS}));
-		add(new SimpleFieldType("Boolean ", Boolean.class, new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("byte", byte.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("Byte", Byte.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
-		add(new SimpleFieldType("dateTime", Date.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("base64Binary", byte[].class, new Operator[] {Operator.EQUALS}));
 		add(new SimpleFieldType("unsignedInt", long.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));
 		add(new SimpleFieldType("unsignedShort", int.class, new Operator[] {Operator.EQUALS, Operator.LESS_EQUAL_THAN, Operator.LARGER_EQUAL_THAN}));

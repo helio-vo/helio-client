@@ -38,8 +38,8 @@ public interface HelioPropertyHandler {
 
     /**
      * Get the descriptor for a specific property.
-     * @param helioService Instance of the current service.
+     * @param serviceClass Instance of the current service.
      * @return the property descriptor, potentially read from a cache.
      */
-    public PropertyDescriptor getPropertyDescriptor(HelioService helioService);
+    public PropertyDescriptor getPropertyDescriptor(Class<? extends HelioService> serviceClass);
 }

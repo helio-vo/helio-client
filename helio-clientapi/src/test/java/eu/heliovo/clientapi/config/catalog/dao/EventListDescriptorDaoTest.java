@@ -83,15 +83,15 @@ public class EventListDescriptorDaoTest {
         assertEquals("infoUrl", propDescs[15].getName());
     }
     
-    @Test public void testFieldDescriptor() {
-        List<HelioFieldDescriptor<?>> fieldDescriptors = 
-                eventListDescriptorDao.findByListName("goes_sxr_flare").getFieldDescriptors();
-        assertNotNull(fieldDescriptors);
-        assertTrue(fieldDescriptors.size() > 0);
-        assertEquals(10, fieldDescriptors.size());
-        
-        assertEquals("hec_id", fieldDescriptors.get(0).getName());
-        assertEquals("time_start", fieldDescriptors.get(1).getName());
-        assertEquals("time_peak", fieldDescriptors.get(2).getName());
-    }
+//    @Test public void testFieldDescriptor() {
+//        List<HelioFieldDescriptor<?>> fieldDescriptors = 
+//                eventListDescriptorDao.findByListName("goes_sxr_flare").getFieldDescriptors();
+//        assertNotNull(fieldDescriptors);
+//        assertTrue(fieldDescriptors.size() > 0);
+//        assertEquals(10, fieldDescriptors.size());
+//        
+//        assertEquals("hec_id", fieldDescriptors.get(0).getName());
+//        assertEquals("time_start", fieldDescriptors.get(1).getName());
+//        assertEquals("time_peak", fieldDescriptors.get(2).getName());
+//    }
 }

@@ -5,10 +5,12 @@ import java.beans.SimpleBeanInfo;
 import java.text.ParseException;
 import java.util.Date;
 
+import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogueDescriptor;
 import eu.heliovo.shared.util.DateUtil;
 
-abstract class AbstractCatalogueDescriptor {
+abstract class AbstractCatalogueDescriptor implements HelioCatalogueDescriptor, AnnotatedBean {
     
     /**
      * Bean info class for the {@link EventListDescriptor}

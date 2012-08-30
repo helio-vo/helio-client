@@ -1,14 +1,20 @@
 package eu.heliovo.clientapi.config.impl;
 
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
+import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.config.HelioConfigurationManager;
 import eu.heliovo.clientapi.config.HelioPropertyHandler;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogueDescriptor;
 import eu.heliovo.clientapi.model.service.HelioService;
+import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 
@@ -25,26 +31,48 @@ public class HelioConfigurationManagerImpl implements HelioConfigurationManager 
      */
     private Collection<HelioPropertyHandler> propertyHandlers;
   
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<? extends HelioCatalogueDescriptor> getCatalogueDescriptor(HelioServiceName serviceName, String serviceVariant) {
+        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(serviceName, serviceVariant, QueryService.class, "from");
+        if (propertyDescriptor == null || !(propertyDescriptor instanceof ConfigurablePropertyDescriptor<?>)) {
+            return Collections.EMPTY_LIST;
+        }
+        
+        ConfigurablePropertyDescriptor<HelioCatalogueDescriptor> genericPropertyDescriptor = 
+                (ConfigurablePropertyDescriptor<HelioCatalogueDescriptor>) propertyDescriptor;
+        
+        return new ArrayList<HelioCatalogueDescriptor>((Collection<? extends HelioCatalogueDescriptor>)genericPropertyDescriptor.getValueDomain());
+    }
 
     @Override
     public PropertyDescriptor getPropertyDescriptor(HelioService helioService, String propertyName) {
         AssertUtil.assertArgumentNotNull(helioService, "helioService");
+        return getPropertyDescriptor(helioService.getServiceName(), helioService.getServiceVariant(), helioService.getClass(), propertyName);
+    }
+    
+    @Override
+    public PropertyDescriptor getPropertyDescriptor(HelioServiceName serviceName, String serviceVariant,
+            Class<? extends HelioService> serviceClass, String propertyName) {
+        AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
+        AssertUtil.assertArgumentNotNull(serviceClass, "serviceClass");
         AssertUtil.assertArgumentNotNull(propertyName, "propertyName");
-
+        
         HelioPropertyHandler bestMatch = findBestMatchingPropertyHandler(
-                helioService.getServiceName(), helioService.getServiceVariant(), propertyName);
+                serviceName, serviceVariant, propertyName);
         
         // create a default handler for unknown property handlers
         PropertyDescriptor propertyDescriptor;
         if (bestMatch == null) {
-            propertyDescriptor = getStandardPropertyDescriptor(propertyName, helioService.getClass());
+            propertyDescriptor = getStandardPropertyDescriptor(propertyName, serviceClass);
         } else {
-            propertyDescriptor = bestMatch.getPropertyDescriptor(helioService);
+            propertyDescriptor = bestMatch.getPropertyDescriptor(serviceClass);
             if (propertyDescriptor == null) {
                 throw new RuntimeException("Return type of HelioPropertyHandler.getPropertyDescriptor() must not be null.");
             }
-        }
-        
+        }        
         return propertyDescriptor;
     }
 

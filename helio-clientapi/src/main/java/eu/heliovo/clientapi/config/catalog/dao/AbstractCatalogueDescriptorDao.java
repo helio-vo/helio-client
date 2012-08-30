@@ -9,10 +9,11 @@ import org.apache.log4j.Logger;
 
 import uk.ac.starlink.table.ColumnInfo;
 import uk.ac.starlink.table.StarTable;
+import eu.heliovo.clientapi.config.CatalogueDescriptorDao;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.shared.props.HelioFileUtil;
 
-public class AbstractCatalogueDescriptorDao {
+abstract class AbstractCatalogueDescriptorDao implements CatalogueDescriptorDao {
     /**
      * The logger
      */

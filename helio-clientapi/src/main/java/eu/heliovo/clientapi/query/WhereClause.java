@@ -31,7 +31,7 @@ public class WhereClause {
 
     /**
      * Create and initalize the where clause.
-     * Use the {@link WhereClauseFactoryBean} to create instances of this class.
+     * Use the {@link WhereClauseFactoryBeanImpl} to create instances of this class.
      * @param catalogName the name of the catalogue
      * @param fieldDescriptors the corresponding field descriptors.
      */

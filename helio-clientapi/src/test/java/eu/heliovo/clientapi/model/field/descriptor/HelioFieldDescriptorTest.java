@@ -9,13 +9,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.DomainValueDescriptorUtil;
-import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.type.FieldType;
-import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
 
 /**
  * Unit test class for the helio field
@@ -30,9 +27,7 @@ public class HelioFieldDescriptorTest {
 		String id = "id";
 		String fieldName = "fieldName";
 		String description = "description";
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        FieldTypeFactory fieldTypeFactory = (FieldTypeFactory)context.getBean("fieldTypeFactory");
-		FieldType type = fieldTypeFactory.getTypeByName("string");
+		FieldType type = FieldType.STRING;
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2",
 				"string3");
 		String defaultValue = "string1";
@@ -100,9 +95,7 @@ public class HelioFieldDescriptorTest {
 		String id = "id";
 		String fieldName = "fieldName";
 		String description = "description";
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        FieldTypeFactory fieldTypeFactory = (FieldTypeFactory)context.getBean("fieldTypeFactory");
-		FieldType type = fieldTypeFactory.getTypeByName("string");
+		FieldType type = FieldType.STRING;
 		
 		DomainValueDescriptor<String>[] valueDomain = DomainValueDescriptorUtil.asValueDomain("string1", "string2",
 				"string3");
@@ -143,11 +136,8 @@ public class HelioFieldDescriptorTest {
 	 */
 	@Test
 	public void testEqualsAndHashcode() {
-        GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main-test.xml");
-        FieldTypeFactory fieldTypeFactory = (FieldTypeFactory)context.getBean("fieldTypeFactory");
-
-		FieldType type = fieldTypeFactory.getTypeByName("string");
-		HelioFieldDescriptor<String> helioField1 = new HelioFieldDescriptor<String>("id1", "field1", null, type);
+	    FieldType type = FieldType.STRING;
+	    HelioFieldDescriptor<String> helioField1 = new HelioFieldDescriptor<String>("id1", "field1", null, type);
 		HelioFieldDescriptor<String> helioField2 = new HelioFieldDescriptor<String>("id1", "field2", null, type);
 		HelioFieldDescriptor<String> helioField3 = new HelioFieldDescriptor<String>("id3", "field3", null, type);
 
