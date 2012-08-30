@@ -33,10 +33,10 @@ public class HecFromPropertyHandlerTest {
         hecFromPropertyHandler.init();
         
         assertNotNull(hecFromPropertyHandler.getPropertyDescriptor(null));
-        @SuppressWarnings("unchecked")
-        Collection<DomainValueDescriptor<String>> domainValues = (Collection<DomainValueDescriptor<String>>) hecFromPropertyHandler.getPropertyDescriptor(null).getValueDomain();
+        Collection<? extends DomainValueDescriptor<Object>> domainValues = 
+                hecFromPropertyHandler.getPropertyDescriptor(null).getValueDomain();
         int i =0;
-        for (DomainValueDescriptor<String> domainValueDescriptor : domainValues) {
+        for (DomainValueDescriptor<?> domainValueDescriptor : domainValues) {
             i++;
             System.out.println(i + ":\t"+ domainValueDescriptor.getLabel() + " (" + domainValueDescriptor.getValue() + ")");
         }
