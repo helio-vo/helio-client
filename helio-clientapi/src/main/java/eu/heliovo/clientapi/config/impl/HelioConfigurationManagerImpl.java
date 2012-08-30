@@ -6,12 +6,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.config.HelioConfigurationManager;
 import eu.heliovo.clientapi.config.HelioPropertyHandler;
+import eu.heliovo.clientapi.model.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogueDescriptor;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.query.QueryService;
@@ -25,13 +27,14 @@ import eu.heliovo.shared.util.AssertUtil;
  *
  */
 public class HelioConfigurationManagerImpl implements HelioConfigurationManager {
+    
+    private static final Logger LOGGER = Logger.getLogger(HelioConfigurationManagerImpl.class);
 
     /**
      * the property handlers registered with this configuration
      */
     private Collection<HelioPropertyHandler> propertyHandlers;
-  
-    
+   
     @SuppressWarnings("unchecked")
     @Override
     public List<? extends HelioCatalogueDescriptor> getCatalogueDescriptor(HelioServiceName serviceName, String serviceVariant) {
@@ -44,7 +47,15 @@ public class HelioConfigurationManagerImpl implements HelioConfigurationManager 
         ConfigurablePropertyDescriptor<HelioCatalogueDescriptor> genericPropertyDescriptor = 
                 (ConfigurablePropertyDescriptor<HelioCatalogueDescriptor>) propertyDescriptor;
         
-        return new ArrayList<HelioCatalogueDescriptor>((Collection<? extends HelioCatalogueDescriptor>)genericPropertyDescriptor.getValueDomain());
+        List<HelioCatalogueDescriptor> ret = new  ArrayList<HelioCatalogueDescriptor>();
+        for (DomainValueDescriptor<?> catalogueDescriptor : genericPropertyDescriptor.getValueDomain()) {
+            if (catalogueDescriptor instanceof HelioCatalogueDescriptor) {
+                ret.add((HelioCatalogueDescriptor) catalogueDescriptor);
+            } else {
+                LOGGER.info("Ignoring catalogue descriptor as it is not an instance of a HelioCatalogueDescriptor: " + catalogueDescriptor);
+            }
+        }
+        return ret;
     }
 
     @Override
