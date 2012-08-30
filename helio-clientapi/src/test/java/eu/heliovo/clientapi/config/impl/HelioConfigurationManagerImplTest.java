@@ -35,7 +35,7 @@ public class HelioConfigurationManagerImplTest {
         Collection<HelioPropertyHandler> propertyHandlers = createMockPropertyHandlers(); 
         impl.setPropertyHandlers(propertyHandlers);
         
-        List<? extends HelioCatalogueDescriptor> catalogueDescriptors = impl.getCatalogueDescriptor(TEST_SERVICE, null);
+        List<? extends HelioCatalogueDescriptor> catalogueDescriptors = impl.getCatalogueDescriptors(TEST_SERVICE, null);
         assertNotNull(catalogueDescriptors);
         assertEquals(0, catalogueDescriptors.size());
     }

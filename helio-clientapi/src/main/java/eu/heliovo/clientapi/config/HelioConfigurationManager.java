@@ -21,7 +21,7 @@ public interface HelioConfigurationManager {
      * @param serviceVariant the variant name. Ignored if null.
      * @return the list of catalog descriptor or and empty list if not available.
      */
-    public List<? extends HelioCatalogueDescriptor> getCatalogueDescriptor(HelioServiceName serviceName, String serviceVariant);
+    public List<? extends HelioCatalogueDescriptor> getCatalogueDescriptors(HelioServiceName serviceName, String serviceVariant);
 
     /**
      * Get the property descriptor for a given service.

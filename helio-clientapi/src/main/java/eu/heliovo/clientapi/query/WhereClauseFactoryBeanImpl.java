@@ -26,7 +26,7 @@ public class WhereClauseFactoryBeanImpl implements WhereClauseFactoryBean {
     public WhereClause createWhereClause(HelioServiceName helioServiceName, String listName) {
         List<HelioFieldDescriptor<?>> fieldDescriptors = null;
         List<? extends HelioCatalogueDescriptor> catalogueDescriptors = 
-                configurationManager.getCatalogueDescriptor(helioServiceName, null);
+                configurationManager.getCatalogueDescriptors(helioServiceName, null);
         if (catalogueDescriptors.size() > 0) {
             HelioCatalogueDescriptor catalogueDescriptor = findByListName(catalogueDescriptors, listName);
             fieldDescriptors = catalogueDescriptor != null ? catalogueDescriptor.getFieldDescriptors() : null;
