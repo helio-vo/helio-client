@@ -37,7 +37,7 @@ public class HelioConfigurationManagerImpl implements HelioConfigurationManager 
    
     @SuppressWarnings("unchecked")
     @Override
-    public List<? extends HelioCatalogueDescriptor> getCatalogueDescriptor(HelioServiceName serviceName, String serviceVariant) {
+    public List<? extends HelioCatalogueDescriptor> getCatalogueDescriptors(HelioServiceName serviceName, String serviceVariant) {
         AssertUtil.assertArgumentNotNull(serviceName, "serviceName");
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(serviceName, serviceVariant, QueryService.class, "from");
         if (propertyDescriptor == null || !(propertyDescriptor instanceof ConfigurablePropertyDescriptor<?>)) {
