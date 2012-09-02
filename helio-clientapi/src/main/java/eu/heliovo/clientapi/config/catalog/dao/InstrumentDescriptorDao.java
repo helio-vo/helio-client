@@ -46,9 +46,15 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
     private static final String OBSINST_KEY = "obsinst_key";
     
     /**
+     * Column name of the "longname" in the ICS table.
+     */
+    private static final String LONGNAME = "longname";
+    
+    /**
 	 * The logger to use.
 	 */
 	private static final Logger _LOGGER = Logger.getLogger(InstrumentDescriptorDao.class);
+
 	
 	/**
 	 * Location of the instruments list.
@@ -65,6 +71,9 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 	 */
 	private URL patTableUrl = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
 
+	/**
+	 * Our list of instrument Descriptors that should be cached here.
+	 */
     private List<InstrumentDescriptor> domainValues;
 	
 	/**
@@ -233,6 +242,11 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
             throw new IllegalStateException("Unable to find column '" + OBSINST_KEY + "' in ICS table at " + icsTable);
         }
         
+        int longnameCol = findColumnPos(table, LONGNAME);
+        if (longnameCol < 0) {
+            throw new IllegalStateException("Unable to find column '" + LONGNAME + "' in ICS table at " + icsTable);
+        }
+        
         for (int r = 0; r < table.getRowCount(); r++) {
             // get the current data row
             Object[] row;
@@ -247,7 +261,8 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
             String obsInstKeyName = row[obsInstKey].toString();
             InstrumentDescriptor instrumentDescriptor = instrumentDescriptorMap.get(obsInstKeyName);
             if (instrumentDescriptor == null) {
-                instrumentDescriptor = new InstrumentDescriptor(obsInstKeyName, obsInstKeyName, null);
+                String longname = row[longnameCol].toString();
+                instrumentDescriptor = new InstrumentDescriptor(obsInstKeyName, longname, null);
                 instrumentDescriptorMap.put(obsInstKeyName, instrumentDescriptor);
             }
             instrumentDescriptor.setInIcs(true);

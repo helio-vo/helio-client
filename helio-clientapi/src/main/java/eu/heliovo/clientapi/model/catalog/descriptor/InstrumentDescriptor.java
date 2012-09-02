@@ -23,7 +23,7 @@ public class InstrumentDescriptor extends AbstractCatalogueDescriptor implements
     
     private static final HelioFieldDescriptor<?>[] fieldDescriptors = new HelioFieldDescriptor<?>[]  {
         new HelioFieldDescriptor<String>("name", "Instrument Name", "Instrument Name", FieldType.STRING),
-        new HelioFieldDescriptor<String>("observatory_name", "Observatory Name", "Observatory Name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("observatoryName", "Observatory Name", "Observatory Name", FieldType.STRING),
         new HelioFieldDescriptor<String>("obsinstKey", "HELIO ID", "Helio Instrument Name", FieldType.STRING),
         new HelioFieldDescriptor<String>("experimentId", "Experiment ID", "Experiment ID", FieldType.STRING),
         new HelioFieldDescriptor<Date>("timeStart", "Instrument Start Date", "Date when the instrument started to observe", FieldType.DATETIME),
