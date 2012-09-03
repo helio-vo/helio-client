@@ -89,23 +89,24 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 		try {
 			// create the instruments field
 			// get the instruments.xsd ...
-			URL instruments = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsXsdUrl);
-			assertNutNull(instruments, "instruments");
+			URL instrumentsXsd = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsXsdUrl);
+			assertNutNull(instrumentsXsd, "instruments");
 			URL icsVoTable = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "full_ics_instrument.xml", icsTableUrl);
 			assertNutNull(icsVoTable, "icsVoTable");
 			URL patTable = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "patTable.csv", patTableUrl);
 			assertNutNull(patTable, "patTable");
-			InputSource instrumentsSource = getInputSource(instruments);
-			Document dInstruments = parseInputSourceToDom(instrumentsSource);
 			
-			// ...  and extract instruments into a map
-			Map<String, InstrumentDescriptor> instrumentsMap = createMapOfInstruments(dInstruments);
+			// create the map of instruments
+	        Map<String, InstrumentDescriptor> instrumentsMap = new LinkedHashMap<String, InstrumentDescriptor>();
+			
+			// next parse the ics table and enhance instrument descriptors
+			enhanceInstrumentDescriptorsFromICS(instrumentsMap, icsVoTable);
 			
 			// now parse the pat table and add to the instrument descriptors.
 			enhanceProviderInformationFromPat(instrumentsMap, patTable);
 			
-			// next parse the ics table and enhance insturment descriptors
-			enhanceInstrumentDescriptorsFromICS(instrumentsMap, icsVoTable);
+			// ...  and extract instruments into a map
+			enhanceInstrumentDescriptorsFromInstrumentsXsd(instrumentsMap, instrumentsXsd);
 			
 			domainValues = createInstrumentDescriptorDomain(instrumentsMap);
 		} catch (Exception e) {
@@ -118,16 +119,38 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
            throw new IllegalStateException("Failed to load '" + propertyName + "' from local cache or remote.");
        }
     }
+    /**
+     * Extract the instruments from the instruments DOM. 
+     * @param dInstruments the instruments DOM
+     * @return a map with all instruments, key is the instrument id, value the instrumentDescriptor.
+     */
+    private Map<String, InstrumentDescriptor> enhanceInstrumentDescriptorsFromInstrumentsXsd(Map<String, InstrumentDescriptor> instrumentsMap, URL instrumentsXsd) {
+        InputSource instrumentsSource = getInputSource(instrumentsXsd);
+        Document dInstruments = parseInputSourceToDom(instrumentsSource);
+        NodeList lists = dInstruments.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "enumeration");
+        for (int i = 0; i < lists.getLength(); i++) {
+            Element listElement = (Element) lists.item(i);
+            String instrumentName = listElement.getAttribute("value");
+            String instrumentLabel = getTextContent(listElement, "documentation");
+            
+            if (!instrumentsMap.containsKey(instrumentName)) {
+                InstrumentDescriptor instrumentDescriptor = new InstrumentDescriptor(instrumentName, instrumentLabel, null);
+                instrumentDescriptor.setInInstrumentsXsd(true);
+                instrumentsMap.put(instrumentName, instrumentDescriptor);
+            }
+        }
+        return instrumentsMap;
+    }
 
     /**
-	 * Parse the input source into a DOM tree and normalize the DOM tree.
-	 * @param instrumentsSource
-	 * @return a normalized DOM node
-	 * @throws SAXException
-	 * @throws IOException
-	 * @see Node#normalize()
-	 */
-    private Document parseInputSourceToDom(InputSource instrumentsSource) throws SAXException, IOException {
+     * Parse the input source into a DOM tree and normalize the DOM tree.
+     * @param instrumentsSource
+     * @return a normalized DOM node
+     * @throws SAXException
+     * @throws IOException
+     * @see Node#normalize()
+     */
+    private Document parseInputSourceToDom(InputSource instrumentsSource) {
         DocumentBuilder docBuilder;
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -135,35 +158,20 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
             docBuilder = dbFactory.newDocumentBuilder();
             
         } catch (ParserConfigurationException e) {
-            throw new RuntimeException("Unable to create DOM document builder: " + e.getMessage(), e);
+            throw new IllegalStateException("Unable to create DOM document builder: " + e.getMessage(), e);
         }
 
-        Document dInstruments = docBuilder.parse(instrumentsSource);
+        Document dInstruments;
+        try {
+            dInstruments = docBuilder.parse(instrumentsSource);
+        } catch (SAXException e) {
+            throw new IllegalStateException("Unable to parse instruments.xsd: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to parse instruments.xsd: " + e.getMessage(), e);
+        }
         dInstruments.normalize();
         return dInstruments;
     }
-    
-    /**
-     * Extract the instruments from the instruments DOM. 
-     * @param dInstruments the instruments DOM
-     * @return a map with all instruments, key is the instrument id, value the instrumentDescriptor.
-     */
-    private Map<String, InstrumentDescriptor> createMapOfInstruments(Document dInstruments) {
-        Map<String, InstrumentDescriptor> instrumentsMap = new LinkedHashMap<String, InstrumentDescriptor>();
-        //NodeList lists = dInstruments.getChildNodes();
-//        System.out.println("from instruments.xsd");
-        NodeList lists = dInstruments.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "enumeration");
-        for (int i = 0; i < lists.getLength(); i++) {
-            Element listElement = (Element) lists.item(i);
-            String instrumentName = listElement.getAttribute("value");
-            String instrumentLabel = getTextContent(listElement, "documentation");
-            InstrumentDescriptor instrumentDescriptor = new InstrumentDescriptor(instrumentName, instrumentLabel, null);
-            instrumentDescriptor.setInInstrumentsXsd(true);
-            instrumentsMap.put(instrumentName, instrumentDescriptor);
-        }
-        return instrumentsMap;
-    }
-
 
 	/**
 	 * Extract the text content from the first matching tag with a given name.
