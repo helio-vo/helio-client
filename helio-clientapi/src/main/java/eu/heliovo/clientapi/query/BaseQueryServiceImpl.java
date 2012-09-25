@@ -579,6 +579,16 @@ public class BaseQueryServiceImpl extends AbstractServiceImpl implements QuerySe
     public List<WhereClause> getWhereClauses() {
         return whereClauses;
     }
+    
+    @Override
+    public WhereClause getWhereClausesByCatalogName(String catalogName) {
+        for (WhereClause clause : whereClauses) {
+            if (catalogName.equals(clause.getCatalogName())) {
+                return clause;
+            }
+        }
+        return null;
+    }
 
     /**
      * A custom Bean Info for this service.

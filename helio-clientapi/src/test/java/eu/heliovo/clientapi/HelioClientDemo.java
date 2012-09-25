@@ -434,7 +434,8 @@ public class HelioClientDemo {
         List<WhereClause> whereClauses = service.getWhereClauses();
         WhereClause clause = whereClauses.get(0);
         List<HelioFieldDescriptor<?>> descriptors = clause.getFieldDescriptors();
-        HelioFieldDescriptor<Long> totalCount = (HelioFieldDescriptor<Long>) findById(descriptors, "total_count");
+        @SuppressWarnings("unchecked")
+        HelioFieldDescriptor<Long> totalCount = (HelioFieldDescriptor<Long>)clause.findFieldDescriptorById("total_count");
         clause.setQueryTerm(totalCount, new HelioFieldQueryTerm<Long>(totalCount, Operator.LARGER_EQUAL_THAN, 100000000l));
         
         System.out.println(descriptors);
@@ -443,22 +444,6 @@ public class HelioClientDemo {
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 20000));
     }
-    
-    /**
-     * Find a specific descriptor by id.
-     * @param descriptors the descriptors to search
-     * @param id the id to look for.
-     * @return the descriptor or null if not found.
-     */
-    private HelioFieldDescriptor<?> findById(List<HelioFieldDescriptor<?>> descriptors, String id) {
-        for (HelioFieldDescriptor<?> helioFieldDescriptor : descriptors) {
-            if (id.equals(helioFieldDescriptor.getId())) {
-                return helioFieldDescriptor;
-            }
-        }
-        return null;
-    }
-
 
     /**
      * Exec a DPAS query

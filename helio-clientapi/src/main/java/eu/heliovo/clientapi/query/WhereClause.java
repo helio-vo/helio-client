@@ -98,6 +98,21 @@ public class WhereClause {
         return ret;
     }
     
+    
+    /**
+     * Find a specific descriptor by its id.
+     * @param id the id to look for.
+     * @return the descriptor or null if not found.
+     */
+    public HelioFieldDescriptor<?> findFieldDescriptorById(String id) {
+        for (HelioFieldDescriptor<?> helioFieldDescriptor : fieldDescriptors) {
+            if (id.equals(helioFieldDescriptor.getId())) {
+                return helioFieldDescriptor;
+            }
+        }
+        return null;
+    }
+    
     /**
      * Check if the given field descriptor is contained in this.fieldDescriptors.
      * @param fieldDescriptor the descriptor to look for. 

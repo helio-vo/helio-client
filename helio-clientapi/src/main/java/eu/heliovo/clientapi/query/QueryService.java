@@ -172,6 +172,15 @@ public interface QueryService extends HelioService {
      * @return a list for where clauses, if the from property is set. An empty list otherwise.
      */
     public List<WhereClause> getWhereClauses();
+    
+    /**
+     * Get a where clause by a given catalogName. If a catalog does not support where clauses
+     * the where clause will have an empty helioFieldDescriptor field.  
+     * There will be one where clause per entry in the from property.
+     * @param catalogName the name of the catalog to look up. Equals to the "from" property value.
+     * @return a list for where clauses, if the from property is set. An empty list otherwise.
+     */
+    public WhereClause getWhereClausesByCatalogName(String catalogName);
 
 	/**
 	 * Join two tables (expert feature)
