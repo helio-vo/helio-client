@@ -19,7 +19,7 @@ public class WhereClause {
     private String catalogName;
     
     /**
-     * initialize with the field descriptors for this wehre clause
+     * initialize with the field descriptors for this where clause
      */
     private final List<HelioFieldDescriptor<?>> fieldDescriptors;
     

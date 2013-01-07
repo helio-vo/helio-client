@@ -9,7 +9,7 @@ import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.registryclient.HelioServiceName;
 
 /**
- * A factory bean to create new where clauses.
+ * A factory bean to create new where clauses by reading the configuration from the configurationManager.
  * @author MarcoSoldati
  *
  */
@@ -19,9 +19,6 @@ public class WhereClauseFactoryBeanImpl implements WhereClauseFactoryBean {
      */
     private HelioConfigurationManager configurationManager;
     
-    /* (non-Javadoc)
-     * @see eu.heliovo.clientapi.query.WhereClauseFactoryBean#createWhereClause(eu.heliovo.registryclient.HelioServiceName, java.lang.String)
-     */
     @Override
     public WhereClause createWhereClause(HelioServiceName helioServiceName, String listName) {
         List<HelioFieldDescriptor<?>> fieldDescriptors = null;
@@ -45,7 +42,8 @@ public class WhereClauseFactoryBeanImpl implements WhereClauseFactoryBean {
      * @param listName the list name
      * @return the descriptor with the given name or null if not found.
      */
-    private HelioCatalogueDescriptor findByListName(List<? extends HelioCatalogueDescriptor> catalogueDescriptors, String listName) {
+    private HelioCatalogueDescriptor findByListName(List<? extends HelioCatalogueDescriptor> catalogueDescriptors, 
+    		String listName) {
         for (HelioCatalogueDescriptor catalogueDescriptor : catalogueDescriptors) {
             if (listName.equals(catalogueDescriptor.getValue())) {
                 return catalogueDescriptor;
@@ -67,7 +65,4 @@ public class WhereClauseFactoryBeanImpl implements WhereClauseFactoryBean {
     public void setConfigurationManager(HelioConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }
-
-    
-    
 }

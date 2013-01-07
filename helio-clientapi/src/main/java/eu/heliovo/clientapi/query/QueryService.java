@@ -180,7 +180,7 @@ public interface QueryService extends HelioService {
      * @param catalogName the name of the catalog to look up. Equals to the "from" property value.
      * @return a list for where clauses, if the from property is set. An empty list otherwise.
      */
-    public WhereClause getWhereClausesByCatalogName(String catalogName);
+    public WhereClause getWhereClauseByCatalogName(String catalogName);
 
 	/**
 	 * Join two tables (expert feature)

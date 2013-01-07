@@ -51,7 +51,7 @@ public class EventListDescriptorDaoTest {
                 assertEquals("goes_sxr_flare", eventListDescriptor.getValue());
                 assertEquals("GOES Soft X-ray Flare List", eventListDescriptor.getDescription());
                 assertEquals("GOES Soft X-ray Flare List", eventListDescriptor.getLabel());
-                assertEquals("r", eventListDescriptor.getOtyp());
+                assertEquals("R", eventListDescriptor.getOtyp());
                 assertEquals("active", eventListDescriptor.getStatus());
                 assertEquals(DateUtil.fromIsoDate("1975-09-01T00:00:00"), eventListDescriptor.getTimefrom());
                 //assertEquals(DateUtil.fromIsoDate("2011-12-31T00:00:00"), eventListDescriptor.getTimeto());
