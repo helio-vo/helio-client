@@ -71,7 +71,7 @@ abstract class AbstractCatalogueDescriptorDao implements CatalogueDescriptorDao 
         try {
             tables = getStilUtils().read(url);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to parse the configuration " + url);
+            throw new RuntimeException("Failed to parse the configuration " + url + ": " + e.getMessage(), e);
         }
         
         if (tables.length != 1) {

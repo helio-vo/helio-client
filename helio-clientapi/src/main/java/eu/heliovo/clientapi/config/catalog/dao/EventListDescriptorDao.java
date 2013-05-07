@@ -124,6 +124,7 @@ public class EventListDescriptorDao extends AbstractCatalogueDescriptorDao {
 
         			} catch (Exception e) {
         				_LOGGER.warn("Failed to parse " + hecFieldUrlTemplate + ": " + e.getMessage(), e);
+        				continue;
         			}
 
         		}
