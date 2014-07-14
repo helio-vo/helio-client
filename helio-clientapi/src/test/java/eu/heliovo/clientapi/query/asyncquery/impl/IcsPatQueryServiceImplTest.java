@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -26,7 +27,7 @@ public class IcsPatQueryServiceImplTest {
     /**
      * Test the loading of an instruments list.
      */
-    @Test public void testIcsPatCreation() throws Exception {
+    @Ignore @Test public void testIcsPatCreation() throws Exception {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
         HelioClient helioClient = (HelioClient) context.getBean("helioClient");
         
