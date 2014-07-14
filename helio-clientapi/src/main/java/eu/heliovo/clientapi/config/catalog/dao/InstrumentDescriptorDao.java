@@ -64,12 +64,12 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 	/**
 	 * Location of the ICS table.
 	 */
-	private URL icsTableUrl = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-ics/HelioQueryService?STARTTIME=1900-01-01T00:00:00Z&ENDTIME=3000-12-31T00:00:00Z&FROM=instrument");
+	private URL icsTableUrl = FileUtil.asURL("http://helio.mssl.ucl.ac.uk/helio-ics/HelioQueryService?STARTTIME=1900-01-01T00:00:00Z&ENDTIME=3000-12-31T00:00:00Z&FROM=instrument");
 	
 	/**
 	 * The pat table url
 	 */
-	private URL patTableUrl = FileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
+	private URL patTableUrl = FileUtil.asURL("http://helio.mssl.ucl.ac.uk/helio-dpas/HelioPatServlet");
 
 	/**
 	 * Our list of instrument Descriptors that should be cached here.

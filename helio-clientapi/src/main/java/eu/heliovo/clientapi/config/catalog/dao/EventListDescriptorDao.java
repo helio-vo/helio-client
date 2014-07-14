@@ -30,7 +30,7 @@ public class EventListDescriptorDao extends AbstractCatalogueDescriptorDao {
     /**
      * Base url of the server that contains the HEC configuration.
      */
-    private static final String HEC_CONFIG_SERVER = "http://msslkz.mssl.ucl.ac.uk";
+    private static final String HEC_CONFIG_SERVER = "http://helio.mssl.ucl.ac.uk";
     
     /**
      * The URL to get the VOTable from.
@@ -123,7 +123,7 @@ public class EventListDescriptorDao extends AbstractCatalogueDescriptorDao {
         				eventListDescriptor.setFieldDescriptors(fieldDescriptors);
 
         			} catch (Exception e) {
-        				_LOGGER.warn("Failed to parse " + hecFieldUrlTemplate + ": " + e.getMessage(), e);
+        				_LOGGER.warn("Failed to parse " + hecFieldUrlTemplate + ": " + e.getMessage());
         				continue;
         			}
 
