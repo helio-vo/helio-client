@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<import resource="clientapi-localquery.xml" />
+
+	<bean id="propertyPlaceholderConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:helio-test.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="helioFileUtil" class="eu.heliovo.shared.props.HelioFileUtil">
+		<constructor-arg index="0" value="${helio.appId}"></constructor-arg>
+	</bean>
+
+	<!-- <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" 
+		/> -->
+
+</beans>

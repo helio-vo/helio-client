@@ -5,7 +5,7 @@ package eu.heliovo.clientapi;
  * @author marco soldati at fhnw ch
  *
  */
-public abstract class HelioClientException extends RuntimeException {
+public class HelioClientException extends RuntimeException {
 	/**
 	 * the serial id.
 	 */
