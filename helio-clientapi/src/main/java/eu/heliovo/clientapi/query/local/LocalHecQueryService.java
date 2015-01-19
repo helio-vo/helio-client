@@ -1,6 +1,6 @@
 package eu.heliovo.clientapi.query.local;
 
-import java.io.File;
+import eu.heliovo.clientapi.query.HelioQueryResult;
 
 /**
  * Query to a local hec database. The result is formatted as xml VOTable.
@@ -9,14 +9,14 @@ import java.io.File;
  */
 public interface LocalHecQueryService {
 
-	public File query(
+	public HelioQueryResult query(
 			String startTime, 
 			String endTime, 
 			String from,
 			int startindex, 
 			int maxrecords);
 	
-	public File query(
+	public HelioQueryResult query(
 			String whereClause, 
 			String from,
 			int startindex, 

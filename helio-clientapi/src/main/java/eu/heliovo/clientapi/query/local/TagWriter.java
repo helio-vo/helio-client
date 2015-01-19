@@ -12,7 +12,7 @@ import java.util.Map;
  * @author marco soldati at fhnw ch
  *
  */
-abstract class TagWriter {
+class TagWriter {
 
 	/**
      * OS dependent new line character

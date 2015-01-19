@@ -4,10 +4,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.HelioClientException;
+import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
@@ -21,7 +26,7 @@ public class LocalHecQueryServiceImpl implements LocalHecQueryService {
 	private static final String VOTABLE = "votable";
 
 	private LocalHecQueryDao localHecQueryDao;
-
+	private VoTableWriterImpl voTableWriter;
 	private HelioFileUtil helioFileUtil;
 
 	/**
@@ -35,21 +40,26 @@ public class LocalHecQueryServiceImpl implements LocalHecQueryService {
 	 * @return File
 	 */
 	@Override
-	public File query(String startTime, String endTime, String from, int startindex, int maxrecords) {
+	public HelioQueryResult query(String startTime, String endTime, String from, int startindex, int maxrecords) {
+		long jobStartTime = System.currentTimeMillis();
+		List<LogRecord> userLogs = new ArrayList<LogRecord>();
 		StarTable starTable = localHecQueryDao.query(startTime, endTime, from, 0,0);
 		File file = getUuidFile();
 
 		try (FileWriter fw = new FileWriter(file);
 				BufferedWriter bw = new BufferedWriter(fw)) {
 
-			VoTableWriter starTableWriter = new VoTableWriter(bw, new StarTable[]{starTable});
-			starTableWriter.writeVoTableToXml();
+			voTableWriter.writeVoTableToXml(bw, new StarTable[]{starTable});
 
 		} catch (IOException e) {
 			throw new HelioClientException("could not write votable to xml", e);
 		}
 
-		return file;
+		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
+		userLogs.add(new LogRecord(Level.INFO, "Created file in: " + file.getAbsolutePath().toString()));
+		
+		HelioQueryResult helioQueryResult = new LocalHecQueryResultImpl(executionDuration, userLogs, file);
+		return helioQueryResult;
 	}
 	
 	/**
@@ -61,27 +71,31 @@ public class LocalHecQueryServiceImpl implements LocalHecQueryService {
 	 * @return File
 	 */
 	@Override
-	public File query(String whereClause, String from, int startindex, int maxrecords) {
+	public HelioQueryResult query(String whereClause, String from, int startindex, int maxrecords) {
+		long jobStartTime = System.currentTimeMillis();
+		List<LogRecord> userLogs = new ArrayList<LogRecord>();
 		StarTable starTable = localHecQueryDao.query(whereClause, from, 0,0);
 		File file = getUuidFile();
 
 		try (FileWriter fw = new FileWriter(file);
 				BufferedWriter bw = new BufferedWriter(fw)) {
-
-			VoTableWriter starTableWriter = new VoTableWriter(bw, new StarTable[]{starTable});
-			starTableWriter.writeVoTableToXml();
+			
+			voTableWriter.writeVoTableToXml(bw, new StarTable[]{starTable});
 
 		} catch (IOException e) {
 			throw new HelioClientException("could not write votable to xml", e);
 		}
 
-		return file;
+		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
+		userLogs.add(new LogRecord(Level.INFO, "Created file in: " + file.getAbsolutePath().toString()));
+		
+		HelioQueryResult helioQueryResult = new LocalHecQueryResultImpl(executionDuration, userLogs, file);
+		return helioQueryResult;
 	}
 
 	private File getUuidFile() {
 		UUID uuid = UUID.randomUUID();
 		String uuidFilename = "votable_" + uuid.toString() + ".xml";
-		System.out.println(System.getProperty("java.io.tmpdir"));
 		File tempDir = helioFileUtil.getHelioTempDir(VOTABLE);
 		File file = new File(tempDir, uuidFilename);
 		if (!file.exists()) {
@@ -110,4 +124,13 @@ public class LocalHecQueryServiceImpl implements LocalHecQueryService {
 	public void setHelioFileUtil(HelioFileUtil helioFileUtil) {
 		this.helioFileUtil = helioFileUtil;
 	}
+	
+	public VoTableWriterImpl getVoTableWriter() {
+		return voTableWriter;
+	}
+
+	public void setVoTableWriter(VoTableWriterImpl voTableWriter) {
+		this.voTableWriter = voTableWriter;
+	}
+
 }

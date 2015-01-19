@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+import eu.heliovo.clientapi.query.HelioQueryResult;
+
 /**
  * Demo class for {@link LocalHecQueryServiceImpl}
  * @author junia schoch at fhnw ch
@@ -19,8 +21,9 @@ public class LocalHecQueryDemo {
 		String from = "hec__rhessi_hxr_flare";
 		
 		//Service
-		File file = service.query(startTime, endTime, from, 0, 0);
-		System.out.println(file.getAbsolutePath());
+		HelioQueryResult result = service.query(startTime, endTime, from, 0, 0);
+		System.out.println("xml saved in " + result.asURL());
+		//System.out.println(result.asString());
 		
 		//Dao
 //		LocalHecQueryDaoImpl dao = (LocalHecQueryDaoImpl) context.getBean("localHecQueryDao");

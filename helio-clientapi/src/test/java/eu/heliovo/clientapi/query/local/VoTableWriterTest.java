@@ -1,9 +1,12 @@
 package eu.heliovo.clientapi.query.local;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,13 +17,14 @@ import uk.ac.starlink.table.StarTableFactory;
 import uk.ac.starlink.util.DataSource;
 
 /**
- * Test class for {@link VoTableWriter}
+ * Test class for {@link VoTableWriterImpl}
  * @author junia schoch at fhnw ch
  *
  */
 public class VoTableWriterTest {
 
 	private StringWriter writer = null;
+	private static final String TEST_HEADER = "test header";
 	
 	@Before
 	public void setup() {
@@ -35,7 +39,8 @@ public class VoTableWriterTest {
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_votable() {
 		StarTable[] starTable = null;
-		VoTableWriter votableWriter = new VoTableWriter(writer, starTable);
+		VoTableWriterImpl votableWriter = new VoTableWriterImpl();
+		votableWriter.writeVoTableToXml(writer, starTable);
 	}
 	
 	@Test	
@@ -48,8 +53,15 @@ public class VoTableWriterTest {
 			}
 		};
 		StarTable starTable = new StarTableFactory().makeStarTable(datsrc, "CSV");
-		VoTableWriter votableWriter = new VoTableWriter(writer, new StarTable[]{starTable});
-		votableWriter.writeVoTableToXml();
-		System.out.println(writer.getBuffer());
+		VoTableWriterImpl votableWriter = new VoTableWriterImpl();
+		votableWriter.setProperties(getSampleProperty());
+		votableWriter.writeVoTableToXml(writer, new StarTable[]{starTable});
+		assertTrue(writer.getBuffer().toString().contains(TEST_HEADER));
+	}
+
+	private Properties getSampleProperty() {
+		Properties properties = new Properties();
+		properties.put("sql.votable.head.desc", TEST_HEADER);
+		return properties;
 	}
 }
