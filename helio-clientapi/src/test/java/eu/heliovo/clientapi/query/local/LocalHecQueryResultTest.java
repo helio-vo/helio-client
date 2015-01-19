@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.query.local;
 
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -58,7 +59,7 @@ public class LocalHecQueryResultTest {
 	public void test_asVoTable() {
 		List<LogRecord> userLogs = new ArrayList<LogRecord>();
 		LocalHecQueryResultImpl hecQueryResultImpl = new LocalHecQueryResultImpl(0, userLogs, getTestVOTable());
-		assertTrue(hecQueryResultImpl.asVOTable().toString().contains("net.ivoa.xml.votable.v1.VOTABLE@2f7a2457"));
+		assertEquals(2, hecQueryResultImpl.asVOTable().getRESOURCE().size());
 	}
 	
     private File getTestVOTable() {
