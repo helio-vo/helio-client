@@ -52,9 +52,10 @@ public class ServiceVariantRegistry {
         }
         ServiceVariant variant = new ServiceVariant(serviceName, serviceVariant, capability, beanName);
         if (registry.contains(variant)) {
-            throw new IllegalArgumentException("Internal Error: " + variant + " has been previously registered.");            
+            //throw new IllegalArgumentException("Internal Error: " + variant + " has been previously registered.");            
+        } else {
+        	registry.add(variant);
         }
-        registry.add(variant);
     }
     
     
