@@ -12,7 +12,7 @@ public class HelioConversionService extends DefaultConversionService {
     
     /**
      * Create a conversion service with the default converters defined by {@link DefaultConversionService}
-     * and custom converter for HELIO.
+     * and custom converters for HELIO.
      */
     public HelioConversionService() {
         addCustomConverters(this);

@@ -70,7 +70,7 @@ public class ContextClientDemo {
         config.add("ulysses");
         config.add("wind");
         
-        //final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://msslkz.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
+        //final AccessInterface ai = new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE, HelioFileUtil.asURL("http://helio.mssl.ucl.ac.uk/cxs/services/CommonExecutionConnectorService"));
         //final AccessInterface ai = null;
 
         final GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
