@@ -78,7 +78,7 @@ public class EventListDescriptor extends AbstractCatalogueDescriptor implements 
     /**
      * Template for the URL string
      */
-    private static final String URL_TEMPLATE = "http://hec.ts.astro.it/hec/stfc/HEC_ListsAll.html#%1$s";
+    private static final String URL_TEMPLATE = "http://hec.helio-vo.eu/hec/stfc/HEC_ListsAll.html#%1$s";
     
     
     private String name;
