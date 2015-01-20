@@ -156,7 +156,6 @@ public class IcsPatQueryServiceImpl extends BaseQueryServiceImpl {
         public URL asURL(long timeout, TimeUnit unit) throws JobExecutionException {
             // get the ics table
             URL icsResultUrl = helioQueryResult.asURL(timeout, unit);
-            //System.out.println(url);
 
             // convert to a star table
             StarTable[] tables;
