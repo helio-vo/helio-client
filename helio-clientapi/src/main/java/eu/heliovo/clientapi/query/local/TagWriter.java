@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import eu.heliovo.shared.util.AssertUtil;
+
 /**
  * Template class that provides a base language for classes that output VoTable to a given writer.
  * The goal of this class is to make the VoTable transformation code as readable as possible.
@@ -29,7 +31,8 @@ class TagWriter {
      * @param outWriter the writer used as out.
      */
     public TagWriter(Writer outWriter) {
-        this.outWriter = outWriter;
+    	AssertUtil.assertArgumentNotNull(outWriter, "outWriter");
+    	this.outWriter = outWriter;
     }
 
     public Writer getOut() {
@@ -111,20 +114,6 @@ class TagWriter {
     }
 
     /**
-     * Write an XML processing instruction.
-     * @param tagName the tag name
-     * @param attributes use empty map if no attributes are required.
-     * @return 'this' to join several statements.
-     */
-    public TagWriter processingInstruction(String tagName, Map<String, String> attributes) {
-        append("<?");
-        append(tagName);
-        appendAttributes(attributes);
-        append(" ?>");
-        return this;
-    }
-
-    /**
      * Append the attributes to an already opened tag.
      * @param attributes use empty map if no attributes are required.
      */
@@ -136,24 +125,6 @@ class TagWriter {
             append(attr.getValue());
             append("\"");
         }
-    }
-
-    /**
-     * Helper method to convert a given set of attributes to a map. 
-     * @param attributes a list of key-value-pairs. The list size must be even, but must not be null.
-     * @return a map of the key-value pairs, the map may be empty, but will never be null.
-     */
-    public Map<String, String> attributes(String... attributes) {
-        if (attributes.length % 2 != 0) {
-            throw new IllegalArgumentException("Even number of elements expected: " + attributes.length);
-        }
-        Map<String, String> attrMap = new LinkedHashMap<String, String>();
-        for (int i = 0; i < attributes.length; i += 2) {
-            String key = attributes[i];
-            String value = attributes[i + 1];
-            attrMap.put(key, value);
-        }
-        return attrMap;
     }
 
     /**

@@ -22,24 +22,28 @@ import uk.ac.starlink.util.DataSource;
  *
  */
 public class VoTableWriterTest {
+	private static final String TEST_HEADER = "test header";
 
 	private StringWriter writer = null;
-	private static final String TEST_HEADER = "test header";
+	private VoTableWriterImpl votableWriter;
+
 	
 	@Before
 	public void setup() {
 		writer = new StringWriter();
+		votableWriter = new VoTableWriterImpl();
+		votableWriter.setProperties(getSampleProperty());
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 		writer.close();
+		writer = null;
 	}
 	
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_votable() {
 		StarTable[] starTable = null;
-		VoTableWriterImpl votableWriter = new VoTableWriterImpl();
 		votableWriter.writeVoTableToXml(writer, starTable);
 	}
 	
@@ -53,8 +57,6 @@ public class VoTableWriterTest {
 			}
 		};
 		StarTable starTable = new StarTableFactory().makeStarTable(datsrc, "CSV");
-		VoTableWriterImpl votableWriter = new VoTableWriterImpl();
-		votableWriter.setProperties(getSampleProperty());
 		votableWriter.writeVoTableToXml(writer, new StarTable[]{starTable});
 		assertTrue(writer.getBuffer().toString().contains(TEST_HEADER));
 	}
