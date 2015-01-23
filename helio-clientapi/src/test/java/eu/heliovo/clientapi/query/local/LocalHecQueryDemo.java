@@ -1,6 +1,5 @@
 package eu.heliovo.clientapi.query.local;
 
-import java.io.File;
 import java.util.Collections;
 
 import org.springframework.context.support.GenericXmlApplicationContext;

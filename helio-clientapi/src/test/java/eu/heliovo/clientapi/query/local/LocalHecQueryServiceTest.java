@@ -9,9 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.List;
 import java.util.logging.LogRecord;
 
 import org.junit.After;
@@ -23,7 +21,6 @@ import uk.ac.starlink.table.StarTableFactory;
 import uk.ac.starlink.util.DataSource;
 import eu.heliovo.clientapi.HelioClientException;
 import eu.heliovo.clientapi.query.HelioQueryResult;
-import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 

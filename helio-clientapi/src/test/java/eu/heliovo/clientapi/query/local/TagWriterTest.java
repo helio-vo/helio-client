@@ -11,8 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.starlink.table.StarTable;
-
 /**
  * Test for {@link TagWriter}
  * @author junia schoch at fhnw ch

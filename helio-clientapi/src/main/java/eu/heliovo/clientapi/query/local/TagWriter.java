@@ -3,7 +3,6 @@ package eu.heliovo.clientapi.query.local;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import eu.heliovo.shared.util.AssertUtil;
