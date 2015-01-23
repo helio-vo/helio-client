@@ -3,7 +3,6 @@ package eu.heliovo.clientapi.query.local;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -14,8 +13,6 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.table.Tables;
 import uk.ac.starlink.table.jdbc.SequentialResultSetStarTable;
-import eu.heliovo.clientapi.query.WhereClause;
-import eu.heliovo.clientapi.workerservice.JobExecutionException;
 
 /**
  * Returns a StarTable from sql query.

@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.query.local;
 
 import java.io.File;
+import java.util.Collections;
 
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -14,21 +15,18 @@ import eu.heliovo.clientapi.query.HelioQueryResult;
 public class LocalHecQueryDemo {
 	public static void main(String[] args) throws Exception {
 		GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-localquery-test.xml");
-		LocalHecQueryService service = (LocalHecQueryServiceImpl) context.getBean("localHecQueryService");
+		LocalHecQueryServiceImpl service = (LocalHecQueryServiceImpl) context.getBean("localHecQueryService");
 		
 		String startTime = "2003-08-03 08:00:00";
 		String endTime = "2003-08-05 08:00:00";
 		String from = "hec__rhessi_hxr_flare";
+		Integer maxRecords = 0;
+		Integer startIndex = 0;
 		
 		//Service
-		HelioQueryResult result = service.query(startTime, endTime, from, 0, 0);
-		System.out.println("xml saved in " + result.asURL());
-		//System.out.println(result.asString());
+		HelioQueryResult result = service.query(Collections.singletonList(startTime), 
+				Collections.singletonList(endTime), Collections.singletonList(from), maxRecords, startIndex, null);
 		
-		//Dao
-//		LocalHecQueryDaoImpl dao = (LocalHecQueryDaoImpl) context.getBean("localHecQueryDao");
-//		StarTable starTable = dao.query(startTime, endTime, from);
-//		System.out.println(Arrays.toString(starTable.getRow(0)));
-	
+		System.out.println("xml saved in " + result.asURL());	
 	}
 }
