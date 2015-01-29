@@ -19,8 +19,8 @@ public class LocalHecQueryDemo {
 		String startTime = "2003-08-03 08:00:00";
 		String endTime = "2003-08-05 08:00:00";
 		String from = "hec__rhessi_hxr_flare";
-		Integer maxRecords = 0;
-		Integer startIndex = 0;
+		Integer maxRecords = 3;
+		Integer startIndex = 1;
 		
 		//Service
 		HelioQueryResult result = service.query(Collections.singletonList(startTime), 

@@ -112,7 +112,13 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	public HelioQueryResult execute() {
 		long jobStartTime = System.currentTimeMillis();
 		List<LogRecord> userLogs = new ArrayList<LogRecord>();
-		StarTable starTable = localHecQueryDao.query(startTime.get(0), endTime.get(0), from.get(0), 0, 0);
+		
+		String select = "id, time_start, time_peak, time_end, nar, x_cart, y_cart, "
+				+ "radial_arcsec, duration, count_sec_peak, total_count, energy_kev, flare_number";
+		String from = "hec__rhessi_hxr_flare";
+		String where = "time_start <= '" + startTime + "' AND time_end <= '" + endTime + "'";
+		
+		StarTable starTable = localHecQueryDao.query(select, from, where, startIndex, maxRecords);
 		File file = getUuidFile();
 
 		try (FileWriter fw = new FileWriter(file);
@@ -205,18 +211,6 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	@Override
 	public void setStartIndex(Integer startIndex) {
 		this.startIndex = startIndex;
-	}
-
-	@Override
-	public String getWhere() {
-		StringBuilder sb = new StringBuilder();
-        for (WhereClause whereClause : whereClauses) {
-            if (sb.length() > 0) {
-                sb.append(";");  // separator between multiple where clauses
-            }
-            sb.append(querySerializer.getWhereClause(whereClause.getCatalogName(), whereClause.getQueryTerms()));
-        }
-        return sb.toString();
 	}
 
 	@Override

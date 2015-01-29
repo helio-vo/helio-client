@@ -26,49 +26,38 @@ public class LocalHecQueryDaoImpl implements LocalHecQueryDao {
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
-    
+	
     /**
-     * Returns a StarTable from a sql query.
-     * Params must not be null.
-     * @param startTime DateTime String example: '2003-08-03 08:00:00'
-     * @param endTime DateTime String example: '2003-08-03 08:00:00'
-     * @param from name of a table in the database
-     * @param startindex
-	 * @param maxrecords
-     * @return StarTable
-     */
-	@Override
-	public StarTable query(String startTime, String endTime, String from, 
-			int startindex, int maxrecords) {
-		StringBuilder sqlStatement = new StringBuilder();
-		sqlStatement.append("SELECT id, time_start, time_peak, time_end, nar, x_cart, y_cart, radial_arcsec, duration, count_sec_peak, total_count, energy_kev, flare_number");
-		sqlStatement.append(" FROM " + from);
-		sqlStatement.append(" WHERE time_start <= '" + startTime + "' AND time_end <= '" + endTime + "';" );
-	
-		StarTable starTable = query(sqlStatement.toString());
-		
-		return starTable;
-	}
-	
-	/**
-	 * Returns a StarTable from sql query.
-	 * @param from table name in db, must not be null
-	 * @param whereClause where statement, must not be null
-	 * @param startindex
-	 * @param maxrecords
+	 * Execute postgresql query.
+	 * @param select: select statement that contains the field names
+	 * @param from: table name
+	 * @param where: where statement
+	 * @param startindex: named 'OFFSET' in postgresql
+	 * @param maxrecords: named 'LIMIT' in postgresql
 	 */
-	@Override
-	public StarTable query(String from, String whereClause, int startindex, int maxrecord) {
+    @Override
+	public StarTable query(String select, String from, String where, int startindex, int maxrecord) {
 		StringBuilder sqlStatement = new StringBuilder();
-		sqlStatement.append("SELECT id, time_start, time_peak, time_end, nar, x_cart, y_cart, radial_arcsec, duration, count_sec_peak, total_count, energy_kev, flare_number");
+		sqlStatement.append("SELECT " + select);
 		sqlStatement.append(" FROM " + from);
-		sqlStatement.append(" " + whereClause + ";");
+		sqlStatement.append(" WHERE " + where);
 		
-		StarTable starTable = query(sqlStatement.toString());
+		if(maxrecord > 0) {
+			sqlStatement.append(" LIMIT " + maxrecord); 
+		}
+		if(startindex >= 0) {
+			sqlStatement.append(" OFFSET " + startindex);
+		}
+		
+		sqlStatement.append(";");
+	
+		System.out.println(sqlStatement.toString());
+		StarTable starTable = execute(sqlStatement.toString());
+		
 		return starTable;
 	}
 	
-	private StarTable query(String sqlStatement) {
+	private StarTable execute(String sqlStatement) {
 		StarTable starTable = this.jdbcTemplate.query(
 				sqlStatement.toString(),
 				new ResultSetExtractor<StarTable>() {

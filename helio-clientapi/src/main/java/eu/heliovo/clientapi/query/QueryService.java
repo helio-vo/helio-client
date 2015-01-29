@@ -158,12 +158,6 @@ public interface QueryService extends HelioService {
 	 * @param startIndex the start index
 	 */
 	public void setStartIndex(Integer startIndex);
-	
-	/**
-	 * Get the where clause
-	 * @return the where clause
-	 */
-	public String getWhere();
     
     /**
      * Get the currently available where clauses. If a catalog does not support where clauses

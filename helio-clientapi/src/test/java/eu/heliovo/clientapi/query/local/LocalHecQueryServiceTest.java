@@ -30,9 +30,6 @@ import eu.heliovo.shared.props.HelioFileUtil;
  *
  */
 public class LocalHecQueryServiceTest {
-
-	
-
 	private LocalHecQueryServiceImpl localHecQueryService;
 	
 	private static final String START_TIME = "2003-08-03 08:00:00";
@@ -167,14 +164,8 @@ public class LocalHecQueryServiceTest {
 	 */
 	private static final class MockLocalHecQueryDao implements LocalHecQueryDao {
 		@Override
-		public StarTable query(String whereClause, String from, int startindex,
+		public StarTable query(String select, String from, String where, int startindex,
 				int maxrecords) {
-			return getStarTable();
-		}
-
-		@Override
-		public StarTable query(String startTime, String endTime, String from,
-				int startindex, int maxrecords) {
 			return getStarTable();
 		}
 	}
