@@ -97,5 +97,6 @@
   <import resource="clientapi-linkprovider.xml" />
   <import resource="clientapi-processing.xml" />
   <import resource="clientapi-query.xml" />
+  <import resource="clientapi-localquery.xml" />
   <import resource="clientapi-model.xml" />
 </beans>

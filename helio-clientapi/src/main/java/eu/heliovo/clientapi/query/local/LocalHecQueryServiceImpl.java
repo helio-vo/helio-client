@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.logging.LogRecord;
 
 import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.HelioClientException;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.query.QueryType;
@@ -33,7 +36,9 @@ import eu.heliovo.shared.props.HelioFileUtil;
  *
  */
 public class LocalHecQueryServiceImpl implements QueryService {
+	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 	private static final String VOTABLE = "votable";
+	private static final String HEC_ID = "hec_id";
 	private LocalHecQueryDao localHecQueryDao;
 	private VoTableWriter voTableWriter;
 	private HelioFileUtil helioFileUtil;
@@ -53,12 +58,7 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	private transient Map<String, WhereClause> whereClauseCache = new HashMap<String, WhereClause>();
 	
 	private transient QueryType queryType = QueryType.SYNC_QUERY;
-	private transient QuerySerializer querySerializer; 
-	
-	public LocalHecQueryServiceImpl() {
-		serviceName = HelioServiceName.HEC;
-	}
-	
+	private transient QuerySerializer querySerializer; 	
 
 	@Override	
 	public HelioQueryResult query( String startTime, String endTime, String from, Integer maxrecords, Integer startindex, String join) {
@@ -112,31 +112,97 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	public HelioQueryResult execute() {
 		long jobStartTime = System.currentTimeMillis();
 		List<LogRecord> userLogs = new ArrayList<LogRecord>();
+		int executionDuration = 0;
 		
-		String select = "id, time_start, time_peak, time_end, nar, x_cart, y_cart, "
-				+ "radial_arcsec, duration, count_sec_peak, total_count, energy_kev, flare_number";
-		String from = "hec__rhessi_hxr_flare";
-		String where = "time_start <= '" + startTime + "' AND time_end <= '" + endTime + "'";
+		StarTable[] starTables = getStarTablesFromQueries();
+		File file = writeStarTablesToXml(starTables);
 		
-		StarTable starTable = localHecQueryDao.query(select, from, where, startIndex, maxRecords);
-		File file = getUuidFile();
-
-		try (FileWriter fw = new FileWriter(file);
-				BufferedWriter bw = new BufferedWriter(fw)) {
-
-			voTableWriter.writeVoTableToXml(bw, new StarTable[]{starTable});
-
-		} catch (IOException e) {
-			throw new HelioClientException("could not write votable to xml", e);
-		}
-
-		int executionDuration = (int)(System.currentTimeMillis() - jobStartTime);
+		executionDuration = (int) (System.currentTimeMillis() - jobStartTime);
 		userLogs.add(new LogRecord(Level.INFO, "Created file in: " + file.getAbsolutePath().toString()));
-		
+
 		HelioQueryResult helioQueryResult = new LocalHecQueryResultImpl(executionDuration, userLogs, file);
 		return helioQueryResult;
 	}
+	
+	private StarTable[] getStarTablesFromQueries() {
+		int numberOfQueries = getFrom().size();
+		StarTable[] starTables = new StarTable[numberOfQueries];
+		
+		for (int i=0; i<numberOfQueries; i++) {
+			String select = getSelectStatement(getWhereClauses().get(i));
+			String fromStatement = getFrom().get(i);
+			String where = getWhereStatement(getWhereClauses().get(i), getStartTime().get(i), getEndTime().get(i));
 
+			StarTable starTable = localHecQueryDao.query(select, fromStatement, where, startIndex, maxRecords);
+			starTables[i] = starTable;
+		}
+		
+		return starTables;
+	}
+	
+
+	private String getSelectStatement(WhereClause whereClause) {
+		List<HelioFieldDescriptor<?>> fieldDescriptors = whereClause.getFieldDescriptors();
+		StringBuilder select = new StringBuilder();
+		boolean first = true;
+		for (HelioFieldDescriptor<?> helioFieldDescriptor : fieldDescriptors) {
+			if (first) {
+				first = false;
+			} else {
+				select.append(", ");
+			}
+			if (HEC_ID.equalsIgnoreCase(helioFieldDescriptor.getName())) {
+				select.append("id as " + HEC_ID);
+			} else {
+				select.append(helioFieldDescriptor.getName());
+			}
+		}
+		
+		return select.toString();
+	}
+
+	private String getWhereStatement(WhereClause whereClause, String startTime, String endTime) {
+		String timewhere = "NOT ('" + endTime + "' < time_start AND '" + startTime + "' >= time_end)";
+		String where = querySerializer.getWhereClause(whereClause.getCatalogName(), whereClause.getQueryTerms());
+
+		if(where.isEmpty()) {
+			return timewhere;
+		} else {
+			return "(" +  where + ") AND (" + timewhere + ")";
+		}
+	}
+	
+	private File writeStarTablesToXml(StarTable[] starTables) {
+		File file = getUuidFile();
+		Map<String, String> attributes = getKeyValueAttrMap();
+		
+		try (FileWriter fw = new FileWriter(file);
+				BufferedWriter bw = new BufferedWriter(fw)) {
+
+			voTableWriter.writeVoTableToXml(bw, starTables, attributes);
+
+		} catch (IOException e) {
+			throw new HelioClientException(
+					"could not write votable to xml", e);
+		}
+		
+		return file;
+	}
+	
+	private Map<String, String> getKeyValueAttrMap() {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put("QUERY_STATUS", "COMPLETED");
+		attributes.put("EXECUTED_AT", now());
+		
+		return attributes;
+	}
+ 
+	private static String now() {
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		return sdf.format(cal.getTime());
+	}
+	
 	@Override
 	public HelioServiceName getServiceName() {
 		return serviceName;
@@ -169,7 +235,7 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	@Override
 	public void setFrom(List<String> from) {
 		this.from = from;
-		//updateWhereClauses();
+		updateWhereClauses();
 	}
 
 	@Override
@@ -212,6 +278,29 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	public void setStartIndex(Integer startIndex) {
 		this.startIndex = startIndex;
 	}
+	
+    public WhereClauseFactoryBean getWhereClauseFactoryBean() {
+        return whereClauseFactoryBean;
+    }
+
+    public void setWhereClauseFactoryBean(WhereClauseFactoryBean whereClauseFactoryBean) {
+        this.whereClauseFactoryBean = whereClauseFactoryBean;
+    }
+    
+    /**
+     * @return the querySerializer
+     */
+    public QuerySerializer getQuerySerializer() {
+        return querySerializer;
+    }
+
+    /**
+     * @param querySerializer the querySerializer to set
+     */
+    public void setQuerySerializer(QuerySerializer querySerializer) {
+        this.querySerializer = querySerializer;
+    }
+
 
 	@Override
 	public List<WhereClause> getWhereClauses() {
@@ -305,5 +394,4 @@ public class LocalHecQueryServiceImpl implements QueryService {
             whereClauses.add(clause);
         }
     }
-
 }

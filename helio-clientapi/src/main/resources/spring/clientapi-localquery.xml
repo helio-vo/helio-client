@@ -7,12 +7,16 @@
 	<bean id="localHecQueryService"
 		class="eu.heliovo.clientapi.query.local.LocalHecQueryServiceImpl">
 		<property name="localHecQueryDao" ref="localHecQueryDao" />
+		<property name="serviceName" value="HEC" />
 		<property name="helioFileUtil" ref="helioFileUtil" />
 		<property name="voTableWriter" ref="voTableWriter" />
+		<property name="querySerializer" ref="sqlSerializer" />
+		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
 	</bean>
 
 	<bean id="localHecQueryDao" class="eu.heliovo.clientapi.query.local.LocalHecQueryDaoImpl">
 		<property name="dataSource" ref="dataSource" />
+		<property name="eventListDescriptorDao" ref="eventListDescriptorDao"></property>
 	</bean>
 
 	<bean id="hecProperties"
@@ -27,6 +31,10 @@
 	<bean id="voTableWriter" class="eu.heliovo.clientapi.query.local.VoTableWriterImpl">
 		<property name="properties" ref="hecProperties" />
 	</bean>
+	
+	<bean id="sqlSerializer" class="eu.heliovo.clientapi.query.paramquery.serialize.SQLSerializer">
+    	<property name="conversionService" ref="conversionService"></property>
+  	</bean>
 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">

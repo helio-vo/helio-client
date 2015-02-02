@@ -6,6 +6,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -23,6 +27,7 @@ import uk.ac.starlink.util.DataSource;
  */
 public class VoTableWriterTest {
 	private static final String TEST_HEADER = "test header";
+	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
 	private StringWriter writer = null;
 	private VoTableWriterImpl votableWriter;
@@ -44,7 +49,7 @@ public class VoTableWriterTest {
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_votable() {
 		StarTable[] starTable = null;
-		votableWriter.writeVoTableToXml(writer, starTable);
+		votableWriter.writeVoTableToXml(writer, starTable, getProperties());
 	}
 	
 	@Test	
@@ -57,7 +62,7 @@ public class VoTableWriterTest {
 			}
 		};
 		StarTable starTable = new StarTableFactory().makeStarTable(datsrc, "CSV");
-		votableWriter.writeVoTableToXml(writer, new StarTable[]{starTable});
+		votableWriter.writeVoTableToXml(writer, new StarTable[]{starTable}, getProperties());
 		assertTrue(writer.getBuffer().toString().contains(TEST_HEADER));
 	}
 
@@ -65,5 +70,21 @@ public class VoTableWriterTest {
 		Properties properties = new Properties();
 		properties.put("sql.votable.head.desc", TEST_HEADER);
 		return properties;
+	}
+	
+	private Map<String, String> getProperties() {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put("QUERY_STATUS", "COMPLETED");
+		attributes.put("EXECUTED_AT", now());
+		attributes.put("QUERY_STRING", "n/a");
+		attributes.put("QUERY_URL", "n/a");
+		
+		return attributes;
+	}
+	
+	private static String now() {
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
+		return sdf.format(cal.getTime());
 	}
 }

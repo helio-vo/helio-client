@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.Collections;
+import java.util.Map;
 import java.util.logging.LogRecord;
 
 import org.junit.After;
@@ -21,6 +22,9 @@ import uk.ac.starlink.table.StarTableFactory;
 import uk.ac.starlink.util.DataSource;
 import eu.heliovo.clientapi.HelioClientException;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.MockWhereClauseFactoryBean;
+import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
+import eu.heliovo.clientapi.query.paramquery.serialize.SQLSerializer;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 
@@ -46,17 +50,21 @@ public class LocalHecQueryServiceTest {
 		
 		HelioFileUtil helioFileUtil = new HelioFileUtil("test");
 		VoTableWriter voTableWriter = new MockVoTableWriter();
+		
+		WhereClauseFactoryBean whereClauseFactoryBean = new MockWhereClauseFactoryBean(); 
+		
 		this.localHecQueryService = new LocalHecQueryServiceImpl();
+		this.localHecQueryService.setServiceName(HelioServiceName.HEC);
 		this.localHecQueryService.setLocalHecQueryDao(localHecQueryDao);
 		this.localHecQueryService.setHelioFileUtil(helioFileUtil);
 		this.localHecQueryService.setVoTableWriter(voTableWriter);
-		
+		this.localHecQueryService.setQuerySerializer(new SQLSerializer());
+		this.localHecQueryService.setWhereClauseFactoryBean(whereClauseFactoryBean);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 		this.localHecQueryService = null;
-		//Delete files in test direction?
 	}
 	
 	@Test
@@ -145,7 +153,7 @@ public class LocalHecQueryServiceTest {
 	 */
 	private final class MockVoTableWriter implements VoTableWriter {
 		@Override
-		public void writeVoTableToXml(Writer outWriter, StarTable[] starTables) {
+		public void writeVoTableToXml(Writer outWriter, StarTable[] starTables, Map<String, String> attrKeyValueMap) {
 			try {
 				outWriter.append("<" + VOTABLE_TAG + " version=\"1.1\" xmlns=\"http://www.ivoa.net/xml/VOTable/v1.1\">");
 				outWriter.append("<INFO name=\"TEST\" value=\"This content ist just for testing purposes.\"/>");
