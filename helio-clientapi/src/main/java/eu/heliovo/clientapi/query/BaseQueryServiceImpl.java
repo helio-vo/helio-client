@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.HelioConfigurationManager;
-import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
+import eu.heliovo.clientapi.model.service.AbstractRemoteServiceImpl;
 import eu.heliovo.clientapi.query.delegate.QueryDelegateFactory;
 import eu.heliovo.clientapi.query.paramquery.serialize.QuerySerializer;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
@@ -37,7 +37,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author MarcoSoldati
  * 
  */
-public class BaseQueryServiceImpl extends AbstractServiceImpl implements QueryService, AnnotatedBean {
+public class BaseQueryServiceImpl extends AbstractRemoteServiceImpl implements QueryService, AnnotatedBean {
     /**
      * The logger instance
      */

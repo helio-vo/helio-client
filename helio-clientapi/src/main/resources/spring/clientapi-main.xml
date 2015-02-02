@@ -27,7 +27,7 @@
   <bean id="loadBalancer"
     class="eu.heliovo.clientapi.loadbalancing.impl.RoundRobinLoadBalancer"></bean>
 
-  <bean id="abstractService" class="eu.heliovo.clientapi.model.service.AbstractServiceImpl"
+  <bean id="abstractService" class="eu.heliovo.clientapi.model.service.AbstractRemoteServiceImpl"
     abstract="true">
     <property name="loadBalancer" ref="loadBalancer"></property>
   </bean>

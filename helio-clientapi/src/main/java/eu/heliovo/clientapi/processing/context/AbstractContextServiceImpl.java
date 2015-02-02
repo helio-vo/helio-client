@@ -25,7 +25,7 @@ import org.astrogrid.schema.ceatypes.v1.ExecutionPhase;
 import org.astrogrid.schema.ceatypes.v1.JobIdentifierType;
 import org.astrogrid.schema.ceatypes.v1.MessageType;
 
-import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
+import eu.heliovo.clientapi.model.service.AbstractRemoteServiceImpl;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ProcessingService;
 import eu.heliovo.clientapi.processing.UrlProcessingResultObject;
@@ -42,7 +42,7 @@ import eu.heliovo.shared.util.FileUtil;
  * @author MarcoSoldati
  *
  */
-public abstract class AbstractContextServiceImpl extends AbstractServiceImpl implements ProcessingService<UrlProcessingResultObject> {
+public abstract class AbstractContextServiceImpl extends AbstractRemoteServiceImpl implements ProcessingService<UrlProcessingResultObject> {
     /**
      * The logger instance
      */

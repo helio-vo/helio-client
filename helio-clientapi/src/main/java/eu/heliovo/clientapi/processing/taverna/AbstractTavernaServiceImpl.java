@@ -22,7 +22,7 @@ import uk.org.taverna.ns._2010.xml.server.Status;
 import uk.org.taverna.ns._2010.xml.server.soap.BadStateChangeException;
 import uk.org.taverna.ns._2010.xml.server.soap.NoUpdateException;
 import uk.org.taverna.ns._2010.xml.server.soap.UnknownRunException;
-import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
+import eu.heliovo.clientapi.model.service.AbstractRemoteServiceImpl;
 import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ResultObjectFactory;
@@ -47,7 +47,7 @@ import eu.heliovo.tavernaserver.Server;
  * @param <T> Type of the result object returned by a call to this class.
  *
  */
-public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServiceResultObject> extends AbstractServiceImpl implements TavernaService<T>, ResultObjectFactory<T, Run> {
+public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServiceResultObject> extends AbstractRemoteServiceImpl implements TavernaService<T>, ResultObjectFactory<T, Run> {
     /**
      * The logger instance
      */

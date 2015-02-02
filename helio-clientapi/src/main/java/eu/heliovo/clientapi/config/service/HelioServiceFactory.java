@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import eu.heliovo.clientapi.loadbalancing.LoadBalancer;
+import eu.heliovo.clientapi.model.service.AbstractRemoteServiceImpl;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.registryclient.AccessInterface;
@@ -137,27 +138,39 @@ public class HelioServiceFactory implements ServiceFactory, ApplicationContextAw
         for (int i = 0; i < beanNames.length; i++) {
             String beanName = beanNames[i];
             HelioService serviceImpl = (HelioService) springApplicationContext.getBean(beanName);
-            if (serviceImpl instanceof AbstractServiceImpl) {
-                AbstractServiceImpl impl = (AbstractServiceImpl)serviceImpl;                
-                if (serviceName != null) {
-                    impl.setServiceName(serviceName);
-                }
-                if (serviceVariant != null) {
-                    impl.setServiceVariant(serviceVariant);
-                }
-                
-                if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
-                    impl.setAccessInterfaces(getAccessInterfaces(serviceImpl));
-                } else {
-                    impl.setAccessInterfaces(accessInterfaces);
-                }
-                impl.setLoadBalancer(getLoadBalancer());
-                impl.init();
-            }
+            configureHelioService(serviceImpl, serviceName, serviceVariant);
+            configureHelioRemoteService(serviceImpl, accessInterfaces);
             serviceImpls[i] = serviceImpl;
         }
         return serviceImpls;
     }
+
+	private void configureHelioService(HelioService serviceImpl, HelioServiceName serviceName, String serviceVariant) {
+		if (serviceImpl instanceof AbstractServiceImpl) {
+		    AbstractServiceImpl impl = (AbstractServiceImpl)serviceImpl;                
+		    if (serviceName != null) {
+		        impl.setServiceName(serviceName);
+		    }
+		    if (serviceVariant != null) {
+		        impl.setServiceVariant(serviceVariant);
+		    }
+		}
+	}
+	
+	private void configureHelioRemoteService(HelioService serviceImpl, AccessInterface[] accessInterfaces) {
+		if (serviceImpl instanceof AbstractRemoteServiceImpl) {
+			AbstractRemoteServiceImpl impl = (AbstractRemoteServiceImpl)serviceImpl;                
+			
+			if (accessInterfaces == null || accessInterfaces.length == 0 || accessInterfaces[0] == null) {
+				impl.setAccessInterfaces(getAccessInterfaces(serviceImpl));
+			} else {
+				impl.setAccessInterfaces(accessInterfaces);
+			}
+			impl.setLoadBalancer(getLoadBalancer());
+			impl.init();
+		}
+	}
+
     
     /**
      * Read all access interfaces from the registry. 

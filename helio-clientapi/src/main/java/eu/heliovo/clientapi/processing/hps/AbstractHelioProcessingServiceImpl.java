@@ -15,7 +15,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
 
-import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
+import eu.heliovo.clientapi.model.service.AbstractRemoteServiceImpl;
 import eu.heliovo.clientapi.processing.HelioProcessingServiceResultObject;
 import eu.heliovo.clientapi.processing.ProcessingResult;
 import eu.heliovo.clientapi.processing.ProcessingService;
@@ -37,7 +37,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @param <T> Type of the result object returned by a call to this class.
  *
  */
-public abstract class AbstractHelioProcessingServiceImpl<T extends HelioProcessingServiceResultObject> extends AbstractServiceImpl implements ProcessingService<T> {
+public abstract class AbstractHelioProcessingServiceImpl<T extends HelioProcessingServiceResultObject> extends AbstractRemoteServiceImpl implements ProcessingService<T> {
     /**
      * The logger instance
      */
