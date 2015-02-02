@@ -67,6 +67,7 @@ public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServic
      * The default constructor.
      */
     public AbstractTavernaServiceImpl() {
+    	setCapabilites(ServiceCapability.TAVERNA_SERVER);
     }
     
     /**
@@ -85,11 +86,6 @@ public abstract class AbstractTavernaServiceImpl<T extends HelioProcessingServic
     }
     
     
-    @Override
-    public boolean supportsCapability(ServiceCapability capability) {
-        return capability == ServiceCapability.TAVERNA_SERVER;
-    }
-
     /**
      * Get the best access interface
      * @return the "best" access interface

@@ -67,11 +67,7 @@ public abstract class AbstractContextServiceImpl extends AbstractRemoteServiceIm
      * Default constructor
      */
     public AbstractContextServiceImpl() {
-    }
-        
-    @Override
-    public boolean supportsCapability(ServiceCapability capability) {
-        return capability == ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE;
+    	setCapabilites(ServiceCapability.COMMON_EXECUTION_ARCHITECTURE_SERVICE);
     }
     
     /**

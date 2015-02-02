@@ -49,11 +49,7 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractRemoteServic
      */
     public AbstractDesPlotterServiceImpl(String mission) {
         this.mission = mission;
-    }
-    
-    @Override
-    public boolean supportsCapability(ServiceCapability capability) {
-        return capability == ServiceCapability.ASYNC_QUERY_SERVICE;
+        setCapabilites(ServiceCapability.ASYNC_QUERY_SERVICE);
     }
 
     /**

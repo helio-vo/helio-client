@@ -62,11 +62,7 @@ public abstract class AbstractHelioProcessingServiceImpl<T extends HelioProcessi
      * Create a client stub for the "best" {@link AccessInterface}. 
      */
     public AbstractHelioProcessingServiceImpl() {
-    }
-
-    @Override
-    public boolean supportsCapability(ServiceCapability capability) {
-        return capability == ServiceCapability.HELIO_PROCESSING_SERVICE;
+    	setCapabilites(ServiceCapability.HELIO_PROCESSING_SERVICE);
     }
     
     /**

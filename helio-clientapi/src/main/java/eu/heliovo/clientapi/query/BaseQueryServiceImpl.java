@@ -135,6 +135,10 @@ public class BaseQueryServiceImpl extends AbstractRemoteServiceImpl implements Q
      */
     private transient Map<String, WhereClause> whereClauseCache = new HashMap<String, WhereClause>();
     
+    public BaseQueryServiceImpl() {
+    	setCapabilites(ServiceCapability.SYNC_QUERY_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE);
+	}
+    
     /**
      * Initialize this object.
      */
@@ -264,11 +268,6 @@ public class BaseQueryServiceImpl extends AbstractRemoteServiceImpl implements Q
         }
     }
 
-    @Override
-    public boolean supportsCapability(ServiceCapability capability) {
-        return capability == ServiceCapability.SYNC_QUERY_SERVICE
-                || capability == ServiceCapability.ASYNC_QUERY_SERVICE;
-    }
 
     @Override
     public void setAccessInterfaces(AccessInterface... accessInterfaces) {

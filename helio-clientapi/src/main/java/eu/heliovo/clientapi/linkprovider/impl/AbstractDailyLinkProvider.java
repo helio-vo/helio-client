@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.activation.MimeType;
 
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
+import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.util.AssertUtil;
@@ -17,7 +18,7 @@ import eu.heliovo.shared.util.FileUtil;
  * @author MarcoSoldati
  *
  */
-abstract class AbstractDailyLinkProvider implements LinkProviderService {
+abstract class AbstractDailyLinkProvider extends AbstractServiceImpl implements LinkProviderService {
     /**
      * Template to create the URL
      */
@@ -56,13 +57,10 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
         this.titleTemplate = titleTemplate;
         this.serviceVariant = serviceVariant;
         this.description = description;
+        setServiceVariant(serviceVariant);
+        setServiceName(HelioServiceName.LPS);
+        setCapabilites(ServiceCapability.LINK_PROVIDER_SERVICE);
     }
-    
-    @Override
-    public boolean supportsCapability(ServiceCapability capability) {
-        return capability == ServiceCapability.LINK_PROVIDER_SERVICE;
-    }
-
     
     @Override
     public URL getLink(Date startTime, Date endTime) {
@@ -89,16 +87,6 @@ abstract class AbstractDailyLinkProvider implements LinkProviderService {
         return null;
     }
     
-    @Override
-    public String getServiceVariant() {
-        return serviceVariant;
-    }
-
-    @Override
-    public HelioServiceName getServiceName() {
-        return HelioServiceName.LPS;
-    }
-
     @Override
     public String getDescription() {
         return description;
