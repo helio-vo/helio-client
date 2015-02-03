@@ -28,6 +28,7 @@ import eu.heliovo.clientapi.workerservice.JobExecutionException;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.props.HelioFileUtil;
+import eu.heliovo.shared.util.DateUtil;
 
 /**
  * Implementation of {@link LocalHecQueryService} that uses {@link LocalHecQueryDao} for data access 
@@ -36,7 +37,6 @@ import eu.heliovo.shared.props.HelioFileUtil;
  *
  */
 public class LocalHecQueryServiceImpl implements QueryService {
-	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 	private static final String VOTABLE = "votable";
 	private static final String HEC_ID = "hec_id";
 	private LocalHecQueryDao localHecQueryDao;
@@ -162,13 +162,23 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	}
 
 	private String getWhereStatement(WhereClause whereClause, String startTime, String endTime) {
-		String timewhere = "NOT ('" + endTime + "' < time_start AND '" + startTime + "' >= time_end)";
+		String timewhere = "";
+		if(!startTime.isEmpty() && !endTime.isEmpty()) {
+			timewhere = "NOT ('" + endTime + "' < time_start AND '" + startTime + "' >= time_end)";
+		} else if (!startTime.isEmpty() && endTime.isEmpty()) {
+			timewhere = "time_start <= '" + startTime + "'";
+		} else if (startTime.isEmpty() && !endTime.isEmpty()) {
+			timewhere = "time_end >= '" + endTime + "'";
+		}
+		
 		String where = querySerializer.getWhereClause(whereClause.getCatalogName(), whereClause.getQueryTerms());
 
 		if(where.isEmpty()) {
 			return timewhere;
-		} else {
+		} else if (!timewhere.isEmpty() && !where.isEmpty()) {
 			return "(" +  where + ") AND (" + timewhere + ")";
+		} else  {
+			return where;
 		}
 	}
 	
@@ -199,8 +209,7 @@ public class LocalHecQueryServiceImpl implements QueryService {
  
 	private static String now() {
 		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-		return sdf.format(cal.getTime());
+		return DateUtil.toIsoDateString(cal.getTime());
 	}
 	
 	@Override

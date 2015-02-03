@@ -60,8 +60,11 @@ public class LocalHecQueryDaoImpl implements LocalHecQueryDao {
 			String where, int startindex, int maxrecord) {
 		StringBuilder sqlStatement = new StringBuilder();
 		sqlStatement.append("SELECT ").append(select);
-		sqlStatement.append(" FROM ").append("hec__").append(from);
-		sqlStatement.append(" WHERE ").append(where);
+		sqlStatement.append(" FROM ").append("hec__").append(from).append(" as ").append(from);
+		
+		if(!where.isEmpty()) {
+			sqlStatement.append(" WHERE ").append(where);
+		}
 		
 		if(maxrecord > 0) {
 			sqlStatement.append(" LIMIT " + maxrecord); 
@@ -125,12 +128,9 @@ public class LocalHecQueryDaoImpl implements LocalHecQueryDao {
 			return null;
 		}
 		
-		System.out.println("got eventlistddescriptor: " + eventListDescriptor);
-		
 		List<HelioFieldDescriptor<?>> fieldDescriptors = eventListDescriptor.getFieldDescriptors();
 		for (HelioFieldDescriptor<?> fieldDescriptor : fieldDescriptors) {
 			if (fieldName.equals(fieldDescriptor.getName())) {				
-				System.out.println("got fielddescriptor: " + fieldDescriptor);
 				return fieldDescriptor;
 			}
 		}

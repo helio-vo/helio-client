@@ -1,10 +1,15 @@
 package eu.heliovo.clientapi.query.local;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
+import eu.heliovo.clientapi.model.field.Operator;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.WhereClause;
 
 /**
  * Demo class for {@link LocalHecQueryServiceImpl}
@@ -31,6 +36,12 @@ public class LocalHecQueryDemo {
 		service.setMaxRecords(maxRecords);
 		service.setStartIndex(startIndex);
 		service.setJoin(null);
+		
+		List<WhereClause> whereClauses = service.getWhereClauses();
+		WhereClause clause = whereClauses.get(0);
+		@SuppressWarnings("unchecked")
+		HelioFieldDescriptor<Long> totalCount = (HelioFieldDescriptor<Long>) clause.findFieldDescriptorById("total_count");
+		clause.setQueryTerm(totalCount, new HelioFieldQueryTerm<Long>(totalCount, Operator.LARGER_EQUAL_THAN, 100l));
 
 		HelioQueryResult result = service.execute();
 		System.out.println("xml saved in " + result.asURL().getPath());

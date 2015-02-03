@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.heliovo.shared.util.DateUtil;
 import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.table.StarTableFactory;
 import uk.ac.starlink.util.DataSource;
@@ -27,7 +28,6 @@ import uk.ac.starlink.util.DataSource;
  */
 public class VoTableWriterTest {
 	private static final String TEST_HEADER = "test header";
-	public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
 
 	private StringWriter writer = null;
 	private VoTableWriterImpl votableWriter;
@@ -84,7 +84,6 @@ public class VoTableWriterTest {
 	
 	private static String now() {
 		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-		return sdf.format(cal.getTime());
+		return DateUtil.toIsoDateString(cal.getTime());
 	}
 }
