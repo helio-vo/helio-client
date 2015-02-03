@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,6 +17,7 @@ import java.util.logging.LogRecord;
 import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.HelioClientException;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
+import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.query.QueryType;
@@ -25,7 +25,6 @@ import eu.heliovo.clientapi.query.WhereClause;
 import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.paramquery.serialize.QuerySerializer;
 import eu.heliovo.clientapi.workerservice.JobExecutionException;
-import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.DateUtil;
@@ -36,15 +35,12 @@ import eu.heliovo.shared.util.DateUtil;
  * @author junia schoch at fhnw ch
  *
  */
-public class LocalHecQueryServiceImpl implements QueryService {
+public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements QueryService {
 	private static final String VOTABLE = "votable";
 	private static final String HEC_ID = "hec_id";
 	private LocalHecQueryDao localHecQueryDao;
 	private VoTableWriter voTableWriter;
 	private HelioFileUtil helioFileUtil;
-	
-	private HelioServiceName serviceName;
-	private String serviceVariant;
 	
 	private List<String> startTime;
 	private List<String> endTime;
@@ -60,6 +56,10 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	private transient QueryType queryType = QueryType.SYNC_QUERY;
 	private transient QuerySerializer querySerializer; 	
 
+	public LocalHecQueryServiceImpl() {
+		setCapabilites(ServiceCapability.SYNC_QUERY_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE);
+	}
+	
 	@Override	
 	public HelioQueryResult query( String startTime, String endTime, String from, Integer maxrecords, Integer startindex, String join) {
 		HelioQueryResult result = query(Collections.singletonList(startTime), Collections.singletonList(endTime),
@@ -210,30 +210,6 @@ public class LocalHecQueryServiceImpl implements QueryService {
 	private static String now() {
 		Calendar cal = Calendar.getInstance();
 		return DateUtil.toIsoDateString(cal.getTime());
-	}
-	
-	@Override
-	public HelioServiceName getServiceName() {
-		return serviceName;
-	}
-	
-    public void setServiceName(HelioServiceName serviceName) {
-        this.serviceName = serviceName;
-    }
-
-	@Override
-	public boolean supportsCapability(ServiceCapability capability) {
-		return capability == ServiceCapability.SYNC_QUERY_SERVICE
-                || capability == ServiceCapability.ASYNC_QUERY_SERVICE;
-	}
-
-	@Override
-	public String getServiceVariant() {
-		return serviceVariant;
-	}
-
-	public void setServiceVariant(String serviceVariant) {
-		this.serviceVariant = serviceVariant;
 	}
 
 	@Override
