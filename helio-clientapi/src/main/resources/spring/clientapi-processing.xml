@@ -5,22 +5,22 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
         
-    <bean id="goesPlotterService" class="eu.heliovo.clientapi.processing.context.impl.GoesPlotterServiceImpl" scope="prototype" parent="abstractService">
+    <bean id="goesPlotterService" class="eu.heliovo.clientapi.processing.context.impl.GoesPlotterServiceImpl" scope="prototype" parent="abstractRemoteService">
         <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.CXS"/></property >
         <property name="serviceVariant"><util:constant static-field="eu.heliovo.clientapi.processing.context.impl.GoesPlotterServiceImpl.SERVICE_VARIANT"/></property>
     </bean>
     
-    <bean id="flarePlotterService" class="eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl" scope="prototype" parent="abstractService">
+    <bean id="flarePlotterService" class="eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl" scope="prototype" parent="abstractRemoteService">
         <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.CXS"/></property >
         <property name="serviceVariant"><util:constant static-field="eu.heliovo.clientapi.processing.context.impl.FlarePlotterServiceImpl.SERVICE_VARIANT"/></property>
     </bean>
     
-    <bean id="simpleParkerModelService" class="eu.heliovo.clientapi.processing.context.impl.SimpleParkerModelServiceImpl" scope="prototype" parent="abstractService">
+    <bean id="simpleParkerModelService" class="eu.heliovo.clientapi.processing.context.impl.SimpleParkerModelServiceImpl" scope="prototype" parent="abstractRemoteService">
         <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.CXS"/></property >
         <property name="serviceVariant"><util:constant static-field="eu.heliovo.clientapi.processing.context.impl.SimpleParkerModelServiceImpl.SERVICE_VARIANT"/></property>
     </bean>
 
-    <bean id="abstractDesPlotterServiceImpl" abstract="true" class="eu.heliovo.clientapi.processing.context.impl.AbstractDesPlotterServiceImpl" parent="abstractService">
+    <bean id="abstractDesPlotterServiceImpl" abstract="true" class="eu.heliovo.clientapi.processing.context.impl.AbstractDesPlotterServiceImpl" parent="abstractRemoteService">
       <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.DES"/></property >
       <property name="stilUtils" ref="stilUtils"/>
       <property name="serviceFactory" ref="helioServiceFactory"></property>
@@ -42,7 +42,7 @@
         <property name="serviceVariant"><util:constant static-field="eu.heliovo.clientapi.processing.context.impl.des.WindPlotterServiceImpl.SERVICE_VARIANT"/></property>
     </bean>
 
-    <bean id="abstractProcessingService" class="eu.heliovo.clientapi.processing.hps.AbstractHelioProcessingServiceImpl" abstract="true" parent="abstractService">
+    <bean id="abstractProcessingService" class="eu.heliovo.clientapi.processing.hps.AbstractHelioProcessingServiceImpl" abstract="true" parent="abstractRemoteService">
         <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.HPS"/></property >
     </bean>
 
@@ -61,11 +61,11 @@
     <bean id="sepPropagationModel" class="eu.heliovo.clientapi.processing.hps.impl.SepPropagationModelImpl" scope="prototype" parent="abstractProcessingService">
         <property name="serviceVariant"><util:constant static-field="eu.heliovo.clientapi.processing.hps.impl.SepPropagationModelImpl.SERVICE_VARIANT"/></property>
     </bean>
-    <bean id="sepBackwardPropagationModel" class="eu.heliovo.clientapi.processing.hps.impl.SepBackwardPropagationModelImpl" scope="prototype" parent="abstractService">
+    <bean id="sepBackwardPropagationModel" class="eu.heliovo.clientapi.processing.hps.impl.SepBackwardPropagationModelImpl" scope="prototype" parent="abstractRemoteService">
         <property name="serviceVariant"><util:constant static-field="eu.heliovo.clientapi.processing.hps.impl.SepBackwardPropagationModelImpl.SERVICE_VARIANT"/></property>
     </bean>
 
-    <bean id="abstractTavernaService" class="eu.heliovo.clientapi.processing.taverna.AbstractTavernaServiceImpl" abstract="true" parent="abstractService">
+    <bean id="abstractTavernaService" class="eu.heliovo.clientapi.processing.taverna.AbstractTavernaServiceImpl" abstract="true" parent="abstractRemoteService">
       <property name="serviceName"><util:constant static-field="eu.heliovo.registryclient.HelioServiceName.TAVERNA_SERVER"/></property >
     </bean>
 

@@ -34,11 +34,6 @@ abstract class AbstractDailyLinkProvider extends AbstractServiceImpl implements 
     private final String titleTemplate;
     
     /**
-     * Name of the service variant. Should start with ivo:// and must be unique.
-     */
-    private final String serviceVariant;
-    
-    /**
      * Description
      */
     private final String description;
@@ -55,7 +50,6 @@ abstract class AbstractDailyLinkProvider extends AbstractServiceImpl implements 
         this.providerTemplate = providerTemplate;
         this.title = title;
         this.titleTemplate = titleTemplate;
-        this.serviceVariant = serviceVariant;
         this.description = description;
         setServiceVariant(serviceVariant);
         setServiceName(HelioServiceName.LPS);

@@ -244,7 +244,6 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
             } catch (MalformedURLException e) {
                 throw new JobExecutionException("Unable to create File URL: " + outFile + ". Cause: " + e.getMessage(), e);
             }
-//                    HelioFileUtil.asURL("https://eric.rcs.manchester.ac.uk:8443/taverna-server-2/rest/runs/" + run.getId() + "/wd/out/VOTable");
         }
 
         /**
@@ -283,41 +282,39 @@ public class TavernaWorkflow2283 extends AbstractTavernaServiceImpl<TavernaWorkf
          * @return the outFile
          */
         private File persistZipEntry(File zipFile, String entryName, File outFile) {
-            ZipFile zip;
-            try {
-                zip = new ZipFile(zipFile);
+            try (ZipFile zip = new ZipFile(zipFile)) {
+            	ZipEntry votableEntry = zip.getEntry(entryName);
+            	boolean error = false;
+            	if (votableEntry == null) {
+            		votableEntry = zip.getEntry(entryName + ".error");
+            		outFile = new File(outFile.getAbsolutePath() + ".error");
+            		error = true;
+            		
+            		if (votableEntry == null) {
+            			throw new JobExecutionException("Failed to read result from ZIP file " + zipFile, null);
+            		}
+            	}
+            	try {
+            		InputStream inputStream = zip.getInputStream(votableEntry);
+            		FileUtils.copyInputStreamToFile(inputStream, outFile);
+            	} catch (IOException e) {
+            		throw new RuntimeException("Internal Error: unable to read entry from previously stored ZIP-file: " + e.getMessage(), e);
+            	}
+            	
+            	if (error) {
+            		List<String> context;
+            		try {
+            			context = Collections.singletonList("Content of " + votableEntry.getName() + ": " +FileUtils.readFileToString(outFile));
+            		} catch (IOException e) {
+            			// unable to read context.
+            			context = Collections.singletonList("Unable to read content of " + votableEntry.getName() + ": " + e.getMessage());
+            		}
+            		throw new TavernaWorkflowException("Failed to load data from file " + entryName , context);
+            	}
             } catch (ZipException e) {
                 throw new RuntimeException("Internal Error: unable to read previously stored ZIP-file: " + e.getMessage(), e);
             } catch (IOException e) {
                 throw new RuntimeException("Internal Error: unable to read previously stored ZIP-file: " + e.getMessage(), e);
-            }
-            ZipEntry votableEntry = zip.getEntry(entryName);
-            boolean error = false;
-            if (votableEntry == null) {
-                votableEntry = zip.getEntry(entryName + ".error");
-                outFile = new File(outFile.getAbsolutePath() + ".error");
-                error = true;
-                
-                if (votableEntry == null) {
-                    throw new JobExecutionException("Failed to read result from ZIP file " + zipFile, null);
-                }
-            }
-            try {
-                InputStream inputStream = zip.getInputStream(votableEntry);
-                FileUtils.copyInputStreamToFile(inputStream, outFile);
-            } catch (IOException e) {
-                throw new RuntimeException("Internal Error: unable to read entry from previously stored ZIP-file: " + e.getMessage(), e);
-            }
-            
-            if (error) {
-                List<String> context;
-                try {
-                    context = Collections.singletonList("Content of " + votableEntry.getName() + ": " +FileUtils.readFileToString(outFile));
-                } catch (IOException e) {
-                    // unable to read context.
-                    context = Collections.singletonList("Unable to read content of " + votableEntry.getName() + ": " + e.getMessage());
-                }
-                throw new TavernaWorkflowException("Failed to load data from file " + entryName , context);
             }
             return outFile;
         }

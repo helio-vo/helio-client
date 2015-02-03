@@ -276,7 +276,15 @@ public abstract class AbstractDesPlotterServiceImpl extends AbstractRemoteServic
                 case ERROR:
                     phase = currentPhase;
                     jobEndTime = System.currentTimeMillis();
-                    break;  
+                    break;
+				case EXECUTING:
+				case HELD:
+				case PENDING:
+				case QUEUED:
+				case SUSPENDED:
+				case UNKNOWN:
+				default:
+					break;  
                 }
             }
             return phase;

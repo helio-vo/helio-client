@@ -13,9 +13,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.heliovo.clientapi.config.catalog.dao.EventListDescriptorDao;
 import eu.heliovo.clientapi.model.catalog.descriptor.EventListDescriptor;
-import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.field.type.FieldTypeFactory;
 import eu.heliovo.clientapi.utils.STILUtils;
 import eu.heliovo.shared.props.HelioFileUtil;

@@ -86,28 +86,28 @@ public class HelioClientDemo {
     private static List<String> config = new ArrayList<String>();
     
     static {
-//        config.add("ils");
-//        config.add("ics");
-//        config.add("icsPat");
+        config.add("ils");
+        //config.add("ics");
+        config.add("icsPat");
         config.add("hec");
-//        config.add("hec_sync");
-//        config.add("hec_pql");
-//        config.add("dpas");
-//        config.add("desPlot_Ace");
-//        config.add("desPlot_Sta");
-//        config.add("desPlot_Stb");
-//        config.add("desPlot_Ulysses");
-//        config.add("desPlot_Wind");
-//        config.add("flarePlot");
-//        config.add("cmePM");
-//        config.add("cmeBwPM");
-//        config.add("cirPM");
-//        config.add("cirBwPM");
-//        config.add("sepPM");
-//        config.add("sepBwPM");
-//        config.add("dumpServices");
-//        config.add("taverna2283");
-//        config.add("links");
+        config.add("hec_sync");
+        config.add("hec_pql");
+        config.add("dpas");
+        config.add("desPlot_Ace");
+        config.add("desPlot_Sta");
+        config.add("desPlot_Stb");
+        config.add("desPlot_Ulysses");
+        config.add("desPlot_Wind");
+        config.add("flarePlot");
+        config.add("cmePM");
+        config.add("cmeBwPM");
+        config.add("cirPM");
+        config.add("cirBwPM");
+        config.add("sepPM");
+        config.add("sepBwPM");
+        config.add("dumpServices");
+        //config.add("taverna2283");
+        config.add("links");
     }
     
 
