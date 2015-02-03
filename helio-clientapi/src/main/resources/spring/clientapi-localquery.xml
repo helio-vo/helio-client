@@ -5,32 +5,42 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 	<bean id="localHecQueryService"
-		class="eu.heliovo.clientapi.query.local.LocalHecQueryServiceImpl">
-		<property name="localHecQueryDao" ref="localHecQueryDao" />
+		class="eu.heliovo.clientapi.query.local.LocalQueryServiceImpl">
+		<property name="localQueryDao" ref="localHecQueryDao" />
 		<property name="serviceName" value="HEC" />
 		<property name="helioFileUtil" ref="helioFileUtil" />
 		<property name="voTableWriter" ref="voTableWriter" />
 		<property name="querySerializer" ref="sqlSerializer" />
 		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
 	</bean>
-
-	<bean id="localHecQueryDao" class="eu.heliovo.clientapi.query.local.LocalHecQueryDaoImpl">
+	
+	<bean id="localHecQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
 		<property name="dataSource" ref="dataSource" />
-		<property name="eventListDescriptorDao" ref="eventListDescriptorDao"></property>
+		<property name="catalogueDescriptorDao" ref="eventListDescriptorDao"/>
+		<property name="tableNameFilter" ref="hecTableNameFilter"/>
 	</bean>
-
-	<bean id="hecProperties"
-		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-		<property name="locations">
-			<list>
-				<value>classpath*:helio-hec-r4.properties</value>
-			</list>
-		</property>
+	
+	<bean id="hecTableNameFilter" class="eu.heliovo.clientapi.query.local.HecTableNameFilter"/>
+	
+	<bean id="localIcsQueryService"
+		class="eu.heliovo.clientapi.query.local.LocalQueryServiceImpl">
+		<property name="localQueryDao" ref="localIcsQueryDao" />
+		<property name="serviceName" value="ICS" />
+		<property name="helioFileUtil" ref="helioFileUtil" />
+		<property name="voTableWriter" ref="voTableWriter" />
+		<property name="querySerializer" ref="sqlSerializer" />
+		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
 	</bean>
-
-	<bean id="voTableWriter" class="eu.heliovo.clientapi.query.local.VoTableWriterImpl">
-		<property name="properties" ref="hecProperties" />
+	
+	<bean id="localIcsQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+		<property name="catalogueDescriptorDao" ref="instrumentDescriptorDao"/>
+		<property name="tableNameFilter" ref="icsTableNameFilter"/>
 	</bean>
+	
+	<bean id="icsTableNameFilter" class="eu.heliovo.clientapi.query.local.IcsTableNameFilter"/>
+	
+	<bean id="voTableWriter" class="eu.heliovo.clientapi.query.local.VoTableWriterImpl"/>
 	
 	<bean id="sqlSerializer" class="eu.heliovo.clientapi.query.paramquery.serialize.SQLSerializer">
     	<property name="conversionService" ref="conversionService"></property>

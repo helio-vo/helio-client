@@ -18,8 +18,8 @@ import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.table.Tables;
 import uk.ac.starlink.table.ValueInfo;
 import uk.ac.starlink.table.jdbc.SequentialResultSetStarTable;
-import eu.heliovo.clientapi.config.catalog.dao.EventListDescriptorDao;
-import eu.heliovo.clientapi.model.catalog.descriptor.EventListDescriptor;
+import eu.heliovo.clientapi.config.CatalogueDescriptorDao;
+import eu.heliovo.clientapi.model.catalog.HelioCatalogueDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 
 /**
@@ -27,12 +27,13 @@ import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
  * @author junia schoch at fhnw ch
  *
  */
-public class LocalHecQueryDaoImpl implements LocalHecQueryDao {
+public class LocalQueryDaoImpl implements LocalQueryDao {
 
 	private JdbcTemplate jdbcTemplate;
-	private EventListDescriptorDao eventListDescriptorDao;
+	private CatalogueDescriptorDao catalogueDescriptorDao;
+	private TableNameFilter tableNameFilter;
 
-    public void setDataSource(DataSource dataSource) {
+	public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 	
@@ -60,7 +61,7 @@ public class LocalHecQueryDaoImpl implements LocalHecQueryDao {
 			String where, int startindex, int maxrecord) {
 		StringBuilder sqlStatement = new StringBuilder();
 		sqlStatement.append("SELECT ").append(select);
-		sqlStatement.append(" FROM ").append("hec__").append(from).append(" as ").append(from);
+		sqlStatement.append(" FROM ").append(tableNameFilter.getTableName(from)).append(" as ").append(from);
 		
 		if(!where.isEmpty()) {
 			sqlStatement.append(" WHERE ").append(where);
@@ -123,7 +124,7 @@ public class LocalHecQueryDaoImpl implements LocalHecQueryDao {
 	}
 	
 	private HelioFieldDescriptor<?> findFieldDescriptor(String catalogue, String fieldName) {
-		EventListDescriptor eventListDescriptor = findEventListDescriptor(catalogue);
+		HelioCatalogueDescriptor eventListDescriptor = findEventListDescriptor(catalogue);
 		if (eventListDescriptor == null) {
 			return null;
 		}
@@ -138,22 +139,30 @@ public class LocalHecQueryDaoImpl implements LocalHecQueryDao {
 	}
 
 
-	private EventListDescriptor findEventListDescriptor(String catalogue) {
-		List<EventListDescriptor> eventListDescriptors = eventListDescriptorDao.getDomainValues();
-		for (EventListDescriptor eventListDescriptor : eventListDescriptors) {
-			if (catalogue.equals(eventListDescriptor.getName())) {
+	private HelioCatalogueDescriptor findEventListDescriptor(String catalogue) {
+		List<? extends HelioCatalogueDescriptor> eventListDescriptors = catalogueDescriptorDao.getDomainValues();
+		for (HelioCatalogueDescriptor eventListDescriptor : eventListDescriptors) {
+			if (catalogue.equals(eventListDescriptor.getValue())) {
 				return eventListDescriptor;
 			}
 		}
 		return null;
 	}
 
-	public EventListDescriptorDao getEventListDescriptorDao() {
-		return eventListDescriptorDao;
+	public CatalogueDescriptorDao getEventListDescriptorDao() {
+		return catalogueDescriptorDao;
 	}
 
-	public void setEventListDescriptorDao(
-			EventListDescriptorDao eventListDescriptorDao) {
-		this.eventListDescriptorDao = eventListDescriptorDao;
+	public void setCatalogueDescriptorDao(
+			CatalogueDescriptorDao eventListDescriptorDao) {
+		this.catalogueDescriptorDao = eventListDescriptorDao;
+	}
+	
+	public TableNameFilter getTableNameFilter() {
+		return tableNameFilter;
+	}
+
+	public void setTableNameFilter(TableNameFilter tableNameFilter) {
+		this.tableNameFilter = tableNameFilter;
 	}
 }

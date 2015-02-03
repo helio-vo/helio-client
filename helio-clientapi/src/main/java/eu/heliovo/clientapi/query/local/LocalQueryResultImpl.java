@@ -22,7 +22,7 @@ import eu.heliovo.shared.util.AssertUtil;
  * @author junia schoch at fhnw ch
  *
  */
-public class LocalHecQueryResultImpl implements HelioQueryResult{
+public class LocalQueryResultImpl implements HelioQueryResult{
 	 /**
      * How long did it take to execute the process.
      */
@@ -49,7 +49,7 @@ public class LocalHecQueryResultImpl implements HelioQueryResult{
 	 * @param executionDuration the time used for the query
 	 * @param userLogs logs
 	 */
-	public LocalHecQueryResultImpl(int executionDuration, List<LogRecord> userLogs, File file) {
+	public LocalQueryResultImpl(int executionDuration, List<LogRecord> userLogs, File file) {
 		AssertUtil.assertArgumentNotNull(file, "file");
 		AssertUtil.assertArgumentNotNull(userLogs, "userLogs");
 		

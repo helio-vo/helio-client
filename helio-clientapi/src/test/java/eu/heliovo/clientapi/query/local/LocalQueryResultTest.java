@@ -21,11 +21,11 @@ import org.junit.Test;
 import eu.heliovo.clientapi.workerservice.HelioWorkerServiceHandler.Phase;
 
 /**
- * Test class for {@link LocalHecQueryResultImpl}
+ * Test class for {@link LocalQueryResultImpl}
  * @author junia schoch at fhnw ch
  *
  */
-public class LocalHecQueryResultTest {
+public class LocalQueryResultTest {
 
 	private StringWriter writer = null;
 	private static final String SAMPLE_VOTABLE = "/eu/heliovo/clientapi/utils/resource/testdata_2_tables.xml";
@@ -44,67 +44,67 @@ public class LocalHecQueryResultTest {
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_file() {
 		List<LogRecord> userLogs = new ArrayList<LogRecord>();
-		new LocalHecQueryResultImpl(0, userLogs, null);
+		new LocalQueryResultImpl(0, userLogs, null);
 	}
 	
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_userLogs() {
-		new LocalHecQueryResultImpl(0, null, null);
+		new LocalQueryResultImpl(0, null, null);
 	}
 	
 	@Test
 	public void test_asURL() {
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertTrue(result.asURL().toString().contains(SAMPLE_VOTABLE));
 	}
 	
 	@Test
 	public void test_asURL_withParams() {
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertTrue(result.asURL((long)0,TimeUnit.SECONDS).toString().contains(SAMPLE_VOTABLE));
 	}
 	
 	@Test
 	public void test_asVoTable() {
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertEquals(2, result.asVOTable().getRESOURCE().size());
 	}
 	
 	@Test
 	public void test_asVoTable_withParams() {
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertEquals(2, result.asVOTable((long)0, TimeUnit.SECONDS).getRESOURCE().size());
 	}
 	
 	
 	@Test
 	public void test_phase() {
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertEquals(Phase.COMPLETED, result.getPhase());
 	}
 	
 	@Test
 	public void test_destructionTime() {
 		Date now = new Date();
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertTrue(result.getDestructionTime().compareTo(now) >= 0);
 	}
 	
 	@Test
 	public void test_asString() {
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertTrue(result.asString().contains(VOTABLE_CLOSE_TAG));
 	}
 	
 	@Test
 	public void test_asString_withParams() {
-		LocalHecQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalHecQueryResult();
 		assertTrue(result.asString((long)0, TimeUnit.SECONDS).contains(VOTABLE_CLOSE_TAG));
 	}
 	
-	private LocalHecQueryResultImpl getValidLocalHecQueryResult() {
+	private LocalQueryResultImpl getValidLocalHecQueryResult() {
 		List<LogRecord> userLogs = new ArrayList<LogRecord>();
-		LocalHecQueryResultImpl hecQueryResultImpl = new LocalHecQueryResultImpl(0, userLogs, getTestVOTable());
+		LocalQueryResultImpl hecQueryResultImpl = new LocalQueryResultImpl(0, userLogs, getTestVOTable());
 		return hecQueryResultImpl;
 	}
 	

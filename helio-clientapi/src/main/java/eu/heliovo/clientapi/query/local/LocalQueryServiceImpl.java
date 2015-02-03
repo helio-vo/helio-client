@@ -30,15 +30,15 @@ import eu.heliovo.shared.props.HelioFileUtil;
 import eu.heliovo.shared.util.DateUtil;
 
 /**
- * Implementation of {@link LocalHecQueryService} that uses {@link LocalHecQueryDao} for data access 
+ * Implementation of {@link LocalQueryService} that uses {@link LocalQueryDao} for data access 
  * and StarTable for VOTable serialization.
  * @author junia schoch at fhnw ch
  *
  */
-public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements QueryService {
+public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryService {
 	private static final String VOTABLE = "votable";
 	private static final String HEC_ID = "hec_id";
-	private LocalHecQueryDao localHecQueryDao;
+	private LocalQueryDao localQueryDao;
 	private VoTableWriter voTableWriter;
 	private HelioFileUtil helioFileUtil;
 	
@@ -56,7 +56,7 @@ public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements Que
 	private transient QueryType queryType = QueryType.SYNC_QUERY;
 	private transient QuerySerializer querySerializer; 	
 
-	public LocalHecQueryServiceImpl() {
+	public LocalQueryServiceImpl() {
 		setCapabilites(ServiceCapability.SYNC_QUERY_SERVICE, ServiceCapability.ASYNC_QUERY_SERVICE);
 	}
 	
@@ -103,7 +103,7 @@ public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements Que
 		setFrom(from);
 		setMaxRecords(maxrecords);
 		setStartIndex(startindex);
-		setJoin(join);
+		setJoin(null);
 		
 		return execute();
 	}
@@ -120,7 +120,7 @@ public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements Que
 		executionDuration = (int) (System.currentTimeMillis() - jobStartTime);
 		userLogs.add(new LogRecord(Level.INFO, "Created file in: " + file.getAbsolutePath().toString()));
 
-		HelioQueryResult helioQueryResult = new LocalHecQueryResultImpl(executionDuration, userLogs, file);
+		HelioQueryResult helioQueryResult = new LocalQueryResultImpl(executionDuration, userLogs, file);
 		return helioQueryResult;
 	}
 	
@@ -133,7 +133,7 @@ public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements Que
 			String fromStatement = getFrom().get(i);
 			String where = getWhereStatement(getWhereClauses().get(i), getStartTime().get(i), getEndTime().get(i));
 
-			StarTable starTable = localHecQueryDao.query(select, fromStatement, where, startIndex, maxRecords);
+			StarTable starTable = localQueryDao.query(select, fromStatement, where, startIndex, maxRecords);
 			starTables[i] = starTable;
 		}
 		
@@ -189,7 +189,7 @@ public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements Que
 		try (FileWriter fw = new FileWriter(file);
 				BufferedWriter bw = new BufferedWriter(fw)) {
 
-			voTableWriter.writeVoTableToXml(bw, starTables, attributes);
+			voTableWriter.writeVoTableToXml(bw, starTables, attributes, getServiceName());
 
 		} catch (IOException e) {
 			throw new HelioClientException(
@@ -322,12 +322,12 @@ public class LocalHecQueryServiceImpl extends AbstractServiceImpl implements Que
 		this.queryType = queryType;
 	}
 	
-	public LocalHecQueryDao getLocalHecQueryDao() {
-		return localHecQueryDao;
+	public LocalQueryDao getLocalQueryDao() {
+		return localQueryDao;
 	}
 
-	public void setLocalHecQueryDao(LocalHecQueryDao localHecQueryDao) {
-		this.localHecQueryDao = localHecQueryDao;
+	public void setLocalQueryDao(LocalQueryDao localQueryDao) {
+		this.localQueryDao = localQueryDao;
 	}
 	
 	public HelioFileUtil getHelioFileUtil() {

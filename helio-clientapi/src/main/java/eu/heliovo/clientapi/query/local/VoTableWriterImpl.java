@@ -12,6 +12,7 @@ import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.votable.DataFormat;
 import uk.ac.starlink.votable.VOSerializer;
 import eu.heliovo.clientapi.HelioClientException;
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.AssertUtil;
 
 /**
@@ -20,11 +21,11 @@ import eu.heliovo.shared.util.AssertUtil;
  * 
  */
 public class VoTableWriterImpl implements VoTableWriter{
-	private Properties properties;
 	public VoTableWriterImpl() {}
 	
 	@Override
-	public void writeVoTableToXml(Writer outWriter, StarTable[] starTables, Map<String, String> attrKeyValueMap) {
+	public void writeVoTableToXml(Writer outWriter, StarTable[] starTables, 
+			Map<String, String> attrKeyValueMap, HelioServiceName helioServiceName) {
 		AssertUtil.assertArgumentNotNull(starTables, "starTables");
 		
 		TagWriter tagWriter = new TagWriter(outWriter);
@@ -35,14 +36,14 @@ public class VoTableWriterImpl implements VoTableWriter{
 		
 		tagWriter.openTag(VoTableTag.VOTABLE, attributes).newLine();
 		{
-			writeDescription(tagWriter, attrKeyValueMap);
+			writeDescription(tagWriter, attrKeyValueMap, helioServiceName);
 			writeResources(tagWriter, starTables);
 		}
 		tagWriter.closeTag(VoTableTag.VOTABLE).newLine();
 	}
 	
-	private void writeDescription(TagWriter tagWriter, Map<String, String> attrKeyValueMap) {
-		tagWriter.tag(VoTableTag.DESCRIPTION, properties.getProperty("sql.votable.head.desc")).newLine(); 
+	private void writeDescription(TagWriter tagWriter, Map<String, String> attrKeyValueMap, HelioServiceName helioServiceName) {
+		tagWriter.tag(VoTableTag.DESCRIPTION, "Helio " + helioServiceName + " time based query V1.17.61").newLine();
 		writeInfoTags(tagWriter, attrKeyValueMap);
 	}
 	
@@ -78,13 +79,5 @@ public class VoTableWriterImpl implements VoTableWriter{
 			}
 		}
 		tagWriter.closeTag(VoTableTag.RESOURCE).newLine();
-	}
-	
-	public Properties getProperties() {
-		return properties;
-	}
-
-	public void setProperties(Properties properties) {
-		this.properties = properties;
 	}
 }

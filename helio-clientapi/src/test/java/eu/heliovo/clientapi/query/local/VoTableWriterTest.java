@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.util.DateUtil;
 import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.table.StarTableFactory;
@@ -27,17 +28,16 @@ import uk.ac.starlink.util.DataSource;
  *
  */
 public class VoTableWriterTest {
-	private static final String TEST_HEADER = "test header";
-
 	private StringWriter writer = null;
 	private VoTableWriterImpl votableWriter;
+	private HelioServiceName serviceName;
 
 	
 	@Before
 	public void setup() {
 		writer = new StringWriter();
 		votableWriter = new VoTableWriterImpl();
-		votableWriter.setProperties(getSampleProperty());
+		serviceName = HelioServiceName.HEC;
 	}
 	
 	@After
@@ -49,7 +49,7 @@ public class VoTableWriterTest {
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_votable() {
 		StarTable[] starTable = null;
-		votableWriter.writeVoTableToXml(writer, starTable, getProperties());
+		votableWriter.writeVoTableToXml(writer, starTable, getProperties(), serviceName);
 	}
 	
 	@Test	
@@ -62,14 +62,9 @@ public class VoTableWriterTest {
 			}
 		};
 		StarTable starTable = new StarTableFactory().makeStarTable(datsrc, "CSV");
-		votableWriter.writeVoTableToXml(writer, new StarTable[]{starTable}, getProperties());
-		assertTrue(writer.getBuffer().toString().contains(TEST_HEADER));
-	}
-
-	private Properties getSampleProperty() {
-		Properties properties = new Properties();
-		properties.put("sql.votable.head.desc", TEST_HEADER);
-		return properties;
+		votableWriter.writeVoTableToXml(writer, new StarTable[]{starTable}, getProperties(), serviceName);
+		System.out.println(writer.getBuffer());
+		assertTrue(writer.getBuffer().toString().contains(serviceName.toString()));
 	}
 	
 	private Map<String, String> getProperties() {

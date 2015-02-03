@@ -7,7 +7,7 @@ import uk.ac.starlink.table.StarTable;
  * @author junia schoch at fhnw ch
  *
  */
-public interface LocalHecQueryDao {
+public interface LocalQueryDao {
 	
 	/**
 	 * Execute a query on a HELIO query service.

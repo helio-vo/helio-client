@@ -34,12 +34,12 @@ import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.shared.props.HelioFileUtil;
 
 /**
- * Test for {@link LocalHecQueryServiceImpl}
+ * Test for {@link LocalQueryServiceImpl}
  * @author junia schoch at fhnw ch
  *
  */
 public class LocalHecQueryServiceTest {
-	private LocalHecQueryServiceImpl localHecQueryService;
+	private LocalQueryServiceImpl localHecQueryService;
 	private MockLocalHecQueryDao localHecQueryDao;
 	private HelioFileUtil helioFileUtil;
 	
@@ -68,9 +68,9 @@ public class LocalHecQueryServiceTest {
 		SQLSerializer sqlSerializer = new SQLSerializer();
 		sqlSerializer.setConversionService(new HelioConversionService());
 		
-		this.localHecQueryService = new LocalHecQueryServiceImpl();
+		this.localHecQueryService = new LocalQueryServiceImpl();
 		this.localHecQueryService.setServiceName(HelioServiceName.HEC);
-		this.localHecQueryService.setLocalHecQueryDao(localHecQueryDao);
+		this.localHecQueryService.setLocalQueryDao(localHecQueryDao);
 		this.localHecQueryService.setHelioFileUtil(helioFileUtil);
 		this.localHecQueryService.setVoTableWriter(voTableWriter);
 		this.localHecQueryService.setQuerySerializer(sqlSerializer);
@@ -285,7 +285,7 @@ public class LocalHecQueryServiceTest {
 	 */
 	private final class MockVoTableWriter implements VoTableWriter {
 		@Override
-		public void writeVoTableToXml(Writer outWriter, StarTable[] starTables, Map<String, String> attrKeyValueMap) {
+		public void writeVoTableToXml(Writer outWriter, StarTable[] starTables, Map<String, String> attrKeyValueMap, HelioServiceName helioServiceName) {
 			try {
 				outWriter.append("<" + VOTABLE_TAG + " version=\"1.1\" xmlns=\"http://www.ivoa.net/xml/VOTable/v1.1\">");
 				outWriter.append("<INFO name=\"TEST\" value=\"This content ist just for testing purposes.\"/>");
@@ -298,10 +298,10 @@ public class LocalHecQueryServiceTest {
 	}
 	
 	/**
-	 * Mock class for {@link LocalHecQueryDaoImpl}
+	 * Mock class for {@link LocalQueryDaoImpl}
 	 *
 	 */
-	private static final class MockLocalHecQueryDao implements LocalHecQueryDao {
+	private static final class MockLocalHecQueryDao implements LocalQueryDao {
 		private String select;
 		private String from;
 		private String where;
