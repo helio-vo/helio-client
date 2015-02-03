@@ -44,12 +44,12 @@ public class LocalHecQueryResultTest {
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_file() {
 		List<LogRecord> userLogs = new ArrayList<LogRecord>();
-		LocalHecQueryResultImpl hecQueryResultImpl = new LocalHecQueryResultImpl(0, userLogs, null);
+		new LocalHecQueryResultImpl(0, userLogs, null);
 	}
 	
 	@Test (expected=IllegalArgumentException.class)	
 	public void test_null_userLogs() {
-		LocalHecQueryResultImpl hecQueryResultImpl = new LocalHecQueryResultImpl(0, null, null);
+		new LocalHecQueryResultImpl(0, null, null);
 	}
 	
 	@Test
