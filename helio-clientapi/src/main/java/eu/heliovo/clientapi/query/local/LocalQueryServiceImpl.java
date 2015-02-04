@@ -36,11 +36,11 @@ import eu.heliovo.shared.util.DateUtil;
  *
  */
 public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryService {
-	private static final String VOTABLE = "votable";
 	private static final String HEC_ID = "hec_id";
 	private LocalQueryDao localQueryDao;
 	private VoTableWriter voTableWriter;
 	private HelioFileUtil helioFileUtil;
+	private String helioFileUtilArea;
 	
 	private List<String> startTime;
 	private List<String> endTime;
@@ -346,10 +346,18 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 		this.voTableWriter = voTableWriter;
 	}
 	
+	public String getHelioFileUtilArea() {
+		return helioFileUtilArea;
+	}
+
+	public void setHelioFileUtilArea(String helioFileUtilArea) {
+		this.helioFileUtilArea = helioFileUtilArea;
+	}
+
 	private File getUuidFile() {
 		UUID uuid = UUID.randomUUID();
 		String uuidFilename = "votable_" + uuid.toString() + ".xml";
-		File tempDir = helioFileUtil.getHelioTempDir(VOTABLE);
+		File tempDir = helioFileUtil.getHelioTempDir(helioFileUtilArea);
 		File file = new File(tempDir, uuidFilename);
 		if (!file.exists()) {
 			try {

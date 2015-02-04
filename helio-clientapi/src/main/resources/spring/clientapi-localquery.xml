@@ -12,6 +12,7 @@
 		<property name="voTableWriter" ref="voTableWriter" />
 		<property name="querySerializer" ref="sqlSerializer" />
 		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
+		<property name="helioFileUtilArea" value="localHecQueryService"></property>
 	</bean>
 	
 	<bean id="localHecQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
@@ -30,6 +31,7 @@
 		<property name="voTableWriter" ref="voTableWriter" />
 		<property name="querySerializer" ref="sqlSerializer" />
 		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
+		<property name="helioFileUtilArea" value="localIcsQueryService"></property>
 	</bean>
 	
 	<bean id="localIcsQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">

@@ -56,12 +56,14 @@ public class LocalHecQueryServiceTest {
 	private static final String FIELD_DESCRIPTOR_NAME = "testName";
 	private static final String FIELD_DESCRIPTOR_NAME2 = "testName2";
 	private static final Integer FIELD_DESCRIPTOR_VALUE = 5;
+	private static final String AREA = "localquery-votable";
+	private static final String APP_ID = "test";
 	
 	@Before
 	public void setup() {
 		localHecQueryDao = new MockLocalHecQueryDao();
 		
-		helioFileUtil = new HelioFileUtil("test");
+		helioFileUtil = new HelioFileUtil(APP_ID);
 		VoTableWriter voTableWriter = new MockVoTableWriter();
 		
 		WhereClauseFactoryBean whereClauseFactoryBean = new MockWhereClauseFactoryBean(); 
@@ -75,11 +77,13 @@ public class LocalHecQueryServiceTest {
 		this.localHecQueryService.setVoTableWriter(voTableWriter);
 		this.localHecQueryService.setQuerySerializer(sqlSerializer);
 		this.localHecQueryService.setWhereClauseFactoryBean(whereClauseFactoryBean);
+		this.localHecQueryService.setHelioFileUtilArea(AREA);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		this.localHecQueryService = null;
+		File file = localHecQueryService.getHelioFileUtil().getHelioTempDir(AREA);
+		LocalQueryTestUtil.recursiveDelete(file);
 	}
 	
 	@Test
@@ -233,7 +237,6 @@ public class LocalHecQueryServiceTest {
 		}
 		assertTrue(resultFile.exists());
 	}
-		
 	
 	/**
 	 * Set default properties in localHecQueryService property
