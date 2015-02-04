@@ -201,7 +201,6 @@ public class LocalHecQueryServiceTest {
 		localHecQueryService.execute();
 		
 		String expectedSelect = FIELD_DESCRIPTOR_NAME + ", " + FIELD_DESCRIPTOR_NAME2;
-		System.out.println(localHecQueryDao.getSelect());
 		assertEquals(expectedSelect, localHecQueryDao.getSelect());
 	}
 	
