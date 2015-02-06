@@ -143,6 +143,22 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao<Inst
     }
 
     /**
+	 * Wrap a given URL into an input source. Set the public id to the location.
+	 * @param location the location.
+	 * @return a new einput source object. 
+	 */
+	private InputSource getInputSource(URL location) {
+		InputSource source;
+		try {
+			source = new InputSource(location.openStream());
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to open url '" + location + "'. Cause: " + e.getMessage(), e);
+		}
+		source.setPublicId(location.toExternalForm());
+		return source;
+	}
+    
+    /**
      * Parse the input source into a DOM tree and normalize the DOM tree.
      * @param instrumentsSource
      * @return a normalized DOM node
@@ -323,21 +339,6 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao<Inst
 	    }
     }
 
-    /**
-	 * Wrap a given URL into an input source. Set the public id to the location.
-	 * @param location the location.
-	 * @return a new einput source object. 
-	 */
-	private InputSource getInputSource(URL location) {
-		InputSource source;
-		try {
-			source = new InputSource(location.openStream());
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to open url '" + location + "'. Cause: " + e.getMessage(), e);
-		}
-		source.setPublicId(location.toExternalForm());
-		return source;
-	}
 
 	/**
 	 * Get the domain values for the allowed instruments.
