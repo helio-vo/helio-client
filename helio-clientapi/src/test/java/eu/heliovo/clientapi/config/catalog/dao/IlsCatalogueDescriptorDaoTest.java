@@ -47,7 +47,7 @@ public class IlsCatalogueDescriptorDaoTest {
 		
 		List<HelioFieldDescriptor<?>> fieldDescriptors = instrumentsList.getFieldDescriptors();
 		assertEquals(10, fieldDescriptors.size());
-		assertEquals("name", fieldDescriptors.get(0).getId());
+		assertEquals("target_obj", fieldDescriptors.get(0).getId());
 	}
 
 	private IlsCatalogueDescriptor findDescriptor(String listName) {
