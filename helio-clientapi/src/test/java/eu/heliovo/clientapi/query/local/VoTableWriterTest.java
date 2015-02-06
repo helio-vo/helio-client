@@ -6,21 +6,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.heliovo.registryclient.HelioServiceName;
-import eu.heliovo.shared.util.DateUtil;
 import uk.ac.starlink.table.StarTable;
 import uk.ac.starlink.table.StarTableFactory;
 import uk.ac.starlink.util.DataSource;
+import eu.heliovo.registryclient.HelioServiceName;
+import eu.heliovo.shared.util.DateUtil;
 
 /**
  * Test class for {@link VoTableWriterImpl}
@@ -28,6 +26,8 @@ import uk.ac.starlink.util.DataSource;
  *
  */
 public class VoTableWriterTest {
+	private static final HelioServiceName SERVICE_NAME = HelioServiceName.HEC;
+	
 	private StringWriter writer = null;
 	private VoTableWriterImpl votableWriter;
 	private HelioServiceName serviceName;
@@ -37,7 +37,7 @@ public class VoTableWriterTest {
 	public void setup() {
 		writer = new StringWriter();
 		votableWriter = new VoTableWriterImpl();
-		serviceName = HelioServiceName.HEC;
+		serviceName = SERVICE_NAME;
 	}
 	
 	@After

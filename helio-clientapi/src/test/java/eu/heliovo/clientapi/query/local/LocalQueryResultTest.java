@@ -54,58 +54,58 @@ public class LocalQueryResultTest {
 	
 	@Test
 	public void test_asURL() {
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertTrue(result.asURL().toString().contains(SAMPLE_VOTABLE));
 	}
 	
 	@Test
 	public void test_asURL_withParams() {
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertTrue(result.asURL((long)0,TimeUnit.SECONDS).toString().contains(SAMPLE_VOTABLE));
 	}
 	
 	@Test
 	public void test_asVoTable() {
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertEquals(2, result.asVOTable().getRESOURCE().size());
 	}
 	
 	@Test
 	public void test_asVoTable_withParams() {
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertEquals(2, result.asVOTable((long)0, TimeUnit.SECONDS).getRESOURCE().size());
 	}
 	
 	
 	@Test
 	public void test_phase() {
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertEquals(Phase.COMPLETED, result.getPhase());
 	}
 	
 	@Test
 	public void test_destructionTime() {
 		Date now = new Date();
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertTrue(result.getDestructionTime().compareTo(now) >= 0);
 	}
 	
 	@Test
 	public void test_asString() {
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertTrue(result.asString().contains(VOTABLE_CLOSE_TAG));
 	}
 	
 	@Test
 	public void test_asString_withParams() {
-		LocalQueryResultImpl result = getValidLocalHecQueryResult();
+		LocalQueryResultImpl result = getValidLocalQueryResult();
 		assertTrue(result.asString((long)0, TimeUnit.SECONDS).contains(VOTABLE_CLOSE_TAG));
 	}
 	
-	private LocalQueryResultImpl getValidLocalHecQueryResult() {
+	private LocalQueryResultImpl getValidLocalQueryResult() {
 		List<LogRecord> userLogs = new ArrayList<LogRecord>();
-		LocalQueryResultImpl hecQueryResultImpl = new LocalQueryResultImpl(0, userLogs, getTestVOTable());
-		return hecQueryResultImpl;
+		LocalQueryResultImpl queryResultImpl = new LocalQueryResultImpl(0, userLogs, getTestVOTable());
+		return queryResultImpl;
 	}
 	
     private File getTestVOTable() {

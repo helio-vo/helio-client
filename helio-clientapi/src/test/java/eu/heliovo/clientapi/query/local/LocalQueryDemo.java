@@ -27,7 +27,7 @@ public class LocalQueryDemo {
 	private static final Integer STARTINDEX = 0;
 	
 	public static void main(String[] args) throws Exception {
-		HelioQueryResult result = getQueryResult(HelioServiceName.HEC);
+		HelioQueryResult result = getQueryResult(HelioServiceName.ICS);
 		System.out.println("xml saved in " + result.asURL().getPath());
 	}
 	

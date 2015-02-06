@@ -5,7 +5,7 @@ public class IcsTableNameFilter implements TableNameFilter {
 
 	@Override
 	public String getTableName(String catalogName) {
-		return "ics";
+		return "instrument_pat";
 	}
 
 
