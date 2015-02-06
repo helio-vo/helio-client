@@ -151,10 +151,10 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 			} else {
 				select.append(", ");
 			}
-			if (HEC_ID.equalsIgnoreCase(helioFieldDescriptor.getName())) {
+			if (HEC_ID.equalsIgnoreCase(helioFieldDescriptor.getId())) {
 				select.append("id as " + HEC_ID);
 			} else {
-				select.append(helioFieldDescriptor.getName());
+				select.append(helioFieldDescriptor.getId());
 			}
 		}
 		

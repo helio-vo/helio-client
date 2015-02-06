@@ -50,67 +50,67 @@ public class SQLSerializerTest {
 	@Test public void getWhereClause_string_equals() {
 		HelioFieldDescriptor<String> field = getStringFieldDescriptor();
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "a value"));
-		assertEquals("cat.astring='a value'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test='a value'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_like() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.LIKE, "likeval"));
-		assertEquals("cat.astring LIKE '%likeval%'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test LIKE '%likeval%'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_between() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.BETWEEN, "a", "b"));
-		assertEquals("cat.astring BETWEEN 'a' AND 'b'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test BETWEEN 'a' AND 'b'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_gt() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.LARGER_EQUAL_THAN, "a"));
-		assertEquals("cat.astring >= 'a'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test >= 'a'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_lt() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.LESS_EQUAL_THAN, "a"));
-		assertEquals("cat.astring <= 'a'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test <= 'a'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_or_query() {
         HelioFieldDescriptor<String> field = getStringFieldDescriptor();
         paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "a value"));
         paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "another value"));
-        assertEquals("(cat.astring='a value' OR cat.astring='another value')", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+        assertEquals("(cat.string_test='a value' OR cat.string_test='another value')", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_number_equals() {
 		HelioFieldDescriptor<Double> field = getDoubleFieldDescriptor();
 		paramQueryTerms.add(new HelioFieldQueryTerm<Double>(field, Operator.EQUALS, 123.456));
-		assertEquals("cat.anumber=123.456", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.double_test=123.456", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_number_like() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<Double>(getDoubleFieldDescriptor(), Operator.LIKE, 123.456));
-		assertEquals("cat.anumber LIKE '%123.456%'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.double_test LIKE '%123.456%'", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_number_between() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<Double>(getDoubleFieldDescriptor(), Operator.BETWEEN, 123.456, 234.567));
-		assertEquals("cat.anumber BETWEEN 123.456 AND 234.567", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.double_test BETWEEN 123.456 AND 234.567", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_number_gt() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<Double>(getDoubleFieldDescriptor(), Operator.LARGER_EQUAL_THAN, 123.456));
-		assertEquals("cat.anumber >= 123.456", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.double_test >= 123.456", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_number_lt() {		
 		paramQueryTerms.add(new HelioFieldQueryTerm<Double>(getDoubleFieldDescriptor(), Operator.LESS_EQUAL_THAN, 123.456));
-		assertEquals("cat.anumber <= 123.456", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.double_test <= 123.456", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_number_or_query() {
 		HelioFieldDescriptor<Double> field = getDoubleFieldDescriptor();
 		paramQueryTerms.add(new HelioFieldQueryTerm<Double>(field, Operator.EQUALS, 123.456));
 		paramQueryTerms.add(new HelioFieldQueryTerm<Double>(field, Operator.EQUALS, 234.567));
-		assertEquals("(cat.anumber=123.456 OR cat.anumber=234.567)", sqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("(cat.double_test=123.456 OR cat.double_test=234.567)", sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void testComplexQueries() {	    
@@ -123,7 +123,7 @@ public class SQLSerializerTest {
 	    
 	    paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "another value"));
 	    
-	    assertEquals("(cat.astring='a value' OR cat.astring='another value') AND (cat.adate BETWEEN '1973-03-03T09:46:40' AND '1973-03-03T10:03:20' OR cat.adate BETWEEN '1973-03-03T10:20:00' AND '1973-03-03T10:36:40')", 
+	    assertEquals("(cat.string_test='a value' OR cat.string_test='another value') AND (cat.date_test BETWEEN '1973-03-03T09:46:40' AND '1973-03-03T10:03:20' OR cat.date_test BETWEEN '1973-03-03T10:20:00' AND '1973-03-03T10:36:40')", 
 	            sqlSerializer.getWhereClause("cat", paramQueryTerms));
 	    
 	}

@@ -43,8 +43,7 @@ public abstract class AbstractLocalQueryServiceTest {
 	
 	private static final String VOTABLE_TAG = "VOTABLE";
 	private static final String FIELD_DESCRIPTOR_ID = "testId";
-	private static final String FIELD_DESCRIPTOR_NAME = "testName";
-	private static final String FIELD_DESCRIPTOR_NAME2 = "testName2";
+	private static final String FIELD_DESCRIPTOR_ID2 = "testId2";
 	private static final Integer FIELD_DESCRIPTOR_VALUE = 5;
 	private static final String AREA = "localquery-votable";
 	private static final String APP_ID = "test";
@@ -160,7 +159,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		
 		
 		localQueryService.execute();
-		String expectedWhere = CATALOG_NAME + ".testName >= 5";
+		String expectedWhere = CATALOG_NAME + ".testId >= 5";
 		assertEquals(expectedWhere, localQueryDao.getWhere());
 	}
 	
@@ -172,7 +171,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		localQueryService.execute();
 		
 		StringBuilder expectedWhere = new StringBuilder();
-		expectedWhere.append("(").append(CATALOG_NAME).append(".").append(FIELD_DESCRIPTOR_NAME).append(" >= ");
+		expectedWhere.append("(").append(CATALOG_NAME).append(".").append(FIELD_DESCRIPTOR_ID).append(" >= ");
 		expectedWhere.append(FIELD_DESCRIPTOR_VALUE).append(") ");
 		expectedWhere.append("AND (NOT ('").append(END_TIME).append("' < time_start");
 		expectedWhere.append(" AND '").append(START_TIME).append("' >= time_end))");
@@ -193,7 +192,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		setDefaultProperties();
 		localQueryService.execute();
 		
-		String expectedSelect = FIELD_DESCRIPTOR_NAME + ", " + FIELD_DESCRIPTOR_NAME2;
+		String expectedSelect = FIELD_DESCRIPTOR_ID + ", " + FIELD_DESCRIPTOR_ID2;
 		assertEquals(expectedSelect, localQueryDao.getSelect());
 	}
 	

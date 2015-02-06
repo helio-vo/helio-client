@@ -49,7 +49,7 @@ public class LocalQueryDaoImpl implements LocalQueryDao {
 	public StarTable query(String select, String from, String where, int startindex, int maxrecord) {
 		String sqlStatement = buildSQLStatement(select, from, where,
 				startindex, maxrecord);
-	
+	System.out.println(sqlStatement);
 		StarTable starTable = execute(sqlStatement);
 		starTable = addQueryStringInfo(sqlStatement, starTable);
 		starTable = enhanceColumnDescriptors(from, starTable);
@@ -124,12 +124,12 @@ public class LocalQueryDaoImpl implements LocalQueryDao {
 	}
 	
 	private HelioFieldDescriptor<?> findFieldDescriptor(String catalogue, String fieldName) {
-		HelioCatalogueDescriptor eventListDescriptor = findEventListDescriptor(catalogue);
-		if (eventListDescriptor == null) {
+		HelioCatalogueDescriptor catalogueDescriptor = findEventListDescriptor(catalogue);
+		if (catalogueDescriptor == null) {
 			return null;
 		}
 		
-		List<HelioFieldDescriptor<?>> fieldDescriptors = eventListDescriptor.getFieldDescriptors();
+		List<HelioFieldDescriptor<?>> fieldDescriptors = catalogueDescriptor.getFieldDescriptors();
 		for (HelioFieldDescriptor<?> fieldDescriptor : fieldDescriptors) {
 			if (fieldName.equals(fieldDescriptor.getName())) {				
 				return fieldDescriptor;
@@ -140,22 +140,22 @@ public class LocalQueryDaoImpl implements LocalQueryDao {
 
 
 	private HelioCatalogueDescriptor findEventListDescriptor(String catalogue) {
-		List<? extends HelioCatalogueDescriptor> eventListDescriptors = catalogueDescriptorDao.getDomainValues();
-		for (HelioCatalogueDescriptor eventListDescriptor : eventListDescriptors) {
-			if (catalogue.equals(eventListDescriptor.getValue())) {
-				return eventListDescriptor;
+		List<? extends HelioCatalogueDescriptor> catalogueDescriptors = catalogueDescriptorDao.getDomainValues();
+		for (HelioCatalogueDescriptor catalogueDescriptor : catalogueDescriptors) {
+			if (catalogue.equals(catalogueDescriptor.getValue())) {
+				return catalogueDescriptor;
 			}
 		}
 		return null;
 	}
 
-	public CatalogueDescriptorDao getEventListDescriptorDao() {
+	public CatalogueDescriptorDao getCatalogueDescriptorDao() {
 		return catalogueDescriptorDao;
 	}
 
 	public void setCatalogueDescriptorDao(
-			CatalogueDescriptorDao eventListDescriptorDao) {
-		this.catalogueDescriptorDao = eventListDescriptorDao;
+			CatalogueDescriptorDao catalogueListDescriptorDao) {
+		this.catalogueDescriptorDao = catalogueListDescriptorDao;
 	}
 	
 	public TableNameFilter getTableNameFilter() {

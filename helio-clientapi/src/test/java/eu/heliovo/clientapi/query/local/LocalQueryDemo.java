@@ -21,7 +21,7 @@ import eu.heliovo.registryclient.HelioServiceName;
 public class LocalQueryDemo {
 	private static final String START_TIME = "2003-08-03 08:00:00";
 	private static final String END_TIME = "2003-08-05 08:00:00";
-	private static final String FROM_ICS = "instrument";
+	private static final String FROM_ICS = "instrument_pat";
 	private static final String FROM_HEC = "rhessi_hxr_flare";
 	private static final Integer MAXRECORDS = 5;
 	private static final Integer STARTINDEX = 0;

@@ -39,7 +39,7 @@ abstract class AbstractQuerySerializer implements QuerySerializer {
 		    
 		    // handle a term that may contain a list of values.
 		    StringBuilder leftSide = new StringBuilder();
-		    String paramName = catalogueName + "." + termGroup.getKey().getName();
+		    String paramName = catalogueName + "." + termGroup.getKey().getId();
 		    
 		    // iterate over the terms
 		    for (HelioFieldQueryTerm<?> term : termGroup.getValue()) {

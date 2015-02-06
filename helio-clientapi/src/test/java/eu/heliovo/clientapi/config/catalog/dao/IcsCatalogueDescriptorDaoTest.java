@@ -52,7 +52,7 @@ public class IcsCatalogueDescriptorDaoTest {
 
 	private IcsCatalogueDescriptor findDescriptor(String listName) {
 		List<IcsCatalogueDescriptor> lists = catalogueDescriptorDao.getDomainValues();
-		assertEquals(1, lists.size());
+		assertEquals(2, lists.size());
 		for (IcsCatalogueDescriptor icsCatalogueDescriptor : lists) {
 			if (listName.equals(icsCatalogueDescriptor.getValue())) {
 				return icsCatalogueDescriptor;

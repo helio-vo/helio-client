@@ -50,38 +50,38 @@ public class PQLSerializerTest {
 	@Test public void getWhereClause_string_equals() {
 		HelioFieldDescriptor<String> field = getStringFieldDescriptor();
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "a value"));
-		assertEquals("cat.astring,a%20value", pqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test,a%20value", pqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_like() {		
 		paramQueryTerms = new ArrayList<HelioFieldQueryTerm<?>>();
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.LIKE, "likeval"));
-		assertEquals("cat.astring,*likeval*", pqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test,*likeval*", pqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_between() {		
 		paramQueryTerms = new ArrayList<HelioFieldQueryTerm<?>>();
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.BETWEEN, "a", "b"));
-		assertEquals("cat.astring,a/b", pqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test,a/b", pqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_gt() {		
 		paramQueryTerms = new ArrayList<HelioFieldQueryTerm<?>>();
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.LARGER_EQUAL_THAN, "a"));
-		assertEquals("cat.astring,a/", pqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test,a/", pqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_string_lt() {		
 		paramQueryTerms = new ArrayList<HelioFieldQueryTerm<?>>();
 		paramQueryTerms.add(new HelioFieldQueryTerm<String>(getStringFieldDescriptor(), Operator.LESS_EQUAL_THAN, "a"));
-		assertEquals("cat.astring,/a", pqlSerializer.getWhereClause("cat", paramQueryTerms));
+		assertEquals("cat.string_test,/a", pqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void getWhereClause_or_query() {
         HelioFieldDescriptor<String> field = getStringFieldDescriptor();
         paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "a value"));
         paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "another value"));
-        assertEquals("cat.astring,a%20value,another%20value", pqlSerializer.getWhereClause("cat", paramQueryTerms));
+        assertEquals("cat.string_test,a%20value,another%20value", pqlSerializer.getWhereClause("cat", paramQueryTerms));
 	}
 	
 	@Test public void testComplexQueries() {	    
@@ -94,7 +94,7 @@ public class PQLSerializerTest {
 	    
 	    paramQueryTerms.add(new HelioFieldQueryTerm<String>(field, Operator.EQUALS, "another value"));
 	    
-	    assertEquals("cat.astring,a%20value,another%20value;cat.adate,1973-03-03T09%3a46%3a40/1973-03-03T10%3a03%3a20,1973-03-03T10%3a20%3a00/1973-03-03T10%3a36%3a40", 
+	    assertEquals("cat.string_test,a%20value,another%20value;cat.date_test,1973-03-03T09%3a46%3a40/1973-03-03T10%3a03%3a20,1973-03-03T10%3a20%3a00/1973-03-03T10%3a36%3a40", 
 	            pqlSerializer.getWhereClause("cat", paramQueryTerms));
 	    
 	}

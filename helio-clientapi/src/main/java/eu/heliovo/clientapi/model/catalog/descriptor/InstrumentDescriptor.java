@@ -23,23 +23,23 @@ public class InstrumentDescriptor extends AbstractCatalogueDescriptor implements
     
     private static final HelioFieldDescriptor<?>[] fieldDescriptors = new HelioFieldDescriptor<?>[]  {
         new HelioFieldDescriptor<String>("name", "Instrument Name", "Instrument Name", FieldType.STRING),
-        new HelioFieldDescriptor<String>("observatoryName", "Observatory Name", "Observatory Name", FieldType.STRING),
-        new HelioFieldDescriptor<String>("obsinstKey", "HELIO ID", "Helio Instrument Name", FieldType.STRING),
-        new HelioFieldDescriptor<String>("experimentId", "Experiment ID", "Experiment ID", FieldType.STRING),
-        new HelioFieldDescriptor<Date>("timeStart", "Instrument Start Date", "Date when the instrument started to observe", FieldType.DATETIME),
-        new HelioFieldDescriptor<Date>("timeEnd", "Instrument End Date", "Date when the instrument stopped to observe", FieldType.DATETIME),
+        new HelioFieldDescriptor<String>("observatory_name", "Observatory Name", "Observatory Name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("obsinst_key", "HELIO ID", "Helio Instrument Name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("experiment_id", "Experiment ID", "Experiment ID", FieldType.STRING),
+        new HelioFieldDescriptor<Date>("time_start", "Instrument Start Date", "Date when the instrument started to observe", FieldType.DATETIME),
+        new HelioFieldDescriptor<Date>("time_end", "Instrument End Date", "Date when the instrument stopped to observe", FieldType.DATETIME),
         new HelioFieldDescriptor<String>("longname", "Instrument Full Name", "Instrument Full Name", FieldType.STRING),
-        new HelioFieldDescriptor<String>("instType", "Instrument Type", "Type of the instrument", FieldType.STRING),
-        new HelioFieldDescriptor<String>("instOd1", "Observation Domain 1", "Instrument observation domain, 1st category", FieldType.STRING),
-        new HelioFieldDescriptor<String>("instOd2", "Observation Domain 2", "Instrument observation domain, 2nd category", FieldType.STRING),
-        new HelioFieldDescriptor<String>("instOe1", "Observable Entity", "Instrument observation entity element", FieldType.STRING),
-        new HelioFieldDescriptor<String>("instOe2", "Observable Entity", "Instrument observation entity type", FieldType.STRING),
-        new HelioFieldDescriptor<String>("instFd", "Wavelength FD", "Instrument observation wave length fd", FieldType.STRING),
-        new HelioFieldDescriptor<String>("instNd", "Wavelength ND", "Instrument observation wavelength nd", FieldType.STRING),
-        new HelioFieldDescriptor<String>("groupName", "Group Name", "Group name", FieldType.STRING),
+        new HelioFieldDescriptor<String>("inst_type", "Instrument Type", "Type of the instrument", FieldType.STRING),
+        new HelioFieldDescriptor<String>("inst_od1", "Observation Domain 1", "Instrument observation domain, 1st category", FieldType.STRING),
+        new HelioFieldDescriptor<String>("inst_od2", "Observation Domain 2", "Instrument observation domain, 2nd category", FieldType.STRING),
+        new HelioFieldDescriptor<String>("inst_oe1", "Observable Entity", "Instrument observation entity element", FieldType.STRING),
+        new HelioFieldDescriptor<String>("inst_oe2", "Observable Entity", "Instrument observation entity type", FieldType.STRING),
+        new HelioFieldDescriptor<String>("inst_fd", "Wavelength FD", "Instrument observation wave length fd", FieldType.STRING),
+        new HelioFieldDescriptor<String>("inst_nd", "Wavelength ND", "Instrument observation wavelength nd", FieldType.STRING),
+        new HelioFieldDescriptor<String>("group_name", "Group Name", "Group name", FieldType.STRING),
         new HelioFieldDescriptor<String>("keywords", "Keywords", "Complete focusing type", FieldType.STRING),
-        new HelioFieldDescriptor<String>("netKey", "Net Key", "Net Key", FieldType.STRING),
-        new HelioFieldDescriptor<Boolean>("isInPat", "Is in PAT", "Boolean values to indicate if a field from the ICS " +
+        new HelioFieldDescriptor<String>("net_key", "Net Key", "Net Key", FieldType.STRING),
+        new HelioFieldDescriptor<Boolean>("isinpat", "Is in PAT", "Boolean values to indicate if a field from the ICS " +
                 "is contained in the Provider Access Table, i.e. if the Data Access Provider Service is able " +
                 "to access the specific instrument.", FieldType.BOOLEAN),
 
