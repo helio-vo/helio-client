@@ -34,7 +34,7 @@ import eu.heliovo.shared.util.FileUtil;
  * @author marco soldati at fhnw ch
  * 
  */
-public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
+public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao<InstrumentDescriptor> {
     /**
      * where to cache the file
      */
@@ -90,11 +90,11 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 			// create the instruments field
 			// get the instruments.xsd ...
 			URL instrumentsXsd = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "instruments.xsd", instrumentsXsdUrl);
-			assertNutNull(instrumentsXsd, "instruments");
+			assertNotNull(instrumentsXsd, "instruments");
 			URL icsVoTable = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "full_ics_instrument.xml", icsTableUrl);
-			assertNutNull(icsVoTable, "icsVoTable");
+			assertNotNull(icsVoTable, "icsVoTable");
 			URL patTable = getHelioFileUtil().getFileFromRemoteOrCache(CACHE_LOCATION, "patTable.csv", patTableUrl);
-			assertNutNull(patTable, "patTable");
+			assertNotNull(patTable, "patTable");
 			
 			// create the map of instruments
 	        Map<String, InstrumentDescriptor> instrumentsMap = new LinkedHashMap<String, InstrumentDescriptor>();
@@ -114,7 +114,7 @@ public class InstrumentDescriptorDao extends AbstractCatalogueDescriptorDao {
 		}
 	}
 
-	private void assertNutNull(URL url, String propertyName) {
+	private void assertNotNull(URL url, String propertyName) {
        if (url == null) {
            throw new IllegalStateException("Failed to load '" + propertyName + "' from local cache or remote.");
        }

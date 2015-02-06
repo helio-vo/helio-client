@@ -2,13 +2,10 @@ package eu.heliovo.clientapi.model.catalog.descriptor;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
-import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 
 /**
  * Descriptor for one value that is permitted as "from"-value in a HEC catalogue.
@@ -97,11 +94,6 @@ public class EventListDescriptor extends AbstractCatalogueDescriptor implements 
     private boolean geo;
     private boolean planet;
 
-    /**
-     * Unmodifiable set of field descriptors
-     */
-    private List<HelioFieldDescriptor<?>> fieldDescriptors;
-    
     @Override
     public BeanInfo getBeanInfo() {
         return EventListDescriptorBeanInfo.getInstance();
@@ -400,21 +392,5 @@ public class EventListDescriptor extends AbstractCatalogueDescriptor implements 
      */
     public String getInfoUrl() {
         return String.format(URL_TEMPLATE, name);
-    }
-
-    /**
-     * Set the field descriptors of this catalogue.
-     * @param fieldDescriptors the field descriptors will be wrapped in an unmodifiable list.
-     */
-    public void setFieldDescriptors(List<HelioFieldDescriptor<?>> fieldDescriptors) {
-        this.fieldDescriptors = Collections.unmodifiableList(fieldDescriptors);
-    }
-    
-    /**
-     * Get the field descriptors for this catalogue
-     * @return
-     */
-    public List<HelioFieldDescriptor<?>> getFieldDescriptors() {
-        return fieldDescriptors;
     }
 }

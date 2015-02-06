@@ -2,8 +2,6 @@ package eu.heliovo.clientapi.model.catalog.descriptor;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
-import java.util.Arrays;
-import java.util.List;
 
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
@@ -17,10 +15,10 @@ import eu.heliovo.clientapi.model.field.type.FieldType;
  */
 public class IcsCatalogueDescriptor extends AbstractCatalogueDescriptor implements DomainValueDescriptor<String> {
     
-    private static final HelioFieldDescriptor<?>[] fieldDescriptors = new HelioFieldDescriptor<?>[]  {
+    private static final HelioFieldDescriptor<?>[] propDescriptors = new HelioFieldDescriptor<?>[]  {
         new HelioFieldDescriptor<String>("name", "ICS catalogue Name", "Name of the ICS catalogue", FieldType.STRING),
     };
-    
+	
     /**
      * Bean info class for the {@link IcsCatalogueDescriptor}
      * @author MarcoSoldati
@@ -47,8 +45,7 @@ public class IcsCatalogueDescriptor extends AbstractCatalogueDescriptor implemen
          */
         private IcsCatalogueDescriptorBeanInfo() {
             super(IcsCatalogueDescriptor.class);
-                propertyDescriptors = asPropertyDescriptor(fieldDescriptors);
-        }
+            propertyDescriptors = asPropertyDescriptor(propDescriptors);        }
         
         private PropertyDescriptor[] asPropertyDescriptor(HelioFieldDescriptor<?>[] fieldDescriptors) {
             PropertyDescriptor[] ret = new PropertyDescriptor[fieldDescriptors.length];
@@ -94,11 +91,6 @@ public class IcsCatalogueDescriptor extends AbstractCatalogueDescriptor implemen
         this.id = id;
         this.label = label;
         this.description = description;
-    }
-
-    @Override
-    public List<HelioFieldDescriptor<?>> getFieldDescriptors() {
-        return Arrays.asList(fieldDescriptors);
     }
     
     @Override

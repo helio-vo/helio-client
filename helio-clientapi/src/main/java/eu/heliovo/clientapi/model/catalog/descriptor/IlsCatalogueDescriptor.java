@@ -2,8 +2,6 @@ package eu.heliovo.clientapi.model.catalog.descriptor;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
-import java.util.Arrays;
-import java.util.List;
 
 import eu.heliovo.clientapi.model.DomainValueDescriptor;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
@@ -99,11 +97,6 @@ public class IlsCatalogueDescriptor extends AbstractCatalogueDescriptor implemen
     @Override
     public BeanInfo getBeanInfo() {
         return IlsCatalogueDescriptorBeanInfo.getInstance();
-    }
-    
-    @Override
-    public List<HelioFieldDescriptor<?>> getFieldDescriptors() {
-        return Arrays.asList(fieldDescriptors);
     }
     
     @Override

@@ -1,6 +1,7 @@
 package eu.heliovo.clientapi.config.catalog.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import eu.heliovo.clientapi.model.catalog.descriptor.IcsCatalogueDescriptor;
@@ -11,24 +12,35 @@ import eu.heliovo.clientapi.model.catalog.descriptor.IcsCatalogueDescriptor;
  * @author marco soldati at fhnw ch
  * 
  */
-public class IcsCatalogueDescriptorDao extends AbstractCatalogueDescriptorDao {
-	
-    private final List<IcsCatalogueDescriptor> domainValues = new ArrayList<IcsCatalogueDescriptor>();
-	
+public class IcsCatalogueDescriptorDao extends AbstractCatalogueDescriptorDao<IcsCatalogueDescriptor> {
+    private static final String CATALOG_ID = "ics";
+    
 	/**
-	 * Populate the registry
-	 */
-	public IcsCatalogueDescriptorDao() {
-	}
+     * Cache the created domain values
+     */
+    private List<IcsCatalogueDescriptor> domainValues;
 
-	/**
-	 * Init the daos content.
-	 */
-	public void init() {
-        domainValues.add(new IcsCatalogueDescriptor("instrument", "Instrument", null));
-        domainValues.add(new IcsCatalogueDescriptor("observatory", "Observatory", null));
-        domainValues.add(new IcsCatalogueDescriptor("flybys", "Flybys", null));
-	}
+    /**
+     * Populate the registry
+     */
+    public IcsCatalogueDescriptorDao() {
+    }
+        
+    // init the HEC configuration
+    public void init() {
+    	List<IcsCatalogueDescriptor> domainValues = new ArrayList<IcsCatalogueDescriptor>();
+        domainValues.add(newIcsCatalogueDescriptor("instrument", "Instrument", null));
+        //domainValues.add(initList("observatory", "Observatory", null));
+        //domainValues.add(initList("flybys", "Flybys", null));
+        
+        this.domainValues = Collections.unmodifiableList(domainValues);
+    }
+    
+    private IcsCatalogueDescriptor newIcsCatalogueDescriptor(String listId, String listLabel, String listDesc) {
+    	IcsCatalogueDescriptor icsCatalogueDescriptor = new IcsCatalogueDescriptor(listId, listLabel, listDesc);
+    	initList(CATALOG_ID, listId, icsCatalogueDescriptor);
+    	return icsCatalogueDescriptor;
+    }
 
 	/**
 	 * Get the domain values for the allowed instruments.

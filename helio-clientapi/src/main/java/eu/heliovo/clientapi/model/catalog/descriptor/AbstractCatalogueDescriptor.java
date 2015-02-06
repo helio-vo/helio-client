@@ -3,14 +3,17 @@ package eu.heliovo.clientapi.model.catalog.descriptor;
 import java.beans.IntrospectionException;
 import java.beans.SimpleBeanInfo;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import eu.heliovo.clientapi.config.AnnotatedBean;
 import eu.heliovo.clientapi.config.ConfigurablePropertyDescriptor;
 import eu.heliovo.clientapi.model.catalog.HelioCatalogueDescriptor;
+import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.shared.util.DateUtil;
 
-abstract class AbstractCatalogueDescriptor implements HelioCatalogueDescriptor, AnnotatedBean {
+public abstract class AbstractCatalogueDescriptor implements HelioCatalogueDescriptor, AnnotatedBean {
     
     /**
      * Bean info class for the {@link EventListDescriptor}
@@ -56,4 +59,25 @@ abstract class AbstractCatalogueDescriptor implements HelioCatalogueDescriptor, 
             throw new IllegalArgumentException("String cannot be converted to Date: " + time);
         }
     }
+
+	/**
+	 * Unmodifiable set of field descriptors
+	 */
+	private List<HelioFieldDescriptor<?>> fieldDescriptors;
+
+	/**
+	 * Set the field descriptors of this catalogue.
+	 * @param fieldDescriptors the field descriptors will be wrapped in an unmodifiable list.
+	 */
+	public void setFieldDescriptors(List<HelioFieldDescriptor<?>> fieldDescriptors) {
+	    this.fieldDescriptors = Collections.unmodifiableList(fieldDescriptors);
+	}
+
+	/**
+	 * Get the field descriptors for this catalogue
+	 * @return
+	 */
+	public List<HelioFieldDescriptor<?>> getFieldDescriptors() {
+	    return fieldDescriptors;
+	}
 }
