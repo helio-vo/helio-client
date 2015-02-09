@@ -43,7 +43,7 @@ public class HelioClient {
      */
     public synchronized void init() {
         // do some hardcoded init stuff, if needed   
-        // register the HPS
+        // register the HPSL
         ServiceDescriptor hpsDescriptor = getServiceDescriptorByName(HelioServiceName.HPS);
         if (hpsDescriptor == null) {
             hpsDescriptor = new GenericServiceDescriptor(HelioServiceName.HPS, "Locally registered HPS", ServiceCapability.HELIO_PROCESSING_SERVICE);
@@ -52,7 +52,18 @@ public class HelioClient {
         registryClient.registerServiceInstance(hpsDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, 
                 ServiceCapability.HELIO_PROCESSING_SERVICE, 
                 FileUtil.asURL("http://cagnode58.cs.tcd.ie:8080/helio-hps-server/hpsService?wsdl")));
+        
+        registerLocalQueryServiceCapability(HelioServiceName.HEC);
+        registerLocalQueryServiceCapability(HelioServiceName.ILS);
+        registerLocalQueryServiceCapability(HelioServiceName.ICS);
     }
+
+	private void registerLocalQueryServiceCapability(HelioServiceName serviceName) {
+		ServiceDescriptor serivceDescriptor = getServiceDescriptorByName(serviceName);
+		if (serivceDescriptor != null) {
+			serivceDescriptor.addCapability(ServiceCapability.LOCAL_QUERY_SERVICE);
+		}
+	}
     
 	/**
 	 * Get all known service names of HELIO.

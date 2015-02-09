@@ -27,6 +27,9 @@ public class QueryServiceFactoryConfig implements ServiceFactoryConfiguration {
 	    // default impl
 	    serviceVariantRegistry.register(null, null, ServiceCapability.SYNC_QUERY_SERVICE, "baseQueryService");
 	    serviceVariantRegistry.register(null, null, ServiceCapability.ASYNC_QUERY_SERVICE, "baseQueryService");
+	    serviceVariantRegistry.register(HelioServiceName.HEC, null, ServiceCapability.LOCAL_QUERY_SERVICE, "localHecQueryService");
+	    serviceVariantRegistry.register(HelioServiceName.ILS, null, ServiceCapability.LOCAL_QUERY_SERVICE, "localHecQueryService");
+	    serviceVariantRegistry.register(HelioServiceName.ICS, null, ServiceCapability.LOCAL_QUERY_SERVICE, "localHecQueryService");
 	    
 	    serviceVariantRegistry.register(HelioServiceName.DES, null, ServiceCapability.ASYNC_QUERY_SERVICE, "desQueryService");
 	    serviceVariantRegistry.register(HelioServiceName.DPAS, null, ServiceCapability.ASYNC_QUERY_SERVICE, "dpasQueryService");

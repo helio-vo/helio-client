@@ -13,8 +13,8 @@ import java.util.logging.LogRecord;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import eu.heliovo.clientapi.linkprovider.LinkProviderService;
-import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
+import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
 import eu.heliovo.clientapi.model.service.HelioService;
 import eu.heliovo.clientapi.processing.ProcessingResult;
@@ -71,7 +71,6 @@ public class HelioClientDemo {
         try {
             demo.finalize();
         } catch (Throwable e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         demo = null;
@@ -86,28 +85,29 @@ public class HelioClientDemo {
     private static List<String> config = new ArrayList<String>();
     
     static {
-        config.add("ils");
-        //config.add("ics");
-        config.add("icsPat");
-        config.add("hec");
-        config.add("hec_sync");
-        config.add("hec_pql");
-        config.add("dpas");
-        config.add("desPlot_Ace");
-        config.add("desPlot_Sta");
-        config.add("desPlot_Stb");
-        config.add("desPlot_Ulysses");
-        config.add("desPlot_Wind");
-        config.add("flarePlot");
-        config.add("cmePM");
-        config.add("cmeBwPM");
-        config.add("cirPM");
-        config.add("cirBwPM");
-        config.add("sepPM");
-        config.add("sepBwPM");
-        config.add("dumpServices");
-        //config.add("taverna2283");
-        config.add("links");
+//        config.add("ils");
+//        config.add("ics");
+//        config.add("icsPat");
+//        config.add("hec");
+//        config.add("hec_sync");
+//        config.add("hec_pql");
+        config.add("hec_local");
+//        config.add("dpas");
+//        config.add("desPlot_Ace");
+//        config.add("desPlot_Sta");
+//        config.add("desPlot_Stb");
+//        config.add("desPlot_Ulysses");
+//        config.add("desPlot_Wind");
+//        config.add("flarePlot");
+//        config.add("cmePM");
+//        config.add("cmeBwPM");
+//        config.add("cirPM");
+//        config.add("cirBwPM");
+//        config.add("sepPM");
+//        config.add("sepBwPM");
+//        config.add("dumpServices");
+//        config.add("taverna2283");
+//        config.add("links");
     }
     
 
@@ -125,6 +125,7 @@ public class HelioClientDemo {
         if (config.contains("hec")) getHec(helioClient);
         if (config.contains("hec_sync")) getHecSync(helioClient);
         if (config.contains("hec_pql")) getHecPql(helioClient);
+        if (config.contains("hec_local")) getHecLocal(helioClient);
         if (config.contains("dpas")) runDPAS(helioClient);
         if (config.contains("desPlot_Ace")) getDesPlot(helioClient, AcePlotterServiceImpl.SERVICE_VARIANT);
         if (config.contains("desPlot_Sta")) getDesPlot(helioClient, StaPlotterServiceImpl.SERVICE_VARIANT);
@@ -443,6 +444,34 @@ public class HelioClientDemo {
         HelioQueryResult result = service.execute();
         System.out.println(result.asURL());
         System.out.println(trunc(result.asString(), 20000));
+    }
+    
+    /**
+     * Get the HEC from a local database.
+     * @param helioClient the client
+     */
+    private void getHecLocal(HelioClient helioClient) {
+    	QueryService service = (QueryService)helioClient.getServiceInstance(HelioServiceName.HEC, null, 
+    					ServiceCapability.LOCAL_QUERY_SERVICE);
+    	
+    	//System.out.println(service.getClass());
+    	service.setStartTime(Arrays.asList("2000-01-01T00:00:00"));
+    	service.setEndTime(Arrays.asList("2010-01-30T00:00:00"));
+    	service.setFrom(Arrays.asList("rhessi_hxr_flare"));
+    	service.setMaxRecords(20);
+    	
+    	List<WhereClause> whereClauses = service.getWhereClauses();
+    	WhereClause clause = whereClauses.get(0);
+    	List<HelioFieldDescriptor<?>> descriptors = clause.getFieldDescriptors();
+    	@SuppressWarnings("unchecked")
+    	HelioFieldDescriptor<Long> totalCount = (HelioFieldDescriptor<Long>)clause.findFieldDescriptorById("total_count");
+    	clause.setQueryTerm(totalCount, new HelioFieldQueryTerm<Long>(totalCount, Operator.LARGER_EQUAL_THAN, 100000000l));
+    	
+    	System.out.println(descriptors);
+    	
+    	HelioQueryResult result = service.execute();
+    	System.out.println(result.asURL());
+    	System.out.println(trunc(result.asString(), 20000));
     }
 
     /**
