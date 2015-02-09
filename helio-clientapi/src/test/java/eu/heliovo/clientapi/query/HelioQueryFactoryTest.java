@@ -75,8 +75,6 @@ public class HelioQueryFactoryTest {
 		QueryBuilder queryBuilder = helioQueryFactory.buildQuery(HelioServiceName.ICS, "instrument");
 		WhereClause whereClause = queryBuilder.getWhereClause();		
 		
-		System.out.print(whereClause.getFieldDescriptors());
-		
 		@SuppressWarnings("unchecked")
 		HelioFieldDescriptor<String> fieldDescriptor = (HelioFieldDescriptor<String>) whereClause.findFieldDescriptorById("testId");
 		assertNotNull(fieldDescriptor);

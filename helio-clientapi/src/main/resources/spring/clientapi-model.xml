@@ -26,6 +26,9 @@
     
     <!-- descriptor of the ILS tables. -->
     <bean id="ilsCatalogueDescriptorDao" class="eu.heliovo.clientapi.config.catalog.dao.IlsCatalogueDescriptorDao" init-method="init" lazy-init="true">
+        <property name="helioFileUtil" ref="helioFileUtil"></property>    
+        <property name="stilUtils" ref="stilUtils"></property>    
+        <property name="fieldTypeFactory" ref="fieldTypeFactory"></property>    
     </bean>
 
     <bean id="fieldTypeFactory" class="eu.heliovo.clientapi.model.field.type.FieldTypeFactory" init-method="init">

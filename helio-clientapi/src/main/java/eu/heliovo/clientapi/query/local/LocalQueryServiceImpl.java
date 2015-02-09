@@ -44,8 +44,8 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 	
 	private List<String> startTime;
 	private List<String> endTime;
-	private Integer maxRecords;
-	private Integer startIndex;
+	private Integer maxRecords =  0;
+	private Integer startIndex = 0;
 	private List<String> from;
 	private String join;
 	
