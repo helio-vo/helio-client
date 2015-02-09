@@ -46,7 +46,8 @@ public class HelioClient {
         // register the HPSL
         ServiceDescriptor hpsDescriptor = getServiceDescriptorByName(HelioServiceName.HPS);
         if (hpsDescriptor == null) {
-            hpsDescriptor = new GenericServiceDescriptor(HelioServiceName.HPS, "Locally registered HPS", ServiceCapability.HELIO_PROCESSING_SERVICE);
+            hpsDescriptor = new GenericServiceDescriptor(HelioServiceName.HPS, "Locally registered HPS", 
+            				ServiceCapability.HELIO_PROCESSING_SERVICE);
             registryClient.registerServiceDescriptor(hpsDescriptor);
         }
         registryClient.registerServiceInstance(hpsDescriptor, new AccessInterfaceImpl(AccessInterfaceType.SOAP_SERVICE, 
