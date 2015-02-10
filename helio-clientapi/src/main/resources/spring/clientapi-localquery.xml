@@ -16,7 +16,7 @@
 	</bean>
 	
 	<bean id="localHecQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="postgresDataSource" />
 		<property name="catalogueDescriptorDao" ref="eventListDescriptorDao"/>
 		<property name="tableNameFilter" ref="hecTableNameFilter"/>
 	</bean>
@@ -35,7 +35,7 @@
 	</bean>
 	
 	<bean id="localIcsQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
-		<property name="dataSource" ref="dataSource" />
+		<property name="dataSource" ref="postgresDataSource" />
 		<property name="catalogueDescriptorDao" ref="instrumentDescriptorDao"/>
 		<property name="tableNameFilter" ref="icsTableNameFilter"/>
 	</bean>
@@ -48,7 +48,7 @@
     	<property name="conversionService" ref="conversionService"></property>
   	</bean>
 
-	<bean id="dataSource"
+	<bean id="postgresDataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="url"

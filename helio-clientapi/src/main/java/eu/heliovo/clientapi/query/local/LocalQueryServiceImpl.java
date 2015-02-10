@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,11 +165,7 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 	private String getWhereStatement(WhereClause whereClause, String startTime, String endTime) {
 		String timewhere = "";
 		if(!startTime.isEmpty() && !endTime.isEmpty()) {
-			timewhere = "NOT ('" + endTime + "' < time_start AND '" + startTime + "' >= time_end)";
-		} else if (!startTime.isEmpty() && endTime.isEmpty()) {
-			timewhere = "time_start <= '" + startTime + "'";
-		} else if (startTime.isEmpty() && !endTime.isEmpty()) {
-			timewhere = "time_end >= '" + endTime + "'";
+			timewhere = "('" + startTime + "' < time_end AND '" + endTime + "' > time_start)";
 		}
 		
 		String where = querySerializer.getWhereClause(whereClause.getCatalogName(), whereClause.getQueryTerms());

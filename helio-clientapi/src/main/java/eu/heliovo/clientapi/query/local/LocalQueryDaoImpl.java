@@ -69,6 +69,8 @@ public class LocalQueryDaoImpl implements LocalQueryDao {
 		
 		if(maxrecord > 0) {
 			sqlStatement.append(" LIMIT " + maxrecord); 
+		} else {
+			sqlStatement.append(" LIMIT 5000");
 		}
 		if(startindex >= 0) {
 			sqlStatement.append(" OFFSET " + startindex);

@@ -116,7 +116,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		setDefaultProperties();
 		localQueryService.execute();
 		
-		String expectedWhere = "NOT ('" + END_TIME + "' < time_start AND '" + START_TIME + "' >= time_end)";
+		String expectedWhere = "('" + START_TIME + "' < time_end AND '" + END_TIME + "' > time_start)";
 		assertEquals(expectedWhere, localQueryDao.getWhere());
 	}
 	
@@ -126,7 +126,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		localQueryService.setEndTime(Collections.singletonList(""));
 		localQueryService.execute();
 
-		String expectedWhere = "time_start <= '" + START_TIME + "'";
+		String expectedWhere = "";
 		assertEquals(expectedWhere, localQueryDao.getWhere());
 	}
 	
@@ -136,7 +136,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		localQueryService.setStartTime(Collections.singletonList(""));
 		localQueryService.execute();
 
-		String expectedWhere = "time_end >= '" + END_TIME + "'";
+		String expectedWhere = "";
 		assertEquals(expectedWhere, localQueryDao.getWhere());
 	}
 	
@@ -173,8 +173,8 @@ public abstract class AbstractLocalQueryServiceTest {
 		StringBuilder expectedWhere = new StringBuilder();
 		expectedWhere.append("(").append(CATALOG_NAME).append(".").append(FIELD_DESCRIPTOR_ID).append(" >= ");
 		expectedWhere.append(FIELD_DESCRIPTOR_VALUE).append(") ");
-		expectedWhere.append("AND (NOT ('").append(END_TIME).append("' < time_start");
-		expectedWhere.append(" AND '").append(START_TIME).append("' >= time_end))");
+		expectedWhere.append("AND (");
+		expectedWhere.append("('").append(START_TIME).append("' < time_end AND '").append(END_TIME).append("' > time_start))");
 		
 		assertEquals(expectedWhere.toString(), localQueryDao.getWhere());
 	}
