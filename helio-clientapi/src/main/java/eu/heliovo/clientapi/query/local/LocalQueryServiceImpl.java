@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,18 +163,61 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 
 	private String getWhereStatement(WhereClause whereClause, String startTime, String endTime) {
 		String timewhere = "";
-		if(!startTime.isEmpty() && !endTime.isEmpty()) {
-			timewhere = "('" + startTime + "' < time_end AND '" + endTime + "' > time_start)";
+		if(!isNullOrEmpty(startTime) && !isNullOrEmpty(endTime)) {
+			boolean hasTimeStart = hasTimeStart(whereClause);
+			boolean hasTimeEnd = hasTimeEnd(whereClause);
+			boolean hasTime = hasTime(whereClause);
+			
+			if(hasTimeStart && hasTimeEnd) {
+				timewhere = "('" + startTime + "' < time_end AND '" + endTime + "' > time_start)";
+			} else if (hasTimeStart && !hasTimeEnd) {
+				timewhere = "('" + startTime + "' < time_end)";
+			} else if (!hasTimeStart && hasTimeEnd) {
+				timewhere = "('" + endTime + "' > time_start)";
+			} else if(hasTime) {
+				timewhere = "('" + startTime + "' <= time AND '" + endTime + "' >= time)"; 
+			}
 		}
 		
 		String where = querySerializer.getWhereClause(whereClause.getCatalogName(), whereClause.getQueryTerms());
 
-		if(where.isEmpty()) {
+		if (!isNullOrEmpty(timewhere) && !isNullOrEmpty(where)) {
+			return "(" + where + ") AND (" + timewhere + ")";
+		} else if (!isNullOrEmpty(timewhere)) {
 			return timewhere;
-		} else if (!timewhere.isEmpty() && !where.isEmpty()) {
-			return "(" +  where + ") AND (" + timewhere + ")";
-		} else  {
+		} else if (!isNullOrEmpty(where)){
 			return where;
+		} else {
+			return "";
+		}
+	}
+	
+	private boolean isNullOrEmpty(String str) {
+    	if(str == null || str.isEmpty()) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
+	
+	private boolean hasTimeStart(WhereClause whereClause) {
+		return hasFieldDescriptor(whereClause, "time_start");
+	}
+	
+	private boolean hasTimeEnd(WhereClause whereClause) {
+		return hasFieldDescriptor(whereClause, "time_end");
+	}
+	
+	private boolean hasTime(WhereClause whereClause) {
+		return hasFieldDescriptor(whereClause, "time");
+	}
+	
+	private boolean hasFieldDescriptor(WhereClause whereClause, String name) {
+		HelioFieldDescriptor<?> descriptor = whereClause.findFieldDescriptorById(name);
+		if(descriptor != null) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
@@ -196,6 +238,22 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 		return file;
 	}
 	
+	private File getUuidFile() {
+		UUID uuid = UUID.randomUUID();
+		String uuidFilename = "votable_" + uuid.toString() + ".xml";
+		File tempDir = helioFileUtil.getHelioTempDir(helioFileUtilArea);
+		File file = new File(tempDir, uuidFilename);
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				throw new HelioClientException("could not create file "
+						+ file.getAbsolutePath(), e);
+			}
+		}
+		return file;
+	}
+	
 	private Map<String, String> getKeyValueAttrMap() {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put("QUERY_STATUS", "COMPLETED");
@@ -207,17 +265,6 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 	private static String now() {
 		Calendar cal = Calendar.getInstance();
 		return DateUtil.toIsoDateString(cal.getTime());
-	}
-
-	@Override
-	public List<String> getFrom() {
-		return from;
-	}
-
-	@Override
-	public void setFrom(List<String> from) {
-		this.from = from;
-		updateWhereClauses();
 	}
 
 	@Override
@@ -351,20 +398,15 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 		this.helioFileUtilArea = helioFileUtilArea;
 	}
 
-	private File getUuidFile() {
-		UUID uuid = UUID.randomUUID();
-		String uuidFilename = "votable_" + uuid.toString() + ".xml";
-		File tempDir = helioFileUtil.getHelioTempDir(helioFileUtilArea);
-		File file = new File(tempDir, uuidFilename);
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				throw new HelioClientException("could not create file "
-						+ file.getAbsolutePath(), e);
-			}
-		}
-		return file;
+	@Override
+	public List<String> getFrom() {
+		return from;
+	}
+
+	@Override
+	public void setFrom(List<String> from) {
+		this.from = from;
+		updateWhereClauses();
 	}
 	
     /**

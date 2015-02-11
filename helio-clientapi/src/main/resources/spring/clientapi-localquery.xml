@@ -4,8 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
-	<bean id="localHecQueryService"
-		class="eu.heliovo.clientapi.query.local.LocalQueryServiceImpl">
+	<bean id="localHecQueryService" class="eu.heliovo.clientapi.query.local.LocalQueryServiceImpl">
 		<property name="localQueryDao" ref="localHecQueryDao" />
 		<property name="serviceName" value="HEC" />
 		<property name="helioFileUtil" ref="helioFileUtil" />
@@ -14,17 +13,16 @@
 		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
 		<property name="helioFileUtilArea" value="localHecQueryService"></property>
 	</bean>
-	
+
 	<bean id="localHecQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
 		<property name="dataSource" ref="postgresDataSource" />
-		<property name="catalogueDescriptorDao" ref="eventListDescriptorDao"/>
-		<property name="tableNameFilter" ref="hecTableNameFilter"/>
+		<property name="catalogueDescriptorDao" ref="eventListDescriptorDao" />
+		<property name="tableNameFilter" ref="hecTableNameFilter" />
 	</bean>
-	
-	<bean id="hecTableNameFilter" class="eu.heliovo.clientapi.query.local.HecTableNameFilter"/>
-	
-	<bean id="localIcsQueryService"
-		class="eu.heliovo.clientapi.query.local.LocalQueryServiceImpl">
+
+	<bean id="hecTableNameFilter" class="eu.heliovo.clientapi.query.local.HecTableNameFilter" />
+
+	<bean id="localIcsQueryService" class="eu.heliovo.clientapi.query.local.LocalQueryServiceImpl">
 		<property name="localQueryDao" ref="localIcsQueryDao" />
 		<property name="serviceName" value="ICS" />
 		<property name="helioFileUtil" ref="helioFileUtil" />
@@ -33,20 +31,39 @@
 		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
 		<property name="helioFileUtilArea" value="localIcsQueryService"></property>
 	</bean>
-	
+
 	<bean id="localIcsQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
 		<property name="dataSource" ref="postgresDataSource" />
-		<property name="catalogueDescriptorDao" ref="instrumentDescriptorDao"/>
-		<property name="tableNameFilter" ref="icsTableNameFilter"/>
+		<property name="catalogueDescriptorDao" ref="instrumentDescriptorDao" />
+		<property name="tableNameFilter" ref="icsTableNameFilter" />
 	</bean>
-	
-	<bean id="icsTableNameFilter" class="eu.heliovo.clientapi.query.local.IcsTableNameFilter"/>
-	
-	<bean id="voTableWriter" class="eu.heliovo.clientapi.query.local.VoTableWriterImpl"/>
-	
-	<bean id="sqlSerializer" class="eu.heliovo.clientapi.query.paramquery.serialize.SQLSerializer">
-    	<property name="conversionService" ref="conversionService"></property>
-  	</bean>
+
+	<bean id="icsTableNameFilter" class="eu.heliovo.clientapi.query.local.IcsTableNameFilter" />
+
+	<bean id="localIlsQueryService" class="eu.heliovo.clientapi.query.local.LocalQueryServiceImpl">
+		<property name="localQueryDao" ref="localIlsQueryDao" />
+		<property name="serviceName" value="ILS" />
+		<property name="helioFileUtil" ref="helioFileUtil" />
+		<property name="voTableWriter" ref="voTableWriter" />
+		<property name="querySerializer" ref="sqlSerializer" />
+		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
+		<property name="helioFileUtilArea" value="localIlsQueryService"></property>
+	</bean>
+
+	<bean id="localIlsQueryDao" class="eu.heliovo.clientapi.query.local.LocalQueryDaoImpl">
+		<property name="dataSource" ref="postgresDataSource" />
+		<property name="catalogueDescriptorDao" ref="ilsCatalogueDescriptorDao" />
+		<property name="tableNameFilter" ref="ilsTableNameFilter" />
+	</bean>
+
+	<bean id="ilsTableNameFilter" class="eu.heliovo.clientapi.query.local.IlsTableNameFilter" />
+
+	<bean id="voTableWriter" class="eu.heliovo.clientapi.query.local.VoTableWriterImpl" />
+
+	<bean id="sqlSerializer"
+		class="eu.heliovo.clientapi.query.paramquery.serialize.SQLSerializer">
+		<property name="conversionService" ref="conversionService"></property>
+	</bean>
 
 	<bean id="postgresDataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">

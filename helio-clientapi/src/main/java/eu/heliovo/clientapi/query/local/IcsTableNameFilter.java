@@ -5,7 +5,12 @@ public class IcsTableNameFilter implements TableNameFilter {
 
 	@Override
 	public String getTableName(String catalogName) {
-		return "instrument_pat";
+		switch(catalogName) {
+			case "instrument":
+				return "instrument_pat";
+			default:
+				return catalogName;
+		}
 	}
 
 

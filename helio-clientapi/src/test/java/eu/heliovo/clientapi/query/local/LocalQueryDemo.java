@@ -23,11 +23,12 @@ public class LocalQueryDemo {
 	private static final String END_TIME = "2003-08-05 08:00:00";
 	private static final String FROM_ICS = "instrument_pat";
 	private static final String FROM_HEC = "rhessi_hxr_flare";
+	private static final String FROM_ILS = "trajectories";
 	private static final Integer MAXRECORDS = 5;
 	private static final Integer STARTINDEX = 0;
 	
 	public static void main(String[] args) throws Exception {
-		HelioQueryResult result = getQueryResult(HelioServiceName.ICS);
+		HelioQueryResult result = getQueryResult(HelioServiceName.HEC);
 		System.out.println("xml saved in " + result.asURL().getPath());
 	}
 	
@@ -50,6 +51,9 @@ public class LocalQueryDemo {
 			case "ICS":
 				beanName = "localIcsQueryService";
 				break;
+			case "ILS":
+				beanName = "localIlsQueryService";
+				break;
 		}
 		
 		LocalQueryServiceImpl service = (LocalQueryServiceImpl) context.getBean(beanName);
@@ -63,7 +67,10 @@ public class LocalQueryDemo {
 				break;
 			case "ICS":
 				service.setFrom(Collections.singletonList(FROM_ICS));
-			break;
+				break;
+			case "ILS":
+				service.setFrom(Collections.singletonList(FROM_ILS));
+				break;
 		}
 		service.setStartTime(Collections.singletonList(START_TIME));
 		service.setEndTime(Collections.singletonList(END_TIME));

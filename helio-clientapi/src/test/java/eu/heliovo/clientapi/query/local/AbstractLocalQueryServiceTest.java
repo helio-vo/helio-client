@@ -7,7 +7,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.LogRecord;
 
@@ -19,6 +21,7 @@ import uk.ac.starlink.table.StarTable;
 import eu.heliovo.clientapi.model.field.HelioFieldQueryTerm;
 import eu.heliovo.clientapi.model.field.Operator;
 import eu.heliovo.clientapi.model.field.descriptor.HelioFieldDescriptor;
+import eu.heliovo.clientapi.model.field.type.FieldType;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.MockWhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.WhereClause;
@@ -43,7 +46,6 @@ public abstract class AbstractLocalQueryServiceTest {
 	
 	private static final String VOTABLE_TAG = "VOTABLE";
 	private static final String FIELD_DESCRIPTOR_ID = "testId";
-	private static final String FIELD_DESCRIPTOR_ID2 = "testId2";
 	private static final Integer FIELD_DESCRIPTOR_VALUE = 5;
 	private static final String AREA = "localquery-votable";
 	private static final String APP_ID = "test";
@@ -58,7 +60,12 @@ public abstract class AbstractLocalQueryServiceTest {
 		helioFileUtil = new HelioFileUtil(APP_ID);
 		VoTableWriter voTableWriter = new MockVoTableWriter();
 		
-		WhereClauseFactoryBean whereClauseFactoryBean = new MockWhereClauseFactoryBean(); 
+		List<String> descriptorNames = new ArrayList<String>();
+		descriptorNames.add("testId");
+		descriptorNames.add("time_start");
+		descriptorNames.add("time_end");
+		MockWhereClauseFactoryBean whereClauseFactoryBean = getMockWhereClauseFactoryBean(descriptorNames);
+		
 		SQLSerializer sqlSerializer = new SQLSerializer();
 		sqlSerializer.setConversionService(new HelioConversionService());
 		
@@ -106,14 +113,24 @@ public abstract class AbstractLocalQueryServiceTest {
 	}
 	
 	@Test
-	public void test_serviceName() {
-		HelioServiceName expectedName = getHelioServiceName();
-		assertEquals(expectedName, localQueryService.getServiceName());
+	public void test_whereStatement() {
+		setDefaultProperties();
+		setWhereClauseQueryTerm();
+		
+		localQueryService.execute();
+		
+		StringBuilder expectedWhere = new StringBuilder();
+		expectedWhere.append("(").append(CATALOG_NAME).append(".").append(FIELD_DESCRIPTOR_ID).append(" >= ");
+		expectedWhere.append(FIELD_DESCRIPTOR_VALUE).append(") ");
+		expectedWhere.append("AND (");
+		expectedWhere.append("('").append(START_TIME).append("' < time_end AND '").append(END_TIME).append("' > time_start))");
+		
+		assertEquals(expectedWhere.toString(), localQueryDao.getWhere());
 	}
 	
 	@Test
-	public void test_whereStatement_withoutWhereClauses() {
-		setDefaultProperties();
+	public void test_whereStatement_startTime_endTime() {
+        setDefaultProperties();
 		localQueryService.execute();
 		
 		String expectedWhere = "('" + START_TIME + "' < time_end AND '" + END_TIME + "' > time_start)";
@@ -121,7 +138,55 @@ public abstract class AbstractLocalQueryServiceTest {
 	}
 	
 	@Test
-	public void test_whereStatement_withoutWhereClauses_onlyStartDate() {
+	public void test_whereStatement_startTime() {
+		//set different WhereClauseFactoryBean
+		List<String> descriptorNames = new ArrayList<String>();
+		descriptorNames.add("testId");
+		descriptorNames.add("time_start");
+		MockWhereClauseFactoryBean whereClauseFactoryBean = getMockWhereClauseFactoryBean(descriptorNames);
+		localQueryService.setWhereClauseFactoryBean(whereClauseFactoryBean);
+		
+		setDefaultProperties();		
+		localQueryService.execute();
+		
+		String expectedWhere = "('" + START_TIME + "' < time_end)";
+		assertEquals(expectedWhere, localQueryDao.getWhere());
+	}
+	
+	@Test
+	public void test_whereStatement_endTime() {
+		//set different WhereClauseFactoryBean
+		List<String> descriptorNames = new ArrayList<String>();
+		descriptorNames.add("testId");
+		descriptorNames.add("time_end");
+		MockWhereClauseFactoryBean whereClauseFactoryBean = getMockWhereClauseFactoryBean(descriptorNames);
+		localQueryService.setWhereClauseFactoryBean(whereClauseFactoryBean);
+		
+		setDefaultProperties();		
+		localQueryService.execute();
+		
+		String expectedWhere = "('" + END_TIME + "' > time_start)";
+		assertEquals(expectedWhere, localQueryDao.getWhere());
+	}
+	
+	@Test
+	public void test_whereStatement_time() {
+		//set different WhereClauseFactoryBean
+		List<String> descriptorNames = new ArrayList<String>();
+		descriptorNames.add("testId");
+		descriptorNames.add("time");
+		MockWhereClauseFactoryBean whereClauseFactoryBean = getMockWhereClauseFactoryBean(descriptorNames);
+		localQueryService.setWhereClauseFactoryBean(whereClauseFactoryBean);
+		
+		setDefaultProperties();		
+		localQueryService.execute();
+		
+		String expectedWhere = "('" + START_TIME + "' <= time AND '" + END_TIME + "' >= time)"; 
+		assertEquals(expectedWhere, localQueryDao.getWhere());
+	}
+	
+	@Test
+	public void test_whereStatement_parameter_onlyStartDate() {
 		setDefaultProperties();
 		localQueryService.setEndTime(Collections.singletonList(""));
 		localQueryService.execute();
@@ -131,7 +196,7 @@ public abstract class AbstractLocalQueryServiceTest {
 	}
 	
 	@Test
-	public void test_whereStatement_withoutWhereClauses_onlyEndDate() {
+	public void test_whereStatement_parameter_onlyEndDate() {
 		setDefaultProperties();
 		localQueryService.setStartTime(Collections.singletonList(""));
 		localQueryService.execute();
@@ -141,7 +206,7 @@ public abstract class AbstractLocalQueryServiceTest {
 	}
 	
 	@Test
-	public void test_whereStatement_empty() {
+	public void test_whereStatement_parameter_empty_startEnd() {
 		setDefaultProperties();
 		localQueryService.setEndTime(Collections.singletonList(""));
 		localQueryService.setStartTime(Collections.singletonList(""));
@@ -164,22 +229,6 @@ public abstract class AbstractLocalQueryServiceTest {
 	}
 	
 	@Test
-	public void test_whereStatement() {
-		setDefaultProperties();
-		setWhereClauseQueryTerm();
-		
-		localQueryService.execute();
-		
-		StringBuilder expectedWhere = new StringBuilder();
-		expectedWhere.append("(").append(CATALOG_NAME).append(".").append(FIELD_DESCRIPTOR_ID).append(" >= ");
-		expectedWhere.append(FIELD_DESCRIPTOR_VALUE).append(") ");
-		expectedWhere.append("AND (");
-		expectedWhere.append("('").append(START_TIME).append("' < time_end AND '").append(END_TIME).append("' > time_start))");
-		
-		assertEquals(expectedWhere.toString(), localQueryDao.getWhere());
-	}
-	
-	@Test
 	public void test_fromStatement() {
 		setDefaultProperties();
 		localQueryService.execute();
@@ -192,8 +241,14 @@ public abstract class AbstractLocalQueryServiceTest {
 		setDefaultProperties();
 		localQueryService.execute();
 		
-		String expectedSelect = FIELD_DESCRIPTOR_ID + ", " + FIELD_DESCRIPTOR_ID2;
+		String expectedSelect = FIELD_DESCRIPTOR_ID + ", time_start, time_end";
 		assertEquals(expectedSelect, localQueryDao.getSelect());
+	}
+	
+	@Test
+	public void test_serviceName() {
+		HelioServiceName expectedName = getHelioServiceName();
+		assertEquals(expectedName, localQueryService.getServiceName());
 	}
 	
 	@Test
@@ -227,6 +282,20 @@ public abstract class AbstractLocalQueryServiceTest {
 			fail(e.toString());
 		}
 		assertTrue(resultFile.exists());
+	}
+	
+	private MockWhereClauseFactoryBean getMockWhereClauseFactoryBean(List<String> descriptorNames) {
+		List<HelioFieldDescriptor<?>> fieldDescriptors = new ArrayList<HelioFieldDescriptor<?>>();
+		for(String name:descriptorNames) {
+			fieldDescriptors.add(new HelioFieldDescriptor<Integer>(name, name, name, FieldType.INTEGER));
+		}
+		
+//		fieldDescriptors.add(new HelioFieldDescriptor<Integer>("testId", "testName", "testDescription", FieldType.INTEGER));
+//		fieldDescriptors.add(new HelioFieldDescriptor<Integer>("time_start", "time_start", "time_start", FieldType.INTEGER));
+//        fieldDescriptors.add(new HelioFieldDescriptor<Integer>("time_end", "time_end", "time_end", FieldType.INTEGER));
+        
+        MockWhereClauseFactoryBean mockWhereClauseFactoryBean = new MockWhereClauseFactoryBean(fieldDescriptors);
+        return mockWhereClauseFactoryBean;
 	}
 	
 	/**
