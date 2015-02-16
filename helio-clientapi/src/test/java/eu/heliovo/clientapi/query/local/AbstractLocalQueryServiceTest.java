@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +94,11 @@ public abstract class AbstractLocalQueryServiceTest {
 	
 	@Test
 	public void test_query_List() {
-		HelioQueryResult result = localQueryService.query(Collections.singletonList(START_TIME), 
-				Collections.singletonList(END_TIME), Collections.singletonList(FROM), MAX_RECORDS_0, START_INDEX, JOIN);
+		HelioQueryResult result = localQueryService.query(Arrays.asList(START_TIME, START_TIME), 
+				Arrays.asList(END_TIME, END_TIME), Arrays.asList(FROM, FROM), MAX_RECORDS_0, START_INDEX, JOIN);
+		System.out.println(localQueryDao.getFrom());
+		System.out.println(localQueryDao.getSelect());
+		System.out.println(localQueryDao.getWhere());
 		assertTrue(result.asString().contains(VOTABLE_TAG));
 	}
 	
@@ -149,7 +153,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		setDefaultProperties();		
 		localQueryService.execute();
 		
-		String expectedWhere = "('" + START_TIME + "' < time_end)";
+		String expectedWhere = "(time_start BETWEEN '" + START_TIME + "' AND '" + END_TIME + "')";
 		assertEquals(expectedWhere, localQueryDao.getWhere());
 	}
 	
@@ -165,7 +169,7 @@ public abstract class AbstractLocalQueryServiceTest {
 		setDefaultProperties();		
 		localQueryService.execute();
 		
-		String expectedWhere = "('" + END_TIME + "' > time_start)";
+		String expectedWhere = "(time_end BETWEEN '" + START_TIME + "' AND '" + END_TIME + "')";
 		assertEquals(expectedWhere, localQueryDao.getWhere());
 	}
 	
@@ -332,6 +336,9 @@ public abstract class AbstractLocalQueryServiceTest {
 			try {
 				outWriter.append("<" + VOTABLE_TAG + " version=\"1.1\" xmlns=\"http://www.ivoa.net/xml/VOTable/v1.1\">");
 				outWriter.append("<INFO name=\"TEST\" value=\"This content ist just for testing purposes.\"/>");
+				for(Map.Entry<String, String> a:attrKeyValueMap.entrySet()) {
+					outWriter.append("<INFO name=\"" + a.getKey() + "\" value=\"" + a.getValue() + "\"/>");
+				}
 				outWriter.append("</" + VOTABLE_TAG + ">");
 			} catch (IOException e) {
 				fail(e.toString());

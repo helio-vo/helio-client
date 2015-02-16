@@ -132,7 +132,7 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 			String select = getSelectStatement(getWhereClauses().get(i));
 			String fromStatement = getFrom().get(i);
 			String where = getWhereStatement(getWhereClauses().get(i), getStartTime().get(i), getEndTime().get(i));
-
+			
 			StarTable starTable = localQueryDao.query(select, fromStatement, where, startIndex, maxRecords);
 			starTables[i] = starTable;
 		}
@@ -151,11 +151,11 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 			} else {
 				select.append(", ");
 			}
-			if (HEC_ID.equalsIgnoreCase(helioFieldDescriptor.getId())) {
-				select.append("id as " + HEC_ID);
-			} else {
+//			if (HEC_ID.equalsIgnoreCase(helioFieldDescriptor.getId())) {
+//				select.append("id as " + HEC_ID);
+//			} else {
 				select.append(helioFieldDescriptor.getId());
-			}
+//			}
 		}
 		
 		return select.toString();
@@ -171,9 +171,9 @@ public class LocalQueryServiceImpl extends AbstractServiceImpl implements QueryS
 			if(hasTimeStart && hasTimeEnd) {
 				timewhere = "('" + startTime + "' < time_end AND '" + endTime + "' > time_start)";
 			} else if (hasTimeStart && !hasTimeEnd) {
-				timewhere = "('" + startTime + "' < time_end)";
+				timewhere = "(time_start BETWEEN '" + startTime + "' AND '" + endTime + "')";
 			} else if (!hasTimeStart && hasTimeEnd) {
-				timewhere = "('" + endTime + "' > time_start)";
+				timewhere = "(time_end BETWEEN '" + startTime + "' AND '" + endTime + "')";
 			} else if(hasTime) {
 				timewhere = "('" + startTime + "' <= time AND '" + endTime + "' >= time)"; 
 			}

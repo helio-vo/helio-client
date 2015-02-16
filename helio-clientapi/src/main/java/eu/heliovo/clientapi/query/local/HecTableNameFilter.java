@@ -5,7 +5,7 @@ public class HecTableNameFilter implements TableNameFilter {
 
 	@Override
 	public String getTableName(String catalogName) {
-		return "hec__" + catalogName;
+		return "hec2__" + catalogName;
 	}
 
 
