@@ -1,5 +1,10 @@
 package eu.heliovo.clientapi.query.impl;
 
-public class IesQueryServiceTest {
+import org.junit.Test;
 
+public class IesQueryServiceTest {
+	@Test
+	public void test() {
+		
+	}
 }
