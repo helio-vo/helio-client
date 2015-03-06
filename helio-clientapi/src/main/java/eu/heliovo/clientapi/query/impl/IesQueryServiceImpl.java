@@ -1,14 +1,14 @@
 package eu.heliovo.clientapi.query.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import org.h2.engine.SysProperties;
 
 import net.ivoa.xml.votable.v1.DATA;
 import net.ivoa.xml.votable.v1.RESOURCE;
 import net.ivoa.xml.votable.v1.TABLE;
+import net.ivoa.xml.votable.v1.TD;
 import net.ivoa.xml.votable.v1.TR;
 import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
@@ -26,93 +26,131 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 	LocalQueryServiceImpl icsQueryService;
 	QueryService dpasQueryService;
 	
+	private List<String> startTime;
+	private List<String> endTime;
+	private List<String> hecStartTime;
+	private List<String> hecEndTime;
+	private Integer maxRecords =  0;
+	private Integer startIndex = 0;
+	private List<String> fromHec;
+	private List<String> fromIcs;
+	private List<String> fromDpas;
+	private String join = null;
+	
 	public IesQueryServiceImpl() {
 		
 	}
 	
-	public HelioQueryResult execute() {
-		// 1. get timeRanges from hecQueryService events
-		HashMap<String, String> eventTimeRanges = getHecTimeRanges();
+	/**
+	 * Query to find Observation data by events and instruments.
+	 * @param startTime, endTime timeRanges for the hec query
+	 * @param fromHec names of the event tables
+	 * @param fromIcs names of the chosen instruments, column "obsinst_key"
+	 * @maxRecords maximum number of results
+	 * @startIndex named 'OFFSET' in postgresql
+	 */
+	public HelioQueryResult query(List<String> startTime, List<String> endTime, List<String> fromHec, 
+			List<String> fromIcs, int maxRecords, int startIndex) {
+		this.fromHec = fromHec;
+		this.fromIcs = fromIcs;
+		this.maxRecords = maxRecords;
+		this.startIndex = startIndex;
+		this.hecStartTime = startTime;
+		this.hecEndTime = endTime;
 		
-		// 2. get instruments form icsQueryService
-		List<String> startTimes = new ArrayList<String>();
-		List<String> endTimes = new ArrayList<String>();
-		for(Map.Entry<String, String> entry:eventTimeRanges.entrySet()) {
-			startTimes.add(entry.getKey());
-			endTimes.add(entry.getValue());
-		}
-	 	
-		List<String> instruments = getIcsInstruments(startTimes, endTimes);
-		
-		// 3. get observation data from dpasQueryService
-		HelioQueryResult result = getObservationData(instruments);
-		
-		return null;
+		HelioQueryResult result = getQueryResult();
+		return result;
 	}
 	
-	private HashMap<String, String> getHecTimeRanges() {
-		HashMap<String, String> timeRangeMap = new HashMap<String, String>();
-		VOTABLE voTable = getHecVoTable();
+	private HelioQueryResult getQueryResult() {
+		// 1. set timeRanges from hecQueryService events
+		VOTABLE hecVoTable = getHecVoTable();
+		setTimeRangesFromVoTable(hecVoTable);
 		
-		//iterate over VOTABLE to get timeRanges
-		List<RESOURCE> resources = voTable.getRESOURCE();
-		for (RESOURCE r:resources) {
-			List<TABLE> tables = r.getTABLE();
-			for(TABLE t:tables) {
-				DATA data = t.getDATA();
-				List<TR> trs = data.getTABLEDATA().getTR();
-				for(TR tr:trs ) {
-					String startTime = tr.getTD().get(1).getValue(); //startTime
-					String endTime = tr.getTD().get(3).getValue(); //endTime
-					timeRangeMap.put(startTime, endTime);
-				}
+		// 2. get instruments for given time range
+		List<String> instruments = getIcsInstruments();
+		
+		// 3. combine fromIcs and instruments to set fromDpas
+		for(String s:instruments) {
+			if(fromIcs.contains(s)) {
+				fromDpas.add(s);
 			}
 		}
 		
-		return timeRangeMap;
+		// 4. get observation data from dpasQueryService
+		HelioQueryResult result = getObservationData();
+		return result;
 	}
 	
 	private VOTABLE getHecVoTable() {
 		// set hecQueryService query properties
-		hecQueryService.setStartTime(Collections.singletonList("2003-08-03 08:00:00"));
-		hecQueryService.setEndTime(Collections.singletonList("2003-08-05 08:00:00"));
-		hecQueryService.setFrom(Collections.singletonList("rhessi_hxr_flare"));
-		hecQueryService.setMaxRecords(0);
-		hecQueryService.setStartIndex(0);
-		hecQueryService.setJoin(null);
+		hecQueryService.setStartTime(hecStartTime);
+		hecQueryService.setEndTime(hecEndTime);
+		hecQueryService.setFrom(fromHec);
+		hecQueryService.setMaxRecords(maxRecords);
+		hecQueryService.setStartIndex(startIndex);
+		hecQueryService.setJoin(join);
 		
 		HelioQueryResult result = hecQueryService.execute();
 		VOTABLE voTable = result.asVOTable();
 		return voTable;
 	}
 	
-	private List<String> getIcsInstruments(List<String> startTimes, List<String> endTimes) {
-		List<String> instruments = new ArrayList<String>();
-		VOTABLE voTable = getIcsVoTable(startTimes, endTimes);
-		
+	private void setTimeRangesFromVoTable(VOTABLE voTable) {
 		//iterate over VOTABLE to get timeRanges
-		List<RESOURCE> resources = voTable.getRESOURCE();
-		for (RESOURCE r:resources) {
-			List<TABLE> tables = r.getTABLE();
-			for(TABLE t:tables) {
-				DATA data = t.getDATA();
-				List<TR> trs = data.getTABLEDATA().getTR();
-				for(TR tr:trs ) {
-					instruments.add(tr.getTD().get(2).getValue()); // obsinst_key
+		if(voTable != null) {
+			List<RESOURCE> resources = voTable.getRESOURCE();
+			for (RESOURCE r:resources) {
+				List<TABLE> tables = r.getTABLE();
+				for(TABLE t:tables) {
+					DATA data = t.getDATA();
+					List<TR> trs = data.getTABLEDATA().getTR();
+					for(TR tr:trs ) {
+						List<TD> td = tr.getTD();
+						startTime.add(td.get(1).getValue()); //td = column startTime
+						endTime.add(td.get(3).getValue()); // td = column endTime
+					}
 				}
 			}
+		} else {
+			System.out.println("VOTABLE is null");
+		}
+	}
+	
+	private List<String> getIcsInstruments() {
+		List<String> instruments = new ArrayList<String>();
+		VOTABLE voTable = getIcsVoTable();
+		
+		//iterate over VOTABLE to get timeRanges
+		if(voTable != null) {
+			List<RESOURCE> resources = voTable.getRESOURCE();
+			if(resources.size() > 0) {
+				for (RESOURCE r:resources) {
+					List<TABLE> tables = r.getTABLE();
+					for(TABLE t:tables) {
+						DATA data = t.getDATA();
+						List<TR> trs = data.getTABLEDATA().getTR();
+						for(TR tr:trs ) {
+							List<TD> td = tr.getTD();
+							instruments.add(td.get(2).getValue()); // obsinst_key
+						}
+					}
+				}	
+			}
+		} else {
+			System.out.println("VOTABLE is null");
 		}
 		
 		return instruments;
 	}
 	
-	private VOTABLE getIcsVoTable(List<String> startTimes, List<String> endTimes) {
-		icsQueryService.setStartTime(startTimes);
-		icsQueryService.setEndTime(endTimes);
-		icsQueryService.setFrom(Collections.singletonList("instrument_pat"));
-		icsQueryService.setMaxRecords(0);
-		icsQueryService.setStartIndex(0);
-		icsQueryService.setJoin(null);
+	private VOTABLE getIcsVoTable() {
+		icsQueryService.setStartTime(startTime);
+		icsQueryService.setEndTime(endTime);
+		icsQueryService.setFrom(fromIcs);
+		icsQueryService.setMaxRecords(maxRecords);
+		icsQueryService.setStartIndex(startIndex);
+		icsQueryService.setJoin(join);
 		
 		HelioQueryResult result = icsQueryService.execute();
 		VOTABLE voTable = result.asVOTable();
@@ -120,12 +158,13 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return voTable;
 	}
 	
-	private HelioQueryResult getObservationData(List<String> instruments) {
-		dpasQueryService.setFrom(instruments);
-		dpasQueryService.setStartTime(Collections.singletonList("2003-08-03 08:00:00"));
-		dpasQueryService.setEndTime(Collections.singletonList("2015-03-31 08:00:00"));
-		dpasQueryService.setMaxRecords(0);
-		dpasQueryService.setJoin(null);
+	private HelioQueryResult getObservationData() {
+		dpasQueryService.setFrom(fromDpas);
+		dpasQueryService.setStartTime(startTime);
+		dpasQueryService.setEndTime(endTime);
+		dpasQueryService.setMaxRecords(maxRecords);
+		dpasQueryService.setStartIndex(startIndex);
+		dpasQueryService.setJoin(join);
 		
 		HelioQueryResult result = dpasQueryService.execute();
 		return result;
@@ -153,5 +192,61 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 	
 	public void setDpasQueryService(QueryService dpasQueryService) {
 		this.dpasQueryService = dpasQueryService;
+	}
+
+	public List<String> getStartTime() {
+		return startTime;
+	}
+
+	public List<String> getEndTime() {
+		return endTime;
+	}
+
+	public Integer getMaxRecords() {
+		return maxRecords;
+	}
+
+	public void setMaxRecords(Integer maxRecords) {
+		this.maxRecords = maxRecords;
+	}
+
+	public Integer getStartIndex() {
+		return startIndex;
+	}
+
+	public void setStartIndex(Integer startIndex) {
+		this.startIndex = startIndex;
+	}
+
+	public List<String> getFromHec() {
+		return fromHec;
+	}
+
+	public void setFromHec(List<String> fromHec) {
+		this.fromHec = fromHec;
+	}
+
+	public List<String> getFromIcs() {
+		return fromIcs;
+	}
+
+	public void setFromIcs(List<String> fromIcs) {
+		this.fromIcs = fromIcs;
+	}
+
+	public List<String> getFromDpas() {
+		return fromDpas;
+	}
+
+	public void setFromDpas(List<String> fromDpas) {
+		this.fromDpas = fromDpas;
+	}
+
+	public String getJoin() {
+		return join;
+	}
+
+	public void setJoin(String join) {
+		this.join = join;
 	}
 }
