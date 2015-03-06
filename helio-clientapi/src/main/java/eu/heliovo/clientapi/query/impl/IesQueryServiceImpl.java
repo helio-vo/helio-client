@@ -13,6 +13,7 @@ import net.ivoa.xml.votable.v1.TR;
 import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
+import eu.heliovo.clientapi.query.QueryService;
 import eu.heliovo.clientapi.query.local.LocalQueryServiceImpl;
 
 /**
@@ -23,7 +24,7 @@ import eu.heliovo.clientapi.query.local.LocalQueryServiceImpl;
 public class IesQueryServiceImpl extends AbstractServiceImpl{
 	LocalQueryServiceImpl hecQueryService;
 	LocalQueryServiceImpl icsQueryService;
-	DpasQueryServiceImpl dpasQueryService;
+	QueryService dpasQueryService;
 	
 	public IesQueryServiceImpl() {
 		
@@ -146,11 +147,11 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		this.icsQueryService = icsQueryService;
 	}
 	
-	public DpasQueryServiceImpl getDpasQueryService() {
+	public QueryService getDpasQueryService() {
 		return dpasQueryService;
 	}
 	
-	public void setDpasQueryService(DpasQueryServiceImpl dpasQueryService) {
+	public void setDpasQueryService(QueryService dpasQueryService) {
 		this.dpasQueryService = dpasQueryService;
 	}
 }

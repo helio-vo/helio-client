@@ -217,7 +217,7 @@ public class HelioFieldDescriptor<T extends Object> {
 		StringBuilder sb = new StringBuilder();
 		sb.append("HelioField");
 		sb.append(" id=").append(id);
-		sb.append(" name=").append(name);
+		sb.append(", name=").append(name);
 		sb.append(", type=").append(type);
 		if (valueDomain != null) 
 			sb.append(", domain=").append(Arrays.toString(valueDomain));
