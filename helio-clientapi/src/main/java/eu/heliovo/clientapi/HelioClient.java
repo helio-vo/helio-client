@@ -57,12 +57,26 @@ public class HelioClient {
         registerLocalQueryServiceCapability(HelioServiceName.HEC);
         registerLocalQueryServiceCapability(HelioServiceName.ILS);
         registerLocalQueryServiceCapability(HelioServiceName.ICS);
+        registerIesQueryServiceCapability(HelioServiceName.IES);
     }
 
 	private void registerLocalQueryServiceCapability(HelioServiceName serviceName) {
 		ServiceDescriptor serivceDescriptor = getServiceDescriptorByName(serviceName);
 		if (serivceDescriptor != null) {
 			serivceDescriptor.addCapability(ServiceCapability.LOCAL_QUERY_SERVICE);
+		}
+	}
+	
+	/**
+	 * Register ServiceCapabilities of IES
+	 * @param serviceName
+	 * @author junia schoch at fhnw ch
+	 */
+	private void registerIesQueryServiceCapability(HelioServiceName serviceName) {
+		ServiceDescriptor serivceDescriptor = getServiceDescriptorByName(serviceName);
+		if (serivceDescriptor != null) {
+			serivceDescriptor.addCapability(ServiceCapability.LOCAL_QUERY_SERVICE);
+			serivceDescriptor.addCapability(ServiceCapability.ASYNC_QUERY_SERVICE);
 		}
 	}
     

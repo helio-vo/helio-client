@@ -43,7 +43,7 @@
     <property name="querySerializer" ref="pqlSerializer"></property>
   </bean>
 
-  <!-- Speicalized query services -->
+  <!-- Specialized query services -->
   <bean id="desQueryService" class="eu.heliovo.clientapi.query.impl.DesQueryServiceImpl"
     scope="prototype" parent="baseQueryService">
     <property name="serviceName">
@@ -73,7 +73,21 @@
     </property>
     <property name="stilUtils" ref="stilUtils" />
     <property name="instrumentDescriptorDao" ref="instrumentDescriptorDao" />
-  </bean>
+	</bean>
+	
+	<!-- iesQueryService @author junia schoch at fhnw ch-->
+	<bean id="iesQueryService" class="eu.heliovo.clientapi.query.impl.IesQueryServiceImpl"
+		scope="prototype">
+		<property name="serviceName">
+			<util:constant static-field="eu.heliovo.registryclient.HelioServiceName.IES" />
+		</property>
+		<property name="serviceVariant">
+			<null />
+		</property>
+		<property name="hecQueryServie" ref="localHecQueryService"/>
+		<property name="icsQueryService" ref="localIcsQueryService"/>
+		<property name="dpasQueryService" ref="dpasQueryService"/>
+	</bean>
 
   <!-- the query factory configuration -->
   <bean id="queryServiceFactoryConfig" class="eu.heliovo.clientapi.query.QueryServiceFactoryConfig"></bean>
