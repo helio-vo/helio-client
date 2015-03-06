@@ -1,6 +1,7 @@
 package ch.heliovo.clientapi.query.impl;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.context.support.GenericXmlApplicationContext;
 
@@ -15,9 +16,14 @@ public class IesQueryServiceDemo {
 	
 	public static void main(String[] args) {
 		IesQueryServiceImpl iesQueryService = getIesQueryService();
-		HelioQueryResult result = iesQueryService.query(Collections.singletonList("2002-02-14T00:00:00"), 
-				Collections.singletonList("2002-02-15T00:00:00"), Collections.singletonList("rhessi_hxr_flare"), 
-				Collections.singletonList("RHESSI__HESSI_HXR"), 0, 0);
+		
+		List<String> startTime = Collections.singletonList("2002-02-14T00:00:00");
+		List<String> endTime = Collections.singletonList("2002-02-15T00:00:00");
+		List<String> fromHec = Collections.singletonList("rhessi_hxr_flare");
+		List<String> instruments = Collections.singletonList("RHESSI__HESSI_HXR"); 
+		List<String> fromIcs = Collections.singletonList("instrument_pat");
+		
+		HelioQueryResult result = iesQueryService.query(startTime, endTime, fromHec, fromIcs, instruments, 0, 0);
 		
 		System.out.println("xml saved in " + result.asURL().getPath());
 	}

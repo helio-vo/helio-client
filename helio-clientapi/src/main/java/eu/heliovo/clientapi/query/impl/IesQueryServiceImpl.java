@@ -3,8 +3,6 @@ package eu.heliovo.clientapi.query.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.h2.engine.SysProperties;
-
 import net.ivoa.xml.votable.v1.DATA;
 import net.ivoa.xml.votable.v1.RESOURCE;
 import net.ivoa.xml.votable.v1.TABLE;
@@ -26,20 +24,17 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 	LocalQueryServiceImpl icsQueryService;
 	QueryService dpasQueryService;
 	
-	private List<String> startTime;
-	private List<String> endTime;
+	private List<String> startTime = new ArrayList<String>();
+	private List<String> endTime = new ArrayList<String>();
 	private List<String> hecStartTime;
 	private List<String> hecEndTime;
 	private Integer maxRecords =  0;
 	private Integer startIndex = 0;
 	private List<String> fromHec;
 	private List<String> fromIcs;
-	private List<String> fromDpas;
+	private List<String> fromDpas = new ArrayList<String>();
+	private List<String> instruments;
 	private String join = null;
-	
-	public IesQueryServiceImpl() {
-		
-	}
 	
 	/**
 	 * Query to find Observation data by events and instruments.
@@ -50,13 +45,14 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 	 * @startIndex named 'OFFSET' in postgresql
 	 */
 	public HelioQueryResult query(List<String> startTime, List<String> endTime, List<String> fromHec, 
-			List<String> fromIcs, int maxRecords, int startIndex) {
+			List<String> fromIcs, List<String> instruments, int maxRecords, int startIndex) {
 		this.fromHec = fromHec;
 		this.fromIcs = fromIcs;
 		this.maxRecords = maxRecords;
 		this.startIndex = startIndex;
 		this.hecStartTime = startTime;
 		this.hecEndTime = endTime;
+		this.instruments = instruments;
 		
 		HelioQueryResult result = getQueryResult();
 		return result;
@@ -68,11 +64,11 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		setTimeRangesFromVoTable(hecVoTable);
 		
 		// 2. get instruments for given time range
-		List<String> instruments = getIcsInstruments();
+		List<String> icsInstruments = getIcsInstruments();
 		
 		// 3. combine fromIcs and instruments to set fromDpas
-		for(String s:instruments) {
-			if(fromIcs.contains(s)) {
+		for(String s:icsInstruments) {
+			if(instruments.contains(s)) {
 				fromDpas.add(s);
 			}
 		}
@@ -107,13 +103,13 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 					List<TR> trs = data.getTABLEDATA().getTR();
 					for(TR tr:trs ) {
 						List<TD> td = tr.getTD();
-						startTime.add(td.get(1).getValue()); //td = column startTime
-						endTime.add(td.get(3).getValue()); // td = column endTime
+						if(td.size() >= 3) {
+							startTime.add(td.get(1).getValue()); //td = column startTime
+							endTime.add(td.get(3).getValue()); // td = column endTime
+						}
 					}
 				}
 			}
-		} else {
-			System.out.println("VOTABLE is null");
 		}
 	}
 	
@@ -137,8 +133,6 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 					}
 				}	
 			}
-		} else {
-			System.out.println("VOTABLE is null");
 		}
 		
 		return instruments;
