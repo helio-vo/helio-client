@@ -75,8 +75,7 @@ public class HelioClient {
 	private void registerIesQueryServiceCapability(HelioServiceName serviceName) {
 		ServiceDescriptor serivceDescriptor = getServiceDescriptorByName(serviceName);
 		if (serivceDescriptor != null) {
-			serivceDescriptor.addCapability(ServiceCapability.LOCAL_QUERY_SERVICE);
-			serivceDescriptor.addCapability(ServiceCapability.ASYNC_QUERY_SERVICE);
+			serivceDescriptor.addCapability(ServiceCapability.EXPERIMENTAL_QUERY_SERVICE);
 		}
 	}
     
