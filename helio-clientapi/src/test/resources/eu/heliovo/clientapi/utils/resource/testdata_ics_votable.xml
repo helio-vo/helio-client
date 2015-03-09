@@ -1,0 +1,103 @@
+<VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
+<DESCRIPTION>Helio ICS time based query V1.17.61</DESCRIPTION>
+<INFO name="EXECUTED_AT" value="2015-03-09T08:58:50"/>
+<INFO name="QUERY_STATUS" value="COMPLETED"/>
+<RESOURCE>
+<TABLE nrows="207">
+<INFO name="QUERY_STRING" value="SELECT name, observatory_name, obsinst_key, experiment_id, time_start, time_end, longname, inst_type, inst_od1, inst_od2, inst_oe1, inst_oe2, inst_fd, inst_nd, group_name, keywords, net_key FROM instrument_pat as instrument WHERE ('2002-02-14T00:00:00' &lt; time_end AND '2002-02-15T00:00:00' &gt; time_start) LIMIT 5000 OFFSET 0;"/>
+<FIELD arraysize="*" datatype="char" name="name"/>
+<FIELD arraysize="*" datatype="char" name="observatory_name"/>
+<FIELD arraysize="*" datatype="char" name="obsinst_key"/>
+<FIELD arraysize="*" datatype="char" name="experiment_id"/>
+<FIELD arraysize="*" datatype="char" name="time_start"/>
+<FIELD arraysize="*" datatype="char" name="time_end"/>
+<FIELD arraysize="*" datatype="char" name="longname"/>
+<FIELD arraysize="*" datatype="char" name="inst_type"/>
+<FIELD arraysize="*" datatype="char" name="inst_od1"/>
+<FIELD arraysize="*" datatype="char" name="inst_od2"/>
+<FIELD arraysize="*" datatype="char" name="inst_oe1"/>
+<FIELD arraysize="*" datatype="char" name="inst_oe2"/>
+<FIELD arraysize="*" datatype="char" name="inst_fd"/>
+<FIELD arraysize="*" datatype="char" name="inst_nd"/>
+<FIELD arraysize="*" datatype="char" name="group_name"/>
+<!-- Omitted column keywords(java.sql.Array) -->
+<FIELD arraysize="*" datatype="char" name="net_key"/>
+<DATA>
+<TABLEDATA>
+  <TR>
+    <TD>GWE</TD>
+    <TD>Ulysses</TD>
+    <TD>ULYSSES__GWE</TD>
+    <TD>1990-090B-11</TD>
+    <TD>1990-10-06 00:00:00.0</TD>
+    <TD>2009-06-26 00:00:00.0</TD>
+    <TD>Gravitation Wave Experiment</TD>
+    <TD>in-situ</TD>
+    <TD>galactic</TD>
+    <TD>interstellar</TD>
+    <TD>fields</TD>
+    <TD>gravity</TD>
+    <TD>0</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+  </TR>
+  <TR>
+    <TD>PIXIE</TD>
+    <TD>Polar</TD>
+    <TD>POLAR__PIXIE</TD>
+    <TD>1996-013A-07</TD>
+    <TD>1996-02-24 00:00:00.0</TD>
+    <TD>2008-04-01 00:00:00.0</TD>
+    <TD>Polar Ionospheric X-ray Imaging Experiment</TD>
+    <TD>remote</TD>
+    <TD>Earth</TD>
+    <TD>aurora</TD>
+    <TD>photons</TD>
+    <TD>SXR</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+  </TR>
+  <TR>
+    <TD>Phoenix-2</TD>
+    <TD>BLEN</TD>
+    <TD>BLEN__PHOENIX_2</TD>
+    <TD></TD>
+    <TD>1990-01-01 00:00:00.0</TD>
+    <TD>2020-01-01 00:00:00.0</TD>
+    <TD>Phoenix-2 Radio Spectrometer  (0.1 to 4.0 GHz)</TD>
+    <TD>remote</TD>
+    <TD>Sun</TD>
+    <TD>disk/inr. cor.</TD>
+    <TD>photons</TD>
+    <TD>microwave</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+  </TR>
+  <TR>
+    <TD>EFD</TD>
+    <TD>Geotail</TD>
+    <TD>GEOTAIL__EFD</TD>
+    <TD>1992-044A-05</TD>
+    <TD>1992-07-24 00:00:00.0</TD>
+    <TD>2020-01-01 00:00:00.0</TD>
+    <TD>Electric Field Detector </TD>
+    <TD>in-situ</TD>
+    <TD>Earth</TD>
+    <TD>magnetosphere</TD>
+    <TD>fields</TD>
+    <TD>electric</TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+  </TR>
+</TABLEDATA>
+</DATA>
+</TABLE>
+</RESOURCE>
+</VOTABLE>

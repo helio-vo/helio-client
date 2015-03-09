@@ -1,0 +1,140 @@
+<VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
+	<DESCRIPTION>Helio HEC time based query V1.17.61</DESCRIPTION>
+	<INFO name="EXECUTED_AT" value="2015-03-09T08:50:07" />
+	<INFO name="QUERY_STATUS" value="COMPLETED" />
+	<RESOURCE>
+		<TABLE nrows="3">
+			<INFO name="QUERY_STRING"
+				value="SELECT hec_id, time_start, time_peak, time_end, nar, x_cart, y_cart, radial_arcsec, duration, count_sec_peak, total_count, energy_kev, flare_number FROM hec2__rhessi_hxr_flare as rhessi_hxr_flare WHERE ('2002-02-14T00:00:00' &lt; time_end AND '2002-02-15T00:00:00' &gt; time_start) LIMIT 5000 OFFSET 0;" />
+			<FIELD datatype="int" name="hec_id" ucd="meta.record">
+				<DESCRIPTION>Event identification number (HEC internal number)
+				</DESCRIPTION>
+				<VALUES null='-2147483648' />
+			</FIELD>
+			<FIELD arraysize="*" datatype="char" name="time_start" ucd="time.start"
+				utype="helio:time_period.time_start">
+				<DESCRIPTION>Start time determined from when the flux rate in the
+					6-12 keV band exceeds 3*sigma above the background level calcualted
+					on a 60s running average.</DESCRIPTION>
+			</FIELD>
+			<FIELD arraysize="*" datatype="char" name="time_peak" ucd="time.phase"
+				utype="helio:time.time_peak">
+				<DESCRIPTION>The time of the peak flux for the flare in the energy
+					range greater than 6 keV</DESCRIPTION>
+			</FIELD>
+			<FIELD arraysize="*" datatype="char" name="time_end" ucd="time.end"
+				utype="helio:time_period.time_end">
+				<DESCRIPTION>End time determined from when the flux rate in the 6-12
+					keV band drops below 3*sigma of the background level calcualted on
+					a 60s running average.</DESCRIPTION>
+			</FIELD>
+			<FIELD datatype="int" name="nar" ucd="meta.id.cross" utype="helio:flare.nar">
+				<DESCRIPTION>The number for the closest NOAA active region index
+				</DESCRIPTION>
+				<VALUES null='-2147483648' />
+			</FIELD>
+			<FIELD datatype="double" name="x_cart"
+				ucd="pos.cartesian.x;pos.bodyrc;pos.heliocentric/heliographic ?"
+				utype="helio:location.x_cart">
+				<DESCRIPTION>Position in arcsecs from centre of the sun.
+				</DESCRIPTION>
+			</FIELD>
+			<FIELD datatype="double" name="y_cart"
+				ucd="pos.cartesian.y;pos.bodyrc;pos.heliocentric/heliographic ?"
+				utype="helio:location.y_cart">
+				<DESCRIPTION>Position in arcsecs from centre of the sun.
+				</DESCRIPTION>
+			</FIELD>
+			<FIELD datatype="double" name="radial_arcsec"
+				ucd="pos.heliographic/heliocentric?;pos.distance" utype="helio:location.radial_arcsec">
+				<DESCRIPTION>Radial distance in arcsecs from the centre of the Sun.
+				</DESCRIPTION>
+			</FIELD>
+			<FIELD datatype="int" name="duration" ucd="time.duration"
+				utype="helio:flare.duration">
+				<DESCRIPTION>Duration of the flare in seconds</DESCRIPTION>
+				<VALUES null='-2147483648' />
+			</FIELD>
+			<FIELD datatype="int" name="count_sec_peak" ucd="phot.count"
+				utype="helio:flare.magnitude.hard_xray_quantifier.hard_xray_count">
+				<DESCRIPTION>Peak counts/second in energy range 12-25 keV, averaged
+					over active collimators, including background.</DESCRIPTION>
+				<VALUES null='-2147483648' />
+			</FIELD>
+			<FIELD datatype="int" name="total_count" ucd="meta.number"
+				utype="helio:flare.magnitude.hard_xray_quantifier.hard_xray_count">
+				<DESCRIPTION>Total counts in energy range 12-25 keV integrated over
+					duration of flare summed over all subcollimators, including
+					background.</DESCRIPTION>
+				<VALUES null='-2147483648' />
+			</FIELD>
+			<FIELD datatype="int" name="energy_kev" ucd="phys.energy"
+				utype="helio:flare.magnitude.hard_xray_quantifier.energy_keV">
+				<DESCRIPTION>The highest energy band in which the flare was
+					observed.</DESCRIPTION>
+				<VALUES null='-2147483648' />
+			</FIELD>
+			<FIELD datatype="int" name="flare_number" ucd="meta.id"
+				utype="helio:flare.rhessi_flare_number">
+				<DESCRIPTION>An ID number, ymmddnn, e.g., 2042101 is the first flare
+					found for 21-Apr-2002. These numbers are not time ordered, e.g.,
+					flare 2042129 occurred before 2042104. Also all sorts of problems
+					have been noted since 2010 has started, and the energy range has
+					been changed, resulting in more than 100 flares in certain days.
+					Flare_ids for 2010 and beyond start with a 2 digit year, and there
+					can be 3 digits for the flare number in a given day e.g.,
+					100601102.</DESCRIPTION>
+				<VALUES null='-2147483648' />
+			</FIELD>
+			<DATA>
+				<TABLEDATA>
+					<TR>
+						<TD>25</TD>
+						<TD>2002-02-15 03:12:00.0</TD>
+						<TD>2002-02-15 03:12:54.0</TD>
+						<TD>2002-02-15 03:13:08.0</TD>
+						<TD>0</TD>
+						<TD>150.0</TD>
+						<TD>428.0</TD>
+						<TD>454.0</TD>
+						<TD>68</TD>
+						<TD>14</TD>
+						<TD>4416</TD>
+						<TD>6</TD>
+						<TD>2021517</TD>
+					</TR>
+					<TR>
+						<TD>25</TD>
+						<TD>2002-02-15 03:12:00.0</TD>
+						<TD>2002-02-15 03:12:54.0</TD>
+						<TD>2002-02-15 03:13:08.0</TD>
+						<TD>0</TD>
+						<TD>150.0</TD>
+						<TD>428.0</TD>
+						<TD>454.0</TD>
+						<TD>68</TD>
+						<TD>14</TD>
+						<TD>4416</TD>
+						<TD>6</TD>
+						<TD>2021517</TD>
+					</TR>
+					<TR>
+						<TD>25</TD>
+						<TD>2002-02-15 03:12:00.0</TD>
+						<TD>2002-02-15 03:12:54.0</TD>
+						<TD>2002-02-15 03:13:08.0</TD>
+						<TD>0</TD>
+						<TD>150.0</TD>
+						<TD>428.0</TD>
+						<TD>454.0</TD>
+						<TD>68</TD>
+						<TD>14</TD>
+						<TD>4416</TD>
+						<TD>6</TD>
+						<TD>2021517</TD>
+					</TR>
+				</TABLEDATA>
+			</DATA>
+		</TABLE>
+	</RESOURCE>
+</VOTABLE>

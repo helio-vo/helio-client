@@ -64,7 +64,8 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		setTimeRangesFromVoTable(hecVoTable);
 		
 		// 2. get instruments for given time range
-		List<String> icsInstruments = getIcsInstruments();
+		VOTABLE icsVoTable = getIcsVoTable();
+		List<String> icsInstruments = getIcsInstruments(icsVoTable);
 		
 		// 3. combine fromIcs and instruments to set fromDpas
 		for(String s:icsInstruments) {
@@ -78,7 +79,7 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return result;
 	}
 	
-	private VOTABLE getHecVoTable() {
+	protected VOTABLE getHecVoTable() {
 		// set hecQueryService query properties
 		hecQueryService.setStartTime(hecStartTime);
 		hecQueryService.setEndTime(hecEndTime);
@@ -92,7 +93,7 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return voTable;
 	}
 	
-	private void setTimeRangesFromVoTable(VOTABLE voTable) {
+	protected void setTimeRangesFromVoTable(VOTABLE voTable) {
 		//iterate over VOTABLE to get timeRanges
 		if(voTable != null) {
 			List<RESOURCE> resources = voTable.getRESOURCE();
@@ -113,9 +114,8 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		}
 	}
 	
-	private List<String> getIcsInstruments() {
+	protected List<String> getIcsInstruments(VOTABLE voTable) {
 		List<String> instruments = new ArrayList<String>();
-		VOTABLE voTable = getIcsVoTable();
 		
 		//iterate over VOTABLE to get timeRanges
 		if(voTable != null) {
@@ -138,7 +138,7 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return instruments;
 	}
 	
-	private VOTABLE getIcsVoTable() {
+	protected VOTABLE getIcsVoTable() {
 		icsQueryService.setStartTime(startTime);
 		icsQueryService.setEndTime(endTime);
 		icsQueryService.setFrom(fromIcs);
