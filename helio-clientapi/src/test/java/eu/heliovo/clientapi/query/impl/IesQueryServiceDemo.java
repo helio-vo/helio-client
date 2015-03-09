@@ -31,9 +31,6 @@ public class IesQueryServiceDemo {
 	public static IesQueryServiceImpl getIesQueryService() {
 		GenericXmlApplicationContext context = new GenericXmlApplicationContext("classpath:spring/clientapi-main.xml");
 		IesQueryServiceImpl iesQueryService = context.getBean(IesQueryServiceImpl.class);
-		HelioClient helioClient = context.getBean(HelioClient.class);
-        QueryService dpasService = (QueryService)helioClient.getServiceInstance(HelioServiceName.DPAS, null, ServiceCapability.SYNC_QUERY_SERVICE);
-		iesQueryService.setDpasQueryService(dpasService);
 		return iesQueryService;
 	}
 	

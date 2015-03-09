@@ -86,7 +86,8 @@
 		</property>
 		<property name="hecQueryService" ref="localHecQueryService"/>
 		<property name="icsQueryService" ref="localIcsQueryService"/>
-		<property name="dpasQueryService" ref="dpasQueryService"/>
+		 <property name="dpasQueryService" value="#{helioClient.getServiceInstance(T(eu.heliovo.registryclient.HelioServiceName).DPAS, null, T(eu.heliovo.registryclient.ServiceCapability).SYNC_QUERY_SERVICE)}"/> 
+		<property name="whereClauseFactoryBean" ref="whereClauseFactoryBean" />
 	</bean>
 
   <!-- the query factory configuration -->
