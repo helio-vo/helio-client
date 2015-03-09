@@ -1,7 +1,9 @@
 package eu.heliovo.clientapi.query.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.ivoa.xml.votable.v1.DATA;
 import net.ivoa.xml.votable.v1.RESOURCE;
@@ -12,6 +14,8 @@ import net.ivoa.xml.votable.v1.VOTABLE;
 import eu.heliovo.clientapi.model.service.AbstractServiceImpl;
 import eu.heliovo.clientapi.query.HelioQueryResult;
 import eu.heliovo.clientapi.query.QueryService;
+import eu.heliovo.clientapi.query.WhereClause;
+import eu.heliovo.clientapi.query.WhereClauseFactoryBean;
 import eu.heliovo.clientapi.query.local.LocalQueryServiceImpl;
 
 /**
@@ -23,6 +27,10 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 	LocalQueryServiceImpl hecQueryService;
 	LocalQueryServiceImpl icsQueryService;
 	QueryService dpasQueryService;
+	
+	private transient WhereClauseFactoryBean whereClauseFactoryBean;
+	private List<WhereClause> whereClauses = new ArrayList<WhereClause>();
+	private transient Map<String, WhereClause> whereClauseCache = new HashMap<String, WhereClause>();
 	
 	private List<String> startTime = new ArrayList<String>();
 	private List<String> endTime = new ArrayList<String>();
@@ -243,4 +251,44 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 	public void setJoin(String join) {
 		this.join = join;
 	}
+	
+	public WhereClauseFactoryBean getWhereClauseFactoryBean() {
+		return whereClauseFactoryBean;
+	}
+
+	public void setWhereClauseFactoryBean(
+			WhereClauseFactoryBean whereClauseFactoryBean) {
+		this.whereClauseFactoryBean = whereClauseFactoryBean;
+	}
+	
+	public List<WhereClause> getWhereClauses() {
+		return whereClauses;
+	}
+
+	public WhereClause getWhereClauseByCatalogName(String catalogName) {
+		for (WhereClause clause : whereClauses) {
+            if (catalogName.equals(clause.getCatalogName())) {
+                return clause;
+            }
+        }
+        return null;
+	}
+	
+	/**
+     * Update the where clauses, depending on the from property. 
+     */
+    private void updateWhereClauses(List<String> from) {
+        // empty the where clauses
+        whereClauses.clear();
+        
+        // and repopulate from cache or create new clause
+        for (String catalogue : from) {
+            WhereClause clause = whereClauseCache.get(catalogue);
+            if (clause == null) {
+                clause = whereClauseFactoryBean.createWhereClause(getServiceName(), catalogue);
+                whereClauseCache.put(catalogue, clause);
+            }
+            whereClauses.add(clause);
+        }
+    }
 }

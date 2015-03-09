@@ -73,6 +73,7 @@ public class HelioClient {
 	 * @author junia schoch at fhnw ch
 	 */
 	private void registerIesQueryServiceCapability(HelioServiceName serviceName) {
+		registryClient.registerServiceDescriptor(new GenericServiceDescriptor(HelioServiceName.IES, "IES", ServiceCapability.EXPERIMENTAL_QUERY_SERVICE));
 		ServiceDescriptor serivceDescriptor = getServiceDescriptorByName(serviceName);
 		if (serivceDescriptor != null) {
 			serivceDescriptor.addCapability(ServiceCapability.EXPERIMENTAL_QUERY_SERVICE);
