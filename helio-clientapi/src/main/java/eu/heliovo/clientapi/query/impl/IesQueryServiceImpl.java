@@ -66,6 +66,10 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return result;
 	}
 	
+	/**
+	 * Execute queries on hec, ics and dpas to get QueryResult
+	 * @return HelioQueryResult
+	 */
 	private HelioQueryResult getQueryResult() {
 		// 1. set timeRanges from hecQueryService events
 		VOTABLE hecVoTable = getHecVoTable();
@@ -87,12 +91,16 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return result;
 	}
 	
+	/**
+	 * Execute query on {@link LocalQueryServiceImpl} for HEC
+	 * @return voTable
+	 */
 	protected VOTABLE getHecVoTable() {
 		// set hecQueryService query properties
 		hecQueryService.setStartTime(hecStartTime);
 		hecQueryService.setEndTime(hecEndTime);
 		hecQueryService.setFrom(fromHec);
-		hecQueryService.setMaxRecords(maxRecords);
+		hecQueryService.setMaxRecords(5); //Hack: limit maxRecords due to backend problems in dpas
 		hecQueryService.setStartIndex(startIndex);
 		hecQueryService.setJoin(join);
 		
@@ -101,6 +109,10 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return voTable;
 	}
 	
+	/**
+	 * Read timeRanges form VOTABLE and set the startTime and endTime properties
+	 * @param voTable
+	 */
 	protected void setTimeRangesFromVoTable(VOTABLE voTable) {
 		//iterate over VOTABLE to get timeRanges
 		if(voTable != null) {
@@ -122,6 +134,11 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		}
 	}
 	
+	/**
+	 * Read instruments form VOTABLE
+	 * @param voTable
+	 * @return list with instrument field value of column "obsinst_key"
+	 */
 	protected List<String> getIcsInstruments(VOTABLE voTable) {
 		List<String> instruments = new ArrayList<String>();
 		
@@ -146,6 +163,10 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return instruments;
 	}
 	
+	/**
+	 * Execute query on {@link IesQueryServiceImpl}
+	 * @return voTable
+	 */
 	protected VOTABLE getIcsVoTable() {
 		icsQueryService.setStartTime(startTime);
 		icsQueryService.setEndTime(endTime);
@@ -160,6 +181,10 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
 		return voTable;
 	}
 	
+	/**
+	 * Execute query on {@link DpasQueryServiceImpl}
+	 * @return HelioQueryResult
+	 */
 	private HelioQueryResult getObservationData() {
 		dpasQueryService.setFrom(fromDpas);
 		dpasQueryService.setStartTime(startTime);
@@ -273,22 +298,4 @@ public class IesQueryServiceImpl extends AbstractServiceImpl{
         }
         return null;
 	}
-	
-	/**
-     * Update the where clauses, depending on the from property. 
-     */
-    private void updateWhereClauses(List<String> from) {
-        // empty the where clauses
-        whereClauses.clear();
-        
-        // and repopulate from cache or create new clause
-        for (String catalogue : from) {
-            WhereClause clause = whereClauseCache.get(catalogue);
-            if (clause == null) {
-                clause = whereClauseFactoryBean.createWhereClause(getServiceName(), catalogue);
-                whereClauseCache.put(catalogue, clause);
-            }
-            whereClauses.add(clause);
-        }
-    }
 }

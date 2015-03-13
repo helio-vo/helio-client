@@ -12,6 +12,11 @@ import eu.heliovo.clientapi.query.impl.IesQueryServiceImpl;
 import eu.heliovo.registryclient.HelioServiceName;
 import eu.heliovo.registryclient.ServiceCapability;
 
+/**
+ * Demo for {@link IesQueryServiceImpl} that creates an example query
+ * @author junia schoch at fhnw ch
+ *
+ */
 public class IesQueryServiceDemo {
 	
 	public static void main(String[] args) {
